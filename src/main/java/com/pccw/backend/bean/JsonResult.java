@@ -8,12 +8,12 @@ import lombok.Data;
  * JsonResult
  */
 @Data
-public class JsonResult {
+public class JsonResult<T> {
 
     public String state;
     public String msg;
-    public ArrayList data;
-    public JsonResult(String state, String msg, ArrayList data) {
+    public ArrayList<T> data;
+    public JsonResult(String state, String msg, ArrayList<T> data) {
         super();
         this.state=state;
         this.msg=msg;

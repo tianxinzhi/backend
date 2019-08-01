@@ -18,13 +18,13 @@ public class StockBalanceCtrl {
 	private StudentRepository repo;
 	
 	@RequestMapping("/search")
-	public JsonResult search(){
-		return new JsonResult("", "3", new ArrayList<String>(Arrays.asList("ok!","333")));
+	public JsonResult<String> search(){
+		return new JsonResult<String>("", "3", new ArrayList<String>(Arrays.asList("ok!","333")));
 	}
 	@RequestMapping("/create")
-	public JsonResult create(){
+	public JsonResult<Student> create(){
 		Student student = new Student("cjl");
 		repo.save(student);
-		return new JsonResult("", "", new ArrayList<Student>(Arrays.asList(student)));
+		return new JsonResult<Student>("", "", new ArrayList<Student>(Arrays.asList(student)));
 	}
 }

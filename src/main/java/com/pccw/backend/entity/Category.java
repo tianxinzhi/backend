@@ -7,9 +7,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import lombok.Data;
@@ -20,8 +17,8 @@ import lombok.Data;
  */
 @Entity
 @Data
-@Table(name="student")
-public class Student implements Serializable {
+@Table(name="category")
+public class Category implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -32,15 +29,11 @@ public class Student implements Serializable {
     @Column(name="name")
     private String name;
 
-    public Student(String name) {
+    public Category(String name) {
         super();
         this.name=name;
-        // this.classId=classId;
     }
-    public Student() {
+    public Category() {
         super();
     }
-    @ManyToOne
-    @JoinColumn(name="category_Id",referencedColumnName = "id")
-    private Category catgory;
 }

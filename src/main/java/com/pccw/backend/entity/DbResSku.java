@@ -21,7 +21,8 @@ import lombok.Data;
 @Entity
 @Table(name = "res_sku")
 @NamedQuery(name="DbResSku.findAll", query="SELECT a FROM DbResSku a")
-public class DbResSku implements Serializable {
+public class DbResSku implements Serializable{
+
 
 	private static final long serialVersionUID = 1L;
 

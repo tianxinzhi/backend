@@ -1,0 +1,168 @@
+package com.pccw.backend.entity;
+
+import java.io.Serializable;
+import javax.persistence.*;
+import java.math.BigDecimal;
+import java.util.Date;
+
+
+/**
+ * The persistent class for the TM_PRODUCT_COMMITMENT database table.
+ * 
+ */
+@Entity
+@Table(name="TM_PRODUCT_COMMITMENT")
+@NamedQuery(name="ProductCommitment.findAll", query="SELECT p FROM ProductCommitment p")
+public class ProductCommitment implements Serializable {
+	private static final long serialVersionUID = 1L;
+
+	@Column(name="CREATED_BY")
+	private String createdBy;
+
+	@Temporal(TemporalType.DATE)
+	@Column(name="CREATED_DATE")
+	private Date createdDate;
+
+	private String description;
+
+	private BigDecimal duration;
+
+	@Temporal(TemporalType.DATE)
+	@Column(name="END_DATE")
+	private Date endDate;
+
+	@Column(name="LAST_UPDATED_BY")
+	private String lastUpdatedBy;
+
+	@Temporal(TemporalType.DATE)
+	@Column(name="LAST_UPDATED_DATE")
+	private Date lastUpdatedDate;
+
+	private String name;
+
+	@Column(name="ORDER_ITEM_ID")
+	private BigDecimal orderItemId;
+
+	@Temporal(TemporalType.DATE)
+	@Column(name="START_DATE")
+	private Date startDate;
+
+	@Column(name="TERM_OR_CONDITION_NUMBER")
+	private String termOrConditionNumber;
+
+	@Column(name="\"TYPE\"")
+	private String type;
+
+	//bi-directional many-to-one association to Product
+	@ManyToOne
+	@JoinColumn(name="PRODUCT_ID")
+	private Product tmProduct;
+
+	public ProductCommitment() {
+	}
+
+	public String getCreatedBy() {
+		return this.createdBy;
+	}
+
+	public void setCreatedBy(String createdBy) {
+		this.createdBy = createdBy;
+	}
+
+	public Date getCreatedDate() {
+		return this.createdDate;
+	}
+
+	public void setCreatedDate(Date createdDate) {
+		this.createdDate = createdDate;
+	}
+
+	public String getDescription() {
+		return this.description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public BigDecimal getDuration() {
+		return this.duration;
+	}
+
+	public void setDuration(BigDecimal duration) {
+		this.duration = duration;
+	}
+
+	public Date getEndDate() {
+		return this.endDate;
+	}
+
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
+	}
+
+	public String getLastUpdatedBy() {
+		return this.lastUpdatedBy;
+	}
+
+	public void setLastUpdatedBy(String lastUpdatedBy) {
+		this.lastUpdatedBy = lastUpdatedBy;
+	}
+
+	public Date getLastUpdatedDate() {
+		return this.lastUpdatedDate;
+	}
+
+	public void setLastUpdatedDate(Date lastUpdatedDate) {
+		this.lastUpdatedDate = lastUpdatedDate;
+	}
+
+	public String getName() {
+		return this.name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public BigDecimal getOrderItemId() {
+		return this.orderItemId;
+	}
+
+	public void setOrderItemId(BigDecimal orderItemId) {
+		this.orderItemId = orderItemId;
+	}
+
+	public Date getStartDate() {
+		return this.startDate;
+	}
+
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
+
+	public String getTermOrConditionNumber() {
+		return this.termOrConditionNumber;
+	}
+
+	public void setTermOrConditionNumber(String termOrConditionNumber) {
+		this.termOrConditionNumber = termOrConditionNumber;
+	}
+
+	public String getType() {
+		return this.type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public Product getTmProduct() {
+		return this.tmProduct;
+	}
+
+	public void setTmProduct(Product tmProduct) {
+		this.tmProduct = tmProduct;
+	}
+
+}

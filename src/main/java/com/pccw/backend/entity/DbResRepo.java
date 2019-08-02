@@ -14,6 +14,10 @@ import javax.persistence.Table;
 
 import lombok.Data;
 
+
+/**
+ * repository => store/shop
+ */
 @Data
 @Entity
 @Table(name = "res_repo")
@@ -31,6 +35,9 @@ public class DbResRepo implements Serializable {
 
 	@Column(name = "repo_type", length = 6)
 	private String repoType;
+
+	@Column(name="repo_num",length = 64)
+	private String repoNum;
 	
 	@Column(name = "repo_name", length = 64)
 	private String repoName;

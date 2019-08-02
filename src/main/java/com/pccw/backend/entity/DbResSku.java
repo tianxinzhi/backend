@@ -11,16 +11,21 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-import javax.persistence.NamedQuery;
+
 
 import javax.persistence.Table;
 
 import lombok.Data;
 
+
+
+/**
+ * sku => product
+ */
+
 @Data
 @Entity
 @Table(name = "res_sku")
-@NamedQuery(name="DbResSku.findAll", query="SELECT a FROM DbResSku a")
 public class DbResSku implements Serializable{
 
 
@@ -30,8 +35,11 @@ public class DbResSku implements Serializable{
 	@GeneratedValue(strategy=GenerationType.IDENTITY)	
 	private Long id;
 	
-	@Column(name = "type_id")
-	private Long typeId;
+	@Column(name = "class_id")
+	private Long classId;
+
+	@Column(name = "class_num")
+	private String classNum;
 	
 	@Column(name = "sku_num", length = 12)
 	private String skuNum;
@@ -42,16 +50,7 @@ public class DbResSku implements Serializable{
 	@Column(name = "sku_desc", length = 512)
 	private String skuDesc;
 	
-	@Column(name = "key_item_attr")
-	private Long keyItemAttr;
-	
 	@Column(name = "status", length = 3)
 	private String status;
-	
-	@Column(name = "eff_start_date")
-	private Date effStartDate;
-	
-	@Column(name = "eff_end_date")
-	private Date effEndDate;
 	
 }

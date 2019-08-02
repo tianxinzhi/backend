@@ -13,6 +13,10 @@ import javax.persistence.Table;
 
 import lombok.Data;
 
+/**
+ * class => category of sku
+ */
+
 @Data
 @Entity
 @Table(name = "res_class")
@@ -26,26 +30,20 @@ public class DbResClass implements Serializable {
 	
 	@Column(name = "parent_class_id")
 	private Long parentClassId;
+
+	@Column(name = "class_Num", length = 32)
+	private String classNum;
 	
 	@Column(name = "class_name", length = 32)
 	private String className;
 	
-	@Column(name = "class_type", length = 16)
-	private String classType;	
 	
 	@Column(name = "class_desc", length = 128)
 	private String classDesc;
 	
-	@Column(name = "ver_id", length = 16)
-	private String verId;
 	
 	@Column(name = "status", length = 3)
 	private String status;
 	
-	@Column(name = "eff_start_date")
-	private Date effStartDate;
-	
-	@Column(name = "eff_end_date")
-	private Date effEndDate;
 
 }

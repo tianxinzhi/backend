@@ -11,6 +11,10 @@ import javax.persistence.Table;
 
 import lombok.Data;
 
+/**
+ *  one area may have many reposity/shop/store
+ */
+
 @Data
 @Entity
 @Table(name = "res_area")

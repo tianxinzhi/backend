@@ -1,7 +1,6 @@
 package com.pccw.backend.entity;
 
 import java.io.Serializable;
-import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,6 +10,12 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import lombok.Data;
+
+
+/**
+ * which store, which sku , how many qty
+ */
+
 
 @Data
 @Entity
@@ -25,22 +30,27 @@ public class DbResItemRepo implements Serializable {
 	
 	@Column(name = "item_id")
 	private Long itemId;
+
+	@Column(name="item_num")
+	private String itemNum;
 	
 	@Column(name = "sku_id")
 	private Long skuId;
+
+	@Column(name="sku_num")
+	private String skuNum;
+
+	@Column(name = "repo_id")
+	private Long repoId;
+
+	@Column(name="repo_num")
+	private String repoNuml;
 	
 	@Column(name = "qty")
 	private int qty;
 	
 	@Column(name = "status", length = 3)
 	private String status;
+
 	
-	@Column(name = "repo_id")
-	private Long repoId;
-	
-	@Column(name = "eff_start_date")
-	private Date effStartDate;
-	
-	@Column(name = "eff_end_date")
-	private Date effEndDate;
 }

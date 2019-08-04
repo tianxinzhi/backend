@@ -1,6 +1,7 @@
 package com.pccw.backend.bean;
 
-import java.util.ArrayList;
+
+import java.util.List;
 
 import lombok.Data;
 
@@ -12,8 +13,8 @@ public class JsonResult<T> {
 
     public String state;
     public String msg;
-    public ArrayList<T> data;
-    public JsonResult(String state, String msg, ArrayList<T> data) {
+    public List<T> data;
+    public JsonResult(String state, String msg, List<T> data) {
         super();
         this.state=state;
         this.msg=msg;

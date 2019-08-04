@@ -6,17 +6,17 @@ import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
+
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import lombok.Data;
+
 
 
 /**
  *  one sku can include many items
  */
-@Data
+
 @Entity
 @Table(name = "res_item")
 public class DbResItem implements Serializable {
@@ -24,19 +24,19 @@ public class DbResItem implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)		
-	private Long id;
+	@GeneratedValue		
+	public Long id;
 	
 	@Column(name = "sku_id")
-	private Long skuId;
+	public Long skuId;
 	
 	@Column(name = "item_num", length = 128)
-	private String itemNum;
+	public String itemNum;
 	
 	@Column(name = "status", length = 3)
-	private String status;
+	public String status;
 	
 	@Column(name = "lot_num", length = 16)
-	private String lotNum;
+	public String lotNum;
 
 }

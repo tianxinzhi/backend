@@ -6,19 +6,17 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
+
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import lombok.Data;
 
 
 /**
  * repository => store/shop
  */
-@Data
 @Entity
 @Table(name = "res_repo")
 public class DbResRepo implements Serializable {
@@ -26,26 +24,26 @@ public class DbResRepo implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	private Long id;
+	@GeneratedValue
+	public Long id;
 
 	@ManyToOne(cascade= {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH})
 	@JoinColumn(name="area_id", referencedColumnName="id")
-	private DbResArea area;
+	public DbResArea area;
 
 	@Column(name = "repo_type", length = 6)
-	private String repoType;
+	public String repoType;
 
 	@Column(name="repo_num",length = 64)
-	private String repoNum;
+	public String repoNum;
 	
 	@Column(name = "repo_name", length = 64)
-	private String repoName;
+	public String repoName;
 
 	@Column(name = "repo_addr", length = 512)
-	private String repoAddr;
+	public String repoAddr;
 
 	@Column(name = "status", length = 6)	
-	private String status;
+	public String status;
 
 }

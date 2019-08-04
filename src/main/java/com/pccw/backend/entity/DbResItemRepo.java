@@ -10,47 +10,51 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import lombok.Data;
+import lombok.Getter;
 
 
-/**
+/*
  * which store, which sku , how many qty
  */
 
 
-@Data
 @Entity
 @Table(name = "res_item_repo")
+
 public class DbResItemRepo implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)		
-	private Long id;
+	@GeneratedValue	
+	public Long id;
 	
 	@Column(name = "item_id")
-	private Long itemId;
+	public Long itemId;
 
 	@Column(name="item_num")
-	private String itemNum;
+	public String itemNum;
 	
+	// public String getItemNum(){
+	// 	return itemNum;
+	// }
 	@Column(name = "sku_id")
-	private Long skuId;
+	public Long skuId;
 
 	@Column(name="sku_num")
-	private String skuNum;
+	public String skuNum;
 
 	@Column(name = "repo_id")
-	private Long repoId;
+	public Long repoId;
 
 	@Column(name="repo_num")
-	private String repoNuml;
+	public String repoNum;
 	
 	@Column(name = "qty")
-	private int qty;
+	public int qty;
 	
 	@Column(name = "status", length = 3)
-	private String status;
+	public String status;
 
 	
 }

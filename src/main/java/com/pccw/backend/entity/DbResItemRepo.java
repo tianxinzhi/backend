@@ -5,12 +5,12 @@ import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
+
 import javax.persistence.Id;
 import javax.persistence.Table;
 
 import lombok.Data;
-import lombok.Getter;
+
 
 
 /*
@@ -20,7 +20,7 @@ import lombok.Getter;
 
 @Entity
 @Table(name = "res_item_repo")
-
+@Data
 public class DbResItemRepo implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
@@ -35,9 +35,6 @@ public class DbResItemRepo implements Serializable {
 	@Column(name="item_num")
 	public String itemNum;
 	
-	// public String getItemNum(){
-	// 	return itemNum;
-	// }
 	@Column(name = "sku_id")
 	public Long skuId;
 

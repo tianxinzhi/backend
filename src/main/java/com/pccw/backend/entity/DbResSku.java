@@ -1,7 +1,6 @@
 package com.pccw.backend.entity;
 
 import java.io.Serializable;
-import java.util.Date;
 
 
 import javax.persistence.Column;

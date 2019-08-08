@@ -1,12 +1,13 @@
 package com.pccw.backend.bean;
 
 
+import java.util.Arrays;
 import java.util.List;
 
 import lombok.Data;
 
 /**
- * JsonResult
+ * JsonResult is customer specifiaction of json of all api to return to client
  */
 @Data
 public class JsonResult<T> {
@@ -20,5 +21,22 @@ public class JsonResult<T> {
         this.msg=msg;
         this.data=data;
 
+    }
+    /**
+     * quick method to return a JsonResult when SUCESSED
+     * @param <G> 
+     * @param data
+     * @return
+     */
+    public static <G> JsonResult<G> succss(List<G> data) {
+        return new JsonResult<G>("", "", data);
+    }
+    /**
+     * quick method to return a JsonResult when FAILED
+     * @param <G>
+     * @return
+     */
+    public static <G>JsonResult<G> fail(){
+        return new JsonResult<G>("", "", Arrays.asList());
     }
 }

@@ -1,17 +1,19 @@
 package com.pccw.backend.entity;
 
 import java.io.Serializable;
-
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-
-
-
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+import javax.persistence.JoinColumn;
+
+import lombok.Data;
 
 
 
@@ -22,6 +24,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "res_sku")
+@Data
 public class DbResSku implements Serializable{
 
 
@@ -29,24 +32,31 @@ public class DbResSku implements Serializable{
 
 	@Id
 	@GeneratedValue	
-	public Long id;
+	private Long id;
 	
 	@Column(name = "class_id")
-	public Long classId;
+	private Long classId;
 
 	@Column(name = "class_num")
-	public String classNum;
+	private String classNum;
 	
 	@Column(name = "sku_num", length = 12)
-	public String skuNum;
+	private String skuNum;
 	
 	@Column(name = "sku_name", length = 32)
-	public String skuName;
+	private String skuName;
 	
 	@Column(name = "sku_desc", length = 512)
-	public String skuDesc;
+	private String skuDesc;
+
+// 	@ManyToMany
+//     @JoinTable(name="res_sku_repo",
+//       		joinColumns = { @JoinColumn(name = "sku_id", referencedColumnName = "id") },
+//       		inverseJoinColumns = { @JoinColumn(name = "repo_id", referencedColumnName = "id") }
+//    )
+// 	private List<DbResRepo> repos;
 	
 	@Column(name = "status", length = 3)
-	public String status;
+	private String status;
 	
 }

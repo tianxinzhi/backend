@@ -10,6 +10,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import lombok.Data;
+
 
 
 
@@ -17,6 +19,7 @@ import javax.persistence.Table;
  *  one sku can include many items
  */
 
+@Data
 @Entity
 @Table(name = "res_item")
 public class DbResItem implements Serializable {
@@ -25,18 +28,18 @@ public class DbResItem implements Serializable {
 	
 	@Id
 	@GeneratedValue		
-	public Long id;
+	private Long id;
 	
 	@Column(name = "sku_id")
-	public Long skuId;
+	private Long skuId;
 	
 	@Column(name = "item_num", length = 128)
-	public String itemNum;
+	private String itemNum;
 	
 	@Column(name = "status", length = 3)
-	public String status;
+	private String status;
 	
 	@Column(name = "lot_num", length = 16)
-	public String lotNum;
+	private String lotNum;
 
 }

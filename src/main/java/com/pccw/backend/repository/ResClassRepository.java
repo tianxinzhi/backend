@@ -5,9 +5,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.pccw.backend.entity.DbResClass;
 
-@Profile("dev1")
+
 public interface ResClassRepository extends JpaRepository<DbResClass, Long> {
 	
-	DbResClass findByClassName(String className);
+	// DbResClass findByClassName(String className);
 
 }

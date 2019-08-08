@@ -11,13 +11,15 @@ import javax.persistence.Id;
 
 import javax.persistence.Table;
 
+import lombok.Data;
+
 
 
 /**
  * class => category of sku
  */
 
-
+@Data
 @Entity
 @Table(name = "res_class")
 public class DbResClass implements Serializable {
@@ -26,24 +28,24 @@ public class DbResClass implements Serializable {
 	
 	@Id
 	@GeneratedValue		
-	public Long id;	
+	private Long id;	
 	
 	@Column(name = "parent_class_id")
-	public Long parentClassId;
+	private Long parentClassId;
 
 	@Column(name = "class_Num", length = 32)
-	public String classNum;
+	private String classNum;
 	
 	@Column(name = "class_name", length = 32)
-	public String className;
+	private String className;
 	
 	
 	@Column(name = "class_desc", length = 128)
-	public String classDesc;
+	private String classDesc;
 	
 	
 	@Column(name = "status", length = 3)
-	public String status;
+	private String status;
 	
 
 }

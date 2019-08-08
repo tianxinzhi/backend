@@ -8,12 +8,12 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 
-import com.pccw.backend.entity.DbResItemRepo;
+import com.pccw.backend.entity.DbResSkuRepo;
 
 
 
-public interface  ResItemRepoRepository extends JpaRepository<DbResItemRepo, Long> {
+public interface  ResSkuRepoRepository extends JpaRepository<DbResSkuRepo, Long> {
 
-	Page<DbResItemRepo> findAll(Specification<DbResItemRepo> spec,Pageable p);
+    Page<DbResSkuRepo> findAll(Specification<DbResSkuRepo> spec,Pageable p);
 
 }

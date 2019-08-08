@@ -28,6 +28,9 @@ import com.pccw.backend.annotation.PredicateType;
 @Component
  public class Convertor {
 
+	/**
+	 * for multiple condition search
+	 */
     public static <T,G> Specification<T> convertSpecification(Class<G> cls,Object o)
 			throws IllegalArgumentException, IllegalAccessException {
 
@@ -55,8 +58,8 @@ import com.pccw.backend.annotation.PredicateType;
 			@Override
 			public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query,
 			CriteriaBuilder builder) {
+				// builder.createQuery()
 				List<Predicate> list = new ArrayList<>();
-				
 				arr.stream().forEach( a->{
 					Parm parm = (Parm)a;
 					PredicateType code = PredicateType.getByValue(parm.getPredicateType().getCode());

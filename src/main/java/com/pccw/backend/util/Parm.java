@@ -9,9 +9,10 @@ import lombok.Data;
  */
 @Data
 public class Parm {
-    private PredicateType predicateType;
-    private String name;
-    private Object value;
+    private PredicateType predicateType; 
+    private String name; // colume name
+    private Object value; // column value
+
     public Parm(PredicateType pt, String name, Object o){
         this.predicateType = pt;
         this.name=name;

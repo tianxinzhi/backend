@@ -8,13 +8,15 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import lombok.Data;
+
 
 
 /**
  *  one area may have many reposity/shop/store
  */
 
-
+@Data
 @Entity
 @Table(name = "res_area")
 public class DbResArea implements Serializable {
@@ -23,15 +25,15 @@ public class DbResArea implements Serializable {
 
 	@Id
 	@GeneratedValue
-	public Long id;
+	private Long id;
 	
 	@Column(name = "area_name", length = 64)
-	public String areaName;
+	private String areaName;
 	
 	@Column(name = "area_desc", length = 256)
-	public String areaDesc;
+	private String areaDesc;
 	
 	@Column(name = "status", length = 6)	
-	public String status;
+	private String status;
 
 }

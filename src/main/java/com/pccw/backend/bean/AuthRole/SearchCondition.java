@@ -1,4 +1,4 @@
-package com.pccw.backend.bean.AuthRight;
+package com.pccw.backend.bean.AuthRole;
 
 import java.io.Serializable;
 
@@ -16,12 +16,6 @@ import lombok.Data;
 public class SearchCondition extends BaseSearchCondition implements Serializable{
 
     @PredicateAnnotation(type = PredicateType.LIKE)
-    private String rightName;
-
-    @PredicateAnnotation(type = PredicateType.LIKE)
-    private String rightUrl;
-
-    @PredicateAnnotation(type = PredicateType.LIKE)
-    private String rightModule;
+    private String roleName;
     
 }

@@ -28,8 +28,8 @@ public class JsonResult<T> {
      * @param data
      * @return
      */
-    public static <G> JsonResult<G> succss(List<G> data) {
-        return new JsonResult<G>("", "", data);
+    public static <G> JsonResult<G> success(List<G> data) {
+        return new JsonResult<G>("success", "", data);
     }
     /**
      * quick method to return a JsonResult when FAILED
@@ -37,6 +37,6 @@ public class JsonResult<T> {
      * @return
      */
     public static <G>JsonResult<G> fail(){
-        return new JsonResult<G>("", "", Arrays.asList());
+        return new JsonResult<G>("failed", "", Arrays.asList());
     }
 }

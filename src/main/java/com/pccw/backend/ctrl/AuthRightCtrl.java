@@ -1,10 +1,13 @@
 package com.pccw.backend.ctrl;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.servlet.annotation.HttpConstraint;
 import javax.xml.ws.ResponseWrapper;
 
+import com.pccw.backend.bean.DeleteBean;
 import com.pccw.backend.bean.JsonResult;
 import com.pccw.backend.bean.AuthRight.SearchCondition;
 import com.pccw.backend.entity.DbResRight;
@@ -43,7 +46,17 @@ public class AuthRightCtrl {
         try {
             Specification<DbResRight> spec = Convertor.<DbResRight,SearchCondition>convertSpecification(SearchCondition.class,sc);
             List<DbResRight> res =repo.findAll(spec,PageRequest.of(sc.getPageIndex(),sc.getPageSize())).getContent();
-            return JsonResult.succss(res);
+            return JsonResult.success(res);
+        } catch (Exception e) {
+            return JsonResult.fail();
+        }
+    }
+
+    @RequestMapping(method = RequestMethod.POST,path = "/delete")
+    public JsonResult delete(@RequestBody DeleteBean ids){
+        try {
+            repo.deleteByIdIn(ids.getIds());
+            return JsonResult.success(Arrays.asList());
         } catch (Exception e) {
             return JsonResult.fail();
         }

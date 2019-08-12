@@ -56,7 +56,7 @@ public class StockBalanceCtrl {
 			// List<DbResRepo> r = repoTest.findAll();
 			// log.info(r.toString());
 
-			return JsonResult.succss(res);
+			return JsonResult.success(res);
 		} catch (Exception e) {
 			// log.error(e, t);
 			return JsonResult.fail();

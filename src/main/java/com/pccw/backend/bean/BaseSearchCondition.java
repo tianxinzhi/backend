@@ -2,15 +2,12 @@ package com.pccw.backend.bean;
 
 import java.io.Serializable;
 
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-
-import com.pccw.backend.annotation.PredicateAnnotation;
-import com.pccw.backend.annotation.PredicateType;
 
 
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 
 
@@ -20,6 +17,7 @@ import lombok.Data;
  */
 
 @Data
+@NoArgsConstructor
 public class BaseSearchCondition implements Serializable{
 
 

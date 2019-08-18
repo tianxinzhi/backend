@@ -2,7 +2,7 @@ package com.pccw.backend.ctrl;
 
 import java.util.List;
 
-import com.pccw.backend.bean.AuthRole.SearchCondition;
+import com.pccw.backend.bean.authrole.*;
 import com.pccw.backend.bean.JsonResult;
 import com.pccw.backend.entity.DbResRole;
 import com.pccw.backend.repository.ResRoleRepository;

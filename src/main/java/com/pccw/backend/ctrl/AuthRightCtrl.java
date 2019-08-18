@@ -1,19 +1,16 @@
 package com.pccw.backend.ctrl;
 
-import java.util.ArrayList;
+
 import java.util.Arrays;
 import java.util.List;
 
-import javax.servlet.annotation.HttpConstraint;
-import javax.xml.ws.ResponseWrapper;
-
-import com.pccw.backend.bean.DeleteBean;
 import com.pccw.backend.bean.JsonResult;
-import com.pccw.backend.bean.AuthRight.SearchCondition;
+// import com.pccw.backend.bean.authright.*;
+import com.pccw.backend.bean.authright.SearchCondition;
 import com.pccw.backend.entity.DbResRight;
-
 import com.pccw.backend.repository.ResRightRepository;
 import com.pccw.backend.util.Convertor;
+import com.pccw.backend.bean.DeleteBean;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -22,8 +19,6 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.extern.slf4j.Slf4j;
@@ -60,6 +55,11 @@ public class AuthRightCtrl {
         } catch (Exception e) {
             return JsonResult.fail();
         }
+    }
+
+    @RequestMapping(method = RequestMethod.POST,path="/add")
+    public JsonResult Add(){
+        return JsonResult.fail()
     }
     
 }

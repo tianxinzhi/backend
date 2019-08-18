@@ -3,16 +3,9 @@ package com.pccw.backend.ctrl;
 import java.util.List;
 
 import com.pccw.backend.bean.JsonResult;
-import com.pccw.backend.bean.StockBalance.SearchCondition;
+import com.pccw.backend.bean.stockbalance.*;
 // import com.pccw.backend.repository.ResItemRepoRepository;
-import com.pccw.backend.repository.ResRepoRepository;
-import com.pccw.backend.repository.ResSkuRepoRepository;
 import com.pccw.backend.repository.ResSkuRepository;
-import com.pccw.backend.util.Convertor;
-// import com.pccw.backend.entity.DbResItemRepo;
-import com.pccw.backend.entity.DbResRepo;
-import com.pccw.backend.entity.DbResSku;
-import com.pccw.backend.entity.DbResSkuRepo;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -35,31 +28,31 @@ import lombok.extern.slf4j.Slf4j;
 @CrossOrigin(methods = RequestMethod.POST,origins = "*", allowCredentials = "false")
 public class StockBalanceCtrl {
 
-	@Autowired
-	private ResSkuRepoRepository repo;
+	// @Autowired
+	// private ResSkuRepoRepository repo;
 
 
-	/**
-	 * 
-	 * @param sc
-	 * @return
-	 * @throws IllegalArgumentException
-	 * @throws IllegalAccessException
-	 */
-	@RequestMapping(method=RequestMethod.POST,path="/search")
-	public JsonResult<DbResSkuRepo> test(@RequestBody SearchCondition sc)
-	 {
-	    try {
-			Specification<DbResSkuRepo> spec = Convertor.<DbResSkuRepo,SearchCondition>convertSpecification(SearchCondition.class,sc);
-			List<DbResSkuRepo> res =repo.findAll(spec,PageRequest.of(sc.getPageIndex(),sc.getPageSize())).getContent();
+	// /**
+	//  * 
+	//  * @param sc
+	//  * @return
+	//  * @throws IllegalArgumentException
+	//  * @throws IllegalAccessException
+	//  */
+	// @RequestMapping(method=RequestMethod.POST,path="/search")
+	// public JsonResult<DbResSkuRepo> test(@RequestBody SearchCondition sc)
+	//  {
+	//     try {
+	// 		Specification<DbResSkuRepo> spec = Convertor.<DbResSkuRepo,SearchCondition>convertSpecification(SearchCondition.class,sc);
+	// 		List<DbResSkuRepo> res =repo.findAll(spec,PageRequest.of(sc.getPageIndex(),sc.getPageSize())).getContent();
 
-			// List<DbResRepo> r = repoTest.findAll();
-			// log.info(r.toString());
+	// 		// List<DbResRepo> r = repoTest.findAll();
+	// 		// log.info(r.toString());
 
-			return JsonResult.success(res);
-		} catch (Exception e) {
-			// log.error(e, t);
-			return JsonResult.fail();
-		}
-	}
+	// 		return JsonResult.success(res);
+	// 	} catch (Exception e) {
+	// 		// log.error(e, t);
+	// 		return JsonResult.fail();
+	// 	}
+	// }
 }

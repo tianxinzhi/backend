@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import ch.qos.logback.core.joran.util.beans.BeanUtil;
+import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -64,6 +65,9 @@ public class AuthRightCtrl {
     @RequestMapping(method = RequestMethod.POST,path="/create")
     public JsonResult Create(@RequestBody CreateBean b){
         try {
+            log.info("=========================");
+            log.info(b.toString());
+            log.info("=========================");
             DbResRight entity = new DbResRight();
             BeanUtils.copyProperties(b, entity);
             log.info(entity.toString());
@@ -76,6 +80,9 @@ public class AuthRightCtrl {
     @RequestMapping(method = RequestMethod.POST,path="/edit")
     public JsonResult Create(@RequestBody EditBean b){
         try {
+            log.info("=========================");
+            log.info(b.toString());
+            log.info("=========================");
             DbResRight entity = new DbResRight();
             BeanUtils.copyProperties(b, entity);
             log.info(entity.toString());

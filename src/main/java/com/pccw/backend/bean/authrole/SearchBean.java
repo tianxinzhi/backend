@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import com.pccw.backend.annotation.PredicateAnnotation;
 import com.pccw.backend.annotation.PredicateType;
-import com.pccw.backend.bean.BaseSearchCondition;
+import com.pccw.backend.bean.BaseSearchBean;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class SearchCondition extends BaseSearchCondition implements Serializable{
+public class SearchBean extends BaseSearchBean implements Serializable {
 
     @PredicateAnnotation(type = PredicateType.LIKE)
     private String roleName;

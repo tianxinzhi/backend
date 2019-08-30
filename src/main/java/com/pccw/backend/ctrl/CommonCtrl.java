@@ -1,5 +1,6 @@
 package com.pccw.backend.ctrl;
 
+import java.util.Arrays;
 import java.util.List;
 
 import com.pccw.backend.bean.authrole.*;
@@ -25,19 +26,16 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
-@RequestMapping("/auth/role")
+@RequestMapping("/common")
 @CrossOrigin(methods = RequestMethod.POST,origins = "*", allowCredentials = "false")
-public class AuthRoleCtrl {
+public class CommonCtrl {
 
-    @Autowired
-    ResRoleRepository repo;
 
-    @RequestMapping(method = RequestMethod.POST,path="/search")
-    public JsonResult<DbResRole> search(@RequestBody SearchBean sc) {
+    @RequestMapping(method = RequestMethod.POST,path="/rightModule")
+    public JsonResult<String> search(@RequestBody SearchBean sc) {
         try {
-            Specification<DbResRole> spec = Convertor.<DbResRole,SearchBean>convertSpecification(SearchBean.class,sc);
-            List<DbResRole> res =repo.findAll(spec,PageRequest.of(sc.getPageIndex(),sc.getPageSize())).getContent();
-            return JsonResult.success(res);
+
+            return JsonResult.success(Arrays.asList("role","right","auth"));
         } catch (Exception e) {
             return JsonResult.fail();
         }

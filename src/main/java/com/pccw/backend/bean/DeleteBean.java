@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import lombok.Data;
 
 @Data
-public class DeleteBean {
+public class DeleteBean extends BaseBean{
 
     private ArrayList<Long> ids;
 }

@@ -1,6 +1,5 @@
 package com.pccw.backend.bean;
 
-import java.io.Serializable;
 
 import javax.validation.constraints.NotNull;
 
@@ -18,7 +17,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class BaseSearchCondition implements Serializable{
+public class BaseSearchBean extends BaseBean{
 
 
     @NotNull

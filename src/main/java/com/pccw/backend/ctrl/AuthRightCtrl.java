@@ -5,13 +5,16 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.pccw.backend.bean.JsonResult;
+import com.pccw.backend.bean.authright.CreateBean;
+import com.pccw.backend.bean.authright.EditBean;
 // import com.pccw.backend.bean.authright.*;
-import com.pccw.backend.bean.authright.SearchCondition;
+import com.pccw.backend.bean.authright.SearchBean;
 import com.pccw.backend.entity.DbResRight;
 import com.pccw.backend.repository.ResRightRepository;
 import com.pccw.backend.util.Convertor;
 import com.pccw.backend.bean.DeleteBean;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
@@ -21,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import ch.qos.logback.core.joran.util.beans.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -37,13 +41,13 @@ public class AuthRightCtrl {
     ResRightRepository repo;
 
     @RequestMapping(method = RequestMethod.POST,path="/search")
-    public JsonResult<DbResRight> search(@RequestBody SearchCondition sc) {
+    public JsonResult<DbResRight> search(@RequestBody SearchBean b) {
         try {
-            Specification<DbResRight> spec = Convertor.<DbResRight,SearchCondition>convertSpecification(SearchCondition.class,sc);
-            List<DbResRight> res =repo.findAll(spec,PageRequest.of(sc.getPageIndex(),sc.getPageSize())).getContent();
+            Specification<DbResRight> spec = Convertor.<DbResRight,SearchBean>convertSpecification(SearchBean.class,b);
+            List<DbResRight> res =repo.findAll(spec,PageRequest.of(b.getPageIndex(),b.getPageSize())).getContent();
             return JsonResult.success(res);
         } catch (Exception e) {
-            return JsonResult.fail();
+            return JsonResult.fail(e);
         }
     }
 
@@ -53,13 +57,32 @@ public class AuthRightCtrl {
             repo.deleteByIdIn(ids.getIds());
             return JsonResult.success(Arrays.asList());
         } catch (Exception e) {
-            return JsonResult.fail();
+            return JsonResult.fail(e);
         }
     }
 
-    @RequestMapping(method = RequestMethod.POST,path="/add")
-    public JsonResult Add(){
-        return JsonResult.fail()
+    @RequestMapping(method = RequestMethod.POST,path="/create")
+    public JsonResult Create(@RequestBody CreateBean b){
+        try {
+            DbResRight entity = new DbResRight();
+            BeanUtils.copyProperties(b, entity);
+            log.info(entity.toString());
+            repo.<DbResRight>saveAndFlush(entity);
+            return JsonResult.success(Arrays.asList());
+        } catch (Exception e) {
+            return JsonResult.fail(e);
+        }
     }
-    
+    @RequestMapping(method = RequestMethod.POST,path="/edit")
+    public JsonResult Create(@RequestBody EditBean b){
+        try {
+            DbResRight entity = new DbResRight();
+            BeanUtils.copyProperties(b, entity);
+            log.info(entity.toString());
+            repo.<DbResRight>saveAndFlush(entity);
+            return JsonResult.success(Arrays.asList());
+        } catch (Exception e) {
+            return JsonResult.fail(e);
+        }
+    }
 }

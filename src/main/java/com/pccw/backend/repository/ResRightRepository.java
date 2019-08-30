@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Repository;
 
@@ -19,9 +20,9 @@ import org.springframework.stereotype.Repository;
  */
 
 @Repository
-public interface ResRightRepository extends JpaRepository<DbResRight,Long> {
+public interface ResRightRepository extends JpaRepository<DbResRight,Long>,JpaSpecificationExecutor {
 
-    Page<DbResRight> findAll(Specification<DbResRight> spec,Pageable p);
+    // Page<DbResRight> findAll(Specification<DbResRight> spec,Pageable p);
     @Modifying
     @Transactional
     long deleteByIdIn(ArrayList<Long> ids);

@@ -1,8 +1,7 @@
-package com.pccw.backend.bean.authright;
+package com.pccw.backend.bean.authrole;
 
 
 import com.pccw.backend.bean.BaseBean;
-
 
 
 import lombok.Data;
@@ -12,14 +11,12 @@ import lombok.NoArgsConstructor;
  * SearchCondition
  */
 
- @Data
+@Data
 @NoArgsConstructor
 public class CreateBean extends BaseBean{
 
-    private String rightName;
+    private String roleName;
 
-    private String rightUrl;
-
-    private String rightModule;
+    private String roleDesc;
     
 }

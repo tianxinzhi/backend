@@ -10,23 +10,23 @@ import javax.persistence.MappedSuperclass;
  * Base
  */
 
-@MappedSuperclass
+// @MappedSuperclass
 public class Base implements Serializable{
 
         private static final long serialVersionUID = 1L;
 
-        @Column(name="create_at")
-        private Date createAt;
+        // @Column(name="create_at")
+        // private Date createAt;
     
 
-        @Column(name="update_at")
-        private Date updateAt;
+        // @Column(name="update_at")
+        // private Date updateAt;
     
 
-        @Column(name="create_by")
-        private long createBy;
+        // @Column(name="create_by")
+        // private long createBy;
     
 
-        @Column(name="update_by")
-        private long updateBy;
+        // @Column(name="update_by")
+        // private long updateBy;
 }

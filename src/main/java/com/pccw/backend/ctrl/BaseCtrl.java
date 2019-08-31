@@ -37,11 +37,11 @@ import net.bytebuddy.implementation.bind.MethodDelegationBinder.MethodInvoker.Vi
  */
 
 @Slf4j
-public class BaseCtrl<T> {
+public class BaseCtrl<T>{
 
-    public JsonResult<T> search(BaseRepository repo, BaseSearchBean b) {
+    public <G extends BaseSearchBean> JsonResult search(BaseRepository repo, Class<G> cls, G b) {
         try {
-            Specification<T> spec = Convertor.<T,BaseSearchBean>convertSpecification(BaseSearchBean.class,b);
+            Specification<T> spec = Convertor.<T,G>convertSpecification(cls,b);
             List<T> res =repo.findAll(spec,PageRequest.of(b.getPageIndex(),b.getPageSize())).getContent();
             return JsonResult.success(res);
         } catch (Exception e) {

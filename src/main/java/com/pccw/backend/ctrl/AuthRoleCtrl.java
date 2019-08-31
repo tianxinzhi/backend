@@ -37,7 +37,7 @@ public class AuthRoleCtrl extends BaseCtrl<DbResRole>{
 
     @RequestMapping(method = RequestMethod.POST,path="/search")
     public JsonResult search(@RequestBody SearchBean b) {
-        return this.search(repo, b);
+        return this.search(repo, SearchBean.class, b);
     }
 
     @RequestMapping(method = RequestMethod.POST,path = "/delete")

@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class SearchBean extends BaseSearchBean implements Serializable {
+public class SearchBean extends BaseSearchBean {
 
     @PredicateAnnotation(type = PredicateType.LIKE)
     private String roleName;

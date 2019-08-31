@@ -14,8 +14,7 @@ import lombok.NoArgsConstructor;
  * SearchCondition
  */
 
-@Data
-@NoArgsConstructor
+
 public class BaseBean implements Serializable{
 
 

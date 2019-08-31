@@ -13,6 +13,7 @@ import com.pccw.backend.entity.DbResRight;
 import com.pccw.backend.repository.BaseRepository;
 import com.pccw.backend.repository.ResRightRepository;
 import com.pccw.backend.util.Convertor;
+import com.pccw.backend.bean.BaseSearchBean;
 import com.pccw.backend.bean.DeleteBean;
 
 import org.springframework.beans.BeanUtils;
@@ -45,7 +46,9 @@ public class AuthRightCtrl extends BaseCtrl<DbResRight>{
 
     @RequestMapping(method = RequestMethod.POST,path="/search")
     public JsonResult search(@RequestBody SearchBean b) {
-        return this.search(repo, b);
+        log.info(b.toString());
+        return this.search(repo, SearchBean.class, b);
+        // return JsonResult.fail();
     }
 
     @RequestMapping(method = RequestMethod.POST,path = "/delete")

@@ -3,7 +3,7 @@ package com.pccw.backend.ctrl;
 import com.pccw.backend.bean.JsonResult;
 import com.pccw.backend.bean.workflow_flow.*;
 import com.pccw.backend.entity.DbResFlow;
-import com.pccw.backend.repository.ResRightRepository;
+import com.pccw.backend.repository.ResFlowRepository;
 import com.pccw.backend.bean.DeleteBean;
 
 
@@ -27,7 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 public class WorkFlow_FlowCtrl extends BaseCtrl<DbResFlow>{
 
     @Autowired
-    ResRightRepository repo;
+    ResFlowRepository repo;
 
     @RequestMapping(method = RequestMethod.POST,path="/search")
     public JsonResult search(@RequestBody SearchBean b) {

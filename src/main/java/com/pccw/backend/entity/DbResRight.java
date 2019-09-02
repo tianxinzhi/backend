@@ -2,12 +2,8 @@ package com.pccw.backend.entity;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
+import javax.persistence.*;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
 
 import lombok.Data;
 
@@ -32,5 +28,9 @@ public class DbResRight implements Serializable{
 
     @Column(name="right_url")
     private String rightUrl;
+
+
+    // @Column(name="right_pid")
+    // private long rightPid;
     
 }

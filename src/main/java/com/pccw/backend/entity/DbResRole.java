@@ -2,6 +2,7 @@ package com.pccw.backend.entity;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.*;
 
@@ -27,7 +28,11 @@ public class DbResRole implements Serializable {
     @Column(name="role_desc")
     private String roleDesc;
     
-    @OneToMany(fetch=FetchType.EAGER)
-	@JoinTable(name="res_role_right",joinColumns={@JoinColumn(name="role_id")},inverseJoinColumns={@JoinColumn(name="id")})
-    private List<DbResRight> rightList;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+        //  @Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE})
+    @JoinTable(name = "res_role_right", 
+    joinColumns = { @JoinColumn(name = "role_id") },
+    inverseJoinColumns = { @JoinColumn(name = "right_id") })
+    private Set<DbResRight> rightList;
 }

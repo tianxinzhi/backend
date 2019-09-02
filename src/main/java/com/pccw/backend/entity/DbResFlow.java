@@ -21,7 +21,7 @@ import lombok.Data;
 public class DbResFlow implements Serializable{
 
     @Id
-    @GeneratedValue 
+    @GeneratedValue
     private long id;
 
 

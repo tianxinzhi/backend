@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestController
 @CrossOrigin(methods = RequestMethod.POST,origins = "*", allowCredentials = "false")
-@RequestMapping("/workflow/flow")
+@RequestMapping("/workflow_flow")
 public class WorkFlow_FlowCtrl extends BaseCtrl<DbResFlow>{
 
     @Autowired

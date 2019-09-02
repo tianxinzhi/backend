@@ -28,7 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
-@RequestMapping("/auth/role")
+@RequestMapping("/auth_role")
 @CrossOrigin(methods = RequestMethod.POST,origins = "*", allowCredentials = "false")
 public class Auth_RoleCtrl extends BaseCtrl<DbResRole>{
 

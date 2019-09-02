@@ -24,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestController
 @CrossOrigin(methods = RequestMethod.POST,origins = "*", allowCredentials = "false")
-@RequestMapping("/auth/right")
+@RequestMapping("/auth_right")
 public class Auth_RightCtrl extends BaseCtrl<DbResRight>{
 
     @Autowired

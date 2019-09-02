@@ -5,35 +5,21 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.pccw.backend.bean.JsonResult;
-import com.pccw.backend.bean.authright.CreateBean;
-import com.pccw.backend.bean.authright.EditBean;
-// import com.pccw.backend.bean.authright.*;
-import com.pccw.backend.bean.authright.SearchBean;
-import com.pccw.backend.entity.DbResRight;
 import com.pccw.backend.repository.BaseRepository;
-import com.pccw.backend.repository.ResRightRepository;
 import com.pccw.backend.util.Convertor;
 import com.pccw.backend.bean.BaseBean;
 import com.pccw.backend.bean.BaseSearchBean;
 import com.pccw.backend.bean.DeleteBean;
 
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
-
-import ch.qos.logback.core.joran.util.beans.BeanUtil;
-import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
-import net.bytebuddy.implementation.bind.MethodDelegationBinder.MethodInvoker.Virtual;
+
 
 /**
- * AuthRightCtrl
+ * BaseCtrl
+ * BaseCtrl includs CURD
  */
 
 @Slf4j

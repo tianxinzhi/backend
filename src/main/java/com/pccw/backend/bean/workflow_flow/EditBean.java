@@ -1,4 +1,4 @@
-package com.pccw.backend.bean.authright;
+package com.pccw.backend.bean.workflow_flow;
 
 
 

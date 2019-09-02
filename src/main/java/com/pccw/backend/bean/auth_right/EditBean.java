@@ -1,4 +1,4 @@
-package com.pccw.backend.bean.authrole;
+package com.pccw.backend.bean.auth_right;
 
 
 

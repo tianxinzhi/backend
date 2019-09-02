@@ -1,19 +1,14 @@
 package com.pccw.backend.ctrl;
 
-import java.util.Arrays;
-import java.util.List;
 
-import com.pccw.backend.bean.authrole.*;
-import com.pccw.backend.bean.DeleteBean;
+
 import com.pccw.backend.bean.JsonResult;
-import com.pccw.backend.entity.DbResRole;
-import com.pccw.backend.repository.ResRoleRepository;
-import com.pccw.backend.util.Convertor;
+import com.pccw.backend.bean.auth_right.*;
+import com.pccw.backend.entity.DbResRight;
+import com.pccw.backend.repository.ResRightRepository;
+import com.pccw.backend.bean.DeleteBean;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,16 +23,18 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
-@RequestMapping("/auth/role")
 @CrossOrigin(methods = RequestMethod.POST,origins = "*", allowCredentials = "false")
-public class AuthRoleCtrl extends BaseCtrl<DbResRole>{
+@RequestMapping("/auth/right")
+public class Auth_RightCtrl extends BaseCtrl<DbResRight>{
 
     @Autowired
-    ResRoleRepository repo;
+    ResRightRepository repo;
 
     @RequestMapping(method = RequestMethod.POST,path="/search")
     public JsonResult search(@RequestBody SearchBean b) {
+        log.info(b.toString());
         return this.search(repo, SearchBean.class, b);
+        // return JsonResult.fail();
     }
 
     @RequestMapping(method = RequestMethod.POST,path = "/delete")
@@ -47,11 +44,10 @@ public class AuthRoleCtrl extends BaseCtrl<DbResRole>{
 
     @RequestMapping(method = RequestMethod.POST,path="/create")
     public JsonResult create(@RequestBody CreateBean b){
-        return this.create(repo, DbResRole.class, b);
+        return this.create(repo, DbResRight.class, b);
     }
     @RequestMapping(method = RequestMethod.POST,path="/edit")
     public JsonResult edit(@RequestBody EditBean b){
-        return this.edit(repo, DbResRole.class, b);
+        return this.edit(repo, DbResRight.class, b);
     }
-    
 }

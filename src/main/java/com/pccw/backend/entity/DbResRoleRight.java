@@ -48,11 +48,11 @@ public class DbResRoleRight implements Serializable {
 	private Long id;
 	
 	@Column(name = "role_id")
-	private Long skuId;
+	private Long roleId;
 
 
 	@Column(name = "right_id")
-	private Long repoId;
+	private Long rightId;
 	
 
 	

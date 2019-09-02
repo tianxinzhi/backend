@@ -4,7 +4,7 @@ import com.pccw.backend.entity.DbResFlow;;
 
 
 /**
- * ResRoleRepository
+ * ResFlowRepository
  */
 public interface ResFlowRepository extends BaseRepository<DbResFlow>{
 

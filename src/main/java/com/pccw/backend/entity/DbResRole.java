@@ -1,12 +1,10 @@
 package com.pccw.backend.entity;
 
 import java.io.Serializable;
+import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+
 
 import lombok.Data;
 
@@ -28,4 +26,8 @@ public class DbResRole implements Serializable {
 
     @Column(name="role_desc")
     private String roleDesc;
+    
+    @OneToMany(fetch=FetchType.EAGER)
+	@JoinTable(name="res_role_right",joinColumns={@JoinColumn(name="role_id")},inverseJoinColumns={@JoinColumn(name="id")})
+    private List<DbResRight> rightList;
 }

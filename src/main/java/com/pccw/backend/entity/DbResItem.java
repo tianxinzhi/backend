@@ -30,16 +30,10 @@ public class DbResItem implements Serializable {
 	@GeneratedValue		
 	private Long id;
 	
-	@Column(name = "sku_id")
-	private Long skuId;
 	
 	@Column(name = "item_num", length = 128)
 	private String itemNum;
 	
-	@Column(name = "status", length = 3)
-	private String status;
-	
-	@Column(name = "lot_num", length = 16)
-	private String lotNum;
-
+	@Column(name = "item_name", length = 32)
+	private String itemName;
 }

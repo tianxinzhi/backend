@@ -33,7 +33,7 @@ public class DbResArea implements Serializable {
 	@Column(name = "area_desc", length = 256)
 	private String areaDesc;
 	
-	@Column(name = "status", length = 6)	
-	private String status;
+	// @Column(name = "status", length = 6)	
+	// private String status;
 
 }

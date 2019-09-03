@@ -47,11 +47,14 @@ public class DbResRepo implements Serializable {
 //    @JoinColumn(name = "id",referencedColumnName = "repo_id")
 // 	private List<DbResSku> skus;
 
-	@Column(name = "repo_type", length = 6)
-	private String repoType;
+	// @Column(name = "repo_type", length = 6)
+	// private String repoType;
 
-	@Column(name="repo_num",length = 64)
-	private String repoNum;
+	@Column(name = "area_id")
+	private Long areaId;
+
+	// @Column(name="repo_num",length = 64)
+	// private String repoNum;
 	
 	@Column(name = "repo_name", length = 64)
 	private String repoName;
@@ -59,7 +62,7 @@ public class DbResRepo implements Serializable {
 	@Column(name = "repo_addr", length = 512)
 	private String repoAddr;
 
-	@Column(name = "status", length = 6)	
-	private String status;
+	// @Column(name = "status", length = 6)	
+	// private String status;
 
 }

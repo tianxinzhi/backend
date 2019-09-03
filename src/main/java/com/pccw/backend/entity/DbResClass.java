@@ -30,11 +30,10 @@ public class DbResClass implements Serializable {
 	@GeneratedValue		
 	private Long id;	
 	
-	@Column(name = "parent_class_id")
-	private Long parentClassId;
 
-	@Column(name = "class_Num", length = 32)
-	private String classNum;
+
+	// @Column(name = "class_Num", length = 32)
+	// private String classNum;
 	
 	@Column(name = "class_name", length = 32)
 	private String className;
@@ -44,8 +43,8 @@ public class DbResClass implements Serializable {
 	private String classDesc;
 	
 	
-	@Column(name = "status", length = 3)
-	private String status;
+	// @Column(name = "status", length = 3)
+	// private String status;
 	
 
 }

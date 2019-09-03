@@ -34,15 +34,12 @@ public class DbResSku implements Serializable{
 	@Id
 	@GeneratedValue	
 	private Long id;
-	
-	@Column(name = "class_id")
-	private Long classId;
 
-	@Column(name = "class_num")
-	private String classNum;
+	@Column(name = "class_id")
+	private String classId;
 	
-	@Column(name = "sku_num", length = 12)
-	private String skuNum;
+	// @Column(name = "sku_num", length = 12)
+	// private String skuNum;
 	
 	@Column(name = "sku_name", length = 32)
 	private String skuName;
@@ -57,7 +54,5 @@ public class DbResSku implements Serializable{
 //    )
 // 	private List<DbResRepo> repos;
 	
-	@Column(name = "status", length = 3)
-	private String status;
 	
 }

@@ -61,8 +61,8 @@ public class DbResSkuRepo implements Serializable {
 	@Column(name = "sku_id")
 	private Long skuId;
 
-	@Column(name="sku_num")
-	private String skuNum;
+	// @Column(name="sku_num")
+	// private String skuNum;
 
 	// @OneToOne
 	// private DbResSku sku;
@@ -70,15 +70,15 @@ public class DbResSkuRepo implements Serializable {
 	@Column(name = "repo_id")
 	private Long repoId;
 
-	@Column(name="repo_num")
-	private String repoNum;
+	// @Column(name="repo_num")
+	// private String repoNum;
 	
 
 	@Column(name = "qty")
 	private int qty;
 	
-	@Column(name = "status", length = 3)
-	private String status;
+	// @Column(name = "status", length = 3)
+	// private String status;
 
 	
 }

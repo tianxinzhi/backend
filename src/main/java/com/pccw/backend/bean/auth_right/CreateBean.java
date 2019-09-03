@@ -20,6 +20,6 @@ public class CreateBean extends BaseBean{
 
     private String rightUrl;
 
-    private String rightPid;
+    private Long rightPid;
     
 }

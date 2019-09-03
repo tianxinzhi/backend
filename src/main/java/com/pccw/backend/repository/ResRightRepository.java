@@ -2,6 +2,9 @@ package com.pccw.backend.repository;
 
 
 
+import java.util.List;
+import java.util.Optional;
+
 import com.pccw.backend.entity.DbResRight;
 
 import org.springframework.stereotype.Repository;
@@ -14,4 +17,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ResRightRepository extends BaseRepository<DbResRight> {
 
+    List<DbResRight> findByRightPid(Long pid);
 }

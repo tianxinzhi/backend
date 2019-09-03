@@ -21,16 +21,12 @@ public class DbResRight implements Serializable{
     private long id;
 
     @Column(name="right_pid")
-    private String rightPid;
+    private Long rightPid;
 
     @Column(name="right_name")
     private String rightName;
 
     @Column(name="right_url")
     private String rightUrl;
-
-
-    // @Column(name="right_pid")
-    // private long rightPid;
     
 }

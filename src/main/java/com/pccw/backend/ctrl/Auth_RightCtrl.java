@@ -6,7 +6,7 @@ import com.pccw.backend.bean.JsonResult;
 import com.pccw.backend.bean.auth_right.*;
 import com.pccw.backend.entity.DbResRight;
 import com.pccw.backend.repository.ResRightRepository;
-import com.pccw.backend.bean.DeleteBean;
+import com.pccw.backend.bean.BaseDeleteBean;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -37,7 +37,7 @@ public class Auth_RightCtrl extends BaseCtrl<DbResRight>{
     }
 
     @RequestMapping(method = RequestMethod.POST,path = "/delete")
-    public JsonResult delete(@RequestBody DeleteBean ids){
+    public JsonResult delete(@RequestBody BaseDeleteBean ids){
         return this.delete(repo,ids);
     }
 

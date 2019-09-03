@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.pccw.backend.bean.auth_role.*;
-import com.pccw.backend.bean.DeleteBean;
+import com.pccw.backend.bean.BaseDeleteBean;
 import com.pccw.backend.bean.JsonResult;
 import com.pccw.backend.entity.DbResRole;
 import com.pccw.backend.repository.ResRoleRepository;
@@ -41,7 +41,7 @@ public class Auth_RoleCtrl extends BaseCtrl<DbResRole>{
     }
 
     @RequestMapping(method = RequestMethod.POST,path = "/delete")
-    public JsonResult delete(@RequestBody DeleteBean ids){
+    public JsonResult delete(@RequestBody BaseDeleteBean ids){
         return this.delete(repo,ids);
     }
 

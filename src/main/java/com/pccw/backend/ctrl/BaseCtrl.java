@@ -9,7 +9,7 @@ import com.pccw.backend.repository.BaseRepository;
 import com.pccw.backend.util.Convertor;
 import com.pccw.backend.bean.BaseBean;
 import com.pccw.backend.bean.BaseSearchBean;
-import com.pccw.backend.bean.DeleteBean;
+import com.pccw.backend.bean.BaseDeleteBean;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.PageRequest;
@@ -35,7 +35,7 @@ public class BaseCtrl<T>{
         }
     }
 
-    public JsonResult delete(BaseRepository repo, DeleteBean ids){
+    public JsonResult delete(BaseRepository repo, BaseDeleteBean ids){
         try {
             repo.deleteByIdIn(ids.getIds());
             return JsonResult.success(Arrays.asList());

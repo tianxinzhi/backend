@@ -47,7 +47,7 @@ public class JsonResult<T> {
      * @return
      */
     public static <G> JsonResult<G> fail(){
-        return new JsonResult<G>("failed", "msg", Arrays.asList());
+        return new JsonResult<G>("failed", "", Arrays.asList());
     }
     
 }

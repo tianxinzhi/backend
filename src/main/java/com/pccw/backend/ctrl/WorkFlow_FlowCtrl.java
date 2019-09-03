@@ -4,7 +4,7 @@ import com.pccw.backend.bean.JsonResult;
 import com.pccw.backend.bean.workflow_flow.*;
 import com.pccw.backend.entity.DbResFlow;
 import com.pccw.backend.repository.ResFlowRepository;
-import com.pccw.backend.bean.DeleteBean;
+import com.pccw.backend.bean.BaseDeleteBean;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +36,7 @@ public class WorkFlow_FlowCtrl extends BaseCtrl<DbResFlow>{
     }
 
     @RequestMapping(method = RequestMethod.POST,path = "/delete")
-    public JsonResult delete(@RequestBody DeleteBean ids){
+    public JsonResult delete(@RequestBody BaseDeleteBean ids){
         return this.delete(repo,ids);
     }
 

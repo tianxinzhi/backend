@@ -27,6 +27,9 @@ public class DbResRole implements Serializable {
 
     @Column(name="role_desc")
     private String roleDesc;
+
+    @Column(name="role_funtiongroup")
+    private String roleFunctionGroup;
     
 
     @ManyToMany(fetch = FetchType.EAGER)

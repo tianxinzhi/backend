@@ -7,10 +7,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * SearchCondition
+ * 
  */
 
- @Data
+@Data
 @NoArgsConstructor
 public class EditBean extends CreateBean{
 

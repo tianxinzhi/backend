@@ -20,8 +20,8 @@ public class DbResRight implements Serializable{
     @GeneratedValue 
     private long id;
 
-    @Column(name="right_module")
-    private String rightModule;
+    @Column(name="right_pid")
+    private String rightPid;
 
     @Column(name="right_name")
     private String rightName;

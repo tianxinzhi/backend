@@ -24,6 +24,6 @@ public class SearchBean extends BaseSearchBean {
     private String rightUrl;
 
     @PredicateAnnotation(type = PredicateType.LIKE)
-    private String rightModule;
+    private String rightPid;
     
 }

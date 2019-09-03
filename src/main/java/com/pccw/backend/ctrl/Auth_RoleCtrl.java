@@ -51,6 +51,9 @@ public class Auth_RoleCtrl extends BaseCtrl<DbResRole>{
     }
     @RequestMapping(method = RequestMethod.POST,path="/edit")
     public JsonResult edit(@RequestBody EditBean b){
+        log.info("====================");
+        log.info(b.toString());
+        log.info("====================");
         return this.edit(repo, DbResRole.class, b);
     }
     

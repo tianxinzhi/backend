@@ -34,51 +34,27 @@ import lombok.Data;
 @Entity
 @Table(name = "res_sku_repo")
 @Data
-public class DbResSkuRepo implements Serializable {
-
-	/**
-	 *
-	 */
-	
-
-	private static final long serialVersionUID = 1L;
+public class DbResSkuRepo extends Base{
 	
 	@Id
 	@GeneratedValue	
 	private Long id;
 	
-	// @Column(name = "item_id")
-	// private Long itemId;
-
-	// @Column(name="item_num")
-	// private String itemNum;
-
-
-	// @OneToOne
-	// @JoinColumn(name = "itemNum")
-    // private DbResItem item; 
-	
 	@Column(name = "sku_id")
 	private Long skuId;
 
-	// @Column(name="sku_num")
-	// private String skuNum;
-
-	// @OneToOne
-	// private DbResSku sku;
-
 	@Column(name = "repo_id")
 	private Long repoId;
+	
+	@Column(name = "item_id")
+	private Long itemId;
 
-	// @Column(name="repo_num")
-	// private String repoNum;
+	@Column(name="subin_id")
+	private String subinId;
 	
 
 	@Column(name = "qty")
 	private int qty;
-	
-	// @Column(name = "status", length = 3)
-	// private String status;
 
 	
 }

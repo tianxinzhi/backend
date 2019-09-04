@@ -14,7 +14,7 @@ import lombok.Data;
 @Entity
 @Data
 @Table(name="res_account")
-public class DbResAccount {
+public class DbResAccount extends Base{
 
     @Id
     @GeneratedValue

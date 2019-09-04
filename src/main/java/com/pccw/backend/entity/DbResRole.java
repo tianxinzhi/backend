@@ -16,7 +16,7 @@ import lombok.Data;
  @Entity
  @Data
  @Table(name="res_role")
-public class DbResRole implements Serializable {
+public class DbResRole extends Base {
 
     @Id
     @GeneratedValue

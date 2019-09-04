@@ -1,13 +1,11 @@
 package com.pccw.backend.entity;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 
 import javax.persistence.Id;
@@ -16,38 +14,31 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
-
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-
 
 import lombok.Data;
 
 
 
-/*
- * which store, which sku , how many qty
+/**
+ * repository => store/shop
  */
-
-
-@Entity
-@Table(name = "res_role_right")
 @Data
-public class DbResRoleRight extends Base {
-
+@Entity
+@Table(name = "res_repo")
+public class DbResSubin extends Base {
 	
 	@Id
-	@GeneratedValue	
+	@GeneratedValue
 	private Long id;
-	
-	@Column(name = "role_id")
-	private Long roleId;
 
-
-	@Column(name = "right_id")
-	private Long rightId;
+	@Column(name = "repo_id")
+	private Long repoId;
 	
+	@Column(name = "subin_code")
+	private String subinCode;
 
-	
+	@Column(name = "subin_type")
+	private String subinType;
+
 }

@@ -18,7 +18,7 @@ import lombok.Data;
  @Entity
  @Data
  @Table(name = "res_flow")
-public class DbResFlow implements Serializable{
+public class DbResFlow extends Base{
 
     @Id
     @GeneratedValue

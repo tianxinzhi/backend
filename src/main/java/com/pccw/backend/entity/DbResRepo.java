@@ -26,9 +26,7 @@ import lombok.Data;
 @Data
 @Entity
 @Table(name = "res_repo")
-public class DbResRepo implements Serializable {
-
-	private static final long serialVersionUID = 1L;
+public class DbResRepo extends Base {
 	
 	@Id
 	@GeneratedValue
@@ -53,8 +51,8 @@ public class DbResRepo implements Serializable {
 	@Column(name = "area_id")
 	private Long areaId;
 
-	// @Column(name="repo_num",length = 64)
-	// private String repoNum;
+	@Column(name="repo_code",length = 64)
+	private String repoCode;
 	
 	@Column(name = "repo_name", length = 64)
 	private String repoName;

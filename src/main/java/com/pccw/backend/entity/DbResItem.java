@@ -22,17 +22,16 @@ import lombok.Data;
 @Data
 @Entity
 @Table(name = "res_item")
-public class DbResItem implements Serializable {
+public class DbResItem extends Base {
 	
-	private static final long serialVersionUID = 1L;
 	
 	@Id
 	@GeneratedValue		
 	private Long id;
 	
 	
-	@Column(name = "item_num", length = 128)
-	private String itemNum;
+	@Column(name = "item_code", length = 128)
+	private String itemCode;
 	
 	@Column(name = "item_name", length = 32)
 	private String itemName;

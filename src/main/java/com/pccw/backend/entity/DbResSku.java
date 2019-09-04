@@ -26,10 +26,7 @@ import lombok.Data;
 @Entity
 @Table(name = "res_sku")
 @Data
-public class DbResSku implements Serializable{
-
-
-	private static final long serialVersionUID = 1L;
+public class DbResSku extends Base{
 
 	@Id
 	@GeneratedValue	
@@ -44,6 +41,9 @@ public class DbResSku implements Serializable{
 	@Column(name = "sku_name", length = 32)
 	private String skuName;
 	
+	@Column(name = "sku_code", length = 32)
+	private String skuCode;
+
 	@Column(name = "sku_desc", length = 512)
 	private String skuDesc;
 

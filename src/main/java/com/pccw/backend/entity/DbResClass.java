@@ -22,9 +22,8 @@ import lombok.Data;
 @Data
 @Entity
 @Table(name = "res_class")
-public class DbResClass implements Serializable {
-	
-	private static final long serialVersionUID = 1L;
+public class DbResClass extends Base {
+
 	
 	@Id
 	@GeneratedValue		

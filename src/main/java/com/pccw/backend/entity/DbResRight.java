@@ -14,7 +14,7 @@ import lombok.Data;
  @Entity
  @Data
  @Table(name = "res_right")
-public class DbResRight implements Serializable{
+public class DbResRight extends Base{
 
     @Id
     @GeneratedValue 

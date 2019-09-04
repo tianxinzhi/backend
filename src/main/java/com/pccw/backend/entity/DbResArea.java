@@ -19,9 +19,7 @@ import lombok.Data;
 @Data
 @Entity
 @Table(name = "res_area")
-public class DbResArea implements Serializable {
-
-	private static final long serialVersionUID = 1L;
+public class DbResArea extends Base {
 
 	@Id
 	@GeneratedValue

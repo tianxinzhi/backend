@@ -25,7 +25,7 @@ import lombok.Data;
  */
 @Data
 @Entity
-@Table(name = "res_repo")
+@Table(name = "res_subin")
 public class DbResSubin extends Base {
 	
 	@Id

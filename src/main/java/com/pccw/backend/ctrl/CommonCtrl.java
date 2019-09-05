@@ -40,7 +40,7 @@ public class CommonCtrl {
             }).collect(Collectors.toList());
             return JsonResult.success(kvList);
         } catch (Exception e) {
-            return JsonResult.fail();
+            return JsonResult.fail(e);
         }
     }
     

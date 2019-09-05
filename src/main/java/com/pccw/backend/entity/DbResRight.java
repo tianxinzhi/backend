@@ -5,6 +5,8 @@ import java.io.Serializable;
 import javax.persistence.*;
 import javax.persistence.Entity;
 
+import org.springframework.data.jpa.repository.Query;
+
 import lombok.Data;
 
 /**

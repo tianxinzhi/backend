@@ -47,6 +47,7 @@ public class Auth_RightCtrl extends BaseCtrl<DbResRight>{
     }
     @RequestMapping(method = RequestMethod.POST,path="/edit")
     public JsonResult edit(@RequestBody EditBean b){
+        log.info(b.toString());
         return this.edit(repo, DbResRight.class, b);
     }
 }

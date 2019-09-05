@@ -28,7 +28,9 @@ public class BaseCtrl<T>{
     public <G extends BaseSearchBean> JsonResult search(BaseRepository repo, Class<G> cls, G b) {
         try {
             Specification<T> spec = Convertor.<T,G>convertSpecification(cls,b);
+
             List<T> res =repo.findAll(spec,PageRequest.of(b.getPageIndex(),b.getPageSize())).getContent();
+
             return JsonResult.success(res);
         } catch (Exception e) {
             return JsonResult.fail(e);
@@ -38,6 +40,7 @@ public class BaseCtrl<T>{
     public JsonResult delete(BaseRepository repo, BaseDeleteBean ids){
         try {
             repo.deleteByIdIn(ids.getIds());
+            
             return JsonResult.success(Arrays.asList());
         } catch (Exception e) {
             return JsonResult.fail(e);
@@ -51,6 +54,7 @@ public class BaseCtrl<T>{
             BeanUtils.copyProperties(b, entity);
             log.info(entity.toString());
             repo.<T>saveAndFlush(entity);
+            
             return JsonResult.success(Arrays.asList());
         } catch (Exception e) {
             return JsonResult.fail(e);
@@ -60,8 +64,11 @@ public class BaseCtrl<T>{
     public JsonResult edit(BaseRepository repo, Class<T> cls,BaseBean b){
         try {
             T entity = cls.newInstance();
+
             BeanUtils.copyProperties(b, entity);
+
             log.info(entity.toString());
+
             repo.<T>saveAndFlush(entity);
             return JsonResult.success(Arrays.asList());
         } catch (Exception e) {

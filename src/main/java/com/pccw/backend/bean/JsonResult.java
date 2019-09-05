@@ -16,8 +16,11 @@ import lombok.Data;
 public class JsonResult<T> {
 
     private String state;
+
     private String msg;
+
     private List<T> data;
+
     public JsonResult(String state, String msg, List<T> data) {
         super();
         this.state=state;
@@ -40,14 +43,6 @@ public class JsonResult<T> {
      */
     public static <G>JsonResult<G> fail(Exception e){
         return new JsonResult<G>("failed", e.getMessage(), Arrays.asList());
-    }
-    /**
-     * 
-     * @param <G>
-     * @return
-     */
-    public static <G> JsonResult<G> fail(){
-        return new JsonResult<G>("failed", "", Arrays.asList());
     }
     
 }

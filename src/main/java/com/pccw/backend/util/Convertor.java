@@ -38,6 +38,7 @@ import com.pccw.backend.annotation.PredicateType;
 		Field[] fieldArr = cls.getDeclaredFields();
 
 		ArrayList<Parm> arr = new ArrayList<Parm>();
+
 		for (Field f : fieldArr) {
 			f.setAccessible(true); 
 			Object obj = f.get(o);
@@ -60,9 +61,12 @@ import com.pccw.backend.annotation.PredicateType;
 			CriteriaBuilder builder) {
 				// builder.createQuery()
 				List<Predicate> list = new ArrayList<>();
+
 				arr.stream().forEach( a->{
 					Parm parm = (Parm)a;
+
 					PredicateType code = PredicateType.getByValue(parm.getPredicateType().getCode());
+					
 					switch (code) {
 						case EQUEL:
 							list.add(builder.equal(root.get(parm.getName()).as(String.class),parm.getValue()));

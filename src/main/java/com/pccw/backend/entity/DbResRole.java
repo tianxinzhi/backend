@@ -38,4 +38,6 @@ public class DbResRole extends Base {
     joinColumns = { @JoinColumn(name = "role_id") },
     inverseJoinColumns = { @JoinColumn(name = "right_id") })
     private Set<DbResRight> rightList;
+
+    
 }

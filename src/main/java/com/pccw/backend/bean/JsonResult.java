@@ -34,15 +34,15 @@ public class JsonResult<T> {
      * @param data
      * @return
      */
-    public static <G> JsonResult<G> success(List<G> data) {
-        return new JsonResult<G>("success", "", data);
+    public static <T> JsonResult<T> success(List<T> data) {
+        return new JsonResult<T>("success", "", data);
     }
     /**
      * quick method to return a JsonResult when FAILED
      * @return
      */
-    public static <G>JsonResult<G> fail(Exception e){
-        return new JsonResult<G>("failed", e.getMessage(), Arrays.asList());
+    public static <T> JsonResult<T> fail(Exception e){
+        return new JsonResult<T>("failed", e.getMessage(), Arrays.asList());
     }
     
 }

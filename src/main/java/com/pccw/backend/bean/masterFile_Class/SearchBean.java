@@ -1,4 +1,4 @@
-package com.pccw.backend.bean.MasterFile_Class;
+package com.pccw.backend.bean.masterFile_Class;
 
 
 import com.pccw.backend.annotation.PredicateAnnotation;

@@ -24,7 +24,7 @@ public class MF_RepoCtrl extends BaseCtrl<DbResRepo> {
 
     @Autowired
     ResRepoRepository repo;
-
+     //12345
     @RequestMapping(method = RequestMethod.POST,path="/search")
     public JsonResult search(@RequestBody SearchBean b) {
         log.info(b.toString());

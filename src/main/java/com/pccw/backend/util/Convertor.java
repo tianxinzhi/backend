@@ -17,6 +17,7 @@ import javax.persistence.criteria.*;
 
 import com.pccw.backend.annotation.PredicateAnnotation;
 import com.pccw.backend.annotation.PredicateType;
+import com.pccw.backend.bean.BaseSearchBean;
 
 
 
@@ -31,11 +32,12 @@ import com.pccw.backend.annotation.PredicateType;
 	/**
 	 * for multiple condition search
 	 */
-    public static <T,G> Specification<T> convertSpecification(Class<G> cls,Object o)
+    public static <T> Specification<T> convertSpecification(Object o)
+    // public static <T> Specification<T> convertSpecification(Class<? extends BaseSearchBean> cls,Object o)
 			throws IllegalArgumentException, IllegalAccessException {
 
 	    // get all Fields which haved the PredicateAnnotation uysing reflact
-		Field[] fieldArr = cls.getDeclaredFields();
+		Field[] fieldArr = o.getClass().getDeclaredFields();
 
 		ArrayList<Parm> arr = new ArrayList<Parm>();
 

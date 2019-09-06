@@ -25,9 +25,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class BaseCtrl<T>{
 
-    public <G extends BaseSearchBean> JsonResult search(BaseRepository repo, Class<G> cls, G b) {
+    public <G extends BaseSearchBean> JsonResult search(BaseRepository repo, G b) {
         try {
-            Specification<T> spec = Convertor.<T,G>convertSpecification(cls,b);
+            Specification<T> spec = Convertor.<T>convertSpecification(b);
 
             List<T> res =repo.findAll(spec,PageRequest.of(b.getPageIndex(),b.getPageSize())).getContent();
 
@@ -50,11 +50,7 @@ public class BaseCtrl<T>{
 
     public JsonResult create(BaseRepository repo, Class<T> cls,BaseBean b) {
         try {
-            T entity = cls.newInstance();
-            BeanUtils.copyProperties(b, entity);
-            log.info(entity.toString());
-            repo.<T>saveAndFlush(entity);
-            
+            saveAndFlush(repo, cls, b);       
             return JsonResult.success(Arrays.asList());
         } catch (Exception e) {
             return JsonResult.fail(e);
@@ -63,16 +59,20 @@ public class BaseCtrl<T>{
 
     public JsonResult edit(BaseRepository repo, Class<T> cls,BaseBean b){
         try {
-            T entity = cls.newInstance();
-
-            BeanUtils.copyProperties(b, entity);
-
-            log.info(entity.toString());
-
-            repo.<T>saveAndFlush(entity);
+            saveAndFlush(repo, cls, b);
             return JsonResult.success(Arrays.asList());
         } catch (Exception e) {
             return JsonResult.fail(e);
         }
     }
+    private void saveAndFlush(BaseRepository repo, Class<T> cls, BaseBean b) throws Exception{
+        try {         
+            T entity = cls.newInstance();
+            BeanUtils.copyProperties(b, entity);
+            log.info(entity.toString());
+            repo.<T>saveAndFlush(entity); 
+        } catch (Exception e) {
+            throw e;
+        }
+    } 
 }

@@ -22,7 +22,7 @@ public class MasterFile_ItemCtrl extends BaseCtrl<DbResItem> {
   @RequestMapping(method = RequestMethod.POST,path = "/search")
   public JsonResult search(@RequestBody SearchBean b){
       log.info(b.toString());
-    return this.search(resItemRepository, SearchBean.class,b);
+    return this.search(resItemRepository,b);
   }
 
     @RequestMapping(method = RequestMethod.POST,path = "/creat")

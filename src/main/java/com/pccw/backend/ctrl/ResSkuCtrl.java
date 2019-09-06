@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @CrossOrigin(methods = RequestMethod.POST,origins = "*", allowCredentials = "false")
-@RequestMapping("res_sku")
+@RequestMapping("masterfile_sku")
 public class ResSkuCtrl extends BaseCtrl<DbResSku> {
 
     @Autowired
@@ -38,6 +38,6 @@ public class ResSkuCtrl extends BaseCtrl<DbResSku> {
 
     @RequestMapping(method = RequestMethod.POST,value = "/search")
     public JsonResult search(@RequestBody SearchBean bean) {
-        return this.search(repo,SearchBean.class,bean);
+        return this.search(repo,bean);
     }
 }

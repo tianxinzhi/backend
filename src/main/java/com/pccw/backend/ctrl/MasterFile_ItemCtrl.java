@@ -25,7 +25,7 @@ public class MasterFile_ItemCtrl extends BaseCtrl<DbResItem> {
     return this.search(resItemRepository,b);
   }
 
-    @RequestMapping(method = RequestMethod.POST,path = "/creat")
+    @RequestMapping(method = RequestMethod.POST,path = "/create")
     public JsonResult creat(@RequestBody CreateBean b){
       return this.create(resItemRepository, DbResItem.class,b);
     }

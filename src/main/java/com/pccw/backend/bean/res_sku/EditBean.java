@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class EditBean extends BaseBean {
+public class EditBean extends CreateBean {
 
     private Long id;
 }

@@ -1,4 +1,4 @@
-package com.pccw.backend.bean.stockbalance;
+package com.pccw.backend.bean.stock_balance;
 
 import java.io.Serializable;
 

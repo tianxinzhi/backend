@@ -6,9 +6,10 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 
 import com.pccw.backend.entity.DbResClass;
+import org.springframework.stereotype.Repository;
 
-
-public interface ResClassRepository extends JpaRepository<DbResClass, Long>,JpaSpecificationExecutor {
+@Repository
+public interface ResClassRepository extends BaseRepository<DbResClass> {
 	
 	//  DbResClass findByClassName(String className);
 

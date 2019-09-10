@@ -3,9 +3,9 @@ package com.pccw.backend.ctrl;
 import com.pccw.backend.bean.BaseDeleteBean;
 import com.pccw.backend.bean.JsonResult;
 
-import com.pccw.backend.bean.res_sku.CreateBean;
-import com.pccw.backend.bean.res_sku.EditBean;
-import com.pccw.backend.bean.res_sku.SearchBean;
+import com.pccw.backend.bean.masterfile_sku.CreateBean;
+import com.pccw.backend.bean.masterfile_sku.EditBean;
+import com.pccw.backend.bean.masterfile_sku.SearchBean;
 import com.pccw.backend.entity.DbResSku;
 import com.pccw.backend.repository.ResSkuRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @CrossOrigin(methods = RequestMethod.POST,origins = "*", allowCredentials = "false")
 @RequestMapping("masterfile_sku")
-public class ResSkuCtrl extends BaseCtrl<DbResSku> {
+public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> {
 
     @Autowired
     ResSkuRepository repo;

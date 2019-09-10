@@ -3,9 +3,9 @@ package com.pccw.backend.ctrl;
 
 import com.pccw.backend.bean.BaseDeleteBean;
 import com.pccw.backend.bean.JsonResult;
-import com.pccw.backend.bean.mf_repo.CreateBean;
-import com.pccw.backend.bean.mf_repo.EditBean;
-import com.pccw.backend.bean.mf_repo.SearchBean;
+import com.pccw.backend.bean.masterfile_repo.CreateBean;
+import com.pccw.backend.bean.masterfile_repo.EditBean;
+import com.pccw.backend.bean.masterfile_repo.SearchBean;
 import com.pccw.backend.entity.DbResRepo;
 import com.pccw.backend.repository.ResRepoRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -19,8 +19,8 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @CrossOrigin(methods = RequestMethod.POST,origins = "*", allowCredentials = "false")
-@RequestMapping("/mf_repo")
-public class MF_RepoCtrl extends BaseCtrl<DbResRepo> {
+@RequestMapping("/masterfile_repo")
+public class MasterFile_RepoCtrl extends BaseCtrl<DbResRepo> {
 
     @Autowired
     ResRepoRepository repo;

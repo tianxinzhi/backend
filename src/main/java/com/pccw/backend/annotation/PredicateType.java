@@ -7,8 +7,13 @@ package com.pccw.backend.annotation;
  */
 
 public enum PredicateType{
-    EQUEL(0, ""),
-    LIKE(1,""),
+    EQUEL(0, "="),
+    LIKE(1,"%?%"),
+    BETWEEN(2,"[?,?]"),
+    GREATER_THAN(3,">"),
+    LESS_THAN(4,"<"),
+    GREATERTHAN_OR_EQUEL(5,">="),
+    LESSTHAN_OR_EQUEL(6,"<="),
     ;
     private int code;
     private String message;

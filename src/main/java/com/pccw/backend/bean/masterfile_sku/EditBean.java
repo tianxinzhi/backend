@@ -1,6 +1,5 @@
-package com.pccw.backend.bean.res_sku;
+package com.pccw.backend.bean.masterfile_sku;
 
-import com.pccw.backend.bean.BaseBean;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

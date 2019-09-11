@@ -9,10 +9,12 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.pccw.backend.entity.DbResSku;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 
-public interface ResSkuRepository extends JpaRepository<DbResSku, Long> {
+public interface ResSkuRepository extends BaseRepository<DbResSku> {
 
-	Page<DbResSku> findAll(Specification<DbResSku> spec,Pageable p);
+	//Page<DbResSku> findAll(Specification<DbResSku> spec,Pageable p);
+	//DbResSku getByClass
 
 }

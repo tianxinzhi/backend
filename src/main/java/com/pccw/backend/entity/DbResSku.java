@@ -53,6 +53,13 @@ public class DbResSku extends Base{
 //       		inverseJoinColumns = { @JoinColumn(name = "repo_id", referencedColumnName = "id") }
 //    )
 // 	private List<DbResRepo> repos;
+
+//	@ManyToMany
+//	@JoinTable(name="RES_SKU_TYPE",
+//			joinColumns = { @JoinColumn(name = "SKU_ID", referencedColumnName = "id") },
+//			inverseJoinColumns = { @JoinColumn(name = "TYPE_ID", referencedColumnName = "id") }
+//	)
+//	private List<DbResType> typeList;
 	
 	
 }

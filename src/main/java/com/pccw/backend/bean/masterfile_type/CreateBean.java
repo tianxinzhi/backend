@@ -1,4 +1,4 @@
-package com.pccw.backend.bean.masterfile_class;
+package com.pccw.backend.bean.masterfile_type;
 
 
 import com.pccw.backend.bean.BaseBean;
@@ -13,14 +13,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CreateBean extends BaseBean{
 
-    private String className;
-
-    private String classDesc;
-
-    private String classType;
-
-    private String parentClassId;
-
     private String active;
+
+    private String typeName;
+
+    private String typeCode;
+
+    private String sequential;
+
+    private String typeDesc;
     
 }

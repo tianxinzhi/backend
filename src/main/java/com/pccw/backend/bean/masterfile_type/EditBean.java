@@ -1,4 +1,4 @@
-package com.pccw.backend.bean.masterfile_class;
+package com.pccw.backend.bean.masterfile_type;
 
 
 

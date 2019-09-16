@@ -1,4 +1,4 @@
-package com.pccw.backend.bean.masterFile_Class;
+package com.pccw.backend.bean.masterfile_class;
 
 
 import com.pccw.backend.annotation.PredicateAnnotation;
@@ -20,5 +20,14 @@ public class SearchBean extends BaseSearchBean {
 
     @PredicateAnnotation(type = PredicateType.LIKE)
     private String classDesc;
+
+    @PredicateAnnotation(type = PredicateType.LIKE)
+    private String classType;
+
+    @PredicateAnnotation(type = PredicateType.LIKE)
+    private String parentClassId;
+
+    @PredicateAnnotation(type = PredicateType.LIKE)
+    private String active;
     
 }

@@ -20,7 +20,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @NoRepositoryBean
-public interface BaseRepository<T> extends JpaRepository<T,Long>,JpaSpecificationExecutor<T> {
+    public interface BaseRepository<T> extends JpaRepository<T,Integer>,JpaSpecificationExecutor<T> {
 
     // Page<DbResRight> findAll(Specification<DbResRight> spec,Pageable p);
 

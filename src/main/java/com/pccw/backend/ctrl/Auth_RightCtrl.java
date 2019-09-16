@@ -6,6 +6,9 @@ import com.pccw.backend.bean.JsonResult;
 import com.pccw.backend.bean.auth_right.*;
 import com.pccw.backend.entity.DbResRight;
 import com.pccw.backend.repository.ResRightRepository;
+
+import javax.validation.Valid;
+
 import com.pccw.backend.bean.BaseDeleteBean;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +34,7 @@ public class Auth_RightCtrl extends BaseCtrl<DbResRight>{
     ResRightRepository repo;
 
     @RequestMapping(method = RequestMethod.POST,path="/search")
-    public JsonResult search(@RequestBody SearchBean b) {
+    public JsonResult search(@RequestBody @Valid SearchBean b) {
         return this.search(repo, b);
     }
 

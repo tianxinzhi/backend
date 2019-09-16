@@ -1,33 +1,53 @@
 package com.pccw.backend.exception;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import com.pccw.backend.bean.JsonResult;
+
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * SMPException
  */
-public class SMPException extends RuntimeException {
+@RestControllerAdvice(annotations = {RestController.class})
+@Slf4j
+public class SMPException {
 
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public JsonResult exception(MethodArgumentNotValidException e) {
+        BindingResult bindingResult = e.getBindingResult();
+        List<ObjectError> allErrors = bindingResult.getAllErrors();
+        List<ErrMsg> eMsgs = new ArrayList<>();
 
-
-    private static final long serialVersionUID = 4564124491192825748L;
-
-    private int code;
-
-    public SMPException() {
-        super();
+        allErrors.forEach(objectError -> {
+            FieldError fieldError = (FieldError)objectError;
+            ErrMsg msg = new ErrMsg(fieldError.getField(),fieldError.getDefaultMessage());
+            eMsgs.add(msg);
+        });
+        log.error("==============================");
+        log.error("Validate Exception:{}",eMsgs);
+        log.error("==============================");
+        return JsonResult.fail(eMsgs);
     }
-
-    public SMPException(int code, String message) {
-        super(message);
-        this.setCode(code);
+    
+    @ExceptionHandler(Exception.class)
+    public JsonResult runtimeExceptionHandler(Exception e) {
+        log.error("------------------------------");
+        log.error("Runtime Exception: {}", e.getMessage());
+        log.error("------------------------------");
+        return JsonResult.fail(e);
     }
-
-    public int getCode() {
-        return code;
-    }
-
-    public void setCode(int code) {
-        this.code = code;
-    }
-
     
 }
 

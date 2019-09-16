@@ -26,5 +26,5 @@ import org.springframework.stereotype.Repository;
 
     @Modifying
     @Transactional
-    long deleteByIdIn(ArrayList<Integer> ids);
+    long deleteByIdIn(ArrayList<Long> ids);
 }

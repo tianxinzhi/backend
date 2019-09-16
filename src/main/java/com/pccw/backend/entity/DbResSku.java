@@ -3,16 +3,7 @@ package com.pccw.backend.entity;
 import java.io.Serializable;
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.Table;
-import javax.persistence.JoinColumn;
+import javax.persistence.*;
 
 import lombok.Data;
 
@@ -54,10 +45,10 @@ public class DbResSku extends Base{
 //    )
 // 	private List<DbResRepo> repos;
 
-//	@ManyToMany
+//	@ManyToMany(fetch = FetchType.EAGER)
 //	@JoinTable(name="RES_SKU_TYPE",
-//			joinColumns = { @JoinColumn(name = "SKU_ID", referencedColumnName = "id") },
-//			inverseJoinColumns = { @JoinColumn(name = "TYPE_ID", referencedColumnName = "id") }
+//			joinColumns = { @JoinColumn(name = "SKU_ID")},
+//			inverseJoinColumns = { @JoinColumn(name = "TYPE_ID") }
 //	)
 //	private List<DbResType> typeList;
 	

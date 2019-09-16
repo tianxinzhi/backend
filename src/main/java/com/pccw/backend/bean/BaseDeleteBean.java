@@ -11,5 +11,5 @@ import lombok.Data;
 @Data
 public class BaseDeleteBean extends BaseBean {
 
-    private ArrayList<Integer> ids;
+    private ArrayList<Long> ids;
 }

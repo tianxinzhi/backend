@@ -14,6 +14,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class EditBean extends CreateBean {
 
-    private Integer id;
+    private Long id;
     
 }

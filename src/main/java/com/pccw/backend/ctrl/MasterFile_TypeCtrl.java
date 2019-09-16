@@ -46,11 +46,12 @@ public class MasterFile_TypeCtrl extends BaseCtrl<DbResType> {
 
     @RequestMapping(method = RequestMethod.POST, path = "/create")
     public JsonResult create(@RequestBody CreateBean b) {
-        Optional<DbResClass> byId = resClassRepository.findById(b.getClassId().intValue());
-        DbResClass dbResClass = byId.get();
-        List<DbResClass> classList = new ArrayList<DbResClass>();
-        classList.add(dbResClass);
-        b.setClassList(classList);
+        //级联添加
+//        Optional<DbResClass> byId = resClassRepository.findById(b.getClassId().intValue());
+//        DbResClass dbResClass = byId.get();
+//        List<DbResClass> classList = new ArrayList<DbResClass>();
+//        classList.add(dbResClass);
+//        b.setClassList(classList);
         return this.create(repo, DbResType.class, b);
     }
 

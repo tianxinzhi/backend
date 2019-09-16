@@ -22,7 +22,7 @@ public class  DbResClass extends Base {
 	@Id
 //	@Column(name = "CLASS_ID", length = 11)
 	@GeneratedValue		
-	private Integer id;
+	private Long id;
 
 	@Column(name = "PARENT_CLASS_ID", length = 11)
 	private String parentClassId;

@@ -1,4 +1,4 @@
-package com.pccw.backend.bean.mf_repo;
+package com.pccw.backend.bean.masterfile_spec;
 
 
 import com.pccw.backend.annotation.PredicateAnnotation;
@@ -16,17 +16,13 @@ import lombok.NoArgsConstructor;
 public class SearchBean extends BaseSearchBean {
 
     @PredicateAnnotation(type = PredicateType.LIKE) 
-    private String repoCode;
+    private String specName;
 
     @PredicateAnnotation(type = PredicateType.LIKE)
-    private String repoName;
+    private String specDesc;
 
     @PredicateAnnotation(type = PredicateType.LIKE)
-    private String repoAddr;
+    private String active;
 
-    @PredicateAnnotation(type = PredicateType.LIKE)
-    private String areaId;
-
-    //private String rightDesc;
     
 }

@@ -20,6 +20,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -30,26 +33,31 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/auth_role")
 @CrossOrigin(methods = RequestMethod.POST,origins = "*", allowCredentials = "false")
+@Api(value="AuthRoleCtrl",tags={"auth_role"})
 public class Auth_RoleCtrl extends BaseCtrl<DbResRole>{
 
     @Autowired
     ResRoleRepository repo;
 
     @RequestMapping(method = RequestMethod.POST,path="/search")
-    public JsonResult search(@RequestBody SearchBean b) {
+    @ApiOperation(value="搜索角色",tags={"auth_role"},notes="注意问题点")
+    public JsonResult search(@ApiParam(name="SearchBean",value="搜索条件",required=true) @RequestBody SearchBean b) {
         return this.search(repo, b);
     }
-
+    
     @RequestMapping(method = RequestMethod.POST,path = "/delete")
+    @ApiOperation(value="删除角色",tags={"auth_role"},notes="注意问题点")
     public JsonResult delete(@RequestBody BaseDeleteBean ids){
         return this.delete(repo,ids);
     }
-
+    
     @RequestMapping(method = RequestMethod.POST,path="/create")
+    @ApiOperation(value="新增角色",tags={"auth_role"},notes="注意问题点")
     public JsonResult create(@RequestBody CreateBean b){
         return this.create(repo, DbResRole.class, b);
     }
     @RequestMapping(method = RequestMethod.POST,path="/edit")
+    @ApiOperation(value="修改角色",tags={"auth_role"},notes="注意问题点")
     public JsonResult edit(@RequestBody EditBean b){
         log.info("====================");
         log.info(b.toString());

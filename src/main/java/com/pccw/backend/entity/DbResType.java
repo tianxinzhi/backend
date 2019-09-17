@@ -11,28 +11,28 @@ import java.util.List;
 
 @Data
 @Entity
-@Table(name = "RES_TYPE")
+@Table(name = "res_type")
 public class DbResType extends Base {
 
 	
 	@Id
-//	@Column(name = "TYPE_ID", length = 11)
+//	@Column(name = "type_id", length = 11)
 	@GeneratedValue		
 	private Long id;
 	
-	@Column(name = "TYPE_CODE", length = 3)
+	@Column(name = "type_code", length = 3)
 	private String typeCode;
 
-	@Column(name = "TYPE_NAME", length = 32)
+	@Column(name = "type_name", length = 32)
 	private String typeName;
 
-	@Column(name = "SEQUENTIAL",length = 1)
+	@Column(name = "sequential",length = 1)
 	private String sequential;
 
-	@Column(name = "TYPE_DESC", length = 512)
+	@Column(name = "type_desc", length = 512)
 	private String typeDesc;
 
-	@Column(name = "ACTIVE",length = 1)
+	@Column(name = "active",length = 1)
 	private String active;
 
 //	@ManyToMany(fetch = FetchType.EAGER,cascade = CascadeType.ALL)

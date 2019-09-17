@@ -68,7 +68,7 @@ import com.pccw.backend.bean.BaseSearchBean;
 					Parm parm = (Parm)a;
 
 					PredicateType code = PredicateType.getByValue(parm.getPredicateType().getCode());
-					
+
 					switch (code) {
 						case EQUEL:
 							list.add(builder.equal(root.get(parm.getName()).as(String.class),parm.getValue()));

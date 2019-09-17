@@ -55,11 +55,11 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 			<artifactId>mariadb-java-client</artifactId>
 			<version>2.4.1</version>
 		</dependency>
-		<!-- <dependency>
+		<dependency>
 			<groupId>com.oracle</groupId>
 			<artifactId>ojdbc6</artifactId>
 			<version>11.2.0.3</version>
-		</dependency> -->
+		</dependency>
 	</dependencies>
 
 

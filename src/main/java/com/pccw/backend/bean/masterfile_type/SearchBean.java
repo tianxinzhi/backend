@@ -1,4 +1,4 @@
-package com.pccw.backend.bean.masterFile_Class;
+package com.pccw.backend.bean.masterfile_type;
 
 
 import com.pccw.backend.annotation.PredicateAnnotation;
@@ -16,9 +16,18 @@ import lombok.NoArgsConstructor;
 public class SearchBean extends BaseSearchBean {
 
     @PredicateAnnotation(type = PredicateType.LIKE)
-    private String className;
+    private String active;
 
     @PredicateAnnotation(type = PredicateType.LIKE)
-    private String classDesc;
+    private String typeName;
+
+    @PredicateAnnotation(type = PredicateType.LIKE)
+    private String typeCode;
+
+    @PredicateAnnotation(type = PredicateType.LIKE)
+    private String sequential;
+
+    @PredicateAnnotation(type = PredicateType.LIKE)
+    private String typeDesc;
     
 }

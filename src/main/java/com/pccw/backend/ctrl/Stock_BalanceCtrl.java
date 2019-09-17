@@ -1,21 +1,10 @@
 package com.pccw.backend.ctrl;
 
-import java.util.List;
 
-import com.pccw.backend.bean.JsonResult;
-import com.pccw.backend.bean.stockbalance.*;
-// import com.pccw.backend.repository.ResItemRepoRepository;
-import com.pccw.backend.repository.ResSkuRepository;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
-import org.springframework.data.jpa.domain.Specification;
 
 
 import lombok.extern.slf4j.Slf4j;
@@ -24,9 +13,9 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
-@RequestMapping("/stock/balance")
+@RequestMapping("/stock_balance")
 @CrossOrigin(methods = RequestMethod.POST,origins = "*", allowCredentials = "false")
-public class StockBalanceCtrl {
+public class Stock_BalanceCtrl {
 
 	// @Autowired
 	// private ResSkuRepoRepository repo;

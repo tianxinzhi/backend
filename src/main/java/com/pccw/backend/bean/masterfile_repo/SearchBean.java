@@ -1,16 +1,9 @@
-package com.pccw.backend.bean.auth_right;
+package com.pccw.backend.bean.masterfile_repo;
 
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 import com.pccw.backend.annotation.PredicateAnnotation;
 import com.pccw.backend.annotation.PredicateType;
 import com.pccw.backend.bean.BaseSearchBean;
-
-
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -22,17 +15,18 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class SearchBean extends BaseSearchBean {
 
-    @NotBlank(message = "XXXXXXXXXXX")
-    // @Size(min=2,max=4,message = "YYYYYYYYY")
     @PredicateAnnotation(type = PredicateType.LIKE) 
-    private String rightName; 
+    private String repoCode;
 
     @PredicateAnnotation(type = PredicateType.LIKE)
-    private String rightUrl;
+    private String repoName;
 
     @PredicateAnnotation(type = PredicateType.LIKE)
-    private String rightPid;
+    private String repoAddr;
 
-    private String rightDesc;
+    @PredicateAnnotation(type = PredicateType.LIKE)
+    private String areaId;
+
+    //private String rightDesc;
     
 }

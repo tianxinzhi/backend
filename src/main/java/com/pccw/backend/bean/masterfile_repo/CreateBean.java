@@ -1,4 +1,4 @@
-package com.pccw.backend.bean.mf_repo;
+package com.pccw.backend.bean.masterfile_repo;
 
 
 import com.pccw.backend.bean.BaseBean;

@@ -1,4 +1,4 @@
-package com.pccw.backend.bean.MasterFile_Item;
+package com.pccw.backend.bean.masterFile_Item;
 
 import com.pccw.backend.bean.BaseBean;
 import lombok.Data;

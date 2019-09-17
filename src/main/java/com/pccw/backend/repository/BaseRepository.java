@@ -4,12 +4,6 @@ import java.util.ArrayList;
 
 import javax.transaction.Transactional;
 
-import com.pccw.backend.entity.Base;
-import com.pccw.backend.entity.DbResRight;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;

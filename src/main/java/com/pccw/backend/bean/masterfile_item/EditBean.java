@@ -1,5 +1,6 @@
-package com.pccw.backend.bean.masterFile_Item;
+package com.pccw.backend.bean.masterfile_item;
 
+import com.pccw.backend.bean.BaseBean;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

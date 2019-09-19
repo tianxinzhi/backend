@@ -45,6 +45,7 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> {
     @ApiOperation(value="搜索sku",tags={"masterfile_sku"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST,value = "/search")
     public JsonResult search(@RequestBody SearchBean bean) {
+        System.out.println("skuSearch:"+bean);
         return this.search(repo,bean);
     }
 }

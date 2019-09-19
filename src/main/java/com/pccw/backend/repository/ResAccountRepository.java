@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ResAccountRepository extends BaseRepository<DbResAccount> {
 
+    DbResAccount getDbResAccountsByAccountNameAndPassword(String accountName,String password);
 }

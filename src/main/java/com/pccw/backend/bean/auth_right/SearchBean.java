@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 @ApiModel(value="Right模块 - SearchBean",description="")
 public class SearchBean extends BaseSearchBean {
 
-    @NotBlank(message = "XXXXXXXXXXX")
+    // @NotBlank(message = "XXXXXXXXXXX")
     // @Size(min=2,max=4,message = "YYYYYYYYY")
     @PredicateAnnotation(type = PredicateType.LIKE) 
     private String rightName; 

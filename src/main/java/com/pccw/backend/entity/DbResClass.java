@@ -15,28 +15,28 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "RES_CLASS")
+@Table(name = "res_class")
 public class  DbResClass extends Base {
 
 	
 	@Id
-//	@Column(name = "CLASS_ID", length = 11)
+//	@Column(name = "class_id", length = 11)
 	@GeneratedValue		
 	private Long id;
 
-	@Column(name = "PARENT_CLASS_ID", length = 11)
+	@Column(name = "parent_class_id", length = 11)
 	private String parentClassId;
 	
-	@Column(name = "CLASS_NAME", length = 32)
+	@Column(name = "class_name", length = 32)
 	private String className;
 
-	@Column(name = "CLASS_TYPE", length = 128)
+	@Column(name = "class_type", length = 128)
 	private String classType;
 
-	@Column(name = "CLASS_DESC", length = 128)
+	@Column(name = "class_desc", length = 128)
 	private String classDesc;
 
-	@Column(name = "ACTIVE", length = 1)
+	@Column(name = "active", length = 1)
 	private String active;
 
 //	@ManyToMany(mappedBy = "classList")

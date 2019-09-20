@@ -11,16 +11,16 @@ import lombok.NoArgsConstructor;
 @ApiModel(value="Sku模块 - CreateBean",description="")
 public class CreateBean extends BaseBean {
 
-    @ApiModelProperty(value="class",name="classId",example="delete")
+    @ApiModelProperty(value="class",name="分类",example="delete")
     private String classId;
 
-    @ApiModelProperty(value="skuCode",name="skuCode",example="delete")
+    @ApiModelProperty(value="skuCode",name="sku编码",example="delete")
     private String skuCode;
 
-    @ApiModelProperty(value="skuDesc",name="skuDesc",example="delete")
+    @ApiModelProperty(value="skuDesc",name="sku详情",example="delete")
     private String skuDesc;
 
-    @ApiModelProperty(value="skuName",name="skuName",example="delete")
+    @ApiModelProperty(value="skuName",name="sku名称",example="delete")
     private String skuName;
 
 }

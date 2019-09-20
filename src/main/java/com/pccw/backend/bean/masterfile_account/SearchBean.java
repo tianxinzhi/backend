@@ -1,4 +1,4 @@
-package com.pccw.backend.bean.user;
+package com.pccw.backend.bean.masterfile_account;
 
 import com.pccw.backend.annotation.PredicateAnnotation;
 import com.pccw.backend.annotation.PredicateType;

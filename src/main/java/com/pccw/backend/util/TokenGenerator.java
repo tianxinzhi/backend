@@ -1,6 +1,6 @@
 package com.pccw.backend.util;
 
-import com.pccw.backend.bean.user.LoginBean;
+import com.pccw.backend.bean.system.LoginBean;
 import sun.misc.BASE64Encoder;
 
 import java.security.MessageDigest;

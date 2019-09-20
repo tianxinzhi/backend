@@ -23,7 +23,7 @@ public class TokenGenerator {
 
     public static String  makeToken (LoginBean bean) {
         String token = (bean.getAccountName() + ":"+bean.getPassword()) ;
-        System.out.println("old:"+token);
+//        System.out.println("old:"+token);
         try {
             md = MessageDigest.getInstance("md5");
             byte md5[] =  md.digest(token.getBytes());

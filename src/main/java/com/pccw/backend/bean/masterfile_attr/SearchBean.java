@@ -14,15 +14,15 @@ import lombok.NoArgsConstructor;
 public class SearchBean extends BaseSearchBean {
 
     @PredicateAnnotation(type = PredicateType.LIKE)
-    @ApiModelProperty(value="属性名称",name="attrName",example="delete")
+    @ApiModelProperty(value="属性名称",name="attrName",example="")
     private String attrName;
 
     @PredicateAnnotation(type = PredicateType.LIKE)
-    @ApiModelProperty(value="属性值类型",name="attrValueType",example="delete")
+    @ApiModelProperty(value="属性值类型",name="attrValueType",example="")
     private String attrValueType;
 
     @PredicateAnnotation(type = PredicateType.LIKE)
-    @ApiModelProperty(value="是否有效",name="active",example="delete")
+    @ApiModelProperty(value="是否有效",name="active",example="")
     private String active;
 
 }

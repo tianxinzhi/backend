@@ -17,14 +17,14 @@ public class SearchBean extends BaseSearchBean {
     //private String classId;
 
     @PredicateAnnotation(type = PredicateType.LIKE)
-    @ApiModelProperty(value="sku名",name="skuName",example="delete")
+    @ApiModelProperty(value="sku名",name="skuName",example="")
     private String skuName;
 
     @PredicateAnnotation(type = PredicateType.LIKE)
-    @ApiModelProperty(value="sku编码",name="skuCode",example="delete")
+    @ApiModelProperty(value="sku编码",name="skuCode",example="")
     private String skuCode;
 
     @PredicateAnnotation(type = PredicateType.LIKE)
-    @ApiModelProperty(value="sku详情",name="skuDesc",example="delete")
+    @ApiModelProperty(value="sku详情",name="skuDesc",example="")
     private String skuDesc;
 }

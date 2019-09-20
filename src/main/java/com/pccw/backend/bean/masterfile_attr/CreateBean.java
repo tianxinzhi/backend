@@ -14,15 +14,15 @@ import java.util.List;
 @ApiModel(value="Attr模块 - CreateBean",description="")
 public class CreateBean extends BaseBean {
 
-    @ApiModelProperty(value="属性名",name="attrName",example="delete")
+    @ApiModelProperty(value="属性名",name="attrName",example="")
     private String attrName;
 
-    @ApiModelProperty(value="属性详情",name="attrDesc",example="delete")
+    @ApiModelProperty(value="属性详情",name="attrDesc",example="")
     private String attrDesc;
 
-    @ApiModelProperty(value="属性值类型",name="attrValueType",example="delete")
+    @ApiModelProperty(value="属性值类型",name="attrValueType",example="")
     private String attrValueType;
 
-    @ApiModelProperty(value="是否有效",name="active",example="delete")
+    @ApiModelProperty(value="是否有效",name="active",example="")
     private String active;
 }

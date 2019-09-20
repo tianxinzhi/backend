@@ -17,19 +17,19 @@ public class SearchBean extends BaseSearchBean {
 //    private String attrId;
 
     @PredicateAnnotation(type = PredicateType.LIKE)
-    @ApiModelProperty(value="属性值",name="attrValue",example="delete")
+    @ApiModelProperty(value="属性值",name="attrValue",example="")
     private String attrValue;
 
     @PredicateAnnotation(type = PredicateType.LIKE)
-    @ApiModelProperty(value="单位",name="unitOfMeasure",example="delete")
+    @ApiModelProperty(value="单位",name="unitOfMeasure",example="")
     private String unitOfMeasure;
 
     @PredicateAnnotation(type = PredicateType.LIKE)
-    @ApiModelProperty(value="来源",name="valueFrom",example="delete")
+    @ApiModelProperty(value="来源",name="valueFrom",example="")
     private String valueFrom;
 
     @PredicateAnnotation(type = PredicateType.LIKE)
-    @ApiModelProperty(value="作用",name="valueTo",example="delete")
+    @ApiModelProperty(value="作用",name="valueTo",example="")
     private String valueTo;
 
 }

@@ -1,11 +1,10 @@
 package com.pccw.backend.util;
 
-import com.pccw.backend.bean.masterfile_account.LoginBean;
+import com.pccw.backend.bean.user.LoginBean;
 import sun.misc.BASE64Encoder;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Random;
 
 /**
  * token generator

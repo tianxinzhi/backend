@@ -41,7 +41,7 @@ public class MasterFile_ClassCtrl extends BaseCtrl<DbResClass> {
         return this.create(repo, DbResClass.class, b);
     }
 
-        @RequestMapping(method = RequestMethod.POST, path = "/edit")
+    @RequestMapping(method = RequestMethod.POST, path = "/edit")
     public JsonResult edit(@RequestBody EditBean b) {
         return this.edit(repo, DbResClass.class, b);
     }

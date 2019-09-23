@@ -24,7 +24,7 @@ import java.util.Map;
 @RestController
 @CrossOrigin(methods = RequestMethod.POST,origins = "*", allowCredentials = "false")
 @RequestMapping("system")
-@Api(value="SystemCtrl",tags={"masterfile_account"})
+@Api(value="SystemCtrl",tags={"system"})
 public class SystemCtrl extends BaseCtrl<DbResAccount> {
 
     @Autowired

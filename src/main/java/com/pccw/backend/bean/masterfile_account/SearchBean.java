@@ -1,4 +1,4 @@
-package com.pccw.backend.bean.masterfile_spec_attr;
+package com.pccw.backend.bean.masterfile_account;
 
 import com.pccw.backend.annotation.PredicateAnnotation;
 import com.pccw.backend.annotation.PredicateType;
@@ -10,19 +10,15 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-@ApiModel(value="Spec_Attr模块 - SearchBean",description="")
+@ApiModel(value = "User 模块 - SearchBean", description = "")
 public class SearchBean extends BaseSearchBean {
 
     @PredicateAnnotation(type = PredicateType.LIKE)
-    @ApiModelProperty(value="specId",name="specId",example="")
-    private String specId;
+    @ApiModelProperty(value="角色",name="roleId",example="")
+    private String roleId;
 
     @PredicateAnnotation(type = PredicateType.LIKE)
-    @ApiModelProperty(value="verId",name="verId",example="")
-    private String verId;
-
-    @PredicateAnnotation(type = PredicateType.LIKE)
-    @ApiModelProperty(value="attrId",name="attrId",example="")
-    private String attrId;
+    @ApiModelProperty(value="账号",name="accountName",example="")
+    private String accountName;
 
 }

@@ -9,7 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 
 
 import java.lang.reflect.Field;
-
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -68,7 +68,7 @@ import com.pccw.backend.bean.BaseSearchBean;
 					Parm parm = (Parm)a;
 
 					PredicateType code = PredicateType.getByValue(parm.getPredicateType().getCode());
-					
+
 					switch (code) {
 						case EQUEL:
 							list.add(builder.equal(root.get(parm.getName()).as(String.class),parm.getValue()));
@@ -76,6 +76,22 @@ import com.pccw.backend.bean.BaseSearchBean;
 						case LIKE:
 							list.add(builder.like(root.get(parm.getName()).as(String.class),"%"+parm.getValue()+"%"));
 						break;
+						case LESS_THAN:
+							list.add(builder.lessThan(root.get(parm.getName()).as(String.class),parm.getValue().toString()));
+						break;
+						case LESSTHAN_OR_EQUEL:
+							list.add(builder.lessThanOrEqualTo(root.get(parm.getName()).as(String.class),parm.getValue().toString()));
+						break;
+						case GREATER_THAN:
+						list.add(builder.greaterThan(root.get(parm.getName()).as(String.class),parm.getValue().toString()));
+						break;
+						case GREATERTHAN_OR_EQUEL:
+							list.add(builder.greaterThanOrEqualTo(root.get(parm.getName()).as(String.class),parm.getValue().toString()));
+						break;
+						// case BETWEEN:
+						// String[] arr = (String[])parm.getValue();
+							// list.add(builder.between(root.get(parm.getName()).as(String.class),arr[0],arr[1]);
+						// break;
 						default:
 							break;
 					}

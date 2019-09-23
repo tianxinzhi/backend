@@ -3,7 +3,6 @@ package com.pccw.backend.repository;
 
 
 import java.util.List;
-import java.util.Optional;
 
 import com.pccw.backend.entity.DbResRight;
 

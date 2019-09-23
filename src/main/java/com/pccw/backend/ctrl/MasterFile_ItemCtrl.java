@@ -2,9 +2,7 @@ package com.pccw.backend.ctrl;
 
 import com.pccw.backend.bean.BaseDeleteBean;
 import com.pccw.backend.bean.JsonResult;
-import com.pccw.backend.bean.masterfile_item.CreateBean;
-import com.pccw.backend.bean.masterfile_item.EditBean;
-import com.pccw.backend.bean.masterfile_item.SearchBean;
+import com.pccw.backend.bean.masterfile_item.*;
 import com.pccw.backend.entity.DbResItem;
 import com.pccw.backend.repository.ResItemRepository;
 import lombok.extern.slf4j.Slf4j;

@@ -1,15 +1,9 @@
 package com.pccw.backend.entity;
 
-import java.io.Serializable;
+import java.util.List;
 
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-
-import javax.persistence.Id;
-
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import lombok.Data;
 
@@ -22,28 +16,31 @@ import lombok.Data;
 @Data
 @Entity
 @Table(name = "res_class")
-public class DbResClass extends Base {
+public class  DbResClass extends Base {
 
 	
 	@Id
+//	@Column(name = "class_id", length = 11)
 	@GeneratedValue		
-	private Long id;	
-	
+	private Long id;
 
-
-	// @Column(name = "class_Num", length = 32)
-	// private String classNum;
+	@Column(name = "parent_class_id", length = 11)
+	private String parentClassId;
 	
 	@Column(name = "class_name", length = 32)
 	private String className;
-	
-	
+
+	@Column(name = "class_type", length = 128)
+	private String classType;
+
 	@Column(name = "class_desc", length = 128)
 	private String classDesc;
-	
-	
-	// @Column(name = "status", length = 3)
-	// private String status;
+
+	@Column(name = "active", length = 1)
+	private String active;
+
+//	@ManyToMany(mappedBy = "classList")
+//	private List<DbResType> typeList;
 	
 
 }

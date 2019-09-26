@@ -11,9 +11,9 @@ import java.util.List;
  */
 
 @Entity
-@Table(name = "res_adjust_reason")
+@Table(name = "res_stocktype")
 @Data
-public class DbResAdjustReason extends Base{
+public class DbResStockType extends Base{
 
 	@Id
 	@GeneratedValue
@@ -21,8 +21,8 @@ public class DbResAdjustReason extends Base{
 	private Long id;
 
 
-	@Column(name = "adjust_reason_name",length = 64)
-	private String adjustReasonName;
+	@Column(name = "stocktype_name",length = 64)
+	private String stockTypeName;
 
 
 }

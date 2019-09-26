@@ -17,7 +17,7 @@ public class CreateBean extends BaseBean {
     @ApiModelProperty(value="账户",name="accountName",example="")
     private String accountName;
 
-    @ApiModelProperty(value="密码",name="password",example="")
-    private String password;
+    @ApiModelProperty(value="密码",name="accountPassword",example="")
+    private String accountPassword;
 
 }

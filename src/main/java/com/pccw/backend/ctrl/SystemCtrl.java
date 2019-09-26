@@ -32,7 +32,7 @@ public class SystemCtrl extends BaseCtrl<DbResAccount> {
         System.out.println("loginBean"+bean);
         List<Map<String,String>> data = new ArrayList<>();
         Map<String,String> tokenMap = new HashMap<>();
-        DbResAccount rwe = repo.getDbResAccountsByAccountNameAndPassword(bean.getAccountName(),bean.getPassword());
+        DbResAccount rwe = repo.getDbResAccountsByAccountNameAndAccountPassword(bean.getAccountName(),bean.getAccountPassword());
         if(rwe==null){
             return JsonResult.fail(new Exception());
         }

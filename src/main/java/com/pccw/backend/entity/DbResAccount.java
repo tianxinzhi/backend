@@ -25,8 +25,8 @@ public class DbResAccount extends Base {
 	@Column(name = "account_name", columnDefinition = "varchar(100)")
 	private String accountName;
 	
-	@Column(name = "password", columnDefinition = "varchar(255)")
-	private String password;
+	@Column(name = "account_password", columnDefinition = "varchar(255)")
+	private String accountPassword;
 	
 	// @Column(name = "status", length = 6)	
 	// private String status;

@@ -32,7 +32,8 @@ public class SearchBean extends BaseSearchBean {
 
     @PredicateAnnotation(type = PredicateType.LIKE)
     private String rightPid;
-
+    
+    @PredicateAnnotation(type = PredicateType.LIKE)
     private String rightDesc;
     
 }

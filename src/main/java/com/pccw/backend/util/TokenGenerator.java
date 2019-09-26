@@ -14,12 +14,6 @@ public class TokenGenerator {
     private static MessageDigest md = null;
     private static BASE64Encoder encoder = new BASE64Encoder();
 
-//      public static void main(String[] args) {
-//            String old = TokenGenerator.makeToken("admin","admin");
-//        System.out.println(old);
-//        //encoder.
-//    }
-
     public static String  makeToken (LoginBean bean) {
         String token = (bean.getAccountName() + ":"+bean.getPassword()) ;
 //        System.out.println("old:"+token);

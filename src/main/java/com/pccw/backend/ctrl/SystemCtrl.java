@@ -1,10 +1,6 @@
 package com.pccw.backend.ctrl;
 
-import com.pccw.backend.bean.BaseDeleteBean;
 import com.pccw.backend.bean.JsonResult;
-import com.pccw.backend.bean.masterfile_account.CreateBean;
-import com.pccw.backend.bean.masterfile_account.EditBean;
-import com.pccw.backend.bean.masterfile_account.SearchBean;
 import com.pccw.backend.bean.system.LoginBean;
 import com.pccw.backend.entity.DbResAccount;
 import com.pccw.backend.repository.ResAccountRepository;

@@ -1,4 +1,4 @@
-package com.pccw.backend.bean.masterfile_account;
+package com.pccw.backend.bean.auth_account;
 
 import com.pccw.backend.bean.BaseBean;
 import io.swagger.annotations.ApiModel;
@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-@ApiModel(value="User模块 - CreateBean",description="")
+@ApiModel(value="Account模块 - CreateBean",description="")
 public class CreateBean extends BaseBean {
 
     @ApiModelProperty(value="角色",name="roleId",example="")
@@ -17,7 +17,7 @@ public class CreateBean extends BaseBean {
     @ApiModelProperty(value="账户",name="accountName",example="")
     private String accountName;
 
-    @ApiModelProperty(value="密码",name="password",example="")
-    private String password;
+    @ApiModelProperty(value="密码",name="accountPassword",example="")
+    private String accountPassword;
 
 }

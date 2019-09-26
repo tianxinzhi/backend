@@ -2,6 +2,7 @@ package com.pccw.backend.bean.masterfile_typeskuspec;
 
 
 import com.pccw.backend.bean.BaseBean;
+import io.swagger.annotations.ApiModel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,6 +12,7 @@ import lombok.NoArgsConstructor;
 
  @Data
 @NoArgsConstructor
+ @ApiModel(value="TypeSkuSpec - CreateBean",description="")
 public class CreateBean extends BaseBean {
 
     private String typeId;

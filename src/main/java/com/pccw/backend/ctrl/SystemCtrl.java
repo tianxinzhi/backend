@@ -1,10 +1,6 @@
 package com.pccw.backend.ctrl;
 
-import com.pccw.backend.bean.BaseDeleteBean;
 import com.pccw.backend.bean.JsonResult;
-import com.pccw.backend.bean.masterfile_account.CreateBean;
-import com.pccw.backend.bean.masterfile_account.EditBean;
-import com.pccw.backend.bean.masterfile_account.SearchBean;
 import com.pccw.backend.bean.system.LoginBean;
 import com.pccw.backend.entity.DbResAccount;
 import com.pccw.backend.repository.ResAccountRepository;
@@ -24,7 +20,7 @@ import java.util.Map;
 @RestController
 @CrossOrigin(methods = RequestMethod.POST,origins = "*", allowCredentials = "false")
 @RequestMapping("system")
-@Api(value="SystemCtrl",tags={"masterfile_account"})
+@Api(value="SystemCtrl",tags={"system"})
 public class SystemCtrl extends BaseCtrl<DbResAccount> {
 
     @Autowired
@@ -36,7 +32,7 @@ public class SystemCtrl extends BaseCtrl<DbResAccount> {
         System.out.println("loginBean"+bean);
         List<Map<String,String>> data = new ArrayList<>();
         Map<String,String> tokenMap = new HashMap<>();
-        DbResAccount rwe = repo.getDbResAccountsByAccountNameAndPassword(bean.getAccountName(),bean.getPassword());
+        DbResAccount rwe = repo.getDbResAccountsByAccountNameAndAccountPassword(bean.getAccountName(),bean.getAccountPassword());
         if(rwe==null){
             return JsonResult.fail(new Exception());
         }

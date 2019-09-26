@@ -1,4 +1,4 @@
-package com.pccw.backend.bean.masterfile_account;
+package com.pccw.backend.bean.auth_account;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

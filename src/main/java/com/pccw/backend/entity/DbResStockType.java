@@ -11,7 +11,7 @@ import java.util.List;
  */
 
 @Entity
-@Table(name = "res_stocktype")
+@Table(name = "res_stock_type")
 @Data
 public class DbResStockType extends Base{
 

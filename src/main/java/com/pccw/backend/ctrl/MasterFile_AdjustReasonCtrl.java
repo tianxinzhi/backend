@@ -2,9 +2,9 @@ package com.pccw.backend.ctrl;
 
 import com.pccw.backend.bean.BaseDeleteBean;
 import com.pccw.backend.bean.JsonResult;
-import com.pccw.backend.bean.masterfile_adjustreason.CreateBean;
-import com.pccw.backend.bean.masterfile_adjustreason.EditBean;
-import com.pccw.backend.bean.masterfile_adjustreason.SearchBean;
+import com.pccw.backend.bean.masterfile_adjust_reason.CreateBean;
+import com.pccw.backend.bean.masterfile_adjust_reason.EditBean;
+import com.pccw.backend.bean.masterfile_adjust_reason.SearchBean;
 import com.pccw.backend.entity.DbResAdjustReason;
 import com.pccw.backend.repository.ResAdjustReasonRepository;
 import io.swagger.annotations.Api;

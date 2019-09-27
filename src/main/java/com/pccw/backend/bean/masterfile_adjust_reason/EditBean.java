@@ -1,4 +1,4 @@
-package com.pccw.backend.bean.masterfile_adjustreason;
+package com.pccw.backend.bean.masterfile_adjust_reason;
 
 import io.swagger.annotations.ApiModel;
 import lombok.Data;

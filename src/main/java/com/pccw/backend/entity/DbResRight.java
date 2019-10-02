@@ -15,9 +15,6 @@ import lombok.Data;
  @Table(name = "res_right")
 public class DbResRight extends Base{
 
-    @Id
-    @GeneratedValue 
-    private long id;
 
     @Column(name="right_pid")
     private Long rightPid;

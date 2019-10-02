@@ -15,11 +15,6 @@ import java.util.List;
 @Data
 public class DbResStockType extends Base{
 
-	@Id
-	@GeneratedValue
-	@Column(columnDefinition = "number(11)")
-	private Long id;
-
 
 	@Column(name = "stocktype_name",length = 64)
 	private String stockTypeName;

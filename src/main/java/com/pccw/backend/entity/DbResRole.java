@@ -16,10 +16,6 @@ import lombok.Data;
  @Table(name="res_role")
 public class DbResRole extends Base {
 
-    @Id
-    @GeneratedValue
-    private long id;
-
     @Column(name="role_name")
     private String roleName;
 

@@ -2,6 +2,7 @@ package com.pccw.backend.ctrl;
 
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import com.pccw.backend.bean.JsonResult;
@@ -27,12 +28,14 @@ public class BaseCtrl<T>{
 
     public <G extends BaseSearchBean> JsonResult search(BaseRepository repo, G b) {
         try {
+            log.info(b.toString());
             Specification<T> spec = Convertor.<T>convertSpecification(b);
 
             List<T> res =repo.findAll(spec,PageRequest.of(b.getPageIndex(),b.getPageSize())).getContent();
 
             return JsonResult.success(res);
         } catch (Exception e) {
+            log.info(e.getMessage());
             return JsonResult.fail(e);
         }
     }
@@ -50,6 +53,10 @@ public class BaseCtrl<T>{
 
     public JsonResult create(BaseRepository repo, Class<T> cls,BaseBean b) {
         try {
+            long t = new Date().getTime();
+            b.setCreateAt(t);
+            b.setUpdateAt(t);
+            b.setActive("Y");
             saveAndFlush(repo, cls, b);       
             return JsonResult.success(Arrays.asList());
         } catch (Exception e) {
@@ -59,6 +66,7 @@ public class BaseCtrl<T>{
 
     public JsonResult edit(BaseRepository repo, Class<T> cls,BaseBean b){
         try {
+            b.setUpdateAt(new Date().getTime());
             saveAndFlush(repo, cls, b);
             return JsonResult.success(Arrays.asList());
         } catch (Exception e) {

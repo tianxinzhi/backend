@@ -15,10 +15,6 @@ import java.util.List;
 public class DbResType extends Base {
 
 	
-	@Id
-//	@Column(name = "type_id", length = 11)
-	@GeneratedValue		
-	private Long id;
 	
 	@Column(name = "type_code", length = 3)
 	private String typeCode;
@@ -32,8 +28,6 @@ public class DbResType extends Base {
 	@Column(name = "type_desc", length = 512)
 	private String typeDesc;
 
-	@Column(name = "active",length = 1)
-	private String active;
 
 //	@ManyToMany(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
 //	@JoinTable(name="RES_CLASS_TYPE",

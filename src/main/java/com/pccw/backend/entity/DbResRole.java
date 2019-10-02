@@ -19,6 +19,9 @@ public class DbResRole extends Base {
     @Column(name="role_name")
     private String roleName;
 
+    @Column(name="role_pid")
+    private long rolePid;
+
     @Column(name="role_desc")
     private String roleDesc;
 

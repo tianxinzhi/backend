@@ -40,9 +40,9 @@ public class CommonCtrl  {
             List<CommonBean> res = list.stream().map(r->{
                 return new CommonBean(r.getId(),r.getRightPid(),r.getRightName());
             }).collect(Collectors.toList());
-            res.add(0, new CommonBean(0L, -1L, "Top"));
-            res.add(0, new CommonBean(1L, 0L, "Left"));
-            res.add(0, new CommonBean(2L, 0L, "Right"));
+            res.add(0, new CommonBean(0L, -1L, "SMP"));
+            // res.add(0, new CommonBean(1L, 0L, "Left"));
+            // res.add(0, new CommonBean(2L, 0L, "Right"));
             return JsonResult.success(res);
         } catch (Exception e) {
             return JsonResult.fail(e);

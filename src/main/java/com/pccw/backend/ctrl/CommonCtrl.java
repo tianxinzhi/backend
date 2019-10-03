@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 import com.pccw.backend.bean.CommonBean;
 import com.pccw.backend.bean.JsonResult;
 import com.pccw.backend.bean.KV;
-import com.pccw.backend.bean.TreeSelect;
 import com.pccw.backend.bean.auth_right.SearchBean;
 import com.pccw.backend.entity.DbResRight;
 import com.pccw.backend.repository.ResRightRepository;
@@ -41,7 +40,9 @@ public class CommonCtrl  {
             List<CommonBean> res = list.stream().map(r->{
                 return new CommonBean(r.getId(),r.getRightPid(),r.getRightName());
             }).collect(Collectors.toList());
-            res.add(0, new CommonBean(0L, 0L, "Top"));
+            res.add(0, new CommonBean(0L, -1L, "Top"));
+            res.add(0, new CommonBean(1L, 0L, "Left"));
+            res.add(0, new CommonBean(2L, 0L, "Right"));
             return JsonResult.success(res);
         } catch (Exception e) {
             return JsonResult.fail(e);

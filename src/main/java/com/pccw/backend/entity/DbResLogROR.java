@@ -10,30 +10,26 @@ import javax.persistence.*;
 @Data
 @Entity
 @Table(name = "res_log_ror")
-public class DbResLogROR extends Base {
+public class DbResLogRor extends BaseLog {
 	
-
-	// Transation Number made from SMP self
-	@Column(name="ror_txtNum",length = 512)
-	private String rorTxtBum;
 
 	// POS / BOM / BES
-	@Column(name = "ror_sys",length = 64)
-	private String rorSys;
+	@Column(name = "log_sys",length = 8)
+	private String logSys;
 
-	@Column(name="ror_orderId",length = 512)
-	private String rorOrderId;
+	// OrderId 
+	@Column(name="log_orderId",length = 512)
+	private String logOrderId;
 	
-	@Column(name="ror_relatedOrderId",length = 512)
-	private String rorRelatedOrderId;
+	// Related OrderId
+	@Column(name="log_relatedOrderId",length = 512)
+	private String logRelatedOrderId;
 
 	// N(normal) / A(Advance Order)
-	@Column(name="ror_orderType",length = 1)
-	private String rorOrderType;
+	@Column(name="log_orderType",length = 1)
+	private String logOrderType;
 
-	// ASG(Assign) / RET(return) / EXC(Exchange) / ARS(Advanced Reserve) / CARS(Cancel advance reserve) / APU(Advance pick up)
-	@Column(name = "ror_orderNature", length = 8)
-	private String rorOrderNature;
+
 
 
 }

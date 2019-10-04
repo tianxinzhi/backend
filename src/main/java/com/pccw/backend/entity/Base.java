@@ -44,6 +44,6 @@ public class Base implements Serializable{
         private long updateBy;
 
 
-        @Column(name = "active")
+        @Column(name = "active",length = 4)
         private String active;
 }

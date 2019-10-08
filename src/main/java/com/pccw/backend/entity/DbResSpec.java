@@ -16,11 +16,6 @@ import javax.persistence.*;
 @Entity
 @Table(name = "res_spec")
 public class DbResSpec extends Base {
-	
-	@Id
-	@GeneratedValue
-	@Column(name = "spec_id")
-	private long id;
 
 
 	@Column(name = "spec_name",length = 64)
@@ -32,8 +27,6 @@ public class DbResSpec extends Base {
 	@Column(name="ver_id",length = 512)
 	private String verId;
 
-	@Column(name = "active", length = 1)
-	private String active;
 
 
 	/*@ManyToMany(fetch = FetchType.EAGER)

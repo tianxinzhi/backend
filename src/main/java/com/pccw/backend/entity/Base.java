@@ -4,42 +4,46 @@ import java.io.Serializable;
 import java.sql.Date;
 
 import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
+import javax.validation.constraints.NotNull;
 
 import org.springframework.lang.Nullable;
 
+import lombok.Data;
 import lombok.NonNull;
 
 /**
  * Base
  */
 
+@Data
 @MappedSuperclass
 public class Base implements Serializable{
 
         private static final long serialVersionUID = 1L;
 
-        // @Column(name="create_at")
-        // @Nullable
-        // private Date createAt;
+        @Id
+        @GeneratedValue		
+        private Long id;
+
+        @Column(name="create_at")
+        private long createAt;
     
 
-        // @Column(name="update_at")
-        // @Nullable
-        // private Date updateAt;
+        @Column(name="update_at")
+        private long updateAt;
     
 
-        // @Column(name="create_by")
-        // @Nullable
-        // private long createBy;
+        @Column(name="create_by")
+        private long createBy;
     
 
-        // @Column(name="update_by")
-        // @Nullable
-        // private long updateBy;
+        @Column(name="update_by")
+        private long updateBy;
 
-        // @Nullable
-        // @NonNull
-        // @Column(name = "status", columnDefinition = "varchar(4) default 'Y'")
-        // private String status;
+
+        @Column(name = "active",length = 4)
+        private String active;
 }

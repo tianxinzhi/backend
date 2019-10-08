@@ -22,11 +22,6 @@ import lombok.Data;
 @Table(name = "res_role_right")
 @Data
 public class DbResRoleRight extends Base {
-
-	
-	@Id
-	@GeneratedValue	
-	private Long id;
 	
 	@Column(name = "role_id")
 	private Long roleId;

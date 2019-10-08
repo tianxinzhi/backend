@@ -22,9 +22,9 @@ import lombok.Data;
 @Table(name = "res_area")
 public class DbResArea extends Base {
 
-	@Id
-	@GeneratedValue
-	private Long id;
+	// @Id
+	// @GeneratedValue
+	// private Long id;
 	
 	@Column(name = "area_name", length = 64)
 	private String areaName;

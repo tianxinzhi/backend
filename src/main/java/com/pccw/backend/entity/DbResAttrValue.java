@@ -15,10 +15,7 @@ import java.util.List;
 @Data
 public class DbResAttrValue extends Base{
 
-	@Id
-	@GeneratedValue
-	@Column(columnDefinition = "number(11)")
-	private Long id;
+
 
 	//@ManyToOne
 	//@JoinColumn(name = "attr_id")
@@ -39,8 +36,6 @@ public class DbResAttrValue extends Base{
 	@Column(name = "value_to", columnDefinition = "varchar(128)")
 	private String valueTo;
 
-	@Column(name = "active", columnDefinition = "char(1)")
-	private String active;
 
 // 	@ManyToMany
 //     @JoinTable(name="res_sku_repo",

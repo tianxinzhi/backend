@@ -19,10 +19,6 @@ import lombok.Data;
 @Entity
 @Table(name = "res_subin")
 public class DbResSubin extends Base {
-	
-	@Id
-	@GeneratedValue
-	private Long id;
 
 	@Column(name = "repo_id")
 	private Long repoId;

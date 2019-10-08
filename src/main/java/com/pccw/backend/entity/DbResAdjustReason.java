@@ -15,10 +15,10 @@ import java.util.List;
 @Data
 public class DbResAdjustReason extends Base{
 
-	@Id
-	@GeneratedValue
-	@Column(columnDefinition = "number(11)")
-	private Long id;
+	// @Id
+	// @GeneratedValue
+	// @Column(columnDefinition = "number(11)")
+	// private Long id;
 
 
 	@Column(name = "adjust_reason_name",length = 64)

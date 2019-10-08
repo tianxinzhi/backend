@@ -16,10 +16,6 @@ import java.util.List;
 @Data
 public class DbResAttr extends Base{
 
-	@Id
-	@GeneratedValue
-	@Column(columnDefinition = "number(11)")
-	private Long id;
 
 	@Column(name = "attr_name",columnDefinition = "varchar2(64)")
 	private String attrName;
@@ -30,8 +26,6 @@ public class DbResAttr extends Base{
 	@Column(name = "attr_value_type", columnDefinition = "varchar2(16)")
 	private String attrValueType;
 
-	@Column(name = "active", columnDefinition = "char(1)")
-	private String active;
 
  //	@OneToMany(cascade = {CascadeType.MERGE},targetEntity = DbResAttrValue.class)
 //	@JoinColumn(name = "id")

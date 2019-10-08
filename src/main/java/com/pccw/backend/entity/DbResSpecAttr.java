@@ -11,14 +11,9 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "res_spec_attr")
-@org.hibernate.annotations.Table(appliesTo = "res_spec_attr",comment = "spec data")
+// @org.hibernate.annotations.Table(appliesTo = "res_spec_attr",comment = "spec data")
 @Data
 public class DbResSpecAttr extends Base{
-
-	@Id
-	@GeneratedValue
-	@Column(columnDefinition = "number(11)")
-	private Long id;
 
 	@Column(name = "spec_id",columnDefinition = "number(11)")
 	private String specId;

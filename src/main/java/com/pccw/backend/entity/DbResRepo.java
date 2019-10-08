@@ -28,9 +28,7 @@ import lombok.Data;
 @Table(name = "res_repo")
 public class DbResRepo extends Base {
 	
-	@Id
-	@GeneratedValue
-	private Long id;
+
 
 	// @ManyToOne(cascade= {CascadeType.ALL})
 	// @JoinColumn(name="area_id", referencedColumnName="id")

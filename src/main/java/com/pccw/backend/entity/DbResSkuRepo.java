@@ -24,10 +24,7 @@ import lombok.Data;
 @Table(name = "res_sku_repo")
 @Data
 public class DbResSkuRepo extends Base{
-	
-	@Id
-	@GeneratedValue	
-	private Long id;
+
 	
 	@Column(name = "sku_id")
 	private Long skuId;

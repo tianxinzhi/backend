@@ -20,10 +20,6 @@ import lombok.Data;
  @Table(name = "res_flow")
 public class DbResFlow extends Base{
 
-    @Id
-    @GeneratedValue
-    private long id;
-
 
 
     @Column(name="flow_name")

@@ -11,8 +11,8 @@ import lombok.Data;
 // @Builder
 // @NoArgsConstructor
 @AllArgsConstructor
-public class TreeSelect extends BaseBean {
-	private Long key;
-    private Long value;
-    private String title;
+public class CommonBean extends BaseBean {
+	private Long id;
+    private Long pid;
+    private String name;
 }

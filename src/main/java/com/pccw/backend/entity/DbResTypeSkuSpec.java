@@ -12,10 +12,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "res_type_sku_spec")
 public class DbResTypeSkuSpec extends Base {
-	
-	@Id
-	@GeneratedValue
-	private long id;
+
 
 	@Column(name = "type_id",length = 64)
 	private long typeId;
@@ -26,8 +23,6 @@ public class DbResTypeSkuSpec extends Base {
 	@Column(name="spec_id",length = 512)
 	private long specId;
 
-	@Column(name = "active", length = 1)
-	private String active;
 
 
 }

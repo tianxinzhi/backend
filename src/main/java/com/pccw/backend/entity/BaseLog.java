@@ -25,11 +25,11 @@ public class BaseLog extends Base{
 	@Column(name="log_txtNum",length = 512)
 	private String logTxtBum;
 	
-	// O - Order / M - Mangement
+	// O - Order / M - Mangement / R - Repl
 	@Column(name="log_type",length = 4)
         private String logType; 
         
-        // ASG(Assign) / RET(return) / EXC(Exchange) / ARS(Advanced Reserve) / CARS(Cancel advance reserve) / APU(Advance pick up)
+        // ASG(Assign) / RET(return) / EXC(Exchange) / ARS(Advanced Reserve) / CARS(Cancel advance reserve) / APU(Advance pick up) / RR()/RR
 	@Column(name = "log_orderNature", length = 8)
         private String logOrderNature;
         

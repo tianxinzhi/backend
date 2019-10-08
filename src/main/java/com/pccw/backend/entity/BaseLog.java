@@ -1,18 +1,9 @@
 package com.pccw.backend.entity;
 
-import java.io.Serializable;
-import java.sql.Date;
+import lombok.Data;
 
 import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
-import javax.validation.constraints.NotNull;
-
-import org.springframework.lang.Nullable;
-
-import lombok.Data;
-import lombok.NonNull;
 
 /**
  * Base
@@ -29,7 +20,7 @@ public class BaseLog extends Base{
 	@Column(name="log_type",length = 4)
         private String logType; 
         
-        // ASG(Assign) / RET(return) / EXC(Exchange) / ARS(Advanced Reserve) / CARS(Cancel advance reserve) / APU(Advance pick up) / RR()/RR
+        // ASG(Assign) / RET(return) / EXC(Exchange) / ARS(Advanced Reserve) / CARS(Cancel advance reserve) / APU(Advance pick up) / RREQ(Replenishment request)/ RREC(Replenishment receive)
 	@Column(name = "log_orderNature", length = 8)
         private String logOrderNature;
         

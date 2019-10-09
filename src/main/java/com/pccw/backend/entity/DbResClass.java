@@ -19,10 +19,7 @@ import lombok.Data;
 public class  DbResClass extends Base {
 
 	
-	@Id
-//	@Column(name = "class_id", length = 11)
-	@GeneratedValue		
-	private Long id;
+
 
 	@Column(name = "parent_class_id", length = 11)
 	private String parentClassId;
@@ -36,8 +33,6 @@ public class  DbResClass extends Base {
 	@Column(name = "class_desc", length = 128)
 	private String classDesc;
 
-	@Column(name = "active", length = 1)
-	private String active;
 
 //	@ManyToMany(mappedBy = "classList")
 //	private List<DbResType> typeList;

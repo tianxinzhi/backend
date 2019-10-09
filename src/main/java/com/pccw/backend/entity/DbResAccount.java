@@ -14,10 +14,10 @@ import javax.persistence.*;
 @Table(name = "res_account")
 public class DbResAccount extends Base {
 
-	@Id
-	@GeneratedValue
-	@Column(columnDefinition = "number(11)")
-	private Long id;
+	// @Id
+	// @GeneratedValue
+	// @Column(columnDefinition = "number(11)")
+	// private Long id;
 
 	@Column(name = "role_id", columnDefinition = "number(11)")
 	private Long roleId;

@@ -19,10 +19,6 @@ import lombok.Data;
 @Data
 public class DbResSku extends Base{
 
-	@Id
-	@GeneratedValue	
-	private Long id;
-
 	@Column(name = "class_id")
 	private String classId;
 	

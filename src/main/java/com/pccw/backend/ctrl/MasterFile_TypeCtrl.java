@@ -6,7 +6,6 @@ import com.pccw.backend.bean.JsonResult;
 import com.pccw.backend.bean.masterfile_type.CreateBean;
 import com.pccw.backend.bean.masterfile_type.EditBean;
 import com.pccw.backend.bean.masterfile_type.SearchBean;
-import com.pccw.backend.entity.DbResClass;
 import com.pccw.backend.entity.DbResType;
 import com.pccw.backend.repository.ResClassRepository;
 import com.pccw.backend.repository.ResTypeRepository;
@@ -16,9 +15,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 /**
  * AuthRightCtrl

@@ -40,4 +40,12 @@ public class BaseLog extends Base{
         // remark
         @Column(name = "remark",length = 512)
         private String remark;
+        
+    // Shop code mapping
+    @Column(name = "ccc", length = 512)
+    private String ccc;
+
+    //  Work order
+    @Column(name = "wo", length = 512)
+    private String wo;
 }

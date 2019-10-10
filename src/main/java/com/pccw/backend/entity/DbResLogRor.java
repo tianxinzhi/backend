@@ -10,7 +10,7 @@ import javax.persistence.*;
 @Data
 @Entity
 @Table(name = "res_log_ror")
-public class DbResLogRoR extends BaseLog {
+public class DbResLogRor extends BaseLog {
 
 
     // POS / BOM / BES

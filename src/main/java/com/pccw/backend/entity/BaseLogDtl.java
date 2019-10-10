@@ -46,7 +46,7 @@ public class BaseLogDtl extends Base {
 
 	// AVL(available)/DEM(demo)/RES(reserve)/ARE(ao_reserve)
 	// FAU(faulty) 
-	// INT(intransit) 
+	// INT(ondelivery/intransit) 
 	@Column(name = "status", length = 4)
 	private String Status;
 }

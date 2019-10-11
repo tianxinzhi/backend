@@ -44,6 +44,7 @@ public class Base implements Serializable{
         private long updateBy;
 
 
+        // Y - avaliable , N - deleted
         @Column(name = "active",length = 4)
         private String active;
 }

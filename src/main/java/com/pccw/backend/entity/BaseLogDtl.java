@@ -37,10 +37,16 @@ public class BaseLogDtl extends Base {
 	private String dtlSubin;
 
 	// W - waiting LIS to handle / D - Done
-	@Column(name = "status", length = 4)
-	private String status;
+	@Column(name = "lis_status", length = 4)
+	private String lisStatus;
 
 	// result from LIS
-	@Column(name = "result", length = 512)
-	private String result;
+	@Column(name = "lis_result", length = 512)
+	private String lisResult;
+
+	// AVL(available)/DEM(demo)/RES(reserve)/ARE(ao_reserve)
+	// FAU(faulty) 
+	// INT(ondelivery/intransit) 
+	@Column(name = "status", length = 4)
+	private String Status;
 }

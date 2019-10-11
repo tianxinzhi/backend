@@ -35,4 +35,8 @@ public class DbResItem extends Base {
 	
 	@Column(name = "item_name", length = 32)
 	private String itemName;
+
+	// A - avaliable, S - saled
+	@Column(name = "item_status", length = 4)
+	private String itemStatus;
 }

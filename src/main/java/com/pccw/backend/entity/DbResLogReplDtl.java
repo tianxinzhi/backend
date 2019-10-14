@@ -5,7 +5,7 @@ import javax.persistence.*;
 
 
 /**
- * ROR = RESOURCE ORDER REQUEST
+ * ROR = RESOURCE ORDER REQUES
  */
 @Data
 @Entity
@@ -25,5 +25,9 @@ public class DbResLogReplDtl extends BaseLogDtl {
 	
 	@Column(name="dtl_qty")
 	private long dtlQty;
+
+	@ManyToOne
+	@JoinColumn(name = "db_res_log_repl_id",foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+	private DbResLogRepl dbResLogRepl;
 
 }

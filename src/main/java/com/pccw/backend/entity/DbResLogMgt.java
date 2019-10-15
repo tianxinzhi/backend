@@ -2,6 +2,7 @@ package com.pccw.backend.entity;
 
 import lombok.Data;
 import javax.persistence.*;
+import java.util.List;
 
 
 /**
@@ -23,6 +24,8 @@ public class DbResLogMgt extends BaseLog {
 	@Column(name="log_repo_out")
 	private long logRepoOut;
 
-
+	@OneToMany(cascade = CascadeType.PERSIST)
+	@JoinColumn(name = "log_mgt_id")
+    private List<DbResLogMgtDtl> dtlList;
 
 }

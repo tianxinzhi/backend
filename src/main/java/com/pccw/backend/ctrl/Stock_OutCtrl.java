@@ -1,44 +1,29 @@
 package com.pccw.backend.ctrl;
 
 
+import com.pccw.backend.bean.JsonResult;
+import com.pccw.backend.bean.stock_out.CreateBean;
+import com.pccw.backend.entity.DbResLogMgt;
+import com.pccw.backend.repository.ResLogMgtRepository;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
 
 @Slf4j
 @RestController
 @RequestMapping("/stock_out")
 @CrossOrigin(methods = RequestMethod.POST,origins = "*", allowCredentials = "false")
-public class Stock_OutCtrl {
+public class Stock_OutCtrl  extends BaseCtrl<DbResLogMgt> {
 
-	// @Autowired
-	// private ResSkuRepoRepository repo;
+    @Autowired
+    private ResLogMgtRepository repo;
 
+    @ApiOperation(value="创建stock_out",tags={"stock_out"},notes="说明")
+    @RequestMapping(method = RequestMethod.POST,path="/create")
+    public JsonResult create(@RequestBody CreateBean b){
+        return this.create(repo, DbResLogMgt.class, b);
+    }
 
-	// /**
-	//  * 
-	//  * @param sc
-	//  * @return
-	//  * @throws IllegalArgumentException
-	//  * @throws IllegalAccessException
-	//  */
-	// @RequestMapping(method=RequestMethod.POST,path="/search")
-	// public JsonResult<DbResSkuRepo> test(@RequestBody SearchCondition sc)
-	//  {
-	//     try {
-	// 		Specification<DbResSkuRepo> spec = Convertor.<DbResSkuRepo,SearchCondition>convertSpecification(SearchCondition.class,sc);
-	// 		List<DbResSkuRepo> res =repo.findAll(spec,PageRequest.of(sc.getPageIndex(),sc.getPageSize())).getContent();
-
-	// 		// List<DbResRepo> r = repoTest.findAll();
-	// 		// log.info(r.toString());
-
-	// 		return JsonResult.success(res);
-	// 	} catch (Exception e) {
-	// 		// log.error(e, t);
-	// 		return JsonResult.fail();
-	// 	}
-	// }
 }

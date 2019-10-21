@@ -53,7 +53,7 @@ public class MasterFile_SpecCtrl extends BaseCtrl<DbResSpec> {
         return this.edit(repo, DbResSpec.class, b);
     }
 
- /*   @RequestMapping(method = RequestMethod.POST,path="/test")
+/*    @RequestMapping(method = RequestMethod.POST,path="/test")
     public JsonResult test(@RequestBody EditBean b){
         log.info(b.toString());
         try {

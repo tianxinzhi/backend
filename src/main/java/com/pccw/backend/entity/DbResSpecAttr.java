@@ -29,10 +29,10 @@ public class DbResSpecAttr extends Base{
 	@Column(name = "attr_value_id", columnDefinition = "number(11)")
 	private String attrValueId;
 
-	@JsonBackReference
+	/*@JsonBackReference
 	@JoinColumn(name = "spec_id")
 	@ManyToOne(targetEntity = DbResSpec.class,fetch = FetchType.LAZY,cascade = CascadeType.PERSIST)
-	private DbResSpec resSpec;
+	private DbResSpec resSpec;*/
 
 
 }

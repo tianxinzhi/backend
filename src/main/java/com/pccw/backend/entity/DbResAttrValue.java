@@ -13,8 +13,12 @@ import java.util.List;
 @Entity
 @Table(name = "res_attr_value")
 @Data
+@SequenceGenerator(name="id_attrValue",sequenceName = "attrValue_seq",allocationSize = 1)
 public class DbResAttrValue extends Base{
-
+	@Id
+	@Column(name = "id")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "id_attrValue")
+	private Long id;
 
 
 	//@ManyToOne

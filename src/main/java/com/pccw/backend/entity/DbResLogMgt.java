@@ -10,8 +10,12 @@ import javax.persistence.*;
 @Data
 @Entity
 @Table(name = "res_log_mgt")
+@SequenceGenerator(name="id_logMgt",sequenceName = "logMgt_seq",allocationSize = 1)
 public class DbResLogMgt extends BaseLog {
-	
+	@Id
+	@Column(name = "id")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "id_logMgt")
+	private Long id;
 
 
 

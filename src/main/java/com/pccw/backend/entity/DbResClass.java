@@ -1,23 +1,32 @@
 package com.pccw.backend.entity;
 
 import java.util.List;
+import java.util.Set;
 
 
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
-
+import lombok.Getter;
+import lombok.Setter;
 
 
 /**
  * class => category of sku
  */
 
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "res_class")
+@SequenceGenerator(name="id_class",sequenceName = "class_seq",allocationSize = 1)
 public class  DbResClass extends Base {
-
+	@Id
+	@Column(name = "id")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "id_class")
+	private Long id;
 	
 
 
@@ -33,9 +42,13 @@ public class  DbResClass extends Base {
 	@Column(name = "class_desc", length = 128)
 	private String classDesc;
 
-
+//	@JsonIgnore
+//	@JsonIgnoreProperties(value = { "classList" })
 //	@ManyToMany(mappedBy = "classList")
 //	private List<DbResType> typeList;
+
+	@OneToMany(cascade={CascadeType.ALL},mappedBy = "classs",orphanRemoval = true)
+	List<DbResClassType> relationOfTypeClass;
 	
 
 }

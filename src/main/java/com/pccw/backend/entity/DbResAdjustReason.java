@@ -13,8 +13,12 @@ import java.util.List;
 @Entity
 @Table(name = "res_adjust_reason")
 @Data
+@SequenceGenerator(name="id_adjustReason",sequenceName = "adjustReason_seq",allocationSize = 1)
 public class DbResAdjustReason extends Base{
-
+	@Id
+	@Column(name = "id")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "id_adjustReason")
+	private Long id;
 	// @Id
 	// @GeneratedValue
 	// @Column(columnDefinition = "number(11)")

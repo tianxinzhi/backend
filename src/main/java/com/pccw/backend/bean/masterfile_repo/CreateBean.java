@@ -27,5 +27,8 @@ public class CreateBean extends BaseBean {
 
     @ApiModelProperty(value="areaId",name="areaId",example="")
     private Long areaId;
+
+    @ApiModelProperty(value="仓库类型",name="repoType",example="")
+    private String repoType;
     
 }

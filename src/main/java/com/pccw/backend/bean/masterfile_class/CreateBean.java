@@ -2,10 +2,13 @@ package com.pccw.backend.bean.masterfile_class;
 
 
 import com.pccw.backend.bean.BaseBean;
+import com.pccw.backend.entity.DbResClassType;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 /**
  * SearchCondition
@@ -29,5 +32,7 @@ public class CreateBean extends BaseBean{
     
     @ApiModelProperty(value="是否有效",name="active",example="")
     private String active;
+
+    private List<DbResClassType> ClassTypeList;
     
 }

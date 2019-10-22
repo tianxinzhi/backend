@@ -10,10 +10,14 @@ import java.util.List;
 @Data
 @Entity
 @Table(name = "res_log_repl")
+@SequenceGenerator(name="id_repl",sequenceName = "repl_seq",allocationSize = 1)
 public class DbResLogRepl extends BaseLog {
-	
 
 
+	@Id
+	@Column(name = "id")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "id_repl")
+	private Long id;
 
 	// BatchId
 	@Column(name="log_batchId")

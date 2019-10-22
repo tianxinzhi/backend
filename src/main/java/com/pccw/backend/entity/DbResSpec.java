@@ -15,8 +15,12 @@ import javax.persistence.*;
 @Data
 @Entity
 @Table(name = "res_spec")
+@SequenceGenerator(name="id_spec",sequenceName = "spec_seq",allocationSize = 1)
 public class DbResSpec extends Base {
-
+	@Id
+	@Column(name = "id")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "id_spec")
+	private Long id;
 
 	@Column(name = "spec_name",length = 64)
 	private String specName;

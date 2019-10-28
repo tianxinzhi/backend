@@ -3,6 +3,8 @@ package com.pccw.backend.bean.masterfile_type;
 
 import com.pccw.backend.bean.BaseBean;
 import com.pccw.backend.entity.DbResClass;
+import com.pccw.backend.entity.DbResClassType;
+import com.pccw.backend.entity.DbResTypeSkuSpec;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -33,7 +35,12 @@ public class CreateBean extends BaseBean{
     @ApiModelProperty(value="类型描述",name="typeDesc",example="")
     private String typeDesc;
 
-    private Long classId;
+    private long classId;
 
-    private List<DbResClass> classList;
+    private long specId;
+
+//    private List<DbResClass> classList;
+    private List<DbResClassType> ClassTypeList;
+
+    private DbResTypeSkuSpec dbResTypeSkuSpec;
 }

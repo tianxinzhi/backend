@@ -14,7 +14,12 @@ import lombok.Data;
  @Entity
  @Data
  @Table(name="res_role")
+ @SequenceGenerator(name="id_role",sequenceName = "role_seq",allocationSize = 1)
 public class DbResRole extends Base {
+    @Id
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "id_role")
+    private Long id;
 
     @Column(name="role_name")
     private String roleName;

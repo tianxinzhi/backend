@@ -3,12 +3,7 @@ package com.pccw.backend.entity;
 import java.io.Serializable;
 
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import lombok.Data;
 
@@ -22,11 +17,13 @@ import lombok.Data;
 @Data
 @Entity
 @Table(name = "res_item")
+@SequenceGenerator(name="id_item",sequenceName = "item_seq",allocationSize = 1)
 public class DbResItem extends Base {
 	
 	
 	@Id
-	@GeneratedValue		
+	@Column(name = "id")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "id_item")
 	private Long id;
 	
 	

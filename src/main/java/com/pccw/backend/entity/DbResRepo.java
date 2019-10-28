@@ -58,5 +58,6 @@ public class DbResRepo extends Base {
 	@Column(name = "repo_addr", length = 512)
 	private String repoAddr;
 
-
+	@Column(name = "repo_type", length = 11)
+	private String repoType;
 }

@@ -2,6 +2,8 @@ package com.pccw.backend.ctrl;
 
 import com.pccw.backend.bean.JsonResult;
 import com.pccw.backend.bean.stock_in.CreateBean;
+import com.pccw.backend.bean.stock_in.EditBean;
+import com.pccw.backend.bean.stock_in.SearchBean;
 import com.pccw.backend.entity.DbResLogMgt;
 import com.pccw.backend.repository.ResStockInRepository;
 import io.swagger.annotations.Api;
@@ -27,5 +29,15 @@ public class Stock_InCtrl extends BaseCtrl<DbResLogMgt>{
 //        System.out.println("attrValue:"+bean);
 //        System.out.println("attrValue:"+bean);
         return this.create(rsipo,DbResLogMgt.class,bean);
+    }
+
+    @RequestMapping(method = RequestMethod.POST,path="/search")
+    public JsonResult search(@RequestBody SearchBean bean){
+        return this.search(rsipo,bean);
+    }
+
+    @RequestMapping(method = RequestMethod.POST,path="/edit")
+    public JsonResult edit(@RequestBody EditBean bean){
+        return this.edit(rsipo,DbResLogMgt.class,bean);
     }
 }

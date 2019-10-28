@@ -57,8 +57,9 @@ public class MasterFile_TypeCtrl extends BaseCtrl<DbResType> {
                     BeanUtils.copyProperties(type, searchBean);
                     if(type.getDbResTypeSkuSpec() != null){
                         searchBean.setSpecId(type.getDbResTypeSkuSpec().getSpecId());
-                        Optional<DbResSpec> spec1 = resSpecRepository.findById(type.getDbResTypeSkuSpec().getSpecId());
-                        searchBean.setSpecName(spec1.get().getSpecName());
+//                        Optional<DbResSpec> spec1 = resSpecRepository.findById(type.getDbResTypeSkuSpec().getSpecId());
+                        DbResSpec sp = repo.findBySpecId(type.getDbResTypeSkuSpec().getSpecId());
+                        searchBean.setSpecName(sp.getSpecName());
                         searchBean.setAttrData(specSearch(searchBean.getSpecId()).getData());
                     }
                     if(type.getRelationOfTypeClass() != null && type.getRelationOfTypeClass().size() > 0){

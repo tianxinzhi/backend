@@ -3,8 +3,6 @@ package com.pccw.backend.ctrl;
 
 import com.pccw.backend.bean.JsonResult;
 import com.pccw.backend.bean.stock_out.CreateBean;
-import com.pccw.backend.bean.stock_out.EditBean;
-import com.pccw.backend.bean.stock_out.SearchBean;
 import com.pccw.backend.entity.DbResLogMgt;
 import com.pccw.backend.repository.ResLogMgtRepository;
 import io.swagger.annotations.ApiOperation;

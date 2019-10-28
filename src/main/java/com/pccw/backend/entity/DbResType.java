@@ -1,6 +1,8 @@
 package com.pccw.backend.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -45,7 +47,10 @@ public class DbResType extends Base {
 //	private List<DbResClass> classList;
 
 	@OneToMany(cascade={CascadeType.ALL},mappedBy = "type",orphanRemoval = true)
-	List<DbResClassType> relationOfTypeClass;
+	private List<DbResClassType> relationOfTypeClass;
+
+	@OneToOne(cascade = {CascadeType.ALL},mappedBy = "type")
+	private DbResTypeSkuSpec dbResTypeSkuSpec;
 
 
 }

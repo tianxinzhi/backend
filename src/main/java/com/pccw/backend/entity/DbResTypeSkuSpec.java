@@ -1,6 +1,10 @@
 package com.pccw.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 
@@ -18,14 +22,21 @@ public class DbResTypeSkuSpec extends Base {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "id_tsp")
 	private Long id;
 
-	@Column(name = "type_id",length = 64)
-	private long typeId;
+//	@Column(name = "type_id",length = 64)
+//	private long typeId;
 
 	@Column(name="sku_id",length = 512)
 	private long skuId;
 
 	@Column(name="spec_id",length = 512)
 	private long specId;
+
+	@OneToOne
+	@JsonBackReference
+	@JoinColumn(name = "type_id")
+	private DbResType type;
+
+
 
 
 

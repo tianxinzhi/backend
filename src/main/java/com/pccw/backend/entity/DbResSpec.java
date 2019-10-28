@@ -1,5 +1,6 @@
 package com.pccw.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 import org.springframework.lang.Nullable;
 
@@ -39,6 +40,7 @@ public class DbResSpec extends Base {
 			inverseJoinColumns = { @JoinColumn(name = "type_id") })
 	    private Set<DbResType> resTypeSpecList;*/
 
-
+//	@OneToMany(cascade = {CascadeType.ALL},mappedBy = "spec")
+//	private List<DbResTypeSkuSpec> ResTypeSkuSpecList;
 
 }

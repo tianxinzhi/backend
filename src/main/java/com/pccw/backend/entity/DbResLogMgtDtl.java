@@ -32,6 +32,6 @@ public class DbResLogMgtDtl extends BaseLogDtl {
 	@JsonBackReference
 	@JoinColumn(name = "log_mgt_id")
 	@ManyToOne(targetEntity = DbResLogMgt.class)
-	private DbResLogMgt logMgt;
+	private DbResLogMgt resLogMgt;
 
 }

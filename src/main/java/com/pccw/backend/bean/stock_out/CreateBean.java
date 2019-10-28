@@ -41,7 +41,7 @@ public class CreateBean extends BaseBean {
     private String remark;
 
     @ApiModelProperty(value="dtlList",name="dtlList",example="")
-    private List<DbResLogMgtDtl> dtlList;
+    private List<DbResLogMgtDtl> line;
 
 
 }

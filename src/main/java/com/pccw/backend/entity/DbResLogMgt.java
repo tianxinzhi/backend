@@ -28,6 +28,6 @@ public class DbResLogMgt extends BaseLog {
 	@JsonManagedReference
 	@OneToMany(cascade = CascadeType.ALL)  //ALL  PERSIST
 	@JoinColumn(name = "log_mgt_id")
-    private List<DbResLogMgtDtl> dtlList;
+    private List<DbResLogMgtDtl> line;
 
 }

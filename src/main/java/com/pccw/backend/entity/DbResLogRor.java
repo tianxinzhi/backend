@@ -12,7 +12,6 @@ import javax.persistence.*;
 @Table(name = "res_log_ror")
 @SequenceGenerator(name="id_logRor",sequenceName = "logRor_seq",allocationSize = 1)
 public class DbResLogRor extends BaseLog {
-
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "id_logRor")
@@ -33,5 +32,8 @@ public class DbResLogRor extends BaseLog {
     // N(normal) / A(Advance Order)
     @Column(name="log_orderType",length = 1)
     private String logOrderType;
+
+
+
 
 }

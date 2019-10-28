@@ -3,6 +3,8 @@ package com.pccw.backend.ctrl;
 
 import com.pccw.backend.bean.JsonResult;
 import com.pccw.backend.bean.stock_out.CreateBean;
+import com.pccw.backend.bean.stock_out.EditBean;
+import com.pccw.backend.bean.stock_out.SearchBean;
 import com.pccw.backend.entity.DbResLogMgt;
 import com.pccw.backend.repository.ResLogMgtRepository;
 import io.swagger.annotations.ApiOperation;
@@ -25,5 +27,20 @@ public class Stock_OutCtrl  extends BaseCtrl<DbResLogMgt> {
     public JsonResult create(@RequestBody CreateBean b){
         return this.create(repo, DbResLogMgt.class, b);
     }
+
+
+   /* @ApiOperation(value="查询spec",tags={"masterfile_spec"},notes="说明")
+    @RequestMapping(method = RequestMethod.POST,path="/search")
+    public JsonResult search(@RequestBody SearchBean b) {
+        log.info(b.toString());
+        return this.search(repo,  b);
+    }
+
+    @ApiOperation(value="查询spec",tags={"masterfile_spec"},notes="说明")
+    @RequestMapping(method = RequestMethod.POST,path="/edit")
+    public JsonResult edit(@RequestBody EditBean b){
+        log.info(b.toString());
+        return this.edit(repo, DbResLogMgt.class, b);
+    }*/
 
 }

@@ -42,4 +42,6 @@ public class CreateBean extends BaseBean {
 
     @ApiModelProperty(value="dtlList",name="dtlList",example="")
     private List<DbResLogMgtDtl> dtlList;
+
+
 }

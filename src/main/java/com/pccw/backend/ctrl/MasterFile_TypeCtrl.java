@@ -154,8 +154,18 @@ public class MasterFile_TypeCtrl extends BaseCtrl<DbResType> {
             relationOfTypeClass.add(dbResClassType);
             //更新数据到res_type_sku_spec表
             DbResTypeSkuSpec dbResTypeSkuSpec = dbResType.getDbResTypeSkuSpec();
-            dbResTypeSkuSpec.setUpdateAt(t);
-            dbResTypeSkuSpec.setSpecId(b.getSpecId());
+            if (dbResTypeSkuSpec != null){
+                dbResTypeSkuSpec.setUpdateAt(t);
+                dbResTypeSkuSpec.setSpecId(b.getSpecId());
+            }else{
+                DbResTypeSkuSpec dts = new DbResTypeSkuSpec();
+                dts.setCreateAt(t);
+                dts.setUpdateAt(t);
+                dts.setActive("Y");
+                dts.setSpecId(b.getSpecId());
+                dts.setType(dbResType);
+                dbResType.setDbResTypeSkuSpec(dts);
+            }
             repo.saveAndFlush(dbResType);
             return JsonResult.success(Arrays.asList());
         } catch (Exception e) {

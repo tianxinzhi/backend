@@ -1,14 +1,7 @@
 package com.pccw.backend.entity;
 
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-
-import javax.persistence.Id;
-
-import javax.persistence.Table;
-
+import javax.persistence.*;
 
 
 import lombok.Data;
@@ -23,8 +16,12 @@ import lombok.Data;
 @Entity
 @Table(name = "res_sku_repo")
 @Data
+@SequenceGenerator(name="id_skuRepo",sequenceName = "skuRepo_seq",allocationSize = 1)
 public class DbResSkuRepo extends Base{
-
+	@Id
+	@Column(name = "id")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "id_skuRepo")
+	private Long id;
 	
 	@Column(name = "sku_id")
 	private Long skuId;

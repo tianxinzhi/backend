@@ -4,10 +4,15 @@ package com.pccw.backend.bean.masterfile_type;
 import com.pccw.backend.annotation.PredicateAnnotation;
 import com.pccw.backend.annotation.PredicateType;
 import com.pccw.backend.bean.BaseSearchBean;
+import com.pccw.backend.entity.DbResClassType;
+import com.pccw.backend.entity.DbResTypeSkuSpec;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * SearchCondition
@@ -37,5 +42,14 @@ public class SearchBean extends BaseSearchBean {
     @ApiModelProperty(value="类型描述",name="typeDesc",example="")
     @PredicateAnnotation(type = PredicateType.LIKE)
     private String typeDesc;
+
+    private long id;
+    private long specId;
+    private String specName;
+    private long classId;
+    private String className;
+    private List<DbResClassType> relationOfTypeClass;
+    private DbResTypeSkuSpec dbResTypeSkuSpec;
+    private List<Map> attrData;
     
 }

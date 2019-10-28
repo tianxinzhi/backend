@@ -13,7 +13,13 @@ import javax.persistence.*;
 @Entity
 @Table(name = "res_attr_attr_value")
 @Data
+@SequenceGenerator(name="id_attrValue",sequenceName = "attrValue_seq",allocationSize = 1)
 public class DbResAttrAttrValue extends Base{
+
+	@Id
+	@Column(name = "id")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "id_attrValue")
+	private Long id;
 
 	@ManyToOne
 	@JoinColumn(name = "attr_id" )

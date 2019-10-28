@@ -17,7 +17,12 @@ import lombok.Data;
 @Entity
 @Table(name = "res_sku")
 @Data
+@SequenceGenerator(name="id_sku",sequenceName = "sku_seq",allocationSize = 1)
 public class DbResSku extends Base{
+	@Id
+	@Column(name = "id")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "id_sku")
+	private Long id;
 
 	@Column(name = "class_id")
 	private String classId;

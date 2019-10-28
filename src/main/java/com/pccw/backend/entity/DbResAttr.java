@@ -15,8 +15,12 @@ import java.util.List;
 @Table(name = "res_attr")
 //@org.hibernate.annotations.Table(appliesTo = "res_attr",comment = "")
 @Data
+@SequenceGenerator(name="id_attr",sequenceName = "attr_seq",allocationSize = 1)
 public class DbResAttr extends Base{
-
+	@Id
+	@Column(name = "id")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "id_attr")
+	private Long id;
 
 //	@Column(name = "attr_name",columnDefinition = "varchar2(64)")
 //	private String attrName;

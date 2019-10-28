@@ -2,12 +2,15 @@ package com.pccw.backend.bean.masterfile_spec;
 
 
 import com.pccw.backend.bean.BaseBean;
+import com.pccw.backend.entity.DbResAttrValue;
+import com.pccw.backend.entity.DbResSpecAttr;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.sql.Date;
+import java.util.List;
 
 /**
  * SearchCondition
@@ -30,5 +33,7 @@ public class CreateBean extends BaseBean {
     @ApiModelProperty(value="是否有效",name="active",example="")
     private String active;
 
-    
+    @ApiModelProperty(value="dtlList",name="dtlList",example="")
+    private List<DbResSpecAttr> resSpecAttrList;
+
 }

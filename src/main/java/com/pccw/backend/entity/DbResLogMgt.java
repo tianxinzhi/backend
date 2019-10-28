@@ -1,5 +1,6 @@
 package com.pccw.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 import javax.persistence.*;
 import java.util.List;
@@ -24,8 +25,9 @@ public class DbResLogMgt extends BaseLog {
 	@Column(name="log_repo_out")
 	private long logRepoOut;
 
-	@OneToMany(cascade = CascadeType.PERSIST)
+	@JsonManagedReference
+	@OneToMany(cascade = CascadeType.ALL)  //ALL  PERSIST
 	@JoinColumn(name = "log_mgt_id")
-	private List<DbResLogMgtDtl> line;
+    private List<DbResLogMgtDtl> line;
 
 }

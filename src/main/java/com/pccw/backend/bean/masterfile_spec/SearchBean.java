@@ -4,10 +4,13 @@ package com.pccw.backend.bean.masterfile_spec;
 import com.pccw.backend.annotation.PredicateAnnotation;
 import com.pccw.backend.annotation.PredicateType;
 import com.pccw.backend.bean.BaseSearchBean;
+import com.pccw.backend.entity.DbResSpecAttr;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 /**
  * SearchCondition
@@ -30,5 +33,5 @@ public class SearchBean extends BaseSearchBean {
     @ApiModelProperty(value="是否有效",name="active",example="")
     private String active;
 
-    
+
 }

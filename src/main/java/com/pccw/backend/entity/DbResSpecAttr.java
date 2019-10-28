@@ -1,8 +1,10 @@
 package com.pccw.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.util.List;
 
 
 /**
@@ -20,8 +22,8 @@ public class DbResSpecAttr extends Base{
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "id_specAttr")
 	private Long id;
 
-	@Column(name = "spec_id",columnDefinition = "number(11)")
-	private String specId;
+//	@Column(name = "spec_id",columnDefinition = "number(11)")
+//	private String specId;
 
 	@Column(name = "ver_id", columnDefinition = "varchar(16)")
 	private String verId;
@@ -32,12 +34,10 @@ public class DbResSpecAttr extends Base{
 	@Column(name = "attr_value_id", columnDefinition = "number(11)")
 	private String attrValueId;
 
-// 	@ManyToMany
-//     @JoinTable(name="res_sku_repo",
-//       		joinColumns = { @JoinColumn(name = "sku_id", referencedColumnName = "id") },
-//       		inverseJoinColumns = { @JoinColumn(name = "repo_id", referencedColumnName = "id") }
-//    )
-// 	private List<DbResRepo> repos;
+	/*@JsonBackReference
+	@JoinColumn(name = "spec_id")
+	@ManyToOne(targetEntity = DbResSpec.class,fetch = FetchType.LAZY,cascade = CascadeType.PERSIST)
+	private DbResSpec resSpec;*/
 
 
 }

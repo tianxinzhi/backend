@@ -1,5 +1,6 @@
 package com.pccw.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
 import javax.persistence.*;
 
@@ -32,6 +33,7 @@ public class DbResLogMgtDtl extends BaseLogDtl {
 	@Column(name="dtl_qty")
 	private long dtlQty;
 
+	@JsonBackReference
 	@JoinColumn(name = "log_mgt_id")
 	@ManyToOne(targetEntity = DbResLogMgt.class)
 	private DbResLogMgt resLogMgt;

@@ -8,11 +8,17 @@ import com.pccw.backend.bean.masterfile_spec.EditBean;
 import com.pccw.backend.bean.masterfile_spec.SearchBean;
 import com.pccw.backend.entity.DbResSpec;
 import com.pccw.backend.repository.ResSpecRepository;
+import com.pccw.backend.util.Convertor;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.*;
 
 /**
  * MF_RepoCtrl
@@ -31,13 +37,29 @@ public class MasterFile_SpecCtrl extends BaseCtrl<DbResSpec> {
     @ApiOperation(value="查询spec",tags={"masterfile_spec"},notes="说明")
     @RequestMapping(method = RequestMethod.POST,path="/search")
     public JsonResult search(@RequestBody SearchBean b) {
-        log.info(b.toString());
-        return this.search(repo,  b);
-       /* try {
-            return JsonResult.success(repo.findTest());
+
+        try {
+            Specification specification = Convertor.convertSpecification(b);
+            List<DbResSpec> res =repo.findAll(specification, PageRequest.of(b.getPageIndex(),b.getPageSize())).getContent();
+            ArrayList<com.pccw.backend.bean.masterfile_spec.SearchBean> dbResSpec = new ArrayList<>();
+            if(res != null && res.size() > 0){
+                for (DbResSpec spec:res){
+                    SearchBean searchBean = new SearchBean();
+                    BeanUtils.copyProperties(spec, searchBean);
+                    if(spec.getResSpecAttrList() != null){
+                        searchBean.setAttrData(specSearch(spec.getId()).getData());
+                    }
+                    dbResSpec.add(searchBean);
+                }
+            }
+            return JsonResult.success(dbResSpec);
         } catch (Exception e) {
+            log.info(e.getMessage());
             return JsonResult.fail(e);
-        }*/
+        }
+//        log.info(b.toString());
+//        return this.search(repo,  b);
+
     }
 
     @ApiOperation(value="删除spec",tags={"masterfile_spec"},notes="说明")
@@ -70,14 +92,35 @@ public class MasterFile_SpecCtrl extends BaseCtrl<DbResSpec> {
         }
     }
 
-/*    @RequestMapping(method = RequestMethod.POST,path="/test")
-    public JsonResult test(@RequestBody EditBean b){
-        log.info(b.toString());
+    public JsonResult specSearch(@RequestBody long id) {
         try {
-            return JsonResult.success(repo.findTest());
+            List<Map> list = new ArrayList<>();
+            List<Map> attrList= repo.attrSearch(id);
+            for(Map m:attrList){
+                if(m.get("attrValue") != null){
+                    String attrValue = m.get("attrValue").toString();
+                    List attrValueList = new ArrayList();
+                    if(attrValue.contains(",")){
+                        attrValueList = Arrays.asList(attrValue.split(","));
+                    }else {
+                        attrValueList.add(m.get("attrValue"));
+                    }
+                    HashMap<Object, Object> hm = new HashMap<>();
+                    hm.put("attrName",m.get("attrName"));
+                    hm.put("attrValue",attrValueList);
+                    list.add(hm);
+                }
+            }
+            return JsonResult.success(list);
         } catch (Exception e) {
             return JsonResult.fail(e);
         }
-    }*/
+    }
+
+    @RequestMapping(method = RequestMethod.POST,path="/test")
+    public JsonResult test(@RequestBody SearchBean b){
+                log.info(b.toString());
+         return this.search(repo,  b);
+    }
 
 }

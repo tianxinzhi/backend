@@ -11,6 +11,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * SearchCondition
@@ -33,5 +34,8 @@ public class SearchBean extends BaseSearchBean {
     @ApiModelProperty(value="是否有效",name="active",example="")
     private String active;
 
+    private List<Map> attrData;
+
+    private List<DbResSpecAttr> resSpecAttrList;
 
 }

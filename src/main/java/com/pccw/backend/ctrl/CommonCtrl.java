@@ -43,22 +43,22 @@ public class CommonCtrl  {
     ResRepoRepository repo_repo;
     @Autowired
     ResAttrAttrValueRepository attr_attr_value_repo;
-    //?
-//    @RequestMapping(method = RequestMethod.GET,path="/rightModule")
-//    public JsonResult<CommonBean> search() {
-//        try {
-//            List<DbResRight> list =  right_repo.findAll();
-//            List<CommonBean> res = list.stream().map(r->{
-//                return new CommonBean(r.getId(),r.getRightPid(),r.getRightName());
-//            }).collect(Collectors.toList());
-//            res.add(0, new CommonBean(0L, -1L, "SMP"));
-//            // res.add(0, new CommonBean(1L, 0L, "Left"));
-//            // res.add(0, new CommonBean(2L, 0L, "Right"));
-//            return JsonResult.success(res);
-//        } catch (Exception e) {
-//            return JsonResult.fail(e);
-//        }
-//    }
+
+    @RequestMapping(method = RequestMethod.GET,path="/rightModule")
+    public JsonResult<CommonBean> search() {
+        try {
+            List<DbResRight> list =  right_repo.findAll();
+            List<CommonBean> res = list.stream().map(r->{
+                return new CommonBean(r.getId(),r.getRightPid(),r.getRightName());
+            }).collect(Collectors.toList());
+            res.add(0, new CommonBean(0L, -1L, "SMP"));
+            // res.add(0, new CommonBean(1L, 0L, "Left"));
+            // res.add(0, new CommonBean(2L, 0L, "Right"));
+            return JsonResult.success(res);
+        } catch (Exception e) {
+            return JsonResult.fail(e);
+        }
+    }
 
     @RequestMapping(method = RequestMethod.GET,path="/skuModule")
     public JsonResult<LabelAndValue> searchSku() {

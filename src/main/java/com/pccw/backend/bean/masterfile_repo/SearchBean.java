@@ -34,6 +34,10 @@ public class SearchBean extends BaseSearchBean {
     @ApiModelProperty(value="areaId",name="areaId",example="")
     private String areaId;
 
+    @PredicateAnnotation(type = PredicateType.LIKE)
+    @ApiModelProperty(value="仓库类型",name="repoType",example="")
+    private String repoType;
+
     //private String rightDesc;
     
 }

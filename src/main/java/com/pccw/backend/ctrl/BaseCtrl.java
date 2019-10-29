@@ -78,7 +78,7 @@ public class BaseCtrl<T>{
             T entity = cls.newInstance();
             BeanUtils.copyProperties(b, entity);
             log.info(entity.toString());
-            repo.<T>saveAndFlush(entity); 
+            repo.<T>saveAndFlush(entity);
         } catch (Exception e) {
             throw e;
         }

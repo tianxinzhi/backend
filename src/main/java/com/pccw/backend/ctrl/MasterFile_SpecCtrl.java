@@ -33,6 +33,11 @@ public class MasterFile_SpecCtrl extends BaseCtrl<DbResSpec> {
     public JsonResult search(@RequestBody SearchBean b) {
         log.info(b.toString());
         return this.search(repo,  b);
+       /* try {
+            return JsonResult.success(repo.findTest());
+        } catch (Exception e) {
+            return JsonResult.fail(e);
+        }*/
     }
 
     @ApiOperation(value="删除spec",tags={"masterfile_spec"},notes="说明")
@@ -53,7 +58,19 @@ public class MasterFile_SpecCtrl extends BaseCtrl<DbResSpec> {
         return this.edit(repo, DbResSpec.class, b);
     }
 
- /*   @RequestMapping(method = RequestMethod.POST,path="/test")
+
+    @ApiOperation(value="查询spec",tags={"masterfile_spec"},notes="说明")
+    @RequestMapping(method = RequestMethod.POST,path="/editById")
+    public JsonResult editById(@RequestBody SearchBean b){
+        log.info(b.toString());
+        try {
+            return JsonResult.success(repo.findById(1L));
+        } catch (Exception e) {
+            return JsonResult.fail(e);
+        }
+    }
+
+/*    @RequestMapping(method = RequestMethod.POST,path="/test")
     public JsonResult test(@RequestBody EditBean b){
         log.info(b.toString());
         try {

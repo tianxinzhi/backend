@@ -12,8 +12,12 @@ import javax.persistence.*;
 @Data
 @Entity
 @Table(name = "res_account")
+@SequenceGenerator(name="id_account",sequenceName = "account_seq",allocationSize = 1)
 public class DbResAccount extends Base {
-
+	@Id
+	@Column(name = "id")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "id_account")
+	private Long id;
 	// @Id
 	// @GeneratedValue
 	// @Column(columnDefinition = "number(11)")

@@ -1,13 +1,10 @@
 package com.pccw.backend.bean.masterfile_attr;
 
 import com.pccw.backend.bean.BaseBean;
-import com.pccw.backend.entity.DbResAttrValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -20,9 +17,9 @@ public class CreateBean extends BaseBean {
     @ApiModelProperty(value="属性详情",name="attrDesc",example="")
     private String attrDesc;
 
-    @ApiModelProperty(value="属性值类型",name="attrValueType",example="")
-    private String attrValueType;
+    @ApiModelProperty(value="属性值",name="attrValue",example="")
+    private String[] attrValue;
 
-    @ApiModelProperty(value="是否有效",name="active",example="")
-    private String active;
+//    @ApiModelProperty(value="是否有效",name="active",example="")
+//    private String active;
 }

@@ -11,8 +11,11 @@ import com.pccw.backend.repository.ResClassRepository;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.*;
 
 /**
  * AuthRightCtrl
@@ -50,6 +53,15 @@ public class MasterFile_ClassCtrl extends BaseCtrl<DbResClass> {
     @ApiOperation(value="编辑class",tags={"masterfile_class"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST, path = "/edit")
     public JsonResult edit(@RequestBody EditBean b) {
-        return this.edit(repo, DbResClass.class, b);
+        try {
+            Optional<DbResClass> opt = repo.findById(b.getId());
+            DbResClass dbResClass = opt.get();
+            b.setUpdateAt(new Date().getTime());
+            BeanUtils.copyProperties(b, dbResClass);
+            repo.saveAndFlush(dbResClass);
+            return JsonResult.success(Arrays.asList());
+        } catch (Exception e) {
+            return JsonResult.fail(e);
+        }
     }
 }

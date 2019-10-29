@@ -57,6 +57,8 @@ public class MasterFile_ClassCtrl extends BaseCtrl<DbResClass> {
             Optional<DbResClass> opt = repo.findById(b.getId());
             DbResClass dbResClass = opt.get();
             b.setUpdateAt(new Date().getTime());
+            b.setCreateAt(dbResClass.getCreateAt());
+            b.setActive(dbResClass.getActive());
             BeanUtils.copyProperties(b, dbResClass);
             repo.saveAndFlush(dbResClass);
             return JsonResult.success(Arrays.asList());

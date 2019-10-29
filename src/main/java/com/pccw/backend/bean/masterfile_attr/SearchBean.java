@@ -17,12 +17,12 @@ public class SearchBean extends BaseSearchBean {
     @ApiModelProperty(value="属性名称",name="attrName",example="")
     private String attrName;
 
-    @PredicateAnnotation(type = PredicateType.LIKE)
-    @ApiModelProperty(value="属性值类型",name="attrValueType",example="")
-    private String attrValueType;
+//    @PredicateAnnotation(type = PredicateType.LIKE)
+//    @ApiModelProperty(value="属性值",name="attrValue",example="")
+//    private String attrValue;
 
-    @PredicateAnnotation(type = PredicateType.LIKE)
-    @ApiModelProperty(value="是否有效",name="active",example="")
-    private String active;
+//    @PredicateAnnotation(type = PredicateType.LIKE)
+//    @ApiModelProperty(value="是否有效",name="active",example="")
+//    private String active;
 
 }

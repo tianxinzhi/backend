@@ -11,17 +11,18 @@ import com.pccw.backend.entity.DbResSkuAttrValue;
 import com.pccw.backend.entity.DbResSkuType;
 import com.pccw.backend.repository.ResSkuRepository;
 import com.pccw.backend.repository.ResSkuTypeRepository;
+import com.pccw.backend.util.Convertor;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @RestController
@@ -129,8 +130,6 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> {
             }
         }
 
-        sku.setSkuAttrValueList(skuAttrValueList);
-        sku.setSkuTypeList(skuTypeList);
         skuRepo.saveAndFlush(sku);
 
         return JsonResult.success(Arrays.asList());
@@ -140,11 +139,30 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> {
     @RequestMapping(method = RequestMethod.POST,value = "/search")
     public JsonResult search(@RequestBody SearchBean bean) throws Exception{
         //System.out.println("skuSearch:"+bean);
-//        Specification<DbResSku> spec = Convertor.<DbResSku>convertSpecification(bean);
-//        List<DbResSku> attrList = skuRepo.findAll(spec, PageRequest.of(bean.getPageIndex(),bean.getPageSize())).getContent();
-//
-//        return  JsonResult.success(Arrays.asList());
-        return this.search(skuRepo,bean);
+        Specification<DbResSku> spec = Convertor.<DbResSku>convertSpecification(bean);
+        List<DbResSku> skuList = skuRepo.findAll(spec, PageRequest.of(bean.getPageIndex(),bean.getPageSize())).getContent();
+        List<ResultBean> skuResultBeans = new LinkedList<>();
+        for (DbResSku sku : skuList) {
+            EditBean ebean = new EditBean();
+            ebean.setId(sku.getId());
+            JsonResult typeResult =  skuSearch(ebean);
+
+            ResultBean resultBean = (ResultBean) typeResult.getData().get(0);
+            BeanUtils.copyProperties(sku,resultBean);
+
+            List<Map> attrDataMap = new LinkedList<>();
+            for (int i=0;i<resultBean.getAttrNames().length;i++) {
+                Map<String,Object> map = new HashMap<>();
+                map.put("attrName",resultBean.getAttrNames()[i]);
+                map.put("attrValue",resultBean.getAttrValueNames().get(i));
+
+                attrDataMap.add(map);
+            }
+            resultBean.setAttrData(attrDataMap);
+            skuResultBeans.add(resultBean);
+        }
+        return  JsonResult.success(skuResultBeans);
+        //return this.search(skuRepo,bean);
     }
 
     @ApiOperation(value="type下拉框",tags={"masterfile_sku"},notes="注意问题点")

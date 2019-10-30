@@ -26,7 +26,7 @@ public class CreateBean extends BaseBean {
     private long spec;
 
     @ApiModelProperty(value="attrs",name="attr值",example="[2，3]")
-    private int[] attrs;
+    private long[] attrs;
 
     @ApiModelProperty(value="attrValueList",name="attrValue值",example="{[4,5],[4,6]}")
     private List<int[]> attrValueList;

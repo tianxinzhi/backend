@@ -1,16 +1,29 @@
 package com.pccw.backend.bean.masterfile_sku;
 
+import com.pccw.backend.bean.BaseBean;
+import com.pccw.backend.entity.DbResSku;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.context.annotation.Bean;
 
 import java.util.List;
+import java.util.Map;
 
 @Data
 @NoArgsConstructor
 @ApiModel(value="Sku模块 - SkuResultBean",description="sku搜索结果")
-public class ResultBean {
+public class ResultBean extends BaseBean {
+
+    @ApiModelProperty(value="skuId",name="id",example="")
+    private long id;
+
+    @ApiModelProperty(value="skuCode",name="sku编码",example="")
+    private String skuCode;
+
+    @ApiModelProperty(value="skuDesc",name="sku详情",example="")
+    private String skuDesc;
 
     @ApiModelProperty(value="spec",name="spec",example="1")
     private long type;
@@ -35,4 +48,6 @@ public class ResultBean {
 
     @ApiModelProperty(value="attrValueNames",name="attrValueNames",example="[['red','green'],['red','blue']]")
     private List<String[]> attrValueNames;
+
+    private List<Map> attrData;
 }

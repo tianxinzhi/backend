@@ -138,7 +138,7 @@ public class CommonCtrl  {
         try {
             List<DbResClass> list =  class_repo.findAll();
             List<LabelAndValue> res = list.stream().map(r->{
-                return new LabelAndValue(r.getId(),r.getClassName(),null);
+                return new LabelAndValue(r.getId(),r.getClassName(),r.getParentClassId());
             }).collect(Collectors.toList());
             return JsonResult.success(res);
         } catch (Exception e) {

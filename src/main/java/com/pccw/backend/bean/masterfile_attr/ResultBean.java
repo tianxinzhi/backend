@@ -11,6 +11,9 @@ import lombok.NoArgsConstructor;
 @ApiModel(value="Attr模块 - EditBean",description="attr搜索返回的结果")
 public class ResultBean extends BaseBean {
 
+    @ApiModelProperty(value="id",name="id",example="1")
+    private long id;
+
     @ApiModelProperty(value="属性值",name="attrName",example="color")
     private String attrName;
 

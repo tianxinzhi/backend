@@ -19,5 +19,12 @@ public class SearchBean extends BaseSearchBean {
 
     @PredicateAnnotation(type = PredicateType.LIKE)
     private String roleName;
-    
+
+    private String roleDesc;
+
+    private long id;
+
+    private long[] rightId;
+
+    private String[] rightName;
 }

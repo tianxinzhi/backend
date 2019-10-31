@@ -26,6 +26,6 @@ public class LogMgtBean extends BaseBean {
     private long createDate;
 
     @ApiModelProperty(value="dtls",name="交易明细",example="")
-    private List<LogMgtDtlBean> dtls;
+    private List<LogMgtDtlBean> line;
 
 }

@@ -10,6 +10,7 @@ import com.pccw.backend.bean.LabelAndValue;
 import com.pccw.backend.entity.*;
 import com.pccw.backend.repository.*;
 
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,6 +45,7 @@ public class CommonCtrl  {
     @Autowired
     ResAttrAttrValueRepository attr_attr_value_repo;
 
+    @ApiOperation(value="获取res_right表的信息",tags={"common"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.GET,path="/rightModule")
     public JsonResult<CommonBean> search() {
         try {
@@ -60,6 +62,7 @@ public class CommonCtrl  {
         }
     }
 
+    @ApiOperation(value="获取res_sku表的skuCode和id信息",tags={"common"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.GET,path="/skuModule")
     public JsonResult<LabelAndValue> searchSku() {
         try {
@@ -73,6 +76,7 @@ public class CommonCtrl  {
         }
     }
 
+    @ApiOperation(value="获取res_spec表的SpecName和id信息",tags={"common"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.GET,path="/specModule")
     public JsonResult<LabelAndValue> searchSpec() {
         try {
@@ -86,6 +90,7 @@ public class CommonCtrl  {
         }
     }
 
+    @ApiOperation(value="获取res_type表的TypeName和id信息",tags={"common"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.GET,path="/typeModule")
     public JsonResult<LabelAndValue> searchType() {
         try {
@@ -99,6 +104,7 @@ public class CommonCtrl  {
         }
     }
 
+    @ApiOperation(value="获取res_attr表的AttrName和id信息",tags={"common"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.GET,path="/attrModule")
     public JsonResult<LabelAndValue> searchAttr() {
         try {
@@ -112,6 +118,7 @@ public class CommonCtrl  {
         }
     }
 
+    @ApiOperation(value="获取res_attr_value表的AttrValue和id信息",tags={"common"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.GET,path="/attrValueModule")
     public JsonResult<LabelAndValue> searchAttrValue() {
         try {
@@ -125,12 +132,13 @@ public class CommonCtrl  {
         }
     }
 
+    @ApiOperation(value="获取res_class表的ClassName和id信息",tags={"common"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.GET,path="/classValueModule")
     public JsonResult<LabelAndValue> searchClass() {
         try {
             List<DbResClass> list =  class_repo.findAll();
             List<LabelAndValue> res = list.stream().map(r->{
-                return new LabelAndValue(r.getId(),r.getClassName(),null);
+                return new LabelAndValue(r.getId(),r.getClassName(),r.getParentClassId());
             }).collect(Collectors.toList());
             return JsonResult.success(res);
         } catch (Exception e) {
@@ -138,6 +146,7 @@ public class CommonCtrl  {
         }
     }
 
+    @ApiOperation(value="获取res_repo表的RepoCode，RepoType，id信息",tags={"common"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.GET,path="/repoModule")
     public JsonResult<LabelAndValue> searchRepo(){
         try {
@@ -151,6 +160,7 @@ public class CommonCtrl  {
         }
     }
 
+    @ApiOperation(value="获取res_attr_attr_value表的AttrId和AttrValueId信息",tags={"common"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.GET,path="/attratrrvalueModule")
     public JsonResult<LabelAndValue> searchAttrAttrValue(){
         try {

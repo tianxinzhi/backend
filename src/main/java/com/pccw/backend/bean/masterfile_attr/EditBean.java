@@ -10,4 +10,6 @@ import lombok.NoArgsConstructor;
 public class EditBean extends CreateBean {
 
     private Long id;
+
+    private long[] ids;
 }

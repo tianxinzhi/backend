@@ -10,6 +10,7 @@ import com.pccw.backend.repository.ResLogMgtRepository;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,15 +46,16 @@ public class Stock_AdjustmentCtrl extends BaseCtrl<DbResLogMgt> {
 //        ent.setUpdateBy(1);
 
         List<DbResLogMgtDtl> lstMgtDtl = new LinkedList<>();
-        for(LogMgtDtlBean dtl:bean.getDtls()) {
+        for(LogMgtDtlBean dtl:bean.getLine()) {
             DbResLogMgtDtl mgtDtl = new DbResLogMgtDtl();
-            mgtDtl.setDtlSkuId(dtl.getSku());
-            mgtDtl.setDtlItemId(dtl.getItem());
-            mgtDtl.setDtlRepoId(dtl.getRepo());
-            mgtDtl.setDtlQty(dtl.getQty());
+//            mgtDtl.setDtlSkuId(dtl.getDtlSkuId());
+//            mgtDtl.setDtlItemId(dtl.getItem());
+//            mgtDtl.setDtlRepoId(dtl.getRepo());
+//            mgtDtl.setDtlQty(dtl.getQty());
+            BeanUtils.copyProperties(dtl, mgtDtl);
             mgtDtl.setLogTxtBum(bean.getTransactionNumber());
             //mgtDtl.setDtlLogId();
-            mgtDtl.setDtlAction(dtl.getQty()>0 ? StaticVariable.DTLACTION_ADD : StaticVariable.DTLACTION_DEDUCT);
+            mgtDtl.setDtlAction(dtl.getDtlQty()>0 ? StaticVariable.DTLACTION_ADD : StaticVariable.DTLACTION_DEDUCT);
             mgtDtl.setLisStatus(StaticVariable.LISSTATUS_WAITING);
             if(dtl.getCatalog().trim().equalsIgnoreCase("Good")){
                 mgtDtl.setDtlSubin(StaticVariable.DTLSUBIN_GOOD);

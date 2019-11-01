@@ -54,7 +54,7 @@ public class MasterFile_AttrCtrl extends BaseCtrl<DbResAttr> {
 //        attr.setUpdateBy(1);
         List<DbResAttrAttrValue> attrAttrValueList = new LinkedList<>();
 
-        for(String value:bean.getAttrValue()){
+        for(String value:bean.getAttrValues()){
             DbResAttrAttrValue attrAttrValue = new DbResAttrAttrValue();
             DbResAttrValue attrValue = new DbResAttrValue();
             attrValue.setId(Long.parseLong(value));
@@ -87,7 +87,7 @@ public class MasterFile_AttrCtrl extends BaseCtrl<DbResAttr> {
         resAttr.setUpdateAt(System.currentTimeMillis());
         List<DbResAttrAttrValue> attrAttrValueList = resAttr.getAttrAttrValueList();
         attrAttrValueList.clear();
-        for(String valueId:b.getAttrValue()){
+        for(String valueId:b.getAttrValues()){
             DbResAttrAttrValue resAttrAttrValue = new DbResAttrAttrValue();
 
             DbResAttrValue attrValue = new DbResAttrValue();
@@ -100,7 +100,7 @@ public class MasterFile_AttrCtrl extends BaseCtrl<DbResAttr> {
             resAttrAttrValue.setAttrValue(attrValue);
             attrAttrValueList.add(resAttrAttrValue);
         }
-        resAttr.setAttrAttrValueList(attrAttrValueList);
+        //resAttr.setAttrAttrValueList(attrAttrValueList);
         repo.saveAndFlush(resAttr);
         return JsonResult.success(Arrays.asList());
         //return this.edit(repo, DbResAttr.class, b);
@@ -122,6 +122,7 @@ public class MasterFile_AttrCtrl extends BaseCtrl<DbResAttr> {
                 attrValues[i] = attrValue.getAttrValue();
                 attrValueIds[i] = attrValue.getId();
             }
+            resultBean.setId(resAttr.getId());
             resultBean.setAttrValueNames(attrValues);
             resultBean.setAttrValues(attrValueIds);
             System.out.println("result:" + resultBean);
@@ -134,20 +135,24 @@ public class MasterFile_AttrCtrl extends BaseCtrl<DbResAttr> {
     @ApiOperation(value="根据attr搜索attrValue",tags={"masterfile_attr"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST,value = "/attrSearch")
     public JsonResult attrSearch(@RequestBody EditBean bean) {
-        DbResAttr attr = repo.findById(bean.getId()).get();
         List<ResultBean> resultBeans = new LinkedList<>();
-        ResultBean resultBean = new ResultBean();
-        BeanUtils.copyProperties(attr,resultBean);
-        String[] attrValues = new String[attr.getAttrAttrValueList().size()];
-        long[] attrValueIds = new long[attr.getAttrAttrValueList().size()];
-        for(int i=0;i<attr.getAttrAttrValueList().size();i++) {
-            DbResAttrValue attrValue = attr.getAttrAttrValueList().get(i).getAttrValue();
-            attrValues[i] = attrValue.getAttrValue();
-            attrValueIds[i] = attrValue.getId();
+        for (long id : bean.getIds()) {
+            DbResAttr attr = repo.findById(id).get();
+
+            ResultBean resultBean = new ResultBean();
+            BeanUtils.copyProperties(attr,resultBean);
+            String[] attrValues = new String[attr.getAttrAttrValueList().size()];
+            long[] attrValueIds = new long[attr.getAttrAttrValueList().size()];
+            for(int i=0;i<attr.getAttrAttrValueList().size();i++) {
+                DbResAttrValue attrValue = attr.getAttrAttrValueList().get(i).getAttrValue();
+                attrValues[i] = attrValue.getAttrValue();
+                attrValueIds[i] = attrValue.getId();
+            }
+            resultBean.setAttrValueNames(attrValues);
+            resultBean.setAttrValues(attrValueIds);
+            resultBeans.add(resultBean);
         }
-        resultBean.setAttrValueNames(attrValues);
-        resultBean.setAttrValues(attrValueIds);
-        resultBeans.add(resultBean);
+
         return JsonResult.success(resultBeans);
     }
 }

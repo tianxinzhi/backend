@@ -12,13 +12,13 @@ import lombok.NoArgsConstructor;
 public class LogMgtDtlBean extends BaseBean {
 
     @ApiModelProperty(value="repo",name="repo",example="")
-    private long repo;
+    private long dtlRepoId;
 
     @ApiModelProperty(value="item",name="item",example="")
-    private long item;
+    private long dtlItemId;
 
     @ApiModelProperty(value="sku",name="sku",example="")
-    private long sku;
+    private long dtlSkuId;
 
     @ApiModelProperty(value="catalog",name="catalog",example="Good/Faulty/Intran")
     private String catalog;
@@ -27,7 +27,7 @@ public class LogMgtDtlBean extends BaseBean {
     private String description;
 
     @ApiModelProperty(value="qty",name="调整数量",example="")
-    private long qty;
+    private long dtlQty;
 
 
 }

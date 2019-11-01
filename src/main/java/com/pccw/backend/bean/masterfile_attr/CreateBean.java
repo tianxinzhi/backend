@@ -18,7 +18,7 @@ public class CreateBean extends BaseBean {
     private String attrDesc;
 
     @ApiModelProperty(value="属性值",name="attrValue",example="")
-    private String[] attrValue;
+    private String[] attrValues;
 
 //    @ApiModelProperty(value="是否有效",name="active",example="")
 //    private String active;

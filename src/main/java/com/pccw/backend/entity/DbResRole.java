@@ -1,10 +1,12 @@
 package com.pccw.backend.entity;
 
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.*;
 
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 
 /**
@@ -34,12 +36,16 @@ public class DbResRole extends Base {
     private String roleFunctionGroup;
     
 
-    @ManyToMany(fetch = FetchType.EAGER)
+ /*   @ManyToMany(fetch = FetchType.EAGER)
         //  @Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE})
-    @JoinTable(name = "res_role_right", 
+    @JoinTable(name = "res_role_right",
     joinColumns = { @JoinColumn(name = "role_id") },
     inverseJoinColumns = { @JoinColumn(name = "right_id") })
-    private Set<DbResRight> rightList;
+    private Set<DbResRight> rightList;*/
 
+    @JsonManagedReference
+    @OneToMany(cascade = CascadeType.ALL,orphanRemoval = true)
+    @JoinColumn(name = "role_id")
+    private List<DbResRoleRight> resRoleRightList;
     
 }

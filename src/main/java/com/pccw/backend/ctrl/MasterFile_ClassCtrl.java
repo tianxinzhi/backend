@@ -13,8 +13,10 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.transaction.Transactional;
 import java.util.*;
 
 /**
@@ -38,18 +40,34 @@ public class MasterFile_ClassCtrl extends BaseCtrl<DbResClass> {
         return this.search(repo, b);
     }
 
+    @Transactional(rollbackOn = Exception.class)
     @ApiOperation(value="删除class",tags={"masterfile_class"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST, path = "/delete")
     public JsonResult delete(@RequestBody BaseDeleteBean ids) {
         return this.delete(repo, ids);
     }
-
+    @Transactional(rollbackOn = Exception.class)
     @ApiOperation(value="创建class",tags={"masterfile_class"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST, path = "/create")
     public JsonResult create(@RequestBody CreateBean b) {
-        return this.create(repo, DbResClass.class, b);
+        try {
+            long t = new Date().getTime();
+            b.setCreateAt(t);
+            b.setUpdateAt(t);
+            b.setActive("Y");
+            if(StringUtils.isEmpty(b.getParentClassId())){
+                b.setParentClassId("0");
+            }
+            DbResClass dbResClass = new DbResClass();
+            BeanUtils.copyProperties(b, dbResClass);
+            repo.saveAndFlush(dbResClass);
+            return JsonResult.success(Arrays.asList());
+        } catch (Exception e) {
+            return JsonResult.fail(e);
+        }
     }
 
+    @Transactional(rollbackOn = Exception.class)
     @ApiOperation(value="编辑class",tags={"masterfile_class"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST, path = "/edit")
     public JsonResult edit(@RequestBody EditBean b) {

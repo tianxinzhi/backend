@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.transaction.Transactional;
 import java.util.*;
 
 /**
@@ -39,12 +40,13 @@ public class MasterFile_ClassCtrl extends BaseCtrl<DbResClass> {
         return this.search(repo, b);
     }
 
+    @Transactional(rollbackOn = Exception.class)
     @ApiOperation(value="删除class",tags={"masterfile_class"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST, path = "/delete")
     public JsonResult delete(@RequestBody BaseDeleteBean ids) {
         return this.delete(repo, ids);
     }
-
+    @Transactional(rollbackOn = Exception.class)
     @ApiOperation(value="创建class",tags={"masterfile_class"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST, path = "/create")
     public JsonResult create(@RequestBody CreateBean b) {
@@ -65,6 +67,7 @@ public class MasterFile_ClassCtrl extends BaseCtrl<DbResClass> {
         }
     }
 
+    @Transactional(rollbackOn = Exception.class)
     @ApiOperation(value="编辑class",tags={"masterfile_class"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST, path = "/edit")
     public JsonResult edit(@RequestBody EditBean b) {

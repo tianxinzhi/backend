@@ -19,6 +19,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.transaction.Transactional;
 import java.util.*;
 
 
@@ -63,8 +64,15 @@ public class MasterFile_TypeCtrl extends BaseCtrl<DbResType> {
                         searchBean.setAttrData(specSearch(searchBean.getSpecId()).getData());
                     }
                     if(type.getRelationOfTypeClass() != null && type.getRelationOfTypeClass().size() > 0){
-                        searchBean.setClassName(type.getRelationOfTypeClass().get(0).getClasss().getClassName());
-                        searchBean.setClassId(type.getRelationOfTypeClass().get(0).getClasss().getId());
+                        List<DbResClassType> relationOfTypeClass = type.getRelationOfTypeClass();
+                        String classNames = "";
+                        List classIds = new ArrayList<>();
+                        for(DbResClassType ct:relationOfTypeClass){
+                            classNames += ct.getClasss().getClassName();
+                            classIds.add(ct.getClasss().getId());
+                        }
+                        searchBean.setClassName(classNames);
+                        searchBean.setClassId(classIds);
                     }
                     dbResTypes.add(searchBean);
                 }
@@ -76,12 +84,14 @@ public class MasterFile_TypeCtrl extends BaseCtrl<DbResType> {
         }
     }
 
+    @Transactional(rollbackOn = Exception.class)
     @ApiOperation(value="删除type",tags={"masterfile_type"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST, path = "/delete")
     public JsonResult delete(@RequestBody BaseDeleteBean ids) {
         return this.delete(repo, ids);
     }
 
+    @Transactional(rollbackOn = Exception.class)
     @ApiOperation(value="创建type",tags={"masterfile_type"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST, path = "/create")
     public JsonResult create(@RequestBody CreateBean b) {
@@ -124,6 +134,7 @@ public class MasterFile_TypeCtrl extends BaseCtrl<DbResType> {
         }
     }
 
+    @Transactional(rollbackOn = Exception.class)
     @ApiOperation(value="编辑type",tags={"masterfile_type"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST, path = "/edit")
     public JsonResult edit(@RequestBody EditBean b) {

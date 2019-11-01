@@ -26,13 +26,13 @@ public class DbResType extends Base {
 	private Long id;
 	
 	
-	@Column(name = "type_code", length = 10)
+	@Column(name = "type_code", length = 32)
 	private String typeCode;
 
 	@Column(name = "type_name", length = 32)
 	private String typeName;
 
-	@Column(name = "sequential",length = 10)
+	@Column(name = "sequential",length = 32)
 	private String sequential;
 
 	@Column(name = "type_desc", length = 512)

@@ -13,6 +13,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -52,6 +53,9 @@ public class MasterFile_ClassCtrl extends BaseCtrl<DbResClass> {
             b.setCreateAt(t);
             b.setUpdateAt(t);
             b.setActive("Y");
+            if(StringUtils.isEmpty(b.getParentClassId())){
+                b.setParentClassId("0");
+            }
             DbResClass dbResClass = new DbResClass();
             BeanUtils.copyProperties(b, dbResClass);
             repo.saveAndFlush(dbResClass);

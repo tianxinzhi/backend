@@ -23,8 +23,8 @@ public class DbResRoleRight extends Base {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "id_roleRight")
 	private Long id;
 
-	@Column(name = "role_id")
-	private Long roleId;
+//	@Column(name = "role_id")
+//	private Long roleId;
 
 
 	@Column(name = "right_id")

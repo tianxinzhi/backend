@@ -47,7 +47,18 @@ public class MasterFile_ClassCtrl extends BaseCtrl<DbResClass> {
     @ApiOperation(value="创建class",tags={"masterfile_class"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST, path = "/create")
     public JsonResult create(@RequestBody CreateBean b) {
-        return this.create(repo, DbResClass.class, b);
+        try {
+            long t = new Date().getTime();
+            b.setCreateAt(t);
+            b.setUpdateAt(t);
+            b.setActive("Y");
+            DbResClass dbResClass = new DbResClass();
+            BeanUtils.copyProperties(b, dbResClass);
+            repo.saveAndFlush(dbResClass);
+            return JsonResult.success(Arrays.asList());
+        } catch (Exception e) {
+            return JsonResult.fail(e);
+        }
     }
 
     @ApiOperation(value="编辑class",tags={"masterfile_class"},notes="注意问题点")

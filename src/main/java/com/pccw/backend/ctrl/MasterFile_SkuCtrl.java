@@ -14,6 +14,7 @@ import com.pccw.backend.repository.ResSkuTypeRepository;
 import com.pccw.backend.util.Convertor;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.NotNull;
 import java.util.*;
 
 @Slf4j
@@ -209,10 +211,10 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> {
         List<String[]> attrValueNames = new LinkedList<>();
         List<String[]> attrValues = new LinkedList<>();
         for (int i = 0; i < types.size(); i++) {
-            attrs[i] = Long.valueOf(types.get(i).get("attr").toString());
-            attrNames[i] = types.get(i).get("attrName").toString();
-            String[] attrValueName = StringUtils.commaDelimitedListToStringArray(types.get(i).get("attrValueName").toString());
-            String[] attrValue = StringUtils.commaDelimitedListToStringArray(types.get(i).get("attrValue").toString());
+            attrs[i] = types.get(i).get("attr") == null ? 0:Long.valueOf(types.get(i).get("attr").toString());
+            attrNames[i] = types.get(i).get("attrName") == null ? "":types.get(i).get("attrName").toString();
+            String[] attrValueName = types.get(i).get("attrValueName") == null ? null:StringUtils.commaDelimitedListToStringArray(types.get(i).get("attrValueName").toString());
+            String[] attrValue = types.get(i).get("attrValue") == null ? null:StringUtils.commaDelimitedListToStringArray(types.get(i).get("attrValue").toString());
             attrValues.add(attrValue);
             attrValueNames.add(attrValueName);
         }

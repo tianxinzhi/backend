@@ -31,5 +31,4 @@ public interface ResSkuRepository extends BaseRepository<DbResSku> {
             "left join RES_ATTR_VALUE t7 on t7.id = t2.attr_value_id " +
             "where T1.sku_id  = :skuId GROUP BY T3.type_name ,T3.id ,t5.spec_name,t5.id ,t6.attr_name ,t6.id ",nativeQuery = true)
     List<Map> getTypeDtlsBySku(long skuId);
-
 }

@@ -19,6 +19,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.transaction.Transactional;
 import java.util.*;
 
 
@@ -63,8 +64,15 @@ public class MasterFile_TypeCtrl extends BaseCtrl<DbResType> {
                         searchBean.setAttrData(specSearch(searchBean.getSpecId()).getData());
                     }
                     if(type.getRelationOfTypeClass() != null && type.getRelationOfTypeClass().size() > 0){
-                        searchBean.setClassName(type.getRelationOfTypeClass().get(0).getClasss().getClassName());
-                        searchBean.setClassId(type.getRelationOfTypeClass().get(0).getClasss().getId());
+                        List<DbResClassType> relationOfTypeClass = type.getRelationOfTypeClass();
+                        String classNames = "";
+                        List classIds = new ArrayList<>();
+                        for(DbResClassType ct:relationOfTypeClass){
+                            classNames += ct.getClasss().getClassName();
+                            classIds.add(ct.getClasss().getId());
+                        }
+                        searchBean.setClassName(classNames);
+                        searchBean.setClassId(classIds);
                     }
                     dbResTypes.add(searchBean);
                 }
@@ -76,28 +84,18 @@ public class MasterFile_TypeCtrl extends BaseCtrl<DbResType> {
         }
     }
 
+    @Transactional(rollbackOn = Exception.class)
     @ApiOperation(value="删除type",tags={"masterfile_type"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST, path = "/delete")
     public JsonResult delete(@RequestBody BaseDeleteBean ids) {
         return this.delete(repo, ids);
     }
 
+    @Transactional(rollbackOn = Exception.class)
     @ApiOperation(value="创建type",tags={"masterfile_type"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST, path = "/create")
     public JsonResult create(@RequestBody CreateBean b) {
         try {
-            //级联添加
-//            long[] classIds = b.getClassId();
-//            if(classIds != null && classIds.length > 0){
-//                for(long cid:classIds){
-//                    DbResClass dbResClass = repo.findByClassID(Long.parseLong(cid));
-//                    classList.add(dbResClass);
-//                }
-//            }
-            List<DbResClass> classList = new ArrayList<DbResClass>();
-            Optional<DbResClass> optional = resClassRepository.findById(b.getClassId());
-            DbResClass dbResClass = optional.get();
-            classList.add(dbResClass);
             long t = new Date().getTime();
             b.setCreateAt(t);
             b.setUpdateAt(t);
@@ -105,14 +103,21 @@ public class MasterFile_TypeCtrl extends BaseCtrl<DbResType> {
             DbResType dbResType = new DbResType();
             BeanUtils.copyProperties(b, dbResType);
             //保存数据到res_type_class表
+            List<Long> classIds = b.getClassId();
             List<DbResClassType> classTypeList = new ArrayList<DbResClassType>();
-            DbResClassType dbResClassType = new DbResClassType();
-            dbResClassType.setClasss(dbResClass);
-            dbResClassType.setType(dbResType);
-            classTypeList.add(dbResClassType);
-            dbResClassType.setCreateAt(t);
-            dbResClassType.setUpdateAt(t);
-            dbResClassType.setActive("Y");
+            if(classIds != null && classIds.size() > 0){
+                for(Long cid:classIds){
+                    Optional<DbResClass> optional = resClassRepository.findById(cid);
+                    DbResClass dbResClass = optional.get();
+                    DbResClassType dbResClassType = new DbResClassType();
+                    dbResClassType.setClasss(dbResClass);
+                    dbResClassType.setType(dbResType);
+                    dbResClassType.setCreateAt(t);
+                    dbResClassType.setUpdateAt(t);
+                    dbResClassType.setActive("Y");
+                    classTypeList.add(dbResClassType);
+                }
+            }
             dbResType.setRelationOfTypeClass(classTypeList);
             //保存数据到res_type_sku_spec表
             DbResTypeSkuSpec dbResTypeSkuSpec = new DbResTypeSkuSpec();
@@ -129,6 +134,7 @@ public class MasterFile_TypeCtrl extends BaseCtrl<DbResType> {
         }
     }
 
+    @Transactional(rollbackOn = Exception.class)
     @ApiOperation(value="编辑type",tags={"masterfile_type"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST, path = "/edit")
     public JsonResult edit(@RequestBody EditBean b) {
@@ -144,15 +150,20 @@ public class MasterFile_TypeCtrl extends BaseCtrl<DbResType> {
             dbResType.setTypeDesc(b.getTypeDesc());
             dbResType.setTypeName(b.getTypeName());
             //更新数据到res_type_class表
-            Optional<DbResClass> optiona2 = resClassRepository.findById(b.getClassId());
-            DbResClass dbResClass = optiona2.get();
-            DbResClassType dbResClassType = new DbResClassType();
-            dbResClassType.setClasss(dbResClass);
-            dbResClassType.setType(dbResType);
-            dbResClassType.setCreateAt(t);
-            dbResClassType.setUpdateAt(t);
-            dbResClassType.setActive("Y");
-            relationOfTypeClass.add(dbResClassType);
+            List<Long> classIds = b.getClassId();
+            if(classIds != null && classIds.size() > 0){
+                for(Long id:classIds){
+                    Optional<DbResClass> optiona2 = resClassRepository.findById(id);
+                    DbResClass dbResClass = optiona2.get();
+                    DbResClassType classType = new DbResClassType();
+                    classType.setClasss(dbResClass);
+                    classType.setType(dbResType);
+                    classType.setCreateAt(t);
+                    classType.setUpdateAt(t);
+                    classType.setActive("Y");
+                    relationOfTypeClass.add(classType);
+                }
+            }
             //更新数据到res_type_sku_spec表
             DbResTypeSkuSpec dbResTypeSkuSpec = dbResType.getDbResTypeSkuSpec();
             if (dbResTypeSkuSpec != null){

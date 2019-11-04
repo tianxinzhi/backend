@@ -134,12 +134,13 @@ public class CommonCtrl  {
 
     @ApiOperation(value="获取res_class表的ClassName和id信息",tags={"common"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.GET,path="/classValueModule")
-    public JsonResult<LabelAndValue> searchClass() {
+    public JsonResult<CommonBean> searchClass() {
         try {
             List<DbResClass> list =  class_repo.findAll();
-            List<LabelAndValue> res = list.stream().map(r->{
-                return new LabelAndValue(r.getId(),r.getClassName(),r.getParentClassId());
+            List<CommonBean> res = list.stream().map(r->{
+                return new CommonBean(r.getId(),Long.parseLong(r.getParentClassId()),r.getClassName());
             }).collect(Collectors.toList());
+            res.add(0,new CommonBean(0L,-1L,"class"));
             return JsonResult.success(res);
         } catch (Exception e) {
             return JsonResult.fail(e);

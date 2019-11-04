@@ -8,11 +8,15 @@ import com.pccw.backend.bean.masterfile_class.EditBean;
 import com.pccw.backend.bean.masterfile_class.SearchBean;
 import com.pccw.backend.entity.DbResClass;
 import com.pccw.backend.repository.ResClassRepository;
+import com.pccw.backend.util.Convertor;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,7 +41,16 @@ public class MasterFile_ClassCtrl extends BaseCtrl<DbResClass> {
     @RequestMapping(method = RequestMethod.POST, path = "/search")
     public JsonResult search(@RequestBody SearchBean b) {
         log.info(b.toString());
-        return this.search(repo, b);
+//        return this.search(repo, b);
+        try {
+            Specification spec = Convertor.convertSpecification(b);
+            Sort sort = new Sort(Sort.Direction.DESC,"id");
+            List<DbResClass> res =repo.findAll(spec, PageRequest.of(b.getPageIndex(),b.getPageSize(),sort)).getContent();
+            return JsonResult.success(res);
+        } catch (Exception e) {
+            log.info(e.getMessage());
+            return JsonResult.fail(e);
+        }
     }
 
     @Transactional(rollbackOn = Exception.class)
@@ -77,6 +90,9 @@ public class MasterFile_ClassCtrl extends BaseCtrl<DbResClass> {
             b.setUpdateAt(new Date().getTime());
             b.setCreateAt(dbResClass.getCreateAt());
             b.setActive(dbResClass.getActive());
+            if(StringUtils.isEmpty(b.getParentClassId())){
+                b.setParentClassId("0");
+            }
             BeanUtils.copyProperties(b, dbResClass);
             repo.saveAndFlush(dbResClass);
             return JsonResult.success(Arrays.asList());

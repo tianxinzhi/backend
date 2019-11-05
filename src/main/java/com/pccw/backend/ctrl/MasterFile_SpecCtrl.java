@@ -18,6 +18,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.SQLOutput;
 import java.util.*;
 
 /**
@@ -71,12 +72,42 @@ public class MasterFile_SpecCtrl extends BaseCtrl<DbResSpec> {
     @ApiOperation(value="创建spec",tags={"masterfile_spec"},notes="说明")
     @RequestMapping(method = RequestMethod.POST,path="/create")
     public JsonResult create(@RequestBody CreateBean b){
+        long t = new Date().getTime();
+        b.setUpdateAt(t);
+        b.setCreateAt(t);
+        for(int i=0;i<b.getResSpecAttrList().size();i++) {
+            b.getResSpecAttrList().get(i).setUpdateAt(t);
+            b.getResSpecAttrList().get(i).setCreateAt(t);
+            b.getResSpecAttrList().get(i).setActive("Y");
+        }
         return this.create(repo, DbResSpec.class, b);
     }
+
+
     @ApiOperation(value="查询spec",tags={"masterfile_spec"},notes="说明")
     @RequestMapping(method = RequestMethod.POST,path="/edit")
     public JsonResult edit(@RequestBody EditBean b){
         log.info(b.toString());
+        long t = new Date().getTime();
+        Optional<DbResSpec> optional = repo.findById(b.getId());
+        DbResSpec dbResSpec = optional.get();
+        b.setUpdateAt(t);
+        b.setCreateAt(dbResSpec.getCreateAt());
+        System.out.println(b.getResSpecAttrList());
+        for(int i=0;i<b.getResSpecAttrList().size();i++) {
+            for(int j=0;j<dbResSpec.getResSpecAttrList().size();j++) {
+                if (dbResSpec.getResSpecAttrList().get(j).getId()==b.getResSpecAttrList().get(i).getId()) {
+                    b.getResSpecAttrList().get(i).setUpdateAt(t);
+                    b.getResSpecAttrList().get(i).setCreateAt(dbResSpec.getResSpecAttrList().get(j).getCreateAt());
+                    b.getResSpecAttrList().get(i).setActive("Y");
+                 }else if(b.getResSpecAttrList().get(i).getId()==null){
+                    b.getResSpecAttrList().get(i).setUpdateAt(t);
+                    b.getResSpecAttrList().get(i).setCreateAt(t);
+                    b.getResSpecAttrList().get(i).setActive("Y");
+                }
+            }
+        }
+
         return this.edit(repo, DbResSpec.class, b);
     }
 

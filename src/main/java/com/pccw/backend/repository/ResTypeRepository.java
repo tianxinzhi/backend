@@ -1,6 +1,5 @@
 package com.pccw.backend.repository;
 
-import com.pccw.backend.entity.DbResClass;
 import com.pccw.backend.entity.DbResSpec;
 import com.pccw.backend.entity.DbResType;
 import com.pccw.backend.entity.DbResTypeSkuSpec;
@@ -21,13 +20,8 @@ public interface ResTypeRepository extends BaseRepository<DbResType> {
            "GROUP BY ra.ATTR_NAME,rsa.SPEC_ID ", nativeQuery = true)
    List<Map> specSearch(@Param("id") long id);
 
-
-   @Query(value = "from DbResTypeSkuSpec where typeId =?1")
-   DbResTypeSkuSpec findTssByTypeId(@Param("id") long id);
-
    @Query(value = "from DbResSpec where id =?1")
    DbResSpec findBySpecId(@Param("id") long id);
-
 
 
 

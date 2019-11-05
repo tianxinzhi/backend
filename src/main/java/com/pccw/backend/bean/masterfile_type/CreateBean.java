@@ -35,7 +35,7 @@ public class CreateBean extends BaseBean{
     @ApiModelProperty(value="类型描述",name="typeDesc",example="")
     private String typeDesc;
 
-    private long classId;
+    private List<Long> classId;
 
     private long specId;
 

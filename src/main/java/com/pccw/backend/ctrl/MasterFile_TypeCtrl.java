@@ -15,8 +15,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
@@ -50,15 +52,15 @@ public class MasterFile_TypeCtrl extends BaseCtrl<DbResType> {
     public JsonResult search(@RequestBody SearchBean b) {
         try {
             Specification spec = Convertor.convertSpecification(b);
-            List<DbResType> res =repo.findAll(spec,PageRequest.of(b.getPageIndex(),b.getPageSize())).getContent();
+            Sort sort = new Sort(Sort.Direction.DESC,"id");
+            List<DbResType> res =repo.findAll(spec,PageRequest.of(b.getPageIndex(),b.getPageSize(),sort)).getContent();
             ArrayList<SearchBean> dbResTypes = new ArrayList<>();
             if(res != null && res.size() > 0){
                 for (DbResType type:res){
                     SearchBean searchBean = new SearchBean();
                     BeanUtils.copyProperties(type, searchBean);
-                    if(type.getDbResTypeSkuSpec() != null){
+                    if(type.getDbResTypeSkuSpec() != null && type.getRelationOfTypeClass().size() > 0){
                         searchBean.setSpecId(type.getDbResTypeSkuSpec().getSpecId());
-//                        Optional<DbResSpec> spec1 = resSpecRepository.findById(type.getDbResTypeSkuSpec().getSpecId());
                         DbResSpec sp = repo.findBySpecId(type.getDbResTypeSkuSpec().getSpecId());
                         searchBean.setSpecName(sp.getSpecName());
                         searchBean.setAttrData(specSearch(searchBean.getSpecId()).getData());
@@ -68,8 +70,11 @@ public class MasterFile_TypeCtrl extends BaseCtrl<DbResType> {
                         String classNames = "";
                         List classIds = new ArrayList<>();
                         for(DbResClassType ct:relationOfTypeClass){
-                            classNames += ct.getClasss().getClassName();
+                            classNames += ct.getClasss().getClassName()+",";
                             classIds.add(ct.getClasss().getId());
+                        }
+                        if(!StringUtils.isEmpty(classNames)){
+                            classNames = classNames.substring(0,classNames.length()-1);
                         }
                         searchBean.setClassName(classNames);
                         searchBean.setClassId(classIds);

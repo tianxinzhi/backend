@@ -1,9 +1,6 @@
 package com.pccw.backend.ctrl;
 
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import com.pccw.backend.bean.auth_role.*;
 import com.pccw.backend.bean.BaseDeleteBean;
@@ -52,22 +49,30 @@ public class Auth_RoleCtrl extends BaseCtrl<DbResRole>{
     public JsonResult search(@ApiParam(name="SearchBean",value="搜索条件",required=true) @RequestBody SearchBean b) {
         try {
         Specification spec = Convertor.convertSpecification(b);
-        List<DbResRole> attrList = repo.findAll(spec,PageRequest.of(b.getPageIndex(),b.getPageSize())).getContent();
+        List<DbResRole> roleList = repo.findAll(spec,PageRequest.of(b.getPageIndex(),b.getPageSize())).getContent();
         List<SearchBean> resultBeans = new LinkedList<>();
-        for (DbResRole resAttr : attrList) {
+        for (DbResRole resRole : roleList) {
+            List<Map> rightList = new ArrayList<>();
             SearchBean resultBean = new SearchBean();
-            BeanUtils.copyProperties(resAttr,resultBean);
-            String[] rightNames = new String[resAttr.getResRoleRightList().size()];
-            long[] rightIds  = new long[resAttr.getResRoleRightList().size()];
-            for(int i=0;i<resAttr.getResRoleRightList().size();i++) {
-                Optional<DbResRight> optional = repoRight.findById(resAttr.getResRoleRightList().get(i).getRightId());
+            BeanUtils.copyProperties(resRole,resultBean);
+            String[] rightNames = new String[resRole.getResRoleRightList().size()];
+            long[] rightIds  = new long[resRole.getResRoleRightList().size()];
+            for(int i=0;i<resRole.getResRoleRightList().size();i++) {
+                Optional<DbResRight> optional = repoRight.findById(resRole.getResRoleRightList().get(i).getRightId());
                 DbResRight resRight = optional.get();
                 rightNames[i] = resRight.getRightName();
                 rightIds[i] = resRight.getId();
+                //详情
+
+                HashMap<Object, Object> hm = new HashMap<>();
+                hm.put("rightName",resRight.getRightName());
+                hm.put("rightUrl",resRight.getRightUrl());
+                rightList.add(hm);
                }
-            resultBean.setId(resAttr.getId());
+            resultBean.setId(resRole.getId());
             resultBean.setRightName(rightNames);
             resultBean.setRightId(rightIds);
+            resultBean.setRightData(rightList);
             System.out.println("result:" + resultBean);
             resultBeans.add(resultBean);
             }

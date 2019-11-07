@@ -140,7 +140,7 @@ public class CommonCtrl  {
             List<CommonBean> res = list.stream().map(r->{
                 return new CommonBean(r.getId(),Long.parseLong(r.getParentClassId()),r.getClassName());
             }).collect(Collectors.toList());
-            res.add(0,new CommonBean(0L,-1L,"class"));
+//            res.add(0,new CommonBean(0L,-1L,"class"));
             return JsonResult.success(res);
         } catch (Exception e) {
             return JsonResult.fail(e);

@@ -14,6 +14,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -34,6 +35,7 @@ public class Stock_ReplenishmentCtrl extends BaseCtrl<DbResLogRepl> {
      * @param b
      * @return
      */
+    @Transactional(rollbackOn = Exception.class)
     @ApiOperation(value="创建replenishment",tags={"stock_replenishment"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST, path = "/create")
     public JsonResult create(@RequestBody CreateReplBean b) {

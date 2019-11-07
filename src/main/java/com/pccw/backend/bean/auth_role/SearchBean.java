@@ -1,6 +1,8 @@
 package com.pccw.backend.bean.auth_role;
 
 import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
 
 import com.pccw.backend.annotation.PredicateAnnotation;
 import com.pccw.backend.annotation.PredicateType;
@@ -27,4 +29,6 @@ public class SearchBean extends BaseSearchBean {
     private long[] rightId;
 
     private String[] rightName;
+
+    private List<Map> rightData;
 }

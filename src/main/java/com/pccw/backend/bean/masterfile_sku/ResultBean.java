@@ -50,4 +50,7 @@ public class ResultBean extends BaseBean {
     private List<String[]> attrValueNames;
 
     private List<Map> attrData;
+
+    //前端展示
+    private Map tableMutiData;
 }

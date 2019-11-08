@@ -1,5 +1,6 @@
 package com.pccw.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -16,6 +17,7 @@ public class DbResSkuAttrValue extends Base {
     private Long id;
 
     @ManyToOne
+    @JsonBackReference
     @JoinColumn(name = "sku_id")
     private DbResSku sku;
 

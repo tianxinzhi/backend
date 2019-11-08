@@ -19,6 +19,9 @@ public class CreateBean extends BaseBean {
     @ApiModelProperty(value="skuDesc",name="sku详情",example="")
     private String skuDesc;
 
+    @ApiModelProperty(value="qty",name="qty",example="")
+    private long qty;
+
     @ApiModelProperty(value="type",name="type",example="")
     private long type;
 

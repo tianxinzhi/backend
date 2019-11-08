@@ -52,6 +52,7 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> {
         DbResSku sku = new DbResSku();
         sku.setSkuCode(bean.getSkuCode());
         sku.setSkuDesc(bean.getSkuDesc());
+        sku.setQty(bean.getQty());
         sku.setActive("Y");
         sku.setCreateAt(System.currentTimeMillis());
         sku.setUpdateAt(System.currentTimeMillis());
@@ -102,6 +103,7 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> {
         DbResSku sku = skuRepo.findById(bean.getId()).get();
         sku.setSkuCode(bean.getSkuCode());
         sku.setSkuDesc(bean.getSkuDesc());
+        sku.setQty(bean.getQty());
         sku.setUpdateAt(System.currentTimeMillis());
 
         List<DbResSkuAttrValue> skuAttrValueList = sku.getSkuAttrValueList();
@@ -113,7 +115,6 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> {
         DbResSkuType skuType = new DbResSkuType();
         skuType.setSku(sku);
         skuType.setTypeId(bean.getType());
-        System.out.println("sku:" + sku.getId() + "type:" + bean.getType());
         skuType.setActive("Y");
         skuType.setCreateAt(System.currentTimeMillis());
         skuType.setUpdateAt(System.currentTimeMillis());
@@ -164,9 +165,9 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> {
 
                     attrDataMap.add(map);
 
-                    DbResAttr attr = attrRepo.findById(resultBean.getAttrs()[i]).get();
+                    DbResAttr attr = resultBean.getAttrs()[i] == 0? null:attrRepo.findById(resultBean.getAttrs()[i]).get();
                     List<LabelAndValue> lbs = new LinkedList<>();
-                    if(attr!=null || attr.getAttrAttrValueList().size()<1) {
+                    if(attr!=null) {
                         for(int k=0;k<attr.getAttrAttrValueList().size();k++) {
                             DbResAttrValue value = attr.getAttrAttrValueList().get(k).getAttrValue();
                             LabelAndValue lb = new LabelAndValue(value.getId(),value.getAttrValue(),null);
@@ -223,9 +224,9 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> {
                 attrValueNames.add(attrValueName);
 
                 //获取attr相关的attrValue
-                DbResAttr attr = attrRepo.findById(attrs[i]).get();
+                DbResAttr attr = attrs[i] == 0 ? null:attrRepo.findById(attrs[i]).get();
                 List<LabelAndValue> lbs = new LinkedList<>();
-                if(attr!=null || attr.getAttrAttrValueList().size()<1) {
+                if(attr!=null) {
                     for(int k=0;k<attr.getAttrAttrValueList().size();k++) {
                         DbResAttrValue value = attr.getAttrAttrValueList().get(k).getAttrValue();
                         LabelAndValue lb = new LabelAndValue(value.getId(),value.getAttrValue(),null);

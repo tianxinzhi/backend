@@ -25,6 +25,9 @@ public class ResultBean extends BaseBean {
     @ApiModelProperty(value="skuDesc",name="sku详情",example="")
     private String skuDesc;
 
+    @ApiModelProperty(value="qty",name="qty",example="")
+    private long qty;
+
     @ApiModelProperty(value="spec",name="spec",example="1")
     private long type;
 

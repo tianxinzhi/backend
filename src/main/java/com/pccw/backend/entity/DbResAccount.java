@@ -18,10 +18,6 @@ public class DbResAccount extends Base {
 	@Column(name = "id")
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "id_account")
 	private Long id;
-	// @Id
-	// @GeneratedValue
-	// @Column(columnDefinition = "number(11)")
-	// private Long id;
 
 	@Column(name = "role_id", columnDefinition = "number(11)")
 	private Long roleId;
@@ -31,8 +27,5 @@ public class DbResAccount extends Base {
 	
 	@Column(name = "account_password", columnDefinition = "varchar(255)")
 	private String accountPassword;
-	
-	// @Column(name = "status", length = 6)	
-	// private String status;
 
 }

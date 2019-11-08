@@ -38,7 +38,7 @@ public class SMPException {
         log.error("==============================");
         return JsonResult.fail(eMsgs);
     }
-    
+
     @ExceptionHandler(Exception.class)
     public JsonResult runtimeExceptionHandler(Exception e) {
         log.error("------------------------------");
@@ -46,7 +46,7 @@ public class SMPException {
         log.error("------------------------------");
         return JsonResult.fail(e);
     }
-    
+
 }
 
 

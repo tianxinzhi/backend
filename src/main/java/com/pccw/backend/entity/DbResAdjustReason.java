@@ -19,14 +19,10 @@ public class DbResAdjustReason extends Base{
 	@Column(name = "id")
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "id_adjustReason")
 	private Long id;
-	// @Id
-	// @GeneratedValue
-	// @Column(columnDefinition = "number(11)")
-	// private Long id;
-
 
 	@Column(name = "adjust_reason_name",length = 64)
 	private String adjustReasonName;
 
-
+	@Column(name = "remark",length = 512)
+	private String remark;
 }

@@ -19,7 +19,10 @@ public class LogMgtBean extends BaseBean {
     @ApiModelProperty(value="transactionNumber",name="交易编码",example="")
     private String transactionNumber;
 
-    @ApiModelProperty(value="logRepoIn",name="来源",example="")
+    @ApiModelProperty(value="logRepoOut",name="From",example="")
+    private long logRepoOut;
+
+    @ApiModelProperty(value="logRepoIn",name="To",example="")
     private long logRepoIn;
 
     @ApiModelProperty(value="createDate",name="创建时间",example="")

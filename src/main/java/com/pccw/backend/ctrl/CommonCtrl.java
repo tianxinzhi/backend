@@ -44,6 +44,12 @@ public class CommonCtrl  {
     ResRepoRepository repo_repo;
     @Autowired
     ResAttrAttrValueRepository attr_attr_value_repo;
+    @Autowired
+    ResAdjustReasonRepository adjustReasonRepository;
+    @Autowired
+    ResRoleRepository roleRepository;
+    @Autowired
+    ResStockTypeRepository stockTypeRepository;
 
     @ApiOperation(value="获取res_right表的信息",tags={"common"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.GET,path="/rightModule")
@@ -168,6 +174,48 @@ public class CommonCtrl  {
             List<Map> list =  attr_attr_value_repo.searchAll();
             List<LabelAndValue> res = list.stream().map(r->{
                 return new LabelAndValue(r.get("ATTR_ID"),r.get("ATTR_VALUE_ID"),null);
+            }).collect(Collectors.toList());
+            return JsonResult.success(res);
+        } catch (Exception e) {
+            return JsonResult.fail(e);
+        }
+    }
+
+    @ApiOperation(value="获取res_adjust_reason表的adjustReasonName和id信息",tags={"common"},notes="注意问题点")
+    @RequestMapping(method = RequestMethod.GET,path="/adjustReasonModule")
+    public JsonResult<LabelAndValue> searchAdjustReason(){
+        try {
+            List<DbResAdjustReason> list =  adjustReasonRepository.findAll();
+            List<LabelAndValue> res = list.stream().map(r->{
+                return new LabelAndValue(r.getId(),r.getAdjustReasonName(),null);
+            }).collect(Collectors.toList());
+            return JsonResult.success(res);
+        } catch (Exception e) {
+            return JsonResult.fail(e);
+        }
+    }
+
+    @ApiOperation(value="获取res_role表的roleName和id信息",tags={"common"},notes="注意问题点")
+    @RequestMapping(method = RequestMethod.GET,path="/roleModule")
+    public JsonResult<LabelAndValue> searchRole(){
+        try {
+            List<DbResRole> list =  roleRepository.findAll();
+            List<LabelAndValue> res = list.stream().map(r->{
+                return new LabelAndValue(r.getId(),r.getRoleName(),null);
+            }).collect(Collectors.toList());
+            return JsonResult.success(res);
+        } catch (Exception e) {
+            return JsonResult.fail(e);
+        }
+    }
+
+    @ApiOperation(value="获取res_stock_type表的stockTypeName和id信息",tags={"common"},notes="注意问题点")
+    @RequestMapping(method = RequestMethod.GET,path="/stockTypeModule")
+    public JsonResult<LabelAndValue> searchStockType(){
+        try {
+            List<DbResStockType> list =  stockTypeRepository.findAll();
+            List<LabelAndValue> res = list.stream().map(r->{
+                return new LabelAndValue(r.getId(),r.getStockTypeName(),null);
             }).collect(Collectors.toList());
             return JsonResult.success(res);
         } catch (Exception e) {

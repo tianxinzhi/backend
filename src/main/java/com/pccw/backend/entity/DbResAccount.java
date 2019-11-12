@@ -1,8 +1,10 @@
 package com.pccw.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.util.List;
 
 
 /**
@@ -19,13 +21,14 @@ public class DbResAccount extends Base {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "id_account")
 	private Long id;
 
-	@Column(name = "role_id", columnDefinition = "number(11)")
-	private Long roleId;
-
-	@Column(name = "account_name", columnDefinition = "varchar(100)")
+	@Column(name = "account_name",length = 255)
 	private String accountName;
 	
-	@Column(name = "account_password", columnDefinition = "varchar(255)")
+	@Column(name = "account_password",length = 512)
 	private String accountPassword;
 
+	@JsonBackReference
+	@JoinColumn(name = "account_id")
+	@OneToMany(cascade = CascadeType.ALL,orphanRemoval = true)
+	private List<DbResAccountRole> accountRoles;
 }

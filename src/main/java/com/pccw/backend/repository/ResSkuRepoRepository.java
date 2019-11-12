@@ -8,7 +8,7 @@ import com.pccw.backend.entity.DbResSkuRepo;
 
 
 
-public interface  ResSkuRepoRepository extends JpaRepository<DbResSkuRepo, Long>,JpaSpecificationExecutor{
+public interface  ResSkuRepoRepository extends BaseRepository<DbResSkuRepo>{
 
     // Page<DbResSkuRepo> findAll(Specification<DbResSkuRepo> spec,Pageable p);
 

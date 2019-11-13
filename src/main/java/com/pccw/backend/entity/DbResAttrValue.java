@@ -34,10 +34,6 @@ public class DbResAttrValue extends Base{
 	@Column(name = "value_to", columnDefinition = "varchar(128)")
 	private String valueTo;
 
-//	@JsonBackReference
-//	@ManyToMany(mappedBy = "attrValueList",cascade = {CascadeType.ALL})
-//	private List<DbResAttr> attrList;
-
 	@JsonBackReference
 	@JsonIgnoreProperties(value = { "attrAttrValueList" })
 	@OneToMany(mappedBy = "attrValue",cascade = CascadeType.PERSIST)

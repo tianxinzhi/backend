@@ -38,18 +38,25 @@ public class StaticVariable {
     public static final String DTLACTION_DEDUCT="D";
 
     public static final String DTLSUBIN_GOOD = "Good";
+    public static final String DTLSUBIN_AVAILABLE = "Available";
     public static final String DTLSUBIN_FAULTY = "Faulty";
-    public static final String DTLSUBIN_INTRAN = "Intran";
+    public static final String DTLSUBIN_INTRANSIT = "Intransit";
+    public static final String DTLSUBIN_RESERVED = "Reserved";
+    public static final String DTLSUBIN_RESERVED_WITH_AO = "Reserved With AO";
+    public static final String DTLSUBIN_DEMO = "Demo";
 
     public static final String LISSTATUS_WAITING = "W";
     public static final String LISSTATUS_DONE = "D";
 
     public static final String STATUS_AVAILABLE = "AVL";
-    public static final String STATUS_DEMO = "DEM";
-    public static final String STATUS_RESERVE = "RES";
-    public static final String STATUS_AO_RESERVE = "ARE";
     public static final String STATUS_FAULTY = "FAU";
-    public static final String STATUS_INTRANSIT = "INT";
+    public static final String STATUS_INTRANSIT = "DEL";
+    public static final String STATUS_RESERVED = "RES";
+    public static final String STATUS_RESERVED_WITH_AO = "RAO";
+    public static final String STATUS_DEMO = "DEM";
+
+
+
 
 
 

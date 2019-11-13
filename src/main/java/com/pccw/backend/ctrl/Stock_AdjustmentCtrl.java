@@ -34,6 +34,7 @@ public class Stock_AdjustmentCtrl extends BaseCtrl<DbResLogMgt> {
         System.out.println("logMgtBean:"+bean);
         DbResLogMgt ent = new DbResLogMgt();
         ent.setLogRepoIn(bean.getLogRepoIn());
+        ent.setLogRepoOut(bean.getLogRepoOut());
         ent.setLogTxtBum(bean.getTransactionNumber());
         ent.setLogType(StaticVariable.LOGTYPE_MANAGEMENT);
         ent.setLogOrderNature(StaticVariable.LOGORDERNATURE_STOCK_TAKE_ADJUSTMENT);
@@ -58,13 +59,13 @@ public class Stock_AdjustmentCtrl extends BaseCtrl<DbResLogMgt> {
             mgtDtl.setDtlAction(dtl.getDtlQty()>0 ? StaticVariable.DTLACTION_ADD : StaticVariable.DTLACTION_DEDUCT);
             mgtDtl.setLisStatus(StaticVariable.LISSTATUS_WAITING);
             if(dtl.getCatalog().trim().equalsIgnoreCase("Good")){
-                mgtDtl.setDtlSubin(StaticVariable.DTLSUBIN_GOOD);
+                mgtDtl.setDtlSubin(StaticVariable.DTLSUBIN_AVAILABLE);
                 mgtDtl.setStatus(StaticVariable.STATUS_AVAILABLE);
             } else if(dtl.getCatalog().trim().equalsIgnoreCase("Faulty")) {
                 mgtDtl.setDtlSubin(StaticVariable.DTLSUBIN_FAULTY);
                 mgtDtl.setStatus(StaticVariable.STATUS_FAULTY);
             } else if (dtl.getCatalog().trim().equalsIgnoreCase("Intran")) {
-                mgtDtl.setDtlSubin(StaticVariable.DTLSUBIN_INTRAN);
+                mgtDtl.setDtlSubin(StaticVariable.DTLSUBIN_INTRANSIT);
                 mgtDtl.setStatus(StaticVariable.STATUS_INTRANSIT);
             }
             mgtDtl.setCreateAt(bean.getCreateDate());

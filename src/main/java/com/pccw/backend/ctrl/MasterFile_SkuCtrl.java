@@ -2,13 +2,13 @@ package com.pccw.backend.ctrl;
 
 import com.pccw.backend.bean.BaseDeleteBean;
 import com.pccw.backend.bean.JsonResult;
+import com.pccw.backend.bean.LabelAndValue;
 import com.pccw.backend.bean.masterfile_sku.CreateBean;
 import com.pccw.backend.bean.masterfile_sku.EditBean;
 import com.pccw.backend.bean.masterfile_sku.SearchBean;
 import com.pccw.backend.bean.masterfile_sku.ResultBean;
-import com.pccw.backend.entity.DbResSku;
-import com.pccw.backend.entity.DbResSkuAttrValue;
-import com.pccw.backend.entity.DbResSkuType;
+import com.pccw.backend.entity.*;
+import com.pccw.backend.repository.ResAttrRepository;
 import com.pccw.backend.repository.ResSkuRepository;
 import com.pccw.backend.repository.ResSkuTypeRepository;
 import com.pccw.backend.util.Convertor;
@@ -39,6 +39,9 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> {
     @Autowired
     ResSkuTypeRepository skuTypeRepo;
 
+    @Autowired
+    ResAttrRepository attrRepo;
+
     @ApiOperation(value="创建sku",tags={"masterfile_sku"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST,value = "/create")
     public JsonResult create(@RequestBody CreateBean bean) {
@@ -49,6 +52,7 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> {
         DbResSku sku = new DbResSku();
         sku.setSkuCode(bean.getSkuCode());
         sku.setSkuDesc(bean.getSkuDesc());
+        sku.setQty(bean.getQty());
         sku.setActive("Y");
         sku.setCreateAt(System.currentTimeMillis());
         sku.setUpdateAt(System.currentTimeMillis());
@@ -99,6 +103,7 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> {
         DbResSku sku = skuRepo.findById(bean.getId()).get();
         sku.setSkuCode(bean.getSkuCode());
         sku.setSkuDesc(bean.getSkuDesc());
+        sku.setQty(bean.getQty());
         sku.setUpdateAt(System.currentTimeMillis());
 
         List<DbResSkuAttrValue> skuAttrValueList = sku.getSkuAttrValueList();
@@ -110,7 +115,6 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> {
         DbResSkuType skuType = new DbResSkuType();
         skuType.setSku(sku);
         skuType.setTypeId(bean.getType());
-        System.out.println("sku:" + sku.getId() + "type:" + bean.getType());
         skuType.setActive("Y");
         skuType.setCreateAt(System.currentTimeMillis());
         skuType.setUpdateAt(System.currentTimeMillis());
@@ -149,6 +153,7 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> {
             ebean.setId(sku.getId());
             JsonResult typeResult =  skuSearch(ebean);
             List<Map> attrDataMap = new LinkedList<>();
+            List<Map> tableDatas = new LinkedList<>();
             if(typeResult.getData()!=null && typeResult.getData().size()>0) {
                 ResultBean resultBean = (ResultBean) typeResult.getData().get(0);
                 BeanUtils.copyProperties(sku,resultBean);
@@ -159,7 +164,34 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> {
                     map.put("attrValue",resultBean.getAttrValueNames().get(i));
 
                     attrDataMap.add(map);
+
+                    DbResAttr attr = resultBean.getAttrs()[i] == 0? null:attrRepo.findById(resultBean.getAttrs()[i]).get();
+                    List<LabelAndValue> lbs = new LinkedList<>();
+                    if(attr!=null) {
+                        for(int k=0;k<attr.getAttrAttrValueList().size();k++) {
+                            DbResAttrValue value = attr.getAttrAttrValueList().get(k).getAttrValue();
+                            LabelAndValue lb = new LabelAndValue(value.getId(),value.getAttrValue(),null);
+                            lbs.add(lb);
+                        }
+                    }
+
+                    Map tableData = new HashMap();
+                    tableData.put("value",resultBean.getAttrValues().get(i));
+                    tableData.put("title",resultBean.getAttrNames()[i]);
+                    tableData.put("name",resultBean.getAttrNames()[i]);
+                    tableData.put("linkValue",resultBean.getAttrs()[i]);
+                    tableData.put("selectMode","tags");
+                    tableData.put("type",10);
+                    tableData.put("options",lbs);
+
+                    tableDatas.add(tableData);
                 }
+                Map tableMutiData = new HashMap();
+                tableMutiData.put("titleName",resultBean.getSpecName());
+                tableMutiData.put("headName",new String[]{"Attr","AttrValue"});
+                tableMutiData.put("tableData",tableDatas);
+
+                resultBean.setTableMutiData(tableMutiData);
                 resultBean.setAttrData(attrDataMap);
                 skuResultBeans.add(resultBean);
             }
@@ -181,22 +213,55 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> {
         String[] attrNames = new String[specs.size()];
         List<String[]> attrValues = new LinkedList<>();
         List<String[]> attrValueNames = new LinkedList<>();
-        for (int i = 0; i < specs.size(); i++) {
-            attrs[i] = specs.get(i).get("attr") == null ? 0:Long.valueOf(specs.get(i).get("attr").toString());
-            attrNames[i] = specs.get(i).get("attrName") == null ? "":specs.get(i).get("attrName").toString();
-            String[] attrValueName = specs.get(i).get("attrValueName") == null ? null:StringUtils.commaDelimitedListToStringArray(specs.get(i).get("attrValueName").toString());
-            String[] attrValue = specs.get(i).get("attrValue") == null ? null:StringUtils.commaDelimitedListToStringArray(specs.get(i).get("attrValue").toString());
-            attrValues.add(attrValue);
-            attrValueNames.add(attrValueName);
-        }
+        List<Map> tableDatas = new LinkedList<>();
         if(specs!=null && specs.size()>0){
+            for (int i = 0; i < specs.size(); i++) {
+                attrs[i] = specs.get(i).get("attr") == null ? 0:Long.valueOf(specs.get(i).get("attr").toString());
+                attrNames[i] = specs.get(i).get("attrName") == null ? "":specs.get(i).get("attrName").toString();
+                String[] attrValueName = specs.get(i).get("attrValueName") == null ? null:StringUtils.commaDelimitedListToStringArray(specs.get(i).get("attrValueName").toString());
+                String[] attrValue = specs.get(i).get("attrValue") == null ? null:StringUtils.commaDelimitedListToStringArray(specs.get(i).get("attrValue").toString());
+                attrValues.add(attrValue);
+                attrValueNames.add(attrValueName);
+
+                //获取attr相关的attrValue
+                DbResAttr attr = attrs[i] == 0 ? null:attrRepo.findById(attrs[i]).get();
+                List<LabelAndValue> lbs = new LinkedList<>();
+                if(attr!=null) {
+                    for(int k=0;k<attr.getAttrAttrValueList().size();k++) {
+                        DbResAttrValue value = attr.getAttrAttrValueList().get(k).getAttrValue();
+                        LabelAndValue lb = new LabelAndValue(value.getId(),value.getAttrValue(),null);
+                        lbs.add(lb);
+                    }
+                }
+
+                Map tableData = new HashMap();
+                tableData.put("value",attrValue);
+                tableData.put("title",attrNames[i]);
+                tableData.put("name",attrNames[i]);
+                tableData.put("linkValue",attrs[i]);
+                tableData.put("selectMode","tags");
+                tableData.put("type",10);
+                tableData.put("options",lbs);
+
+                tableDatas.add(tableData);
+            }
+
+            Map tableMutiData = new HashMap();
+            tableMutiData.put("titleName",specs.get(0).get("specName") == null ? "":specs.get(0).get("specName").toString());
+            tableMutiData.put("headName",new String[]{"Attr","AttrValue"});
+            tableMutiData.put("tableData",tableDatas);
+
             ResultBean skuResult = new ResultBean();
-            skuResult.setSpec(specs.get(0).get("spec") == null ? 0:Long.parseLong(specs.get(0).get("spec").toString()));
+            skuResult.setType(specs.get(0).get("type") == null ? 0:Long.parseLong(specs.get(0).get("type").toString()));
+            skuResult.setTypeName(specs.get(0).get("typeName") == null ? "":specs.get(0).get("typeName").toString());
             skuResult.setSpecName(specs.get(0).get("specName") == null ? "":specs.get(0).get("specName").toString());
+            skuResult.setSpec(specs.get(0).get("spec") == null ? 0:Long.parseLong(specs.get(0).get("spec").toString()));
             skuResult.setAttrs(attrs);
             skuResult.setAttrNames(attrNames);
             skuResult.setAttrValues(attrValues);
             skuResult.setAttrValueNames(attrValueNames);
+            skuResult.setTableMutiData(tableMutiData);
+
             skuResultBeans.add(skuResult);
         }
         return JsonResult.success(skuResultBeans);
@@ -213,15 +278,16 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> {
         String[] attrNames = new String[types.size()];
         List<String[]> attrValueNames = new LinkedList<>();
         List<String[]> attrValues = new LinkedList<>();
-        for (int i = 0; i < types.size(); i++) {
-            attrs[i] = types.get(i).get("attr") == null ? 0:Long.valueOf(types.get(i).get("attr").toString());
-            attrNames[i] = types.get(i).get("attrName") == null ? "":types.get(i).get("attrName").toString();
-            String[] attrValueName = types.get(i).get("attrValueName") == null ? null:StringUtils.commaDelimitedListToStringArray(types.get(i).get("attrValueName").toString());
-            String[] attrValue = types.get(i).get("attrValue") == null ? null:StringUtils.commaDelimitedListToStringArray(types.get(i).get("attrValue").toString());
-            attrValues.add(attrValue);
-            attrValueNames.add(attrValueName);
-        }
         if(types!=null&&types.size()>0){
+            for (int i = 0; i < types.size(); i++) {
+                attrs[i] = types.get(i).get("attr") == null ? 0:Long.valueOf(types.get(i).get("attr").toString());
+                attrNames[i] = types.get(i).get("attrName") == null ? "":types.get(i).get("attrName").toString();
+                String[] attrValueName = types.get(i).get("attrValueName") == null ? null:StringUtils.commaDelimitedListToStringArray(types.get(i).get("attrValueName").toString());
+                String[] attrValue = types.get(i).get("attrValue") == null ? null:StringUtils.commaDelimitedListToStringArray(types.get(i).get("attrValue").toString());
+                attrValues.add(attrValue);
+                attrValueNames.add(attrValueName);
+            }
+
             ResultBean skuResult = new ResultBean();
             skuResult.setType(types.get(0).get("type") == null ? 0:Long.parseLong(types.get(0).get("type").toString()));
             skuResult.setTypeName(types.get(0).get("typeName") == null ? "":types.get(0).get("typeName").toString());
@@ -236,16 +302,4 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> {
         return JsonResult.success(skuResultBeans);
     }
 
-    @ApiOperation(value="eidt 搜索",tags={"masterfile_sku"},notes="注意问题点")
-    @RequestMapping(method = RequestMethod.POST,value = "/editSearch")
-    public JsonResult editSearch(@RequestBody SearchBean bean) {
-
-        DbResSku sku = new DbResSku();
-        sku.setId(bean.getSku());
-        List<DbResSkuType> skuList = new LinkedList<>();
-        DbResSkuType skuType = skuTypeRepo.findBySku(sku);
-        skuList.add(skuType);
-
-        return JsonResult.success(skuList);
-    }
 }

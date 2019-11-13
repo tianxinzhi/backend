@@ -1,14 +1,21 @@
 package com.pccw.backend.ctrl;
 
 
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import com.pccw.backend.bean.JsonResult;
+import com.pccw.backend.bean.ResultRecode;
+import com.pccw.backend.bean.stock_balance.SearchBean;
+import com.pccw.backend.entity.DbResSkuRepo;
+import com.pccw.backend.repository.ResSkuRepoRepository;
+import com.pccw.backend.util.Convertor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.web.bind.annotation.*;
 
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.List;
+import java.util.Map;
 
 
 @Slf4j
@@ -17,8 +24,8 @@ import lombok.extern.slf4j.Slf4j;
 @CrossOrigin(methods = RequestMethod.POST,origins = "*", allowCredentials = "false")
 public class Stock_BalanceCtrl {
 
-	// @Autowired
-	// private ResSkuRepoRepository repo;
+	 @Autowired
+	 private ResSkuRepoRepository repo;
 
 
 	// /**
@@ -44,4 +51,20 @@ public class Stock_BalanceCtrl {
 	// 		return JsonResult.fail();
 	// 	}
 	// }
+
+    @RequestMapping(method=RequestMethod.POST,path="/search")
+     public JsonResult<Map> test(@RequestBody SearchBean sc)
+      {
+         try {
+             log.info(sc.toString());
+             String repoNum = sc.getRepoNum() == null ? "" : sc.getRepoNum();
+             String skuNum = sc.getSkuNum() == null ? "" : sc.getSkuNum();
+             List<Map> res = repo.getStockBalanceInfo(skuNum,repoNum);
+             List<Map> result = ResultRecode.returnResult(res);
+             return JsonResult.success(result);
+     	} catch (Exception e) {
+     		// log.error(e, t);
+     		return JsonResult.fail(e);
+     	}
+     }
 }

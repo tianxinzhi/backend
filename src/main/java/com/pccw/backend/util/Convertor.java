@@ -10,8 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
 import java.sql.Date;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import javax.persistence.criteria.*;
 
@@ -100,4 +99,23 @@ import com.pccw.backend.bean.BaseSearchBean;
 			}
 		};
 	}
+
+	/**将map值全部转换为小写
+	 *
+	 * @param orgMap
+	 * @return
+	 */
+	public static Map<String, Object> transformLowerCase(Map<String, Object> orgMap) {
+		Map<String, Object> resultMap = new HashMap<>();
+		if (orgMap == null || orgMap.isEmpty()) {
+			return resultMap;
+		}
+		Set<String> keySet = orgMap.keySet();
+		for (String key : keySet) {
+			String newKey = key.toLowerCase();
+			resultMap.put(newKey, orgMap.get(key));
+		}
+		return resultMap;
+	}
+
 }

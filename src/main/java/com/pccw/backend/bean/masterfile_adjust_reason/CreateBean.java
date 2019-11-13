@@ -14,4 +14,6 @@ public class CreateBean extends BaseBean {
     @ApiModelProperty(value="调整名",name="adjustReasonName",example="")
     private String adjustReasonName;
 
+    @ApiModelProperty(value="备注",name="remark",example="")
+    private String remark;
 }

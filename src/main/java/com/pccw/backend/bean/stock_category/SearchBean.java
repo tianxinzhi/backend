@@ -20,17 +20,19 @@ public class SearchBean extends BaseSearchBean {
 
     @PredicateAnnotation(type = PredicateType.LIKE)
     @ApiModelProperty(value="商店ID",name="repoId",example="")
-    private String repoId;
+    private Long repoId;
 
     @PredicateAnnotation(type = PredicateType.LIKE)
     @ApiModelProperty(value="skuId",name="skuId",example="")
-    private String skuId;
+    private Long skuId;
 
-    private String repoName;
-    private String skuName;
-    private String stockTypeName;
-    private Long qty;
-    private String skuDesc;
     private Long id;
+    private String repoCode;
+    private String skuCode;
+    private Long stockTypeId;
+    private String stockTypeName;
+    private Integer qty;
+    private String skuDesc;
+
     
 }

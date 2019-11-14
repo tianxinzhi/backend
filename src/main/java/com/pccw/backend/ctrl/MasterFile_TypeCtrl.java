@@ -58,8 +58,10 @@ public class MasterFile_TypeCtrl extends BaseCtrl<DbResType> {
             if(res != null && res.size() > 0){
                 for (DbResType type:res){
                     SearchBean searchBean = new SearchBean();
+                    List typeSkuList = repo.searchTypeInSku(type.getId());
                     BeanUtils.copyProperties(type, searchBean);
-                    if(type.getDbResTypeSkuSpec() != null && type.getRelationOfTypeClass().size() > 0){
+                    searchBean.setTypeSkuList(typeSkuList);
+                    if(type.getDbResTypeSkuSpec() != null){
                         searchBean.setSpecId(type.getDbResTypeSkuSpec().getSpecId());
                         DbResSpec sp = repo.findBySpecId(type.getDbResTypeSkuSpec().getSpecId());
                         searchBean.setSpecName(sp.getSpecName());
@@ -216,6 +218,5 @@ public class MasterFile_TypeCtrl extends BaseCtrl<DbResType> {
             return JsonResult.fail(e);
         }
     }
-
 
 }

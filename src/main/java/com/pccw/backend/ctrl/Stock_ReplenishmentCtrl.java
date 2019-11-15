@@ -2,9 +2,11 @@ package com.pccw.backend.ctrl;
 
 
 import com.pccw.backend.bean.JsonResult;
+import com.pccw.backend.bean.ResultRecode;
 import com.pccw.backend.bean.StaticVariable;
 import com.pccw.backend.bean.stock_replenishment.CreateReplBean;
 import com.pccw.backend.bean.stock_replenishment.CreateReplDtlBean;
+import com.pccw.backend.bean.stock_replenishment.SearchBean;
 import com.pccw.backend.entity.DbResLogRepl;
 import com.pccw.backend.entity.DbResLogReplDtl;
 import com.pccw.backend.repository.ResLogReplRepository;
@@ -15,10 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 
 @Slf4j
@@ -83,4 +82,17 @@ public class Stock_ReplenishmentCtrl extends BaseCtrl<DbResLogRepl> {
         }
     }
 
+    @RequestMapping(method = RequestMethod.POST,path="/searchReplenishmentInfo")
+    public JsonResult searchReplenishmentInfo(@RequestBody SearchBean bean){
+        try {
+            log.info(bean.toString());
+            String batchId = bean.getLogBatchId() == null ? "" : bean.getLogBatchId();
+            String dnNum = bean.getLogDnNum() == null ? "" : bean.getLogDnNum();
+            List res = repo.getReplenishmentInfo(batchId, dnNum);
+            List list = ResultRecode.returnHumpNameForList(res);
+            return JsonResult.success(list);
+        }catch (Exception e){
+            return JsonResult.fail(e);
+        }
+    }
 }

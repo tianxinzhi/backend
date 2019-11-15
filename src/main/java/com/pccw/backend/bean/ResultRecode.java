@@ -26,4 +26,17 @@ public class ResultRecode {
         }
         return resultList;
     }
+
+    /**
+     * 将List中map的key值命名方式格式化为驼峰
+     * @param list
+     * @return
+     */
+    public static List<Map<String, Object>> returnHumpNameForList(List<Map<String, Object>> list) {
+        List<Map<String, Object>> newList = new ArrayList<Map<String, Object>>();
+        for (Map<String, Object> o : list) {
+            newList.add(Convertor.formatHumpName(o));
+        }
+        return newList;
+    }
 }

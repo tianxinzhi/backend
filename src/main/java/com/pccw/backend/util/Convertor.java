@@ -10,8 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
 import java.sql.Date;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import javax.persistence.criteria.*;
 
@@ -100,4 +99,67 @@ import com.pccw.backend.bean.BaseSearchBean;
 			}
 		};
 	}
+
+	/**将map值全部转换为小写
+	 *
+	 * @param orgMap
+	 * @return
+	 */
+	public static Map<String, Object> transformLowerCase(Map<String, Object> orgMap) {
+		Map<String, Object> resultMap = new HashMap<>();
+		if (orgMap == null || orgMap.isEmpty()) {
+			return resultMap;
+		}
+		Set<String> keySet = orgMap.keySet();
+		for (String key : keySet) {
+			String newKey = key.toLowerCase();
+			resultMap.put(newKey, orgMap.get(key));
+		}
+		return resultMap;
+	}
+
+
+	/**
+	 * 将Map中的key由下划线转换为驼峰
+	 * @param map
+	 * @return
+	 */
+	public static Map<String, Object> formatHumpName(Map<String, Object> map) {
+		Map<String, Object> newMap = new HashMap<String, Object>();
+		Iterator<Map.Entry<String, Object>> it = map.entrySet().iterator();
+		while (it.hasNext()) {
+			Map.Entry<String, Object> entry = it.next();
+			String key = entry.getKey();
+			String newKey = toFormatHump(key);
+			newMap.put(newKey, entry.getValue());
+		}
+		return newMap;
+	}
+
+	/**
+	 * 将字符串转由下划线转换为驼峰
+	 * @param colName
+	 * @return
+	 */
+	public static String toFormatHump(String colName) {
+		StringBuffer sb = new StringBuffer();
+		String[] str = colName.toLowerCase().split("_");
+		int i = 0;
+		for (String s : str) {
+			if (s.length() == 1) {
+				s = s.toUpperCase();
+			}
+			i++;
+			if (i == 1) {
+				sb.append(s);
+				continue;
+			}
+			if (s.length() > 0) {
+				sb.append(s.substring(0, 1).toUpperCase());
+				sb.append(s.substring(1));
+			}
+		}
+		return sb.toString();
+	}
+
 }

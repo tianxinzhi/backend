@@ -1,6 +1,8 @@
 package com.pccw.backend.entity;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.List;
@@ -9,10 +11,10 @@ import java.util.List;
 /**
  * res_attr_value => product
  */
-
+@Getter
+@Setter
 @Entity
 @Table(name = "res_stock_type")
-@Data
 @SequenceGenerator(name="id_stockType",sequenceName = "stockType_seq",allocationSize = 1)
 public class DbResStockType extends Base{
 	@Id
@@ -22,6 +24,9 @@ public class DbResStockType extends Base{
 
 	@Column(name = "stocktype_name",length = 64)
 	private String stockTypeName;
+
+	@OneToMany(cascade={CascadeType.ALL},mappedBy = "stockType",orphanRemoval = true)
+	private List<DbResSkuRepo> skuRepoList;
 
 
 }

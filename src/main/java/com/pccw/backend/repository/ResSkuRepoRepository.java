@@ -12,9 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 
-public interface  ResSkuRepoRepository extends JpaRepository<DbResSkuRepo, Long>,JpaSpecificationExecutor{
-
-    // Page<DbResSkuRepo> findAll(Specification<DbResSkuRepo> spec,Pageable p);
+public interface  ResSkuRepoRepository extends BaseRepository<DbResSkuRepo>{
 
     @Query(value = "select ROWNUM id, a.* from (select RS.SKU_DESC description,RS.SKU_CODE sku,RR.REPO_CODE AS store,\n" +
             "sum(nvl(decode(RST.STOCKTYPE_NAME ,'Intransit(DEL)',RSR.QTY),0)) DELQTY,\n" +

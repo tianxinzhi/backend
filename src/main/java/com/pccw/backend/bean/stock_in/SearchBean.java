@@ -10,9 +10,9 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 public class SearchBean extends BaseSearchBean {
-    private long logRepoIn;
+    private String logTxtNum;
 
-    private long logRepoOut;
+//    private long logRepoOut;
 
 //    private List<DbResLogMgtDtl> line;
 }

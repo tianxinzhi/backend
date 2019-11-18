@@ -312,8 +312,6 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> {
             List<Map> types = skuRepo.getTypeDtlsBySku(bean.getId());
             List<ResultBean> skuResultBeans = new LinkedList<>();
 
-            String[] stores = new String[1];
-            String[] storeCodes = new String[1];
             long[] attrs = new long[types.size()];
             String[] attrNames = new String[types.size()];
             List<String[]> attrValueNames = new LinkedList<>();
@@ -330,23 +328,13 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> {
                     attrValueNames.add(attrValueName);
                 }
 
-                if(types.get(0).get("store")!=null){
-                    if(types.get(0).get("store").toString().indexOf(",")>=0) {
-                        stores = StringUtils.commaDelimitedListToStringArray(types.get(0).get("store").toString());
-                        storeCodes = StringUtils.commaDelimitedListToStringArray(types.get(0).get("storeCode").toString());
-                    } else {
-                        stores[0] = types.get(0).get("store").toString();
-                        storeCodes[0] = types.get(0).get("storeCode").toString();
-                    }
-                }
-
                 ResultBean skuResult = new ResultBean();
                 skuResult.setType(types.get(0).get("type") == null ? 0:Long.parseLong(types.get(0).get("type").toString()));
                 skuResult.setTypeName(types.get(0).get("typeName") == null ? "":types.get(0).get("typeName").toString());
                 skuResult.setSpecName(types.get(0).get("specName") == null ? "":types.get(0).get("specName").toString());
                 skuResult.setSpec(types.get(0).get("spec") == null ? 0:Long.parseLong(types.get(0).get("spec").toString()));
-                skuResult.setStores(stores);
-                skuResult.setStoreCodes(storeCodes);
+                skuResult.setStores(types.get(0).get("store")==null ? 0:Long.parseLong(types.get(0).get("store").toString()));
+                skuResult.setStoreCodes(types.get(0).get("storeCode")==null ? "":types.get(0).get("storeCode").toString());
                 skuResult.setQty(types.get(0).get("qty") == null ? 0:Long.parseLong(types.get(0).get("qty").toString()));
                 skuResult.setAttrs(attrs);
                 skuResult.setAttrNames(attrNames);

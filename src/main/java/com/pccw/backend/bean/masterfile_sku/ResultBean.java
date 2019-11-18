@@ -20,10 +20,10 @@ public class ResultBean extends BaseBean {
     private long id;
 
     @ApiModelProperty(value="repo",name="repo",example="")
-    private String[] stores;
+    private long stores;
 
     @ApiModelProperty(value="shopCode",name="shopCode",example="")
-    private String[] storeCodes;
+    private String storeCodes;
 
     @ApiModelProperty(value="skuCode",name="sku编码",example="")
     private String skuCode;

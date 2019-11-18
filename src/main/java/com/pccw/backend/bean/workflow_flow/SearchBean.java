@@ -6,8 +6,12 @@ import com.pccw.backend.annotation.PredicateType;
 import com.pccw.backend.bean.BaseSearchBean;
 
 
+import com.pccw.backend.entity.DbResFlowStep;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * SearchCondition
@@ -19,5 +23,14 @@ public class SearchBean extends BaseSearchBean {
 
     @PredicateAnnotation(type = PredicateType.LIKE)
     private String flowName;
+
+    @PredicateAnnotation(type = PredicateType.LIKE)
+    private String flowDesc;
+
+    private long id;
+
+    private List<Map> stepData;
+
+    private List<DbResFlowStep> resFlowStepList;
     
 }

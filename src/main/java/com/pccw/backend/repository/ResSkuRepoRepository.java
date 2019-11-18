@@ -34,4 +34,8 @@ public interface  ResSkuRepoRepository extends BaseRepository<DbResSkuRepo>{
             "AND RSR.REPO_ID=nvl(:repoNum,RSR.REPO_ID)\n"+
             "GROUP BY RS.SKU_CODE,RR.REPO_CODE,RS.SKU_DESC) a",nativeQuery = true)
     List<Map> getStockBalanceInfo(@Param("skuNum") String skuNum,@Param("repoNum") String repoNum);
+
+    @Query(value = "SELECT * from RES_SKU_REPO rsr where rsr.SKU_ID =?1  and rsr.STOCK_TYPE_ID = ?2",nativeQuery = true)
+    DbResSkuRepo findByRepoIdAndStockTypeId(@Param("id") Long id,
+                                            @Param("stockTypeIdTo") Long stockTypeIdTo);
 }

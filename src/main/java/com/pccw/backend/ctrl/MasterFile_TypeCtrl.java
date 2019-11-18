@@ -55,7 +55,7 @@ public class MasterFile_TypeCtrl extends BaseCtrl<DbResType> {
             Sort sort = new Sort(Sort.Direction.DESC,"id");
             List<DbResType> res =repo.findAll(spec,PageRequest.of(b.getPageIndex(),b.getPageSize(),sort)).getContent();
             ArrayList<SearchBean> dbResTypes = new ArrayList<>();
-            if(res != null && res.size() > 0){
+            if(!Objects.isNull(res) && res.size() > 0){
                 for (DbResType type:res){
                     SearchBean searchBean = new SearchBean();
                     List typeSkuList = repo.searchTypeInSku(type.getId());
@@ -112,7 +112,7 @@ public class MasterFile_TypeCtrl extends BaseCtrl<DbResType> {
             //保存数据到res_type_class表
             List<Long> classIds = b.getClassId();
             List<DbResClassType> classTypeList = new ArrayList<DbResClassType>();
-            if(classIds != null && classIds.size() > 0){
+            if(!Objects.isNull(classIds) && classIds.size() > 0){
                 for(Long cid:classIds){
                     Optional<DbResClass> optional = resClassRepository.findById(cid);
                     DbResClass dbResClass = optional.get();
@@ -158,7 +158,7 @@ public class MasterFile_TypeCtrl extends BaseCtrl<DbResType> {
             dbResType.setTypeName(b.getTypeName());
             //更新数据到res_type_class表
             List<Long> classIds = b.getClassId();
-            if(classIds != null && classIds.size() > 0){
+            if(!Objects.isNull(classIds) && classIds.size() > 0){
                 for(Long id:classIds){
                     Optional<DbResClass> optiona2 = resClassRepository.findById(id);
                     DbResClass dbResClass = optiona2.get();
@@ -173,7 +173,7 @@ public class MasterFile_TypeCtrl extends BaseCtrl<DbResType> {
             }
             //更新数据到res_type_sku_spec表
             DbResTypeSkuSpec dbResTypeSkuSpec = dbResType.getDbResTypeSkuSpec();
-            if (dbResTypeSkuSpec != null){
+            if (!Objects.isNull(dbResTypeSkuSpec)){
                 dbResTypeSkuSpec.setUpdateAt(t);
                 dbResTypeSkuSpec.setSpecId(b.getSpecId());
             }else{
@@ -199,7 +199,7 @@ public class MasterFile_TypeCtrl extends BaseCtrl<DbResType> {
             List<Map> list = new ArrayList<>();
             List<Map> attrList= repo.specSearch(id);
                 for(Map m:attrList){
-                    if(m.get("attrValue") != null){
+                    if(!Objects.isNull(m.get("attrValue"))){
                         String attrValue = m.get("attrValue").toString();
                         List attrValueList = new ArrayList();
                         if(attrValue.contains(",")){

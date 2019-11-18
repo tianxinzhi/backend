@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 
 @Slf4j
@@ -57,8 +58,8 @@ public class Stock_BalanceCtrl {
       {
          try {
              log.info(sc.toString());
-             String repoNum = sc.getRepoNum() == null ? "" : sc.getRepoNum();
-             String skuNum = sc.getSkuNum() == null ? "" : sc.getSkuNum();
+             String repoNum = Objects.isNull(sc.getRepoNum()) ? "" : sc.getRepoNum();
+             String skuNum = Objects.isNull(sc.getSkuNum()) ? "" : sc.getSkuNum();
              List<Map> res = repo.getStockBalanceInfo(skuNum,repoNum);
              List<Map> result = ResultRecode.returnResult(res);
              return JsonResult.success(result);

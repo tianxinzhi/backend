@@ -1,6 +1,7 @@
 package com.pccw.backend.ctrl;
 
 import com.pccw.backend.bean.JsonResult;
+import com.pccw.backend.bean.ResultRecode;
 import com.pccw.backend.bean.StaticVariable;
 import com.pccw.backend.bean.stock_in.CreateBean;
 import com.pccw.backend.bean.stock_in.EditBean;
@@ -32,6 +33,7 @@ public class Stock_InCtrl extends BaseCtrl<DbResLogMgt>{
         System.out.println("-------------------");
         List<DbResLogMgtDtl> lineList = bean.getLine();
         for (int i = 0; i <lineList.size() ; i++) {
+            lineList.get(i).setDtlSubin(StaticVariable.DTLSUBIN_GOOD);
             lineList.get(i).setDtlAction(StaticVariable.DTLACTION_ADD);
             lineList.get(i).setStatus(StaticVariable.STATUS_AVAILABLE);
             lineList.get(i).setLisStatus(StaticVariable.LISSTATUS_WAITING);
@@ -43,10 +45,17 @@ public class Stock_InCtrl extends BaseCtrl<DbResLogMgt>{
         return this.create(rsipo,DbResLogMgt.class,bean);
     }
 
-//    @RequestMapping(method = RequestMethod.POST,path="/search")
-//    public JsonResult search(@RequestBody SearchBean bean){
-//        return this.search(rsipo,bean);
-//    }
+    @RequestMapping(method = RequestMethod.POST,path="/searchStockOutInfo")
+    public JsonResult searchStockOutInfo(@RequestBody SearchBean bean){
+        try {
+            List stockOutInfo = rsipo.getStockOutInfo(bean.getLogTxtNum());
+            List res = ResultRecode.returnHumpNameForList(stockOutInfo);
+
+            return JsonResult.success(res);
+        }catch (Exception e){
+            return JsonResult.fail(e);
+        }
+    }
 //
 //    @RequestMapping(method = RequestMethod.POST,path="/edit")
 //    public JsonResult edit(@RequestBody EditBean bean){

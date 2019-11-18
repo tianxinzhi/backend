@@ -14,8 +14,6 @@ import java.util.Map;
 
 public interface  ResSkuRepoRepository extends BaseRepository<DbResSkuRepo>{
 
-    // Page<DbResSkuRepo> findAll(Specification<DbResSkuRepo> spec,Pageable p);
-
     @Query(value = "select ROWNUM id, a.* from (select RS.SKU_DESC description,RS.SKU_CODE sku,RR.REPO_CODE AS store,\n" +
             "sum(nvl(decode(RST.STOCKTYPE_NAME ,'Intransit(DEL)',RSR.QTY),0)) DELQTY,\n" +
             "sum(nvl(decode(RST.STOCKTYPE_NAME ,'Faulty(FAU)',RSR.QTY),0))    FAUQTY,\n" +

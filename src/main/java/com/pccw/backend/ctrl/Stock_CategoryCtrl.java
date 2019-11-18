@@ -48,15 +48,15 @@ public class Stock_CategoryCtrl extends BaseCtrl<DbResSkuRepo> {
                 sb.setStockTypeId(skuRepo.getId());
                 sb.setSkuDesc(skuRepo.getSku().getSkuDesc());
                 sb.setStockTypeName(skuRepo.getStockType().getStockTypeName());
-                if(b.getRepoId() != null && b.getSkuId() != null){
+                if(!Objects.isNull(b.getRepoId()) && !Objects.isNull(b.getSkuId())){
                     if(b.getRepoId() == skuRepo.getRepo().getId() && b.getSkuId() == skuRepo.getSku().getId()){
                         resultList.add(sb);
                     }
-                }else if(b.getRepoId() != null && b.getSkuId() == null){
+                }else if(!Objects.isNull(b.getRepoId()) && Objects.isNull(b.getSkuId())){
                     if(b.getRepoId() == skuRepo.getRepo().getId()){
                         resultList.add(sb);
                     }
-                }else if(b.getRepoId() == null && b.getSkuId() != null){
+                }else if(Objects.isNull(b.getRepoId()) && !Objects.isNull(b.getSkuId())){
                     if(b.getSkuId() == skuRepo.getSku().getId()){
                         resultList.add(sb);
                     }
@@ -79,22 +79,30 @@ public class Stock_CategoryCtrl extends BaseCtrl<DbResSkuRepo> {
             DbResSkuRepo skuRepo = repo.findById(b.getId()).get();
             DbResStockType dbResStockType = stockTypeRepository.findById(b.getStockTypeIdTo()).get();
             skuRepo.setUpdateAt(t);
-            if(b.getQty() < skuRepo.getQty()){
+            DbResSkuRepo dbsr = repo.findByRepoIdAndStockTypeId(skuRepo.getSku().getId(),b.getStockTypeIdTo());
                 //修改 From StockCategory
-                skuRepo.setQty((skuRepo.getQty()-b.getQty()));
-                repo.saveAndFlush(skuRepo);
+                int qty = skuRepo.getQty() - b.getQty();
+                if(qty > 0){
+                    skuRepo.setQty(qty);
+                    repo.saveAndFlush(skuRepo);
+                }else {
+                    repo.deleteById(skuRepo.getId());
+                }
                 //添加一条 To StockCategory
-                DbResSkuRepo toSkuRepo = new DbResSkuRepo();
-                BeanUtils.copyProperties(skuRepo,toSkuRepo);
-                toSkuRepo.setCreateAt(t);
-                toSkuRepo.setStockType(dbResStockType);
-                toSkuRepo.setId(null);
-                toSkuRepo.setQty(b.getQty());
-                repo.saveAndFlush(toSkuRepo);
-            }else if(b.getQty() == skuRepo.getQty()){
-                skuRepo.setStockType(dbResStockType);
-                repo.saveAndFlush(skuRepo);
-            }else{}
+                if(Objects.isNull(dbsr)){
+                    DbResSkuRepo toSkuRepo = new DbResSkuRepo();
+                    BeanUtils.copyProperties(skuRepo,toSkuRepo);
+                    toSkuRepo.setCreateAt(t);
+                    toSkuRepo.setStockType(dbResStockType);
+                    toSkuRepo.setId(null);
+                    toSkuRepo.setQty(b.getQty());
+                    repo.saveAndFlush(toSkuRepo);
+                }else {
+                    DbResSkuRepo skuRepo1 = repo.findById(dbsr.getId()).get();
+                    skuRepo1.setQty(dbsr.getQty()+b.getQty());
+                    skuRepo1.setUpdateAt(t);
+                    repo.saveAndFlush(skuRepo1);
+                }
             return JsonResult.success(Arrays.asList());
         }catch (Exception e){
             return JsonResult.fail(e);

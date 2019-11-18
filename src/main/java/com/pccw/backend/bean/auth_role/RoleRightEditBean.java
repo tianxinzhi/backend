@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 
  @Data
 @NoArgsConstructor
- @ApiModel(value="Spec模块 - CreateBean",description="")
+ @ApiModel(value="Role模块 - EditBean",description="")
 public class RoleRightEditBean extends DbResRoleRight {
 
     private Long roleId;

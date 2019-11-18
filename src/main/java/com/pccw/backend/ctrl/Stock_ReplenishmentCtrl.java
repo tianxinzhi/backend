@@ -86,8 +86,8 @@ public class Stock_ReplenishmentCtrl extends BaseCtrl<DbResLogRepl> {
     public JsonResult searchReplenishmentInfo(@RequestBody SearchBean bean){
         try {
             log.info(bean.toString());
-            String batchId = bean.getLogBatchId() == null ? "" : bean.getLogBatchId();
-            String dnNum = bean.getLogDnNum() == null ? "" : bean.getLogDnNum();
+            String batchId = Objects.isNull(bean.getLogBatchId()) ? "" : bean.getLogBatchId();
+            String dnNum = Objects.isNull(bean.getLogDnNum()) ? "" : bean.getLogDnNum();
             List res = repo.getReplenishmentInfo(batchId, dnNum);
             List list = ResultRecode.returnHumpNameForList(res);
             return JsonResult.success(list);

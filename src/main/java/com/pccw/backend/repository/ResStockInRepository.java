@@ -21,7 +21,7 @@ public interface ResStockInRepository<T> extends BaseRepository<DbResLogMgt>{
             "rlm.id = rlmd.LOG_MGT_ID\n" +
             "and RLMD.DTL_SUBIN = 'Intra'\n" +
             "and RLMD.DTL_ACTION = 'A'\n" +
-            "and RLMD.STATUS = 'DEL'\n" +
+            "and RLMD.STATUS = 'INT'\n" +
             "and rlm.LOG_TXT_NUM = ?1",nativeQuery = true)
     List<Map> getStockOutInfo(String logTxtNum);
 }

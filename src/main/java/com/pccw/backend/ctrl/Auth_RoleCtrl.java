@@ -81,8 +81,6 @@ public class Auth_RoleCtrl extends BaseCtrl<DbResRole>{
                 log.info(e.getMessage());
                 return JsonResult.fail(e);
             }
-
-        //return this.search(repo, b);
     }
     
     @RequestMapping(method = RequestMethod.POST,path = "/delete")
@@ -94,49 +92,55 @@ public class Auth_RoleCtrl extends BaseCtrl<DbResRole>{
     @RequestMapping(method = RequestMethod.POST,path="/create")
     @ApiOperation(value="新增角色",tags={"auth_role"},notes="注意问题点")
     public JsonResult create(@RequestBody CreateBean b){
-        DbResRole role =new DbResRole();
-        BeanUtils.copyProperties(b,role);
-        /*role.setActive("Y");
-        role.setCreateAt(System.currentTimeMillis());
-        role.setUpdateAt(System.currentTimeMillis());*/
-        List<DbResRoleRight> roleRightList = new LinkedList<>();
-        for(String value:b.getRightId()){
-            DbResRoleRight roleRight = new DbResRoleRight();
-            roleRight.setRightId(Long.parseLong(value));
-            roleRight.setActive("Y");
-            roleRight.setCreateAt(System.currentTimeMillis());
-            roleRight.setUpdateAt(System.currentTimeMillis());
-            roleRightList.add(roleRight);
+        try {
+            DbResRole role =new DbResRole();
+            BeanUtils.copyProperties(b,role);
+            List<DbResRoleRight> roleRightList = new LinkedList<>();
+            for(String value:b.getRightId()){
+                DbResRoleRight roleRight = new DbResRoleRight();
+                roleRight.setRightId(Long.parseLong(value));
+                roleRight.setActive("Y");
+                roleRight.setCreateAt(System.currentTimeMillis());
+                roleRight.setUpdateAt(System.currentTimeMillis());
+                roleRightList.add(roleRight);
+            }
+            role.setResRoleRightList(roleRightList);
+            repo.saveAndFlush(role);
+            return JsonResult.success(Arrays.asList());
+
+        }catch (Exception e) {
+            log.info(e.getMessage());
+            return JsonResult.fail(e);
         }
-        role.setResRoleRightList(roleRightList);
-        repo.saveAndFlush(role);
-        return JsonResult.success(Arrays.asList());
-        //return this.create(repo, DbResRole.class, b);
 
     }
+
     @RequestMapping(method = RequestMethod.POST,path="/edit")
     @ApiOperation(value="修改角色",tags={"auth_role"},notes="注意问题点")
     public JsonResult edit(@RequestBody EditBean b){
+        try {
+            DbResRole role = repo.findById(b.getId()).get();
+            role.setRoleDesc(b.getRoleDesc());
+            role.setRoleName(b.getRoleName());
+            role.setUpdateAt(System.currentTimeMillis());
+            List<DbResRoleRight> roleRightList = role.getResRoleRightList();
+            roleRightList.clear();
+            for(String valueId:b.getRightId()){
+                RoleRightEditBean roleRight = new RoleRightEditBean();
+                roleRight.setRightId(Long.parseLong(valueId));
+                roleRight.setRoleId(role.getId());
+                roleRight.setActive("Y");
+                roleRight.setUpdateAt(System.currentTimeMillis());
+                roleRightList.add(roleRight);
+            }
+            role.setResRoleRightList(roleRightList);
+            repo.saveAndFlush(role);
+            return JsonResult.success(Arrays.asList());
 
-        DbResRole role = repo.findById(b.getId()).get();
-        role.setRoleDesc(b.getRoleDesc());
-        role.setRoleName(b.getRoleName());
-        role.setUpdateAt(System.currentTimeMillis());
-        List<DbResRoleRight> roleRightList = role.getResRoleRightList();
-        roleRightList.clear();
-        for(String valueId:b.getRightId()){
-            RoleRightEditBean roleRight = new RoleRightEditBean();
-            roleRight.setRightId(Long.parseLong(valueId));
-            roleRight.setRoleId(role.getId());
-            roleRight.setActive("Y");
-            roleRight.setUpdateAt(System.currentTimeMillis());
-            roleRightList.add(roleRight);
+        }catch (Exception e) {
+            log.info(e.getMessage());
+            return JsonResult.fail(e);
         }
-        role.setResRoleRightList(roleRightList);
-        repo.saveAndFlush(role);
-        return JsonResult.success(Arrays.asList());
-
-       // return this.edit(repo, DbResRole.class, b);
     }
     
 }

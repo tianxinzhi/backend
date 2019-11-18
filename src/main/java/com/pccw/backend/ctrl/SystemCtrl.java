@@ -29,16 +29,20 @@ public class SystemCtrl extends BaseCtrl<DbResAccount> {
     @ApiOperation(value="用户登录",tags={"system"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST,value = "/login")
     public JsonResult login (@RequestBody LoginBean bean) {
-        System.out.println("loginBean"+bean);
-        List<Map<String,String>> data = new ArrayList<>();
-        Map<String,String> tokenMap = new HashMap<>();
-        DbResAccount rwe = repo.getDbResAccountsByAccountNameAndAccountPassword(bean.getAccountName(),bean.getAccountPassword());
-        if(rwe==null){
-            return JsonResult.fail(new Exception());
+        try {
+            System.out.println("loginBean"+bean);
+            List<Map<String,String>> data = new ArrayList<>();
+            Map<String,String> tokenMap = new HashMap<>();
+            DbResAccount rwe = repo.getDbResAccountsByAccountNameAndAccountPassword(bean.getAccountName(),bean.getAccountPassword());
+            if(rwe==null){
+                return JsonResult.fail(new Exception());
+            }
+            String token = TokenGenerator.makeToken(bean);
+            tokenMap.put("token",token);
+            data.add(tokenMap);
+            return JsonResult.success(data);
+        } catch (Exception e) {
+            return JsonResult.fail(e);
         }
-        String token = TokenGenerator.makeToken(bean);
-        tokenMap.put("token",token);
-        data.add(tokenMap);
-        return JsonResult.success(data);
     }
 }

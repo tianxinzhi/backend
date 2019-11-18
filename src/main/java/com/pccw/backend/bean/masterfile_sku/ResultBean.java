@@ -19,6 +19,12 @@ public class ResultBean extends BaseBean {
     @ApiModelProperty(value="skuId",name="id",example="")
     private long id;
 
+    @ApiModelProperty(value="repo",name="repo",example="")
+    private String[] stores;
+
+    @ApiModelProperty(value="shopCode",name="shopCode",example="")
+    private String[] storeCodes;
+
     @ApiModelProperty(value="skuCode",name="sku编码",example="")
     private String skuCode;
 

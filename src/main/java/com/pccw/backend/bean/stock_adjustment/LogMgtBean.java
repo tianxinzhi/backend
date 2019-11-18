@@ -14,7 +14,7 @@ import java.util.List;
 public class LogMgtBean extends BaseBean {
 
     @ApiModelProperty(value="remark",name="备注",example="")
-    private String remark;
+    private long remark;
 
     @ApiModelProperty(value="transactionNumber",name="交易编码",example="")
     private String transactionNumber;

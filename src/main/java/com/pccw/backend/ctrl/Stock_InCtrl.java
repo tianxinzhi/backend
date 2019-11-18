@@ -30,19 +30,23 @@ public class Stock_InCtrl extends BaseCtrl<DbResLogMgt>{
     @ApiOperation(value="stock_in",tags={"stock_in"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST,value = "/create")
     public JsonResult create(@RequestBody CreateBean bean) {
-        System.out.println("-------------------");
-        List<DbResLogMgtDtl> lineList = bean.getLine();
-        for (int i = 0; i <lineList.size() ; i++) {
-            lineList.get(i).setDtlSubin(StaticVariable.DTLSUBIN_GOOD);
-            lineList.get(i).setDtlAction(StaticVariable.DTLACTION_ADD);
-            lineList.get(i).setStatus(StaticVariable.STATUS_AVAILABLE);
-            lineList.get(i).setLisStatus(StaticVariable.LISSTATUS_WAITING);
-            lineList.get(i).setId(null);
+        try {
+            List<DbResLogMgtDtl> lineList = bean.getLine();
+            for (int i = 0; i <lineList.size() ; i++) {
+                lineList.get(i).setDtlSubin(StaticVariable.DTLSUBIN_GOOD);
+                lineList.get(i).setDtlAction(StaticVariable.DTLACTION_ADD);
+                lineList.get(i).setStatus(StaticVariable.STATUS_AVAILABLE);
+                lineList.get(i).setLisStatus(StaticVariable.LISSTATUS_WAITING);
+                lineList.get(i).setId(null);
+            }
+            bean.setLine(lineList);
+//        System.out.println("attrValue:"+bean);
+//        System.out.println("attrValue:"+bean);
+            return this.create(rsipo,DbResLogMgt.class,bean);
+
+        }catch (Exception e){
+            return JsonResult.fail(e);
         }
-        bean.setLine(lineList);
-//        System.out.println("attrValue:"+bean);
-//        System.out.println("attrValue:"+bean);
-        return this.create(rsipo,DbResLogMgt.class,bean);
     }
 
     @RequestMapping(method = RequestMethod.POST,path="/searchStockOutInfo")

@@ -8,10 +8,6 @@ import lombok.Data;
 
 
 
-/*
- * which store, which sku , how many qty
- */
-
 
 @Entity
 @Table(name = "res_role_right")
@@ -22,10 +18,6 @@ public class DbResRoleRight extends Base {
 	@Column(name = "id")
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "id_roleRight")
 	private Long id;
-
-//	@Column(name = "role_id")
-//	private Long roleId;
-
 
 	@Column(name = "right_id")
 	private Long rightId;

@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 
  @Data
 @NoArgsConstructor
- @ApiModel(value="Spec模块 - CreateBean",description="")
+ @ApiModel(value="Flow模块 - EditBean",description="")
 public class FlowStepEditBean extends DbResFlowStep {
 
     private Long flowId;

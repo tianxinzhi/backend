@@ -72,7 +72,6 @@ public class WorkFlow_FlowCtrl extends BaseCtrl<DbResFlow>{
             return JsonResult.fail(e);
         }
 
-       // return this.search(repo, b);
     }
 
     @RequestMapping(method = RequestMethod.POST,path = "/delete")
@@ -82,37 +81,49 @@ public class WorkFlow_FlowCtrl extends BaseCtrl<DbResFlow>{
 
     @RequestMapping(method = RequestMethod.POST,path="/create")
     public JsonResult create(@RequestBody CreateBean b){
-        long t = new Date().getTime();
-        b.setUpdateAt(t);
-        b.setCreateAt(t);
-        for(int i=0;i<b.getResFlowStepList().size();i++) {
-            b.getResFlowStepList().get(i).setUpdateAt(t);
-            b.getResFlowStepList().get(i).setCreateAt(t);
-            b.getResFlowStepList().get(i).setActive("Y");
-        }
-        return this.create(repo, DbResFlow.class, b);
+       try{
+            long t = new Date().getTime();
+            b.setUpdateAt(t);
+            b.setCreateAt(t);
+            for(int i=0;i<b.getResFlowStepList().size();i++) {
+                b.getResFlowStepList().get(i).setUpdateAt(t);
+                b.getResFlowStepList().get(i).setCreateAt(t);
+                b.getResFlowStepList().get(i).setActive("Y");
+            }
+            return this.create(repo, DbResFlow.class, b);
+       } catch (Exception e) {
+           log.info(e.getMessage());
+           return JsonResult.fail(e);
+         }
     }
 
     @RequestMapping(method = RequestMethod.POST,path="/edit")
     public JsonResult edit(@RequestBody EditBean b){
-        long t = new Date().getTime();
-        Optional<DbResFlow> optional = repo.findById(b.getId());
-        DbResFlow dbResFlow =optional.get();
-        b.setUpdateAt(t);
-        b.setCreateAt(dbResFlow.getCreateAt());
-        for(int i=0;i<b.getResFlowStepList().size();i++) {
-            for(int j=0;j<dbResFlow.getResFlowStepList().size();j++) {
-                if (dbResFlow.getResFlowStepList().get(j).getId()==b.getResFlowStepList().get(i).getId()) {
-                    b.getResFlowStepList().get(i).setUpdateAt(t);
-                    b.getResFlowStepList().get(i).setCreateAt(dbResFlow.getResFlowStepList().get(j).getCreateAt());
-                    b.getResFlowStepList().get(i).setActive("Y");
-                }else if(b.getResFlowStepList().get(i).getId()==null){
-                    b.getResFlowStepList().get(i).setUpdateAt(t);
-                    b.getResFlowStepList().get(i).setCreateAt(t);
-                    b.getResFlowStepList().get(i).setActive("Y");
+        try{
+            long t = new Date().getTime();
+            Optional<DbResFlow> optional = repo.findById(b.getId());
+            DbResFlow dbResFlow =optional.get();
+            b.setUpdateAt(t);
+            b.setCreateAt(dbResFlow.getCreateAt());
+            for(int i=0;i<b.getResFlowStepList().size();i++) {
+                for(int j=0;j<dbResFlow.getResFlowStepList().size();j++) {
+                    if (dbResFlow.getResFlowStepList().get(j).getId()==b.getResFlowStepList().get(i).getId()) {
+                        b.getResFlowStepList().get(i).setUpdateAt(t);
+                        b.getResFlowStepList().get(i).setCreateAt(dbResFlow.getResFlowStepList().get(j).getCreateAt());
+                        b.getResFlowStepList().get(i).setActive("Y");
+                    }else if(Objects.isNull(b.getResFlowStepList().get(i).getId())){
+                        b.getResFlowStepList().get(i).setUpdateAt(t);
+                        b.getResFlowStepList().get(i).setCreateAt(t);
+                        b.getResFlowStepList().get(i).setActive("Y");
+                    }
                 }
             }
+            return this.edit(repo, DbResFlow.class, b);
+
+        }catch (Exception e) {
+            log.info(e.getMessage());
+            return JsonResult.fail(e);
         }
-        return this.edit(repo, DbResFlow.class, b);
+
     }
 }

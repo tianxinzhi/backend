@@ -1,6 +1,6 @@
 package com.pccw.backend.repository;
 
-import com.pccw.backend.entity.DbResFlow;;
+import com.pccw.backend.entity.DbResFlow;
 
 
 /**

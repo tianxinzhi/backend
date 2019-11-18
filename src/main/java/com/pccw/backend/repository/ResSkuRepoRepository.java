@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import com.pccw.backend.entity.DbResSkuRepo;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -12,9 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 
-public interface  ResSkuRepoRepository extends JpaRepository<DbResSkuRepo, Long>,JpaSpecificationExecutor{
-
-    // Page<DbResSkuRepo> findAll(Specification<DbResSkuRepo> spec,Pageable p);
+public interface  ResSkuRepoRepository extends BaseRepository<DbResSkuRepo>{
 
     @Query(value = "select ROWNUM id, a.* from (select RS.SKU_DESC description,RS.SKU_CODE sku,RR.REPO_CODE AS store,\n" +
             "sum(nvl(decode(RST.STOCKTYPE_NAME ,'Intransit(DEL)',RSR.QTY),0)) DELQTY,\n" +
@@ -36,4 +35,16 @@ public interface  ResSkuRepoRepository extends JpaRepository<DbResSkuRepo, Long>
             "AND RSR.REPO_ID=nvl(:repoNum,RSR.REPO_ID)\n"+
             "GROUP BY RS.SKU_CODE,RR.REPO_CODE,RS.SKU_DESC) a",nativeQuery = true)
     List<Map> getStockBalanceInfo(@Param("skuNum") String skuNum,@Param("repoNum") String repoNum);
+
+    @Query(value = "SELECT * from RES_SKU_REPO rsr where rsr.SKU_ID =?1  and rsr.STOCK_TYPE_ID = ?2",nativeQuery = true)
+    DbResSkuRepo findByRepoIdAndStockTypeId(@Param("id") Long id,
+                                            @Param("stockTypeIdTo") Long stockTypeIdTo);
+
+    @Query(value = "select * from res_sku_repo t where t.repo_id = ?1 and t.sku_id = ?2 and t.stock_type_id = ?3",nativeQuery = true)
+    DbResSkuRepo findQtyByRepoAndShopAndType(@Param("shop") long shop,@Param("sku") long sku,@Param("stockType") long stockType);
+
+    @Modifying
+    @Query(value = "update res_sku_repo set qty = qty + ?4 where repo_id = ?1 and sku_id = ?2 and stock_type_id = ?3",nativeQuery = true)
+    int updateQtyByRepoAndShopAndTypeAndQty(@Param("shop") long shop,@Param("sku") long sku,@Param("stockType")long stockType,@Param("qty")long qty);
+
 }

@@ -51,5 +51,6 @@ public class SearchBean extends BaseSearchBean {
     private List<DbResClassType> relationOfTypeClass;
     private DbResTypeSkuSpec dbResTypeSkuSpec;
     private List<Map> attrData;
+    private List<Map> typeSkuList;
     
 }

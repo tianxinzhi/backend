@@ -16,7 +16,7 @@ import java.util.List;
 
  @Data
 @NoArgsConstructor
- @ApiModel(value="Spec模块 - CreateBean",description="")
+ @ApiModel(value="Spec模块 - EditBean",description="")
 public class SpecAttrEditBean extends DbResSpecAttr {
 
     private Long specId;

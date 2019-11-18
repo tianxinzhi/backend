@@ -15,13 +15,8 @@ import java.util.List;
 
  @Data
 @NoArgsConstructor
-public class EditBean extends CreateBean/*BaseBean*/ {
+public class EditBean extends CreateBean{
 
     private Long id;
 
-  /*  private String roleName;
-
-    private String roleDesc;
-
-    private List<RoleRightEditBean> resRoleRightList;*/
 }

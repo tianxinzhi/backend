@@ -24,6 +24,4 @@ public class CreateBean extends BaseBean{
 
     private String[] rightId;
 
-//    private List<DbResRoleRight> resRoleRightList;
-
 }

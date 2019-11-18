@@ -111,7 +111,7 @@ public class WorkFlow_FlowCtrl extends BaseCtrl<DbResFlow>{
                         b.getResFlowStepList().get(i).setUpdateAt(t);
                         b.getResFlowStepList().get(i).setCreateAt(dbResFlow.getResFlowStepList().get(j).getCreateAt());
                         b.getResFlowStepList().get(i).setActive("Y");
-                    }else if(b.getResFlowStepList().get(i).getId()==null){
+                    }else if(Objects.isNull(b.getResFlowStepList().get(i).getId())){
                         b.getResFlowStepList().get(i).setUpdateAt(t);
                         b.getResFlowStepList().get(i).setCreateAt(t);
                         b.getResFlowStepList().get(i).setActive("Y");

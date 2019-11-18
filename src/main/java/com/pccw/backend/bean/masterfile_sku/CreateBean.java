@@ -13,6 +13,9 @@ import java.util.List;
 @ApiModel(value="Sku模块 - CreateBean",description="")
 public class CreateBean extends BaseBean {
 
+    @ApiModelProperty(value="repos",name="repos",example="")
+    private long stores;
+
     @ApiModelProperty(value="skuCode",name="sku编码",example="")
     private String skuCode;
 

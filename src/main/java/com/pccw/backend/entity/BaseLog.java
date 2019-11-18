@@ -40,4 +40,7 @@ public class BaseLog extends Base{
     //  Work order
     @Column(name = "wo", length = 512)
     private String wo;
+
+    @Column(name = "adjust_reason_id")
+    private long adjustReasonId;
 }

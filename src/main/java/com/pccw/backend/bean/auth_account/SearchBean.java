@@ -13,9 +13,13 @@ import lombok.NoArgsConstructor;
 @ApiModel(value = "Account 模块 - SearchBean", description = "")
 public class SearchBean extends BaseSearchBean {
 
-    @PredicateAnnotation(type = PredicateType.LIKE)
-    @ApiModelProperty(value="角色",name="roleId",example="")
-    private String roleId;
+    private long id;
+
+    private Long[] roles;
+
+    private String[] roleNames;
+
+    private String accountPassword;
 
     @PredicateAnnotation(type = PredicateType.LIKE)
     @ApiModelProperty(value="账号",name="accountName",example="")

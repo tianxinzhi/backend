@@ -24,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/common")
 @CrossOrigin(methods = RequestMethod.GET,origins = "*", allowCredentials = "false")
-public class CommonCtrl  {
+public class CommonCtrl  extends BaseCtrl{
 
     @Autowired
     ResRightRepository right_repo;
@@ -221,5 +221,10 @@ public class CommonCtrl  {
         } catch (Exception e) {
             return JsonResult.fail(e);
         }
+    }
+
+    @RequestMapping(method = RequestMethod.GET,path="/skuModule1")
+    public JsonResult<LabelAndValue> searchSku1() {
+        return this.labelValueHandle(sku_repo);
     }
 }

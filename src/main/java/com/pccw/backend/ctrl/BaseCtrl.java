@@ -1,16 +1,18 @@
 package com.pccw.backend.ctrl;
 
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
-import com.pccw.backend.bean.JsonResult;
+import com.pccw.backend.annotation.LabelAndValueAnnotation;
+import com.pccw.backend.bean.*;
+import com.pccw.backend.entity.Base;
 import com.pccw.backend.repository.BaseRepository;
 import com.pccw.backend.util.Convertor;
-import com.pccw.backend.bean.BaseBean;
-import com.pccw.backend.bean.BaseSearchBean;
-import com.pccw.backend.bean.BaseDeleteBean;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.PageRequest;
@@ -82,5 +84,61 @@ public class BaseCtrl<T>{
         } catch (Exception e) {
             throw e;
         }
-    } 
+    }
+
+    public <E> JsonResult labelValueHandle(BaseRepository repo){
+        try {
+            List<E> list = repo.findAll();
+            List<LabelAndValue> res = list.stream().map(item->{
+                LabelAndValueAnnotation annotation = item.getClass().getAnnotation(LabelAndValueAnnotation.class);
+                LabelAndValue lav = new LabelAndValue();
+                if (!Objects.isNull(annotation)) {
+                    lav = getLabelAndValue(item, annotation);
+                }
+                return lav;
+            }).collect(Collectors.toList());
+            return JsonResult.success(res);
+        } catch (Exception e) {
+            return JsonResult.fail(e);
+        }
+    }
+
+    public <E> LabelAndValue getLabelAndValue(E item, LabelAndValueAnnotation annotation) {
+        LabelAndValue lav;
+        Object value = null;
+        Object label = null;
+        Object other = null;
+        try {
+            Method[] methods = annotation.getClass().getDeclaredMethods();
+            for (int i = 4; i <methods.length; i++) {
+                    String invoke = (String) methods[i].invoke(annotation);
+                    if (!invoke.equals("")) {
+                        Field declaredField = item.getClass().getDeclaredField(invoke);
+                        declaredField.setAccessible(true);
+
+                        switch (methods[i].getName()){
+                            case "Value" :
+                                value = declaredField.get(item);
+                                break;
+                            case "Label" :
+                                label = declaredField.get(item);
+                                break;
+                            case "Other" :
+                                other = declaredField.get(item);
+                                break;
+                        }
+                    }
+
+            }
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
+        lav = new LabelAndValue(value,label,other);
+        return lav;
+    }
+
 }

@@ -4,6 +4,7 @@ import com.pccw.backend.bean.JsonResult;
 import com.pccw.backend.bean.StaticVariable;
 import com.pccw.backend.bean.stock_adjustment.LogMgtBean;
 import com.pccw.backend.bean.stock_adjustment.LogMgtDtlBean;
+import com.pccw.backend.bean.stock_adjustment.SearchBean;
 import com.pccw.backend.entity.DbResLogMgt;
 import com.pccw.backend.entity.DbResLogMgtDtl;
 import com.pccw.backend.entity.DbResSkuRepo;
@@ -57,6 +58,7 @@ public class Stock_AdjustmentCtrl extends BaseCtrl<DbResLogMgt> {
             List<DbResLogMgtDtl> lstMgtDtl = new LinkedList<>();
             for(LogMgtDtlBean dtl:bean.getLine()) {
                 DbResLogMgtDtl mgtDtl = new DbResLogMgtDtl();
+                mgtDtl.setDtlRepoId(bean.getLogRepoOut());
                 BeanUtils.copyProperties(dtl, mgtDtl);
                 mgtDtl.setLogTxtBum(bean.getTransactionNumber());
                 //mgtDtl.setDtlLogId();
@@ -110,7 +112,7 @@ public class Stock_AdjustmentCtrl extends BaseCtrl<DbResLogMgt> {
 
     @ApiOperation(value="sku库存",tags={"stock_adjustment"},notes="说明")
     @RequestMapping("/balanceSearch")
-    public JsonResult balanceSearch(@RequestBody LogMgtDtlBean bean) {
+    public JsonResult balanceSearch(@RequestBody SearchBean bean) {
         try {
             DbResSkuRepo skuRepo = skuRepoRepository.findQtyByRepoAndShopAndType(bean.getDtlRepoId(),bean.getDtlSkuId(),bean.getCatalog());
             if(skuRepo==null){

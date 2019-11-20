@@ -34,14 +34,6 @@ public class DbResRole extends Base {
 
     @Column(name="role_funtiongroup")
     private String roleFunctionGroup;
-    
-
- /*   @ManyToMany(fetch = FetchType.EAGER)
-        //  @Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE})
-    @JoinTable(name = "res_role_right",
-    joinColumns = { @JoinColumn(name = "role_id") },
-    inverseJoinColumns = { @JoinColumn(name = "right_id") })
-    private Set<DbResRight> rightList;*/
 
     @JsonManagedReference
     @OneToMany(cascade = CascadeType.ALL,orphanRemoval = true)

@@ -9,8 +9,10 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @ApiModel(value="Stock_Adjustment子单模块 - LogMgtDtlBean",description="")
-public class LogMgtDtlBean extends BaseBean {
+public class SearchBean extends BaseBean {
 
+    @ApiModelProperty(value="repo",name="repo",example="")
+    private long dtlRepoId;
 
     @ApiModelProperty(value="item",name="item",example="")
     private long dtlItemId;

@@ -24,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/common")
 @CrossOrigin(methods = RequestMethod.GET,origins = "*", allowCredentials = "false")
-public class CommonCtrl  extends BaseCtrl{
+public class CommonCtrl  extends GeneralCtrl{
 
     @Autowired
     ResRightRepository right_repo;
@@ -50,6 +50,8 @@ public class CommonCtrl  extends BaseCtrl{
     ResRoleRepository roleRepository;
     @Autowired
     ResStockTypeRepository stockTypeRepository;
+    @Autowired
+    ResSkuRepoRepository skuRepoRepository;
 
     @ApiOperation(value="获取res_right表的信息",tags={"common"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.GET,path="/rightModule")
@@ -225,6 +227,16 @@ public class CommonCtrl  extends BaseCtrl{
 
     @RequestMapping(method = RequestMethod.GET,path="/skuModule1")
     public JsonResult<LabelAndValue> searchSku1() {
-        return this.labelValueHandle(sku_repo);
+        return this.JsonResultHandle(sku_repo,new LabelAndValue());
+    }
+
+    @RequestMapping(method = RequestMethod.GET,path="/stockTypeModule1")
+    public JsonResult<LabelAndValue> searchStockType1(){
+        return this.JsonResultHandle(skuRepoRepository,new LabelAndValue());
+    }
+
+    @RequestMapping(method = RequestMethod.GET,path="/rightModule1")
+    public JsonResult<CommonBean> search1() {
+        return this.JsonResultHandle(right_repo,new CommonBean());
     }
 }

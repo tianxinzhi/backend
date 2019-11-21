@@ -5,6 +5,7 @@ import javax.persistence.*;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.pccw.backend.annotation.JsonResultParamHandle;
 import lombok.*;
 
 
@@ -21,6 +22,7 @@ import lombok.*;
 @SequenceGenerator(name="id_skuRepo",sequenceName = "skuRepo_seq",allocationSize = 1)
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonResultParamHandle(param1 = "sku",param2 = "repo",param3 = "id")
 public class DbResSkuRepo extends Base{
 	@Id
 	@Column(name = "id")

@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class LabelAndValue {
+public class LabelAndValue implements GeneralBean{
     private Object Value;
     private Object Label;
     private Object Other;

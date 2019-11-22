@@ -19,6 +19,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.bind.annotation.*;
 
+import javax.transaction.Transactional;
 import java.util.*;
 
 
@@ -73,18 +74,19 @@ public class Stock_CategoryCtrl extends BaseCtrl<DbResSkuRepo> {
 
     @ApiOperation(value = "修改category",tags = "stock_category",notes = "注意问题点")
     @RequestMapping(method = RequestMethod.POST,path = "/edit")
+    @Transactional
     public JsonResult edit(@RequestBody EditBean b){
         try{
             long t = new Date().getTime();
             DbResSkuRepo skuRepo = repo.findById(b.getId()).get();
             DbResStockType dbResStockType = stockTypeRepository.findById(b.getStockTypeIdTo()).get();
             skuRepo.setUpdateAt(t);
-            DbResSkuRepo dbsr = repo.findByRepoIdAndStockTypeId(skuRepo.getSku().getId(),b.getStockTypeIdTo());
+            DbResSkuRepo dbsr = repo.findQtyByRepoAndShopAndType(skuRepo.getRepo().getId(),skuRepo.getSku().getId(),b.getStockTypeIdTo());
                 //修改 From StockCategory
                 int qty = skuRepo.getQty() - b.getQty();
                 if(qty > 0){
                     skuRepo.setQty(qty);
-                    repo.saveAndFlush(skuRepo);
+//                    repo.saveAndFlush(skuRepo);
                 }else {
                     repo.deleteById(skuRepo.getId());
                 }
@@ -101,7 +103,7 @@ public class Stock_CategoryCtrl extends BaseCtrl<DbResSkuRepo> {
                     DbResSkuRepo skuRepo1 = repo.findById(dbsr.getId()).get();
                     skuRepo1.setQty(dbsr.getQty()+b.getQty());
                     skuRepo1.setUpdateAt(t);
-                    repo.saveAndFlush(skuRepo1);
+//                    repo.saveAndFlush(skuRepo1);
                 }
             return JsonResult.success(Arrays.asList());
         }catch (Exception e){

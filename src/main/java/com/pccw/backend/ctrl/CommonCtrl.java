@@ -106,7 +106,16 @@ public class CommonCtrl  extends GeneralCtrl{
     @ApiOperation(value="获取res_adjust_reason表的adjustReasonName和id信息",tags={"common"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.GET,path="/adjustReasonModule")
     public JsonResult<LabelAndValue> searchAdjustReason(){
-        return this.JsonResultHandle(adjustReasonRepository,new LabelAndValue());
+        try {
+            List<DbResAdjustReason> list =  adjustReasonRepository.findAll().stream().filter
+                    (reason -> !reason.getAdjustReasonName().equals("Other reason")).collect(Collectors.toList());
+            List<LabelAndValue> res = list.stream().map(r->{
+                return new LabelAndValue(r.getId(),r.getAdjustReasonName(),r.getRemark());
+            }).collect(Collectors.toList());
+            return JsonResult.success(res);
+        } catch (Exception e) {
+            return JsonResult.fail(e);
+        }
     }
 
     @ApiOperation(value="获取res_role表的roleName和id信息",tags={"common"},notes="注意问题点")

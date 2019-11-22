@@ -19,7 +19,8 @@ public class DbResLogMgt extends BaseLog {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "id_logMgt")
 	private Long id;
 
-
+	@Column(name = "adjust_reason_id")
+	private long adjustReasonId;
 
 	// Repo In
 	@Column(name="log_repo_in")

@@ -22,6 +22,8 @@ public class StaticVariable {
     public static final String LOGORDERNATURE_REPLENISHMENT_RECEIVEN = "RREC";
     public static final String LOGORDERNATURE_STOCK_TAKE_ADJUSTMENT = "STA";
     public static final String LOGORDERNATURE_STOCK_TRANSFER_OUT = "TRO";
+    public static final String LOGORDERNATURE_STOCK_OUT_STS = "SOTS";
+    public static final String LOGORDERNATURE_STOCK_OUT_STW = "SOTW";
     public static final String LOGORDERNATURE_STOCK_TRANSFER_IN= "TRI";
     public static final String LOGORDERNATURE_STOCK_RESERVE = "RES";
     public static final String LOGORDERNATURE_STOCK_CANCEL_RESERVE = "CRES";

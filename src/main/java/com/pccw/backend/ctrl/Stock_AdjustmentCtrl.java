@@ -5,9 +5,8 @@ import com.pccw.backend.bean.StaticVariable;
 import com.pccw.backend.bean.stock_adjustment.LogMgtBean;
 import com.pccw.backend.bean.stock_adjustment.LogMgtDtlBean;
 import com.pccw.backend.bean.stock_adjustment.SearchBean;
-import com.pccw.backend.entity.DbResLogMgt;
-import com.pccw.backend.entity.DbResLogMgtDtl;
-import com.pccw.backend.entity.DbResSkuRepo;
+import com.pccw.backend.entity.*;
+import com.pccw.backend.repository.ResAdjustReasonRepository;
 import com.pccw.backend.repository.ResLogMgtRepository;
 import com.pccw.backend.repository.ResSkuRepoRepository;
 import io.swagger.annotations.Api;
@@ -22,6 +21,11 @@ import springfox.documentation.spring.web.json.Json;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -34,6 +38,8 @@ public class Stock_AdjustmentCtrl extends BaseCtrl<DbResLogMgt> {
     ResLogMgtRepository logMgtRepository;
     @Autowired
     ResSkuRepoRepository skuRepoRepository;
+    @Autowired
+    ResAdjustReasonRepository reasonRepository;
 
     @ApiOperation(value="调货",tags={"stock_adjustment"},notes="说明")
     @RequestMapping("/confirm")
@@ -47,8 +53,18 @@ public class Stock_AdjustmentCtrl extends BaseCtrl<DbResLogMgt> {
             ent.setLogType(StaticVariable.LOGTYPE_MANAGEMENT);
             ent.setLogOrderNature(StaticVariable.LOGORDERNATURE_STOCK_TAKE_ADJUSTMENT);
             ent.setStatus(StaticVariable.STATUS_WAITING);
-            //ent.setRemark(bean.getRemark());
-            ent.setAdjustReasonId(bean.getRemark());
+            if(bean.getReason()!=0){
+                ent.setAdjustReasonId(bean.getReason());
+            } else {
+                DbResAdjustReason resAdjustReason = new DbResAdjustReason();
+                resAdjustReason.setAdjustReasonName("Other reason");
+                resAdjustReason.setRemark(bean.getRemark());
+                resAdjustReason.setCreateAt(bean.getCreateDate());
+                resAdjustReason.setUpdateAt(bean.getCreateDate());
+                resAdjustReason.setActive("Y");
+                reasonRepository.saveAndFlush(resAdjustReason);
+                ent.setAdjustReasonId(resAdjustReason.getId());
+            }
             ent.setCreateAt(bean.getCreateDate());
             ent.setUpdateAt(bean.getCreateDate());
             ent.setActive("Y");
@@ -122,6 +138,35 @@ public class Stock_AdjustmentCtrl extends BaseCtrl<DbResLogMgt> {
         } catch (Exception e) {
             return JsonResult.fail(e);
         }
+    }
+
+    @ApiOperation(value="根据repo查询sku库存",tags={"stock_adjustment"},notes="说明")
+    @RequestMapping("/searchByRepo")
+    public JsonResult searchByRepo(@RequestBody SearchBean bean) {
+        try {
+            DbResRepo repo = new DbResRepo();
+            repo.setId(bean.getDtlRepoId());
+            List<DbResSkuRepo> skuRepos = skuRepoRepository.findDbResSkuRepoByRepo(repo);
+            List<SearchBean> resBeans = new LinkedList<>();
+            for (DbResSkuRepo skuRepo : skuRepos) {
+                SearchBean res = new SearchBean();
+                DbResSku sku = skuRepo.getSku();
+                res.setDtlSkuId(sku.getId());
+                res.setSkuCode(sku.getSkuCode());
+                res.setCatalog(skuRepo.getStockType().getId());
+                res.setDtlRepoId(skuRepo.getRepo().getId());
+                res.setDtlQty(skuRepo.getQty());
+                resBeans.add(res);
+            }
+            return JsonResult.success(resBeans.stream().filter(distinctByKey(resBean -> resBean.getDtlSkuId())).collect(Collectors.toList()));
+        } catch (Exception e) {
+            return JsonResult.fail(e);
+        }
+    }
+
+    private static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
+        Map<Object,Boolean> seen = new ConcurrentHashMap<>();
+        return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
     }
 
 }

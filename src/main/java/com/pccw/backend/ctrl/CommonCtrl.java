@@ -185,9 +185,10 @@ public class CommonCtrl  extends BaseCtrl{
     @RequestMapping(method = RequestMethod.GET,path="/adjustReasonModule")
     public JsonResult<LabelAndValue> searchAdjustReason(){
         try {
-            List<DbResAdjustReason> list =  adjustReasonRepository.findAll();
+            List<DbResAdjustReason> list =  adjustReasonRepository.findAll().stream().filter
+                    (reason -> !reason.getAdjustReasonName().equals("Other reason")).collect(Collectors.toList());
             List<LabelAndValue> res = list.stream().map(r->{
-                return new LabelAndValue(r.getId(),r.getAdjustReasonName(),null);
+                return new LabelAndValue(r.getId(),r.getAdjustReasonName(),r.getRemark());
             }).collect(Collectors.toList());
             return JsonResult.success(res);
         } catch (Exception e) {

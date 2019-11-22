@@ -22,7 +22,6 @@ import lombok.*;
 @SequenceGenerator(name="id_skuRepo",sequenceName = "skuRepo_seq",allocationSize = 1)
 @AllArgsConstructor
 @NoArgsConstructor
-@JsonResultParamHandle(param1 = "sku",param2 = "repo",param3 = "id")
 public class DbResSkuRepo extends Base{
 	@Id
 	@Column(name = "id")

@@ -4,6 +4,7 @@ import com.pccw.backend.annotation.JsonResultParamHandle;
 import com.pccw.backend.bean.GeneralBean;
 import com.pccw.backend.bean.JsonResult;
 import com.pccw.backend.repository.BaseRepository;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.JoinColumn;
 import java.lang.reflect.Constructor;
@@ -14,9 +15,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+@Slf4j
 public class GeneralCtrl {
     /**
-     * 将结果集按照指定bean格式输出
+     * 将结果集按照指定bean格式,并装入JsonResult返回
      * @param repo repository对象
      * @param bean 指定的bean对象
      * @param <E>
@@ -24,19 +26,48 @@ public class GeneralCtrl {
      */
     public <E> JsonResult JsonResultHandle(BaseRepository repo, GeneralBean bean){
         try {
-            List<E> list = repo.findAll();
-            List<GeneralBean> res = list.stream().map(item->{
-                JsonResultParamHandle annotation = item.getClass().getAnnotation(JsonResultParamHandle.class);
-                GeneralBean generalBean = bean;
-                if (!Objects.isNull(annotation)) {
-                    generalBean = setGeneralBean(item, annotation,bean);
-                }
-                return generalBean;
-            }).collect(Collectors.toList());
+            List<GeneralBean> res = getGeneralBeans(repo, bean);
             return JsonResult.success(res);
         } catch (Exception e) {
             return JsonResult.fail(e);
         }
+    }
+
+    /**
+     * 将结果集按照指定bean格式,并装入JsonResult，并在末尾插入一个bean
+     * @param repo repository对象
+     * @param bean 插入的bean对象
+     * @param <E>
+     * @return
+     */
+    public <E> JsonResult addRowJsonResult(BaseRepository repo, GeneralBean bean){
+        try {
+            List<GeneralBean> res = getGeneralBeans(repo, bean);
+            res.add(bean);
+            return JsonResult.success(res);
+        } catch (Exception e) {
+            return JsonResult.fail(e);
+        }
+    }
+
+    /**
+     * 将结果集按照指定bean格式输出
+     * @param repo repository对象
+     * @param bean 指定的bean对象
+     * @param <E>
+     * @return
+     */
+    public <E> List<GeneralBean> getGeneralBeans(BaseRepository repo, GeneralBean bean) {
+        List<E> list = repo.findAll();
+        return list.stream().map(item->{
+            JsonResultParamHandle annotation = item.getClass().getAnnotation(JsonResultParamHandle.class);
+            GeneralBean generalBean = bean;
+            if (!Objects.isNull(annotation)) {
+                generalBean = setGeneralBean(item, annotation,bean);
+                log.info(generalBean.toString());
+            }
+            return generalBean;
+        }).collect(Collectors.toList());
     }
 
     /**
@@ -102,6 +133,7 @@ public class GeneralCtrl {
             constructor.setAccessible(true);
             //装配参数
             bean = constructor.newInstance(new Object[]{param1,param2,param3});
+
         } catch (NoSuchFieldException e) {
             e.printStackTrace();
         }catch (NoSuchMethodException e) {

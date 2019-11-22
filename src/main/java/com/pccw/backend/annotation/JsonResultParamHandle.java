@@ -9,8 +9,8 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface LabelAndValueAnnotation {
-    public String Value() default "";
-    public String Label() default "";
-    public String Other() default "";
+public @interface JsonResultParamHandle {
+    public String param1() default "";
+    public String param2() default "";
+    public String param3() default "";
 }

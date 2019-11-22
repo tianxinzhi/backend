@@ -6,12 +6,13 @@ package com.pccw.backend.bean;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 // @Builder
-// @NoArgsConstructor
+ @NoArgsConstructor
 @AllArgsConstructor
-public class CommonBean extends BaseBean {
+public class CommonBean extends BaseBean implements GeneralBean{
 	private Long id;
     private Long pid;
     private String name;

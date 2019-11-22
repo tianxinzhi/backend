@@ -51,14 +51,16 @@ public class Stock_ReplenishmentCtrl extends BaseCtrl<DbResLogRepl> {
             long t = new Date().getTime();
             b.setCreateAt(t);
             b.setActive("Y");
-            if(StaticVariable.LOGORDERNATURE_REPLENISHMENT_RECEIVEN.equals(b.getReplType())){
-                b.setRepoIdFrom(b.getLogRepoOut());
-                b.setRepoIdTo(b.getLogRepoIn());
-                b.setLogOrderNature(StaticVariable.LOGORDERNATURE_REPLENISHMENT_RECEIVEN);
-                b.setStatus(StaticVariable.STATUS_DONE);
-            }else{
+            if(StaticVariable.LOGORDERNATURE_REPLENISHMENT_REQUEST.equals(b.getReplType())){
                 b.setLogOrderNature(StaticVariable.LOGORDERNATURE_REPLENISHMENT_REQUEST);
                 b.setStatus(StaticVariable.STATUS_WAITING);
+            }else{
+                if(!Objects.isNull(b.getLogRepoOut())){
+                    b.setRepoIdFrom(b.getLogRepoOut());
+                }
+                b.setRepoIdTo(b.getLogRepoIn());
+//                b.setLogOrderNature(StaticVariable.LOGORDERNATURE_REPLENISHMENT_RECEIVEN);
+                b.setStatus(StaticVariable.STATUS_DONE);
             }
             b.setLogType(StaticVariable.LOGTYPE_REPL);
 
@@ -72,7 +74,21 @@ public class Stock_ReplenishmentCtrl extends BaseCtrl<DbResLogRepl> {
                 dt.setLogTxtBum(b.getLogTxtBum());
                 DbResLogReplDtl dtl = new DbResLogReplDtl();
                 BeanUtils.copyProperties(dt, dtl);
-                if(StaticVariable.LOGORDERNATURE_REPLENISHMENT_RECEIVEN.equals(b.getReplType())){
+                if(StaticVariable.LOGORDERNATURE_REPLENISHMENT_REQUEST.equals(b.getReplType())){
+                    dtl.setLisStatus(StaticVariable.LISSTATUS_WAITING);
+                    //res_sku_repo仓库数量减
+//                    DbResSkuRepo skuRepo = rsRepo.findQtyByRepoAndShopAndType(b.getRepoIdFrom(), dtl.getDtlSkuId(), 3l);
+//                    if(!Objects.isNull(skuRepo)){
+//                        DbResSkuRepo skuRepo1 = rsRepo.findById(skuRepo.getId()).get();
+//                        skuRepo1.setUpdateAt(t);
+//                        long qty = skuRepo.getQty() - dtl.getDtlQty();
+//                        if(qty > 0){
+//                            skuRepo1.setQty((int) qty);
+//                        }else {
+//                            rsRepo.deleteById(skuRepo.getId());
+//                        }
+//                    }
+                }else{
                     dtl.setDtlAction(StaticVariable.DTLACTION_ADD);
                     dtl.setDtlSubin(StaticVariable.DTLSUBIN_GOOD);
                     dtl.setLisStatus(StaticVariable.LISSTATUS_WAITING);
@@ -95,20 +111,6 @@ public class Stock_ReplenishmentCtrl extends BaseCtrl<DbResLogRepl> {
                         skuShop2.setSku(resSkuRepo.findById(dtl.getDtlSkuId()).get());
                         rsRepo.saveAndFlush(skuShop2);
                     }
-                }else{
-                    dtl.setLisStatus(StaticVariable.LISSTATUS_WAITING);
-                    //res_sku_repo仓库数量减
-//                    DbResSkuRepo skuRepo = rsRepo.findQtyByRepoAndShopAndType(b.getRepoIdFrom(), dtl.getDtlSkuId(), 3l);
-//                    if(!Objects.isNull(skuRepo)){
-//                        DbResSkuRepo skuRepo1 = rsRepo.findById(skuRepo.getId()).get();
-//                        skuRepo1.setUpdateAt(t);
-//                        long qty = skuRepo.getQty() - dtl.getDtlQty();
-//                        if(qty > 0){
-//                            skuRepo1.setQty((int) qty);
-//                        }else {
-//                            rsRepo.deleteById(skuRepo.getId());
-//                        }
-//                    }
                 }
                 dtl.setDbResLogRepl(repl);
                 repl.getLine().add(dtl);

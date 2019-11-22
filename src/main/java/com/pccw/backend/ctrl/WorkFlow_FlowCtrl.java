@@ -3,6 +3,7 @@ package com.pccw.backend.ctrl;
 import com.pccw.backend.bean.JsonResult;
 import com.pccw.backend.bean.workflow_flow.*;
 import com.pccw.backend.entity.DbResFlow;
+import com.pccw.backend.entity.DbResFlowStep;
 import com.pccw.backend.entity.DbResRole;
 import com.pccw.backend.repository.ResFlowRepository;
 import com.pccw.backend.bean.BaseDeleteBean;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * AuthRightCtrl
@@ -53,16 +55,19 @@ public class WorkFlow_FlowCtrl extends BaseCtrl<DbResFlow>{
                     SearchBean searchBean = new SearchBean();
                     BeanUtils.copyProperties(flow, searchBean);
                     List<Map> stepList = new ArrayList<>();
-                    for(int i=0;i<flow.getResFlowStepList().size();i++) {
-                        Optional<DbResRole> optional = repoRole.findById(flow.getResFlowStepList().get(i).getRoleId());
+                    List<DbResFlowStep> sortedList = flow.getResFlowStepList().stream().sorted(Comparator.comparing(DbResFlowStep::getStepNum)).collect(Collectors.toList());
+
+                    for(int i=0;i<sortedList.size();i++) {
+                        Optional<DbResRole> optional = repoRole.findById(sortedList.get(i).getRoleId());
                         DbResRole resRole = optional.get();
                         //详情
                         HashMap<Object, Object> hm = new HashMap<>();
                         hm.put("roleName",resRole.getRoleName());
-                        hm.put("stepNum",flow.getResFlowStepList().get(i).getStepNum());
+                        hm.put("stepNum",sortedList.get(i).getStepNum());
                         stepList.add(hm);
                     }
                     searchBean.setStepData(stepList);
+                    searchBean.setResFlowStepList(sortedList);
                     dbResFlow.add(searchBean);
                 }
             }

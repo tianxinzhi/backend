@@ -43,4 +43,8 @@ public interface  ResSkuRepoRepository extends BaseRepository<DbResSkuRepo>{
     @Query(value = "update res_sku_repo set qty = qty + ?4 where repo_id = ?1 and sku_id = ?2 and stock_type_id = ?3",nativeQuery = true)
     int updateQtyByRepoAndShopAndTypeAndQty(@Param("shop") long shop,@Param("sku") long sku,@Param("stockType")long stockType,@Param("qty")long qty);
 
+    @Query(value = "SELECT rsr.sku_id id,\n" +
+            "       (select sku_code  from res_sku where id=rsr.sku_id)  skuCode from res_sku_repo rsr where rsr.repo_id =?1  and rsr.stock_type_id = ?2",nativeQuery = true)
+    List<Map> findByTypeIdAndRepoId(@Param("id") Long id, @Param("stockTypeIdTo") Long stockTypeIdTo);
+
 }

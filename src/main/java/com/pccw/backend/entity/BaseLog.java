@@ -20,8 +20,14 @@ public class BaseLog extends Base{
 	@Column(name="log_type",length = 4)
         private String logType; 
         
-        // ASG(Assign) / RET(return) / EXC(Exchange) / ARS(Advanced Reserve) / CARS(Cancel advance reserve) / APU(Advance pick up) / RREQ(Replenishment request)/ RREC(Replenishment receive)
-        // TRO(transfer out)/ TRI(transfer in)/ RES(Reserve)/ CRES(Cancel Reserve)/ STA(Stock Take Adjustment)/ TRW(Transfer to Warehouse) 
+        // ASG(Assign) / RET(return) / EXC(Exchange) 
+        // ARS(Advanced Reserve) / CARS(Cancel advance reserve) / APU(Advance pick up) 
+        // RREQ(Replenishment request)
+        // SOTS(stock out to shop)/ SIFS(stock in from shop)
+        // SOTW(stock out to warehouse)/ SIFW(stock in from warehouse)
+        // SIWPO(stock in without PO)
+        // ST(Stock Take) / STA(Stock Take Adjustment) 
+        // SCC(stock change category)
         @Column(name = "log_orderNature", length = 8)
         private String logOrderNature;
         

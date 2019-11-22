@@ -1,16 +1,11 @@
 package com.pccw.backend.ctrl;
 
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
-import com.pccw.backend.bean.JsonResult;
+import com.pccw.backend.bean.*;
 import com.pccw.backend.repository.BaseRepository;
 import com.pccw.backend.util.Convertor;
-import com.pccw.backend.bean.BaseBean;
-import com.pccw.backend.bean.BaseSearchBean;
-import com.pccw.backend.bean.BaseDeleteBean;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.PageRequest;
@@ -82,5 +77,5 @@ public class BaseCtrl<T>{
         } catch (Exception e) {
             throw e;
         }
-    } 
+    }
 }

@@ -29,5 +29,6 @@ public class SearchBean extends BaseBean {
     @ApiModelProperty(value="qty",name="调整数量",example="")
     private long dtlQty;
 
-
+    @ApiModelProperty(value="skuCode",name="调整数量",example="")
+    private String skuCode;
 }

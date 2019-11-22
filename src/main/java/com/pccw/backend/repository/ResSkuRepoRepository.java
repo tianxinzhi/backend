@@ -1,6 +1,7 @@
 package com.pccw.backend.repository;
 
 
+import com.pccw.backend.entity.DbResRepo;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
@@ -51,4 +52,5 @@ public interface  ResSkuRepoRepository extends BaseRepository<DbResSkuRepo>{
             "       (select sku_code  from res_sku where id=rsr.sku_id)  skuCode from res_sku_repo rsr where rsr.repo_id =?1  and rsr.stock_type_id = ?2",nativeQuery = true)
     List<Map> findByTypeIdAndRepoId(@Param("id") Long id, @Param("stockTypeIdTo") Long stockTypeIdTo);
 
+    List<DbResSkuRepo> findDbResSkuRepoByRepo(DbResRepo repo);
 }

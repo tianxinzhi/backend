@@ -2,9 +2,12 @@ package com.pccw.backend.ctrl;
 
 
 import com.pccw.backend.bean.JsonResult;
+import com.pccw.backend.bean.LabelAndValue;
 import com.pccw.backend.bean.StaticVariable;
 import com.pccw.backend.bean.stock_out.CreateBean;
+import com.pccw.backend.bean.stock_out.SearchBean;
 import com.pccw.backend.entity.DbResLogMgt;
+import com.pccw.backend.entity.DbResSkuRepo;
 import com.pccw.backend.repository.ResLogMgtRepository;
 import com.pccw.backend.repository.ResSkuRepoRepository;
 import io.swagger.annotations.ApiOperation;
@@ -13,6 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 
 @Slf4j
@@ -26,6 +32,24 @@ public class Stock_OutCtrl  extends BaseCtrl<DbResLogMgt> {
 
     @Autowired
     ResSkuRepoRepository skuRepoRepository;
+
+    @ApiOperation(value="查询shop",tags={"masterfile_repo"},notes="说明")
+    @RequestMapping(method = RequestMethod.POST,path="/search")
+    public JsonResult search(@RequestBody SearchBean b) {
+        log.info(b.toString());
+        try {
+            List<Map> list = skuRepoRepository.findByTypeIdAndRepoId(b.getRepoId(),3L);
+            System.out.println("list:" + list);
+            List<LabelAndValue> res = list.stream().map(r->{
+                return new LabelAndValue(r.get("ID"),r.get("SKUCODE"),null);
+            }).collect(Collectors.toList());
+            return JsonResult.success(res);
+
+        } catch (Exception e) {
+            log.info(e.getMessage());
+            return JsonResult.fail(e);
+        }
+    }
 
     @ApiOperation(value="创建stock_out",tags={"stock_out"},notes="说明")
     @RequestMapping(method = RequestMethod.POST,path="/create")
@@ -56,7 +80,6 @@ public class Stock_OutCtrl  extends BaseCtrl<DbResLogMgt> {
                 }
             }
            //
-
             return this.create(repo, DbResLogMgt.class, b);
         } catch (Exception e) {
             return JsonResult.fail(e);

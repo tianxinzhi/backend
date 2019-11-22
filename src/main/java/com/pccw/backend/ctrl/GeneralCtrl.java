@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class GeneralCtrl {
     /**
-     * 将结果集按照指定bean格式,并装入JsonResult返回
+     * 将默认查询结果集按照指定bean格式,并装入JsonResult返回
      * @param repo repository对象
      * @param bean 指定的bean对象
      * @param <E>
@@ -26,7 +26,7 @@ public class GeneralCtrl {
      */
     public <E> JsonResult JsonResultHandle(BaseRepository repo, GeneralBean bean){
         try {
-            List<GeneralBean> res = getGeneralBeans(repo, bean);
+            List<GeneralBean> res = getDefualtSearchBeans(repo, bean);
             return JsonResult.success(res);
         } catch (Exception e) {
             return JsonResult.fail(e);
@@ -34,15 +34,15 @@ public class GeneralCtrl {
     }
 
     /**
-     * 将结果集按照指定bean格式,并装入JsonResult，并在末尾插入一个bean
+     * 将默认查询结果集按照指定bean格式,并装入JsonResult，并在末尾插入一个bean
      * @param repo repository对象
      * @param bean 插入的bean对象
      * @param <E>
      * @return
      */
-    public <E> JsonResult addRowJsonResult(BaseRepository repo, GeneralBean bean){
+    public <E> JsonResult addRowJsonResultHandle(BaseRepository repo, GeneralBean bean){
         try {
-            List<GeneralBean> res = getGeneralBeans(repo, bean);
+            List<GeneralBean> res = getDefualtSearchBeans(repo, bean);
             res.add(bean);
             return JsonResult.success(res);
         } catch (Exception e) {
@@ -51,14 +51,41 @@ public class GeneralCtrl {
     }
 
     /**
-     * 将结果集按照指定bean格式输出
+     * 将自定义查询的结果集按照指定bean格式,并装入JsonResult
+     * @param bean
+     * @param list
+     * @param <E>
+     * @return
+     */
+    public <E> JsonResult customSearchJsonResultHandle(GeneralBean bean, List<E> list){
+        try {
+            List<GeneralBean> res = getCollect(bean,list);
+            return JsonResult.success(res);
+        } catch (Exception e) {
+            return JsonResult.fail(e);
+        }
+    }
+
+    /**
+     * 默认查询全部的数据结果集
      * @param repo repository对象
      * @param bean 指定的bean对象
      * @param <E>
      * @return
      */
-    public <E> List<GeneralBean> getGeneralBeans(BaseRepository repo, GeneralBean bean) {
+    private <E> List<GeneralBean> getDefualtSearchBeans(BaseRepository repo, GeneralBean bean) {
         List<E> list = repo.findAll();
+        return getCollect(bean, list);
+    }
+
+    /**
+     * 将集合转换成指定bean格式
+     * @param bean
+     * @param list
+     * @param <E>
+     * @return
+     */
+    private <E> List<GeneralBean> getCollect(GeneralBean bean, List<E> list) {
         return list.stream().map(item->{
             JsonResultParamHandle annotation = item.getClass().getAnnotation(JsonResultParamHandle.class);
             GeneralBean generalBean = bean;
@@ -78,7 +105,7 @@ public class GeneralCtrl {
      * @param <E>
      * @return
      */
-    public <E> GeneralBean setGeneralBean(E item, JsonResultParamHandle annotation, GeneralBean generalBean) {
+    private <E> GeneralBean setGeneralBean(E item, JsonResultParamHandle annotation, GeneralBean generalBean) {
         GeneralBean bean = generalBean;
         try {
             //将bean的属性类型存入数组

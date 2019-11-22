@@ -52,7 +52,7 @@ public class CommonCtrl  extends GeneralCtrl{
     @ApiOperation(value="获取res_right表的信息",tags={"common"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.GET,path="/rightModule")
     public JsonResult<TreeNode> search() {
-         return this.addRowJsonResult(right_repo,new TreeNode(0L,-1L,"SMP"));
+         return this.addRowJsonResultHandle(right_repo,new TreeNode(0L,-1L,"SMP"));
     }
 
     @ApiOperation(value="获取res_sku表的skuCode和id信息",tags={"common"},notes="注意问题点")
@@ -106,17 +106,9 @@ public class CommonCtrl  extends GeneralCtrl{
     @ApiOperation(value="获取res_adjust_reason表的adjustReasonName和id信息",tags={"common"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.GET,path="/adjustReasonModule")
     public JsonResult<LabelAndValue> searchAdjustReason(){
-//        try {
-            List<DbResAdjustReason> list =  adjustReasonRepository.findAll().stream().filter
-                    (reason -> !reason.getAdjustReasonName().equals("Other reason")).collect(Collectors.toList());
-            return this.
-//            List<LabelAndValue> res = list.stream().map(r->{
-//                return new LabelAndValue(r.getId(),r.getAdjustReasonName(),r.getRemark());
-//            }).collect(Collectors.toList());
-//            return JsonResult.success(res);
-//        } catch (Exception e) {
-//            return JsonResult.fail(e);
-//        }
+        List<DbResAdjustReason> list =  adjustReasonRepository.findAll().stream().filter
+                (reason -> !reason.getAdjustReasonName().equals("Other reason")).collect(Collectors.toList());
+        return this.customSearchJsonResultHandle(new LabelAndValue(),list);
     }
 
     @ApiOperation(value="获取res_role表的roleName和id信息",tags={"common"},notes="注意问题点")

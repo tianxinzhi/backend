@@ -45,20 +45,6 @@ public class Stock_InCtrl extends BaseCtrl<DbResLogMgt>{
                 lineList.get(i).setLisStatus(StaticVariable.LISSTATUS_WAITING);
                 lineList.get(i).setId(null);
 
-//                if (rsrr.findQtyByRepoAndShopAndType(bean.getLogRepoIn(),
-//                                                     lineList.get(i).getDtlSkuId(),
-//                                                     3) != null) {
-//
-//                    rsrr.updateQtyByRepoAndShopAndTypeAndQty(bean.getLogRepoIn(),
-//                                                             lineList.get(i).getDtlSkuId(),
-//                                                             3,
-//                                                             lineList.get(i).getDtlQty());
-//                }else {
-//                    rsrr.saveRepoAndShopAndTypeAndQty(bean.getLogRepoIn(),
-//                            lineList.get(i).getDtlSkuId(),
-//                            3,
-//                            lineList.get(i).getDtlQty());
-//                }
 
                 DbResSku dbResSku = new DbResSku();
                 dbResSku.setId(lineList.get(i).getDtlSkuId());

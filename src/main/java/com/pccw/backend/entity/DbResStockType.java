@@ -1,5 +1,6 @@
 package com.pccw.backend.entity;
 
+import com.pccw.backend.annotation.JsonResultParamHandle;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,6 +17,7 @@ import java.util.List;
 @Entity
 @Table(name = "res_stock_type")
 @SequenceGenerator(name="id_stockType",sequenceName = "stockType_seq",allocationSize = 1)
+@JsonResultParamHandle(param1 = "id",param2 = "stockTypeName")
 public class DbResStockType extends Base{
 	@Id
 	@Column(name = "id")

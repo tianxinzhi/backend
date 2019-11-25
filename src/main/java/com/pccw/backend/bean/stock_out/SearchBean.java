@@ -19,6 +19,9 @@ import lombok.NoArgsConstructor;
 public class SearchBean extends BaseSearchBean {
 
     @ApiModelProperty(value="门店id",name="repoId",example="")
-    private long repoId;
+    private long fromRepoId;
+
+    @ApiModelProperty(value="门店id",name="repoId",example="")
+    private long toRepoId;
     
 }

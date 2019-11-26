@@ -107,7 +107,7 @@ public class CommonCtrl  extends GeneralCtrl{
     @RequestMapping(method = RequestMethod.GET,path="/adjustReasonModule")
     public JsonResult<LabelAndValue> searchAdjustReason(){
         List<DbResAdjustReason> list =  adjustReasonRepository.findAll().stream().filter
-                (reason -> !reason.getAdjustReasonName().equals("Other reason")).collect(Collectors.toList());
+                (reason -> !reason.getAdjustReasonName().equals("Other Reason")).collect(Collectors.toList());
         return this.customSearchJsonResultHandle(new LabelAndValue(),list);
     }
 

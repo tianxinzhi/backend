@@ -38,7 +38,7 @@ public class DbResAttrValue extends Base{
 
 	@JsonBackReference
 	@JsonIgnoreProperties(value = { "attrAttrValueList" })
-	@OneToMany(mappedBy = "attrValue",cascade = CascadeType.PERSIST)
+	@OneToMany(mappedBy = "attrValue",cascade = CascadeType.ALL)
 	private List<DbResAttrAttrValue> attrAttrValueList;
 
 

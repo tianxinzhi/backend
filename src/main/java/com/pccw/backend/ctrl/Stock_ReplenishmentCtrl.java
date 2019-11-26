@@ -59,7 +59,7 @@ public class Stock_ReplenishmentCtrl extends BaseCtrl<DbResLogRepl> {
                     b.setRepoIdFrom(b.getLogRepoOut());
                 }
                 b.setRepoIdTo(b.getLogRepoIn());
-//                b.setLogOrderNature(StaticVariable.LOGORDERNATURE_REPLENISHMENT_RECEIVEN);
+                b.setLogOrderNature(b.getReplType());
                 b.setStatus(StaticVariable.STATUS_DONE);
             }
             b.setLogType(StaticVariable.LOGTYPE_REPL);

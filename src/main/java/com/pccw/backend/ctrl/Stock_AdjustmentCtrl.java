@@ -57,7 +57,7 @@ public class Stock_AdjustmentCtrl extends BaseCtrl<DbResLogMgt> {
                 ent.setAdjustReasonId(bean.getReason());
             } else {
                 DbResAdjustReason resAdjustReason = new DbResAdjustReason();
-                resAdjustReason.setAdjustReasonName("Other reason");
+                resAdjustReason.setAdjustReasonName("Other Reason");
                 resAdjustReason.setRemark(bean.getRemark());
                 resAdjustReason.setCreateAt(bean.getCreateDate());
                 resAdjustReason.setUpdateAt(bean.getCreateDate());

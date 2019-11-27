@@ -52,6 +52,7 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> {
             DbResSku sku = new DbResSku();
             sku.setSkuCode(bean.getSkuCode());
             sku.setSkuDesc(bean.getSkuDesc());
+            sku.setSkuName(bean.getSkuName());
             sku.setActive("Y");
             sku.setCreateAt(System.currentTimeMillis());
             sku.setUpdateAt(System.currentTimeMillis());
@@ -118,6 +119,7 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> {
             System.out.println("bean:" + bean);
             DbResSku sku = skuRepo.findById(bean.getId()).get();
             sku.setSkuCode(bean.getSkuCode());
+            sku.setSkuName(bean.getSkuName());
             sku.setSkuDesc(bean.getSkuDesc());
             sku.setUpdateAt(System.currentTimeMillis());
 

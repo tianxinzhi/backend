@@ -27,7 +27,7 @@ public class DbResStockType extends Base{
 	@Column(name = "stocktype_name",length = 64)
 	private String stockTypeName;
 
-	@OneToMany(cascade={CascadeType.ALL},mappedBy = "stockType",orphanRemoval = true)
+	@OneToMany(cascade={CascadeType.ALL},mappedBy = "stockType")
 	private List<DbResSkuRepo> skuRepoList;
 
 

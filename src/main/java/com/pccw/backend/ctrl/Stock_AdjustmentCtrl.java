@@ -9,6 +9,7 @@ import com.pccw.backend.entity.*;
 import com.pccw.backend.repository.ResAdjustReasonRepository;
 import com.pccw.backend.repository.ResLogMgtRepository;
 import com.pccw.backend.repository.ResSkuRepoRepository;
+import com.pccw.backend.repository.ResStockTypeRepository;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -40,6 +41,8 @@ public class Stock_AdjustmentCtrl extends BaseCtrl<DbResLogMgt> {
     ResSkuRepoRepository skuRepoRepository;
     @Autowired
     ResAdjustReasonRepository reasonRepository;
+    @Autowired
+    ResStockTypeRepository stockTypeRepository;
 
     @ApiOperation(value="调货",tags={"stock_adjustment"},notes="说明")
     @RequestMapping("/confirm")
@@ -68,10 +71,11 @@ public class Stock_AdjustmentCtrl extends BaseCtrl<DbResLogMgt> {
             ent.setCreateAt(bean.getCreateDate());
             ent.setUpdateAt(bean.getCreateDate());
             ent.setActive("Y");
-//        ent.setCreateBy(1);
-//        ent.setUpdateBy(1);
+            ent.setCreateBy(bean.getCreateBy());
+            ent.setUpdateBy(bean.getUpdateBy());
 
             List<DbResLogMgtDtl> lstMgtDtl = new LinkedList<>();
+            List<DbResStockType> stockTypes = stockTypeRepository.findAll();
             for(LogMgtDtlBean dtl:bean.getLine()) {
                 DbResLogMgtDtl mgtDtl = new DbResLogMgtDtl();
                 mgtDtl.setDtlRepoId(bean.getLogRepoOut());
@@ -82,10 +86,13 @@ public class Stock_AdjustmentCtrl extends BaseCtrl<DbResLogMgt> {
                 mgtDtl.setLisStatus(StaticVariable.LISSTATUS_WAITING);
                 mgtDtl.setCreateAt(bean.getCreateDate());
                 mgtDtl.setUpdateAt(bean.getCreateDate());
-    //            mgtDtl.setCreateBy(1);
-    //            mgtDtl.setUpdateBy(1);
+                mgtDtl.setCreateBy(bean.getCreateBy());
+                mgtDtl.setUpdateBy(bean.getUpdateBy());
                 mgtDtl.setActive("Y");
                 mgtDtl.setResLogMgt(ent);
+//                for (DbResStockType stockType : stockTypes) {
+//                    if(){}
+//                }
                 switch ((int)dtl.getCatalog()) {
                     case 1:
                         mgtDtl.setDtlSubin(StaticVariable.DTLSUBIN_DEMO);

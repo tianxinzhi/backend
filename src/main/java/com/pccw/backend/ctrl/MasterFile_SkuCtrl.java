@@ -3,6 +3,7 @@ package com.pccw.backend.ctrl;
 import com.pccw.backend.bean.BaseDeleteBean;
 import com.pccw.backend.bean.JsonResult;
 import com.pccw.backend.bean.LabelAndValue;
+import com.pccw.backend.bean.StaticVariable;
 import com.pccw.backend.bean.masterfile_sku.CreateBean;
 import com.pccw.backend.bean.masterfile_sku.EditBean;
 import com.pccw.backend.bean.masterfile_sku.SearchBean;
@@ -11,6 +12,7 @@ import com.pccw.backend.entity.*;
 import com.pccw.backend.repository.ResAttrRepository;
 import com.pccw.backend.repository.ResSkuRepository;
 import com.pccw.backend.repository.ResSkuTypeRepository;
+import com.pccw.backend.repository.ResStockTypeRepository;
 import com.pccw.backend.util.Convertor;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -44,6 +46,9 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> {
     @Autowired
     ResAttrRepository attrRepo;
 
+    @Autowired
+    ResStockTypeRepository stockTypeRepository;
+
     @ApiOperation(value="创建sku",tags={"masterfile_sku"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST,value = "/create")
     public JsonResult create(@RequestBody CreateBean bean) {
@@ -56,6 +61,8 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> {
             sku.setActive("Y");
             sku.setCreateAt(System.currentTimeMillis());
             sku.setUpdateAt(System.currentTimeMillis());
+            sku.setCreateBy(bean.getCreateBy());
+            sku.setUpdateBy(bean.getUpdateBy());
 
             List<DbResSkuType> skuTypeList = new LinkedList<>();
             DbResSkuType skuType = new DbResSkuType();
@@ -76,6 +83,8 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> {
                     skuAttrValue.setActive("Y");
                     skuAttrValue.setCreateAt(System.currentTimeMillis());
                     skuAttrValue.setUpdateAt(System.currentTimeMillis());
+                    skuAttrValue.setCreateBy(bean.getCreateBy());
+                    skuAttrValue.setUpdateBy(bean.getUpdateBy());
                     skuAttrValueList.add(skuAttrValue);
                 }
             }
@@ -88,11 +97,17 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> {
             resSkuRepo.setRepo(repo);
             DbResStockType stockType = new DbResStockType();
             stockType.setId(3L);
+//            for (DbResStockType dbResStockType : stockTypeRepository.findAll()) {
+//                if(dbResStockType.getStockTypeName().trim().equals(StaticVariable.DTLSUBIN_AVAILABLE))
+//                    stockType = dbResStockType;
+//            }
             resSkuRepo.setStockType(stockType);
             resSkuRepo.setQty((int)bean.getQty());
             resSkuRepo.setActive("Y");
             resSkuRepo.setCreateAt(System.currentTimeMillis());
             resSkuRepo.setUpdateAt(System.currentTimeMillis());
+            resSkuRepo.setCreateBy(bean.getCreateBy());
+            resSkuRepo.setUpdateBy(bean.getUpdateBy());
             skuRepoList.add(resSkuRepo);
 
             sku.setSkuRepoList(skuRepoList);
@@ -122,7 +137,10 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> {
             sku.setSkuName(bean.getSkuName());
             sku.setSkuDesc(bean.getSkuDesc());
             sku.setUpdateAt(System.currentTimeMillis());
-
+            sku.setCreateBy(bean.getCreateBy());
+            sku.setUpdateBy(bean.getUpdateBy());
+            sku.setCreateBy(bean.getCreateBy());
+            sku.setUpdateBy(bean.getUpdateBy());
             List<DbResSkuAttrValue> skuAttrValueList = sku.getSkuAttrValueList();
             List<DbResSkuType> skuTypeList = sku.getSkuTypeList();
             List<DbResSkuRepo> skuRepoList = sku.getSkuRepoList();
@@ -136,6 +154,8 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> {
             skuType.setActive("Y");
             skuType.setCreateAt(System.currentTimeMillis());
             skuType.setUpdateAt(System.currentTimeMillis());
+            skuType.setCreateBy(bean.getCreateBy());
+            skuType.setUpdateBy(bean.getUpdateBy());
             skuTypeList.add(skuType);
 
             for(int i=0;i<bean.getAttrs().length;i++){
@@ -150,6 +170,8 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> {
                     skuAttrValue.setActive("Y");
                     skuAttrValue.setCreateAt(System.currentTimeMillis());
                     skuAttrValue.setUpdateAt(System.currentTimeMillis());
+                    skuAttrValue.setCreateBy(bean.getCreateBy());
+                    skuAttrValue.setUpdateBy(bean.getUpdateBy());
                     skuAttrValueList.add(skuAttrValue);
                 }
             }
@@ -166,6 +188,8 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> {
             resSkuRepo.setActive("Y");
             resSkuRepo.setCreateAt(System.currentTimeMillis());
             resSkuRepo.setUpdateAt(System.currentTimeMillis());
+            resSkuRepo.setCreateBy(bean.getCreateBy());
+            resSkuRepo.setUpdateBy(bean.getUpdateBy());
             skuRepoList.add(resSkuRepo);
 
             skuRepo.saveAndFlush(sku);

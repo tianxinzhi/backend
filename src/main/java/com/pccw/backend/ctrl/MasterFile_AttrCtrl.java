@@ -63,6 +63,8 @@ public class MasterFile_AttrCtrl extends BaseCtrl<DbResAttr> {
                 attrAttrValue.setActive("Y");
                 attrAttrValue.setCreateAt(System.currentTimeMillis());
                 attrAttrValue.setUpdateAt(System.currentTimeMillis());
+                attrAttrValue.setCreateBy(bean.getCreateBy());
+                attrAttrValue.setUpdateBy(bean.getUpdateBy());
                 attrAttrValueList.add(attrAttrValue);
             }
             attr.setAttrAttrValueList(attrAttrValueList);
@@ -100,6 +102,8 @@ public class MasterFile_AttrCtrl extends BaseCtrl<DbResAttr> {
                 resAttrAttrValue.setActive("Y");
                 resAttrAttrValue.setCreateAt(System.currentTimeMillis());
                 resAttrAttrValue.setUpdateAt(System.currentTimeMillis());
+                resAttrAttrValue.setCreateBy(b.getCreateBy());
+                resAttrAttrValue.setUpdateBy(b.getUpdateBy());
                 resAttrAttrValue.setAttr(resAttr);
                 resAttrAttrValue.setAttrValue(attrValue);
                 attrAttrValueList.add(resAttrAttrValue);

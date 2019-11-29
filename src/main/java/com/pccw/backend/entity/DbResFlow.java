@@ -28,6 +28,9 @@ public class DbResFlow extends Base{
     @Column(name="flow_desc")
     private String flowDesc;
 
+    @Column(name="flow_nature")
+    private String flowNature;
+
     @JsonManagedReference
     @OneToMany(cascade = CascadeType.ALL,orphanRemoval = true)
     @JoinColumn(name = "flow_id")

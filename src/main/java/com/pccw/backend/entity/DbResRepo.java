@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.persistence.*;
 
+import com.pccw.backend.annotation.JsonResultParamHandle;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,6 +19,7 @@ import lombok.Setter;
 @Entity
 @Table(name = "res_repo")
 @SequenceGenerator(name="id_repo",sequenceName = "repo_seq",allocationSize = 1)
+@JsonResultParamHandle(param1 = "id",param2 = "repoCode",param3 = "repoType")
 public class DbResRepo extends Base {
 
 	@Id
@@ -56,7 +58,7 @@ public class DbResRepo extends Base {
 	@Column(name = "repo_type", length = 11)
 	private String repoType;
 
-	@OneToMany(cascade={CascadeType.ALL},mappedBy = "repo",orphanRemoval = true)
+	@OneToMany(cascade={CascadeType.ALL},mappedBy = "repo")
 	private List<DbResSkuRepo> skuRepoList;
 
 }

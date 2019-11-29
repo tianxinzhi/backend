@@ -12,6 +12,11 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 @Slf4j
 @RestController
@@ -20,13 +25,13 @@ import org.springframework.web.bind.annotation.*;
 @Api(value = "MasterFile_AttrValueCtrl" ,tags = {"masterfile_attr_value"})
 public class MasterFile_AttrValueCtrl extends BaseCtrl<DbResAttrValue> {
 
+
     @Autowired
     ResAttrValueRepository repo;
 
     @ApiOperation(value="创建attr_value",tags={"masterfile_attr_value"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST,value = "/create")
     public JsonResult create(@RequestBody CreateBean bean) {
-        System.out.println("attrValue:"+bean);
         return this.create(repo,DbResAttrValue.class,bean);
     }
 

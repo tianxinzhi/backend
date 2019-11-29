@@ -2,6 +2,7 @@ package com.pccw.backend.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.pccw.backend.annotation.JsonResultParamHandle;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -16,6 +17,7 @@ import java.util.List;
 @Table(name = "res_attr_value")
 @Data
 @SequenceGenerator(name="id_attrValue",sequenceName = "attrValue_seq",allocationSize = 1)
+@JsonResultParamHandle(param1 = "id",param2 = "attrValue")
 public class DbResAttrValue extends Base{
 	@Id
 	@Column(name = "id")
@@ -36,7 +38,7 @@ public class DbResAttrValue extends Base{
 
 	@JsonBackReference
 	@JsonIgnoreProperties(value = { "attrAttrValueList" })
-	@OneToMany(mappedBy = "attrValue",cascade = CascadeType.PERSIST)
+	@OneToMany(mappedBy = "attrValue",cascade = CascadeType.ALL)
 	private List<DbResAttrAttrValue> attrAttrValueList;
 
 

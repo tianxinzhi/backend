@@ -11,9 +11,9 @@ import lombok.NoArgsConstructor;
 @ApiModel(value = "System 模块 - LoginBean", description = "")
 public class LoginBean extends BaseBean {
 
-    @ApiModelProperty(value="用户名",name="accountName",example="")
-    private String accountName;
+    @ApiModelProperty(value="用户名",name="username",example="")
+    private String username;
 
-    @ApiModelProperty(value="密码",name="accountPassword",example="")
-    private String accountPassword;
+    @ApiModelProperty(value="密码",name="password",example="")
+    private String password;
 }

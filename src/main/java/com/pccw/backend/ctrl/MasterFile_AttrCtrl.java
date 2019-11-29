@@ -50,8 +50,8 @@ public class MasterFile_AttrCtrl extends BaseCtrl<DbResAttr> {
             attr.setActive("Y");
             attr.setCreateAt(System.currentTimeMillis());
             attr.setUpdateAt(System.currentTimeMillis());
-//        attr.setCreateBy(1);
-//        attr.setUpdateBy(1);
+            attr.setCreateBy(bean.getCreateBy());
+            attr.setUpdateBy(bean.getUpdateBy());
             List<DbResAttrAttrValue> attrAttrValueList = new LinkedList<>();
 
             for(String value:bean.getAttrValues()){
@@ -87,6 +87,8 @@ public class MasterFile_AttrCtrl extends BaseCtrl<DbResAttr> {
             resAttr.setAttrDesc(b.getAttrDesc());
             resAttr.setAttrName(b.getAttrName());
             resAttr.setUpdateAt(System.currentTimeMillis());
+            resAttr.setCreateBy(b.getCreateBy());
+            resAttr.setUpdateBy(b.getUpdateBy());
             List<DbResAttrAttrValue> attrAttrValueList = resAttr.getAttrAttrValueList();
             attrAttrValueList.clear();
             for(String valueId:b.getAttrValues()){

@@ -5,6 +5,7 @@ import com.pccw.backend.bean.GeneralBean;
 import com.pccw.backend.bean.JsonResult;
 import com.pccw.backend.repository.BaseRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Sort;
 
 import javax.persistence.JoinColumn;
 import java.lang.reflect.Constructor;
@@ -74,7 +75,9 @@ public class GeneralCtrl {
      * @return
      */
     private <E> List<GeneralBean> getDefualtSearchBeans(BaseRepository repo, GeneralBean bean) {
-        List<E> list = repo.findAll();
+        Sort sort = new Sort(Sort.Direction.DESC, "id");
+        List<E> list = repo.findAll(sort);
+//        List<E> list = repo.findAll();
         return getCollect(bean, list);
     }
 

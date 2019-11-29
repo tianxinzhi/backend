@@ -89,6 +89,8 @@ public class Auth_AccountCtrl extends BaseCtrl<DbResAccount> {
                 accountRoles.add(accountRole);
             }
             BeanUtils.copyProperties(b,account);
+            account.setActive("Y");
+            account.setCreateAt(System.currentTimeMillis());
             account.setUpdateAt(System.currentTimeMillis());
             repo.saveAndFlush(account);
             return JsonResult.success(Arrays.asList());

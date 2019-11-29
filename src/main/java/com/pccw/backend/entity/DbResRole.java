@@ -41,5 +41,10 @@ public class DbResRole extends Base {
     @OneToMany(cascade = CascadeType.ALL,orphanRemoval = true)
     @JoinColumn(name = "role_id")
     private List<DbResRoleRight> resRoleRightList;
+
+    @JsonManagedReference
+    @OneToMany(cascade = CascadeType.ALL,orphanRemoval = true)
+    @JoinColumn(name = "role_id")
+    private List<DbResAccountRole> resAccountRoleList;
     
 }

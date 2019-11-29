@@ -9,6 +9,7 @@ import com.pccw.backend.entity.*;
 import com.pccw.backend.repository.ResAdjustReasonRepository;
 import com.pccw.backend.repository.ResLogMgtRepository;
 import com.pccw.backend.repository.ResSkuRepoRepository;
+import com.pccw.backend.repository.ResStockTypeRepository;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -40,6 +41,8 @@ public class Stock_AdjustmentCtrl extends BaseCtrl<DbResLogMgt> {
     ResSkuRepoRepository skuRepoRepository;
     @Autowired
     ResAdjustReasonRepository reasonRepository;
+    @Autowired
+    ResStockTypeRepository stockTypeRepository;
 
     @ApiOperation(value="调货",tags={"stock_adjustment"},notes="说明")
     @RequestMapping("/confirm")
@@ -68,10 +71,11 @@ public class Stock_AdjustmentCtrl extends BaseCtrl<DbResLogMgt> {
             ent.setCreateAt(bean.getCreateDate());
             ent.setUpdateAt(bean.getCreateDate());
             ent.setActive("Y");
-//        ent.setCreateBy(1);
-//        ent.setUpdateBy(1);
+            ent.setCreateBy(bean.getCreateBy());
+            ent.setUpdateBy(bean.getUpdateBy());
 
             List<DbResLogMgtDtl> lstMgtDtl = new LinkedList<>();
+
             for(LogMgtDtlBean dtl:bean.getLine()) {
                 DbResLogMgtDtl mgtDtl = new DbResLogMgtDtl();
                 mgtDtl.setDtlRepoId(bean.getLogRepoOut());
@@ -82,35 +86,19 @@ public class Stock_AdjustmentCtrl extends BaseCtrl<DbResLogMgt> {
                 mgtDtl.setLisStatus(StaticVariable.LISSTATUS_WAITING);
                 mgtDtl.setCreateAt(bean.getCreateDate());
                 mgtDtl.setUpdateAt(bean.getCreateDate());
-    //            mgtDtl.setCreateBy(1);
-    //            mgtDtl.setUpdateBy(1);
+                mgtDtl.setCreateBy(bean.getCreateBy());
+                mgtDtl.setUpdateBy(bean.getUpdateBy());
                 mgtDtl.setActive("Y");
                 mgtDtl.setResLogMgt(ent);
-                switch ((int)dtl.getCatalog()) {
-                    case 1:
-                        mgtDtl.setDtlSubin(StaticVariable.DTLSUBIN_DEMO);
-                        mgtDtl.setStatus(StaticVariable.STATUS_DEMO);
-                        break;
-                    case 2:
-                        mgtDtl.setDtlSubin(StaticVariable.DTLSUBIN_FAULTY);
-                        mgtDtl.setStatus(StaticVariable.STATUS_FAULTY);
-                        break;
-                    case 3:
-                        mgtDtl.setDtlSubin(StaticVariable.DTLSUBIN_AVAILABLE);
-                        mgtDtl.setStatus(StaticVariable.STATUS_AVAILABLE);
-                        break;
-                    case 4:
-                        mgtDtl.setDtlSubin(StaticVariable.DTLSUBIN_RESERVED);
-                        mgtDtl.setStatus(StaticVariable.STATUS_RESERVED);
-                        break;
-                    case 5:
-                        mgtDtl.setDtlSubin(StaticVariable.DTLSUBIN_RESERVED_WITH_AO);
-                        mgtDtl.setStatus(StaticVariable.STATUS_RESERVED_WITH_AO);
-                        break;
-                    case 6:
-                        mgtDtl.setDtlSubin(StaticVariable.DTLSUBIN_INTRANSIT);
-                        mgtDtl.setStatus(StaticVariable.STATUS_INTRANSIT);
-                        break;
+
+                DbResStockType stockType = stockTypeRepository.findById(dtl.getCatalog()).get();
+
+                if(stockType!=null){
+                    String type = stockType.getStockTypeName();
+                    String subin = type.substring(type.indexOf("(")+1,type.indexOf(")"));
+                    String status = type.replace(type.substring(type.indexOf("("),type.indexOf(")")+1),"");
+                    mgtDtl.setDtlSubin(subin);
+                    mgtDtl.setStatus(status);
                 }
                 lstMgtDtl.add(mgtDtl);
                 int res = skuRepoRepository.updateQtyByRepoAndShopAndTypeAndQty(bean.getLogRepoOut(),dtl.getDtlSkuId(),dtl.getCatalog(),dtl.getDtlQty());

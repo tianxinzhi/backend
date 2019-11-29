@@ -39,10 +39,10 @@ public class SystemAuthFilter extends BasicAuthenticationFilter {
                                     FilterChain chain) throws IOException, ServletException {
         String token = request.getHeader(StaticVariable.TOKEN_HEADER);
         System.out.println("token:" + token);
-        // 如果请求头中没有token信息则直接放行了
+        // 如果请求头中没有token信息则拦截请求
         if (token == null || token == "" || !token.startsWith(StaticVariable.TOKEN_PREFIX)) {
-            chain.doFilter(request, response);
-            return;
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            //return;
         } else {
             // 如果请求头中有token，则进行解析，并且设置授权信息
             SecurityContextHolder.getContext().setAuthentication(getAuthentication(token));

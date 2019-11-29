@@ -95,12 +95,11 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> {
             DbResRepo repo = new DbResRepo();
             repo.setId(bean.getStores());
             resSkuRepo.setRepo(repo);
-            DbResStockType stockType = new DbResStockType();
-            stockType.setId(3L);
-//            for (DbResStockType dbResStockType : stockTypeRepository.findAll()) {
-//                if(dbResStockType.getStockTypeName().trim().equals(StaticVariable.DTLSUBIN_AVAILABLE))
-//                    stockType = dbResStockType;
-//            }
+            DbResStockType stockType = null;
+            for (DbResStockType dbResStockType : stockTypeRepository.findAll()) {
+                if(dbResStockType.getStockTypeName().trim().equals(StaticVariable.DTLSUBIN_AVAILABLE))
+                    stockType = dbResStockType;
+            }
             resSkuRepo.setStockType(stockType);
             resSkuRepo.setQty((int)bean.getQty());
             resSkuRepo.setActive("Y");

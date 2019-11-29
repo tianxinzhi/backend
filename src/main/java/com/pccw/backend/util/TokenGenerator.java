@@ -16,7 +16,7 @@ public class TokenGenerator {
     private static BASE64Encoder encoder = new BASE64Encoder();
 
     public static String  makeToken (LoginBean bean) {
-        String token = (bean.getAccountName() + ":"+bean.getAccountPassword()) ;
+        String token = (bean.getUsername() + ":"+bean.getPassword()) ;
 //        System.out.println("old:"+token);
         try {
             md = MessageDigest.getInstance("md5");

@@ -21,9 +21,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 @Slf4j
 @RestController
@@ -89,6 +87,8 @@ public class Auth_AccountCtrl extends BaseCtrl<DbResAccount> {
                 accountRoles.add(accountRole);
             }
             BeanUtils.copyProperties(b,account);
+            account.setActive("Y");
+            account.setCreateAt(System.currentTimeMillis());
             account.setUpdateAt(System.currentTimeMillis());
             repo.saveAndFlush(account);
             return JsonResult.success(Arrays.asList());
@@ -123,6 +123,24 @@ public class Auth_AccountCtrl extends BaseCtrl<DbResAccount> {
             }
             return JsonResult.success(resList);
         } catch (IllegalArgumentException | IllegalAccessException | BeansException e) {
+            return JsonResult.fail(e);
+        }
+    }
+
+    @ApiOperation(value="根据用户ID搜索用户",tags={"auth_account"},notes="注意问题点")
+    @RequestMapping(method = RequestMethod.POST,path = "/searchById")
+    public JsonResult searchById(@RequestBody long id){
+        try {
+            List<Object> list = new ArrayList<>();
+            Optional<DbResAccount> optional = repo.findById(id);
+            try{
+                DbResAccount dbResAccount = optional.get();
+                list.add(dbResAccount);
+            }catch (Exception ex){
+                return null;
+            }
+            return JsonResult.success(list);
+        } catch (Exception e) {
             return JsonResult.fail(e);
         }
     }

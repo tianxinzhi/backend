@@ -27,6 +27,8 @@ public class SearchBean extends BaseSearchBean {
     @PredicateAnnotation(type = PredicateType.LIKE)
     private String flowDesc;
 
+    private String flowNature;
+
     private long id;
 
     private List<Map> stepData;

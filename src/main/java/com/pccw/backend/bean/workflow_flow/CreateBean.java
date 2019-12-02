@@ -22,6 +22,8 @@ public class CreateBean extends BaseBean{
 
     private String flowDesc;
 
+    private String flowNature;
+
     @ApiModelProperty(value="dtlList",name="dtlList",example="")
     private List<DbResFlowStep> resFlowStepList;
 

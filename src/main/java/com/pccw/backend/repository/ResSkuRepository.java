@@ -25,13 +25,14 @@ public interface ResSkuRepository extends BaseRepository<DbResSku> {
     @Query(value = "select WM_CONCAT(DISTINCT t8.repo_id) store,WM_CONCAT(DISTINCT t9.repo_code) storeCode,t8.qty,T3.type_name typeName,T3.id type,t5.spec_name specName,t5.id spec,t6.attr_name attrName,t6.id attr, " +
             " WM_CONCAT(DISTINCT t7.attr_value) attrValueName ,WM_CONCAT(DISTINCT t7.id) attrValue "+
             "from RES_TYPE t3 inner join  res_sku_type t1  on T3.id = t1.type_id " +
-            "inner join RES_TYPE_SKU_SPEC t4 on t1.type_id = t4.type_id " +
-            "inner join res_spec t5 on t5.id = t4.spec_id " +
+            "left join RES_TYPE_SKU_SPEC t4 on t1.type_id = t4.type_id " +
+            "left join res_spec t5 on t5.id = t4.spec_id " +
             "left JOIN RES_SKU_REPO t8 on t1.sku_id = t8.sku_id "+
             "left join res_repo t9 on t8.repo_id = t9.id "+
             "left join RES_SKU_ATTR_VALUE t2 on T1.SKU_ID = T2.SKU_ID " +
             "left join RES_ATTR t6 on t6.id = t2.attr_id " +
             "left join RES_ATTR_VALUE t7 on t7.id = t2.attr_value_id " +
-            "where T1.sku_id  = ?1 and t8.stock_type_id = 3 GROUP BY t8.qty,T3.type_name ,T3.id ,t5.spec_name,t5.id ,t6.attr_name ,t6.id ",nativeQuery = true)
+            "left join RES_STOCK_TYPE ty on t8.stock_type_id=ty.id "+
+            "where T1.sku_id  = ?1 and ty.stocktype_name like '%Avail%' GROUP BY t8.qty,T3.type_name ,T3.id ,t5.spec_name,t5.id ,t6.attr_name ,t6.id ",nativeQuery = true)
     List<Map> getTypeDtlsBySku(@Param("skuId") long skuId);
 }

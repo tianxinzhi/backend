@@ -58,7 +58,7 @@ public class DbResRepo extends Base {
 	@Column(name = "repo_type", length = 11)
 	private String repoType;
 
-	@OneToMany(cascade={CascadeType.ALL},mappedBy = "repo",orphanRemoval = true)
+	@OneToMany(cascade={CascadeType.ALL},mappedBy = "repo")
 	private List<DbResSkuRepo> skuRepoList;
 
 }

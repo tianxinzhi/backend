@@ -24,6 +24,8 @@ public class EditBean extends BaseBean {
 
     private String flowDesc;
 
+    private String flowNature;
+
     @ApiModelProperty(value="dtlList",name="dtlList",example="")
     private List<FlowStepEditBean> resFlowStepList;
 

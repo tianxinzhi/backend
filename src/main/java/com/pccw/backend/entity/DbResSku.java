@@ -35,6 +35,9 @@ public class DbResSku extends Base {
 	@Column(name = "sku_name")
 	private String skuName;
 
+	@Column(name = "sku_origin",length = 32)
+	private String skuOrigin;
+
 	@JsonBackReference
 	@OneToMany(cascade = CascadeType.ALL,mappedBy = "sku",orphanRemoval = true)
 	private List<DbResSkuType> skuTypeList;

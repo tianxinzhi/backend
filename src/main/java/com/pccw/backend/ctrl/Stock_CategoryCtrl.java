@@ -48,7 +48,9 @@ public class Stock_CategoryCtrl extends BaseCtrl<DbResSkuRepo> {
                 sb.setSkuCode(skuRepo.getSku().getSkuCode());
                 sb.setStockTypeId(skuRepo.getId());
                 sb.setSkuDesc(skuRepo.getSku().getSkuDesc());
-                sb.setStockTypeName(skuRepo.getStockType().getStockTypeName());
+                if(!Objects.isNull(skuRepo.getStockType())){
+                    sb.setStockTypeName(skuRepo.getStockType().getStockTypeName());
+                }
                 if(!Objects.isNull(b.getRepoId()) && !Objects.isNull(b.getSkuId())){
                     if(b.getRepoId() == skuRepo.getRepo().getId() && b.getSkuId() == skuRepo.getSku().getId()){
                         resultList.add(sb);

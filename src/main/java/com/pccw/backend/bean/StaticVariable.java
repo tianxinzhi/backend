@@ -68,5 +68,11 @@ public class StaticVariable {
     public static final long EXPIRATION = 60L * 60L;
     public static final String JWT_SECRET_KEY = "C*F-JaNdRgUkXn2r5u8x/A?D(G+KbPeShVmYq3s6v9y$B&E)H@McQfTjWnZr4u7w";
 
+    public static final String SKU_ORIGIN_FROM_WITHPO = "1";
+    public static final String SKU_ORIGIN_FROM_LIS = "2";
+    public static final String SKU_ORIGIN_FROM_OTHER = "3";
+
+
+
 
 }

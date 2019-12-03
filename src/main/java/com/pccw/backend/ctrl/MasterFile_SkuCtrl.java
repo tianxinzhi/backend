@@ -63,6 +63,7 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> {
             sku.setUpdateAt(System.currentTimeMillis());
             sku.setCreateBy(bean.getCreateBy());
             sku.setUpdateBy(bean.getUpdateBy());
+            sku.setSkuOrigin(StaticVariable.SKU_ORIGIN_FROM_WITHPO);
 
             List<DbResSkuType> skuTypeList = new LinkedList<>();
             DbResSkuType skuType = new DbResSkuType();
@@ -89,27 +90,27 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> {
                 }
             }
 
-            List<DbResSkuRepo> skuRepoList = new LinkedList<>();
-            DbResSkuRepo resSkuRepo = new DbResSkuRepo();
-            resSkuRepo.setSku(sku);
-            DbResRepo repo = new DbResRepo();
-            repo.setId(bean.getStores());
-            resSkuRepo.setRepo(repo);
-            DbResStockType stockType = null;
-            for (DbResStockType dbResStockType : stockTypeRepository.findAll()) {
-                if(dbResStockType.getStockTypeName().trim().equals(StaticVariable.DTLSUBIN_AVAILABLE))
-                    stockType = dbResStockType;
-            }
-            resSkuRepo.setStockType(stockType);
-            resSkuRepo.setQty((int)bean.getQty());
-            resSkuRepo.setActive("Y");
-            resSkuRepo.setCreateAt(System.currentTimeMillis());
-            resSkuRepo.setUpdateAt(System.currentTimeMillis());
-            resSkuRepo.setCreateBy(bean.getCreateBy());
-            resSkuRepo.setUpdateBy(bean.getUpdateBy());
-            skuRepoList.add(resSkuRepo);
+//            List<DbResSkuRepo> skuRepoList = new LinkedList<>();
+//            DbResSkuRepo resSkuRepo = new DbResSkuRepo();
+//            resSkuRepo.setSku(sku);
+//            DbResRepo repo = new DbResRepo();
+//            repo.setId(bean.getStores());
+//            resSkuRepo.setRepo(repo);
+//            DbResStockType stockType = null;
+//            for (DbResStockType dbResStockType : stockTypeRepository.findAll()) {
+//                if(dbResStockType.getStockTypeName().trim().equals(StaticVariable.DTLSUBIN_AVAILABLE))
+//                    stockType = dbResStockType;
+//            }
+//            resSkuRepo.setStockType(stockType);
+//            resSkuRepo.setQty((int)bean.getQty());
+//            resSkuRepo.setActive("Y");
+//            resSkuRepo.setCreateAt(System.currentTimeMillis());
+//            resSkuRepo.setUpdateAt(System.currentTimeMillis());
+//            resSkuRepo.setCreateBy(bean.getCreateBy());
+//            resSkuRepo.setUpdateBy(bean.getUpdateBy());
+//            skuRepoList.add(resSkuRepo);
 
-            sku.setSkuRepoList(skuRepoList);
+//            sku.setSkuRepoList(skuRepoList);
             sku.setSkuAttrValueList(skuAttrValueList);
             sku.setSkuTypeList(skuTypeList);
             skuRepo.saveAndFlush(sku);
@@ -140,6 +141,7 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> {
             sku.setUpdateBy(bean.getUpdateBy());
             sku.setCreateBy(bean.getCreateBy());
             sku.setUpdateBy(bean.getUpdateBy());
+            sku.setSkuOrigin(StaticVariable.SKU_ORIGIN_FROM_WITHPO);
             List<DbResSkuAttrValue> skuAttrValueList = sku.getSkuAttrValueList();
             List<DbResSkuType> skuTypeList = sku.getSkuTypeList();
             List<DbResSkuRepo> skuRepoList = sku.getSkuRepoList();
@@ -175,21 +177,21 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> {
                 }
             }
 
-            DbResSkuRepo resSkuRepo = new DbResSkuRepo();
-            resSkuRepo.setSku(sku);
-            DbResRepo repo = new DbResRepo();
-            repo.setId(bean.getStores());
-            resSkuRepo.setRepo(repo);
-            DbResStockType stockType = new DbResStockType();
-            stockType.setId(3L);//默认为AvailaBle
-            resSkuRepo.setStockType(stockType);
-            resSkuRepo.setQty((int)bean.getQty());
-            resSkuRepo.setActive("Y");
-            resSkuRepo.setCreateAt(System.currentTimeMillis());
-            resSkuRepo.setUpdateAt(System.currentTimeMillis());
-            resSkuRepo.setCreateBy(bean.getCreateBy());
-            resSkuRepo.setUpdateBy(bean.getUpdateBy());
-            skuRepoList.add(resSkuRepo);
+//            DbResSkuRepo resSkuRepo = new DbResSkuRepo();
+//            resSkuRepo.setSku(sku);
+//            DbResRepo repo = new DbResRepo();
+//            repo.setId(bean.getStores());
+//            resSkuRepo.setRepo(repo);
+//            DbResStockType stockType = new DbResStockType();
+//            stockType.setId(3L);//默认为AvailaBle
+//            resSkuRepo.setStockType(stockType);
+//            resSkuRepo.setQty((int)bean.getQty());
+//            resSkuRepo.setActive("Y");
+//            resSkuRepo.setCreateAt(System.currentTimeMillis());
+//            resSkuRepo.setUpdateAt(System.currentTimeMillis());
+//            resSkuRepo.setCreateBy(bean.getCreateBy());
+//            resSkuRepo.setUpdateBy(bean.getUpdateBy());
+//            skuRepoList.add(resSkuRepo);
 
             skuRepo.saveAndFlush(sku);
 
@@ -358,9 +360,9 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> {
                 skuResult.setTypeName(types.get(0).get("typeName") == null ? "":types.get(0).get("typeName").toString());
                 skuResult.setSpecName(types.get(0).get("specName") == null ? "":types.get(0).get("specName").toString());
                 skuResult.setSpec(types.get(0).get("spec") == null ? 0:Long.parseLong(types.get(0).get("spec").toString()));
-                skuResult.setStores(types.get(0).get("store")==null ? 0:Long.parseLong(types.get(0).get("store").toString()));
-                skuResult.setStoreCodes(types.get(0).get("storeCode")==null ? "":types.get(0).get("storeCode").toString());
-                skuResult.setQty(types.get(0).get("qty") == null ? 0:Long.parseLong(types.get(0).get("qty").toString()));
+//                skuResult.setStores(types.get(0).get("store")==null ? 0:Long.parseLong(types.get(0).get("store").toString()));
+//                skuResult.setStoreCodes(types.get(0).get("storeCode")==null ? "":types.get(0).get("storeCode").toString());
+//                skuResult.setQty(types.get(0).get("qty") == null ? 0:Long.parseLong(types.get(0).get("qty").toString()));
                 skuResult.setAttrs(attrs);
                 skuResult.setAttrNames(attrNames);
                 skuResult.setAttrValues(attrValues);

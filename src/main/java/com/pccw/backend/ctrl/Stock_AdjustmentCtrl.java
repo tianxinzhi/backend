@@ -17,7 +17,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import springfox.documentation.spring.web.json.Json;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -95,8 +94,9 @@ public class Stock_AdjustmentCtrl extends BaseCtrl<DbResLogMgt> {
 
                 if(stockType!=null){
                     String type = stockType.getStockTypeName();
-                    String subin = type.substring(type.indexOf("(")+1,type.indexOf(")"));
-                    String status = type.replace(type.substring(type.indexOf("("),type.indexOf(")")+1),"");
+                    String status = type.substring(type.indexOf("(")+1,type.indexOf(")"));
+                    String subin = type.replace(type.substring(type.indexOf("("),type.indexOf(")")+1),"");
+                    log.info("tp:"+type+",subin:"+subin+",status:"+status);
                     mgtDtl.setDtlSubin(subin);
                     mgtDtl.setStatus(status);
                 }

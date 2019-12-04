@@ -2,7 +2,6 @@ package com.pccw.backend.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -34,11 +33,4 @@ public class DbResAccount extends Base {
 	@OneToMany(cascade = CascadeType.ALL,orphanRemoval = true,fetch = FetchType.EAGER)
 	private List<DbResAccountRole> accountRoles;
 
-	public List<SimpleGrantedAuthority> getRoles() {
-		List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-		accountRoles.stream().forEach(role ->{
-			authorities.add(new SimpleGrantedAuthority("" + role.getRoleId()));
-		});
-		return authorities;
-	}
 }

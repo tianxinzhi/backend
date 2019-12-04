@@ -4,17 +4,13 @@ import com.pccw.backend.bean.JsonResult;
 import com.pccw.backend.bean.system.LoginBean;
 import com.pccw.backend.entity.DbResAccount;
 import com.pccw.backend.repository.ResAccountRepository;
-import com.pccw.backend.util.TokenGenerator;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @RestController
@@ -30,17 +26,11 @@ public class SystemCtrl extends BaseCtrl<DbResAccount> {
     @RequestMapping(method = RequestMethod.POST,value = "/login")
     public JsonResult login (@RequestBody LoginBean bean) {
         try {
-            System.out.println("loginBean"+bean);
-            List<Map<String,String>> data = new ArrayList<>();
-            Map<String,String> tokenMap = new HashMap<>();
             DbResAccount rwe = repo.getDbResAccountsByAccountNameAndAccountPassword(bean.getUsername(),bean.getPassword());
             if(rwe==null){
                 return JsonResult.fail(new Exception());
             }
-            String token = TokenGenerator.makeToken(bean);
-            tokenMap.put("token",token);
-            data.add(tokenMap);
-            return JsonResult.success(data);
+            return JsonResult.success(Arrays.asList());
         } catch (Exception e) {
             return JsonResult.fail(e);
         }

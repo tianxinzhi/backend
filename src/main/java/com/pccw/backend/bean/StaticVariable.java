@@ -73,6 +73,12 @@ public class StaticVariable {
     public static final String SKU_ORIGIN_FROM_OTHER = "3";
 
 
-
+    /**
+     * table => Process
+     */
+    public static final String PROCESS_APPROVED_STATUS = "APPROVED";
+    public static final String PROCESS_REJECTED_STATUS = "REJECTED";
+    public static final String PROCESS_WAITING_STATUS = "WAITING";
+    public static final String PROCESS_PENDING_STATUS = "PENDING";
 
 }

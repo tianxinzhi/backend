@@ -13,9 +13,8 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @ApiModel(value = "Process 模块 - SearchBean", description = "")
-public class SearchBean extends BaseSearchBean {
+public class SearchBean{
 
-    @PredicateAnnotation(type = PredicateType.BETWEEN)
     @ApiModelProperty(value="时间区间",name="date",example="")
     private Date[] date;
 
@@ -28,4 +27,8 @@ public class SearchBean extends BaseSearchBean {
     @PredicateAnnotation(type = PredicateType.LIKE)
     @ApiModelProperty(value="Txtnumber",name="logTxtBum",example="")
     private String logTxtBum;
+
+    @PredicateAnnotation(type = PredicateType.BETWEEN)
+    @ApiModelProperty(value="数据库中的时间查询范围",name="createAt",example="")
+    private Long[] createAt;
 }

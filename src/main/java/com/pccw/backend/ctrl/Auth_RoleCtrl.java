@@ -93,6 +93,10 @@ public class Auth_RoleCtrl extends BaseCtrl<DbResRole>{
     @ApiOperation(value="新增角色",tags={"auth_role"},notes="注意问题点")
     public JsonResult create(@RequestBody CreateBean b){
         try {
+            long t = new Date().getTime();
+            b.setCreateAt(t);
+            b.setActive("Y");
+            b.setUpdateAt(t);
             DbResRole role =new DbResRole();
             BeanUtils.copyProperties(b,role);
             List<DbResRoleRight> roleRightList = new LinkedList<>();

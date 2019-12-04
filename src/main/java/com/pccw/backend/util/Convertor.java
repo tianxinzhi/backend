@@ -70,10 +70,12 @@ import com.pccw.backend.bean.BaseSearchBean;
 
 					switch (code) {
 						case EQUEL:
-							list.add(builder.equal(root.get(parm.getName()).as(String.class),parm.getValue()));
+//							list.add(builder.equal(root.get(parm.getName()).as(String.class),parm.getValue()));
+							list.add(builder.equal(builder.lower(root.get(parm.getName()).as(String.class)),parm.getValue().toString().toLowerCase()));
 						break;
 						case LIKE:
-							list.add(builder.like(root.get(parm.getName()).as(String.class),"%"+parm.getValue()+"%"));
+//							list.add(builder.like(root.get(parm.getName()).as(String.class),"%"+parm.getValue()+"%"));
+							list.add(builder.like(builder.lower(root.get(parm.getName()).as(String.class)),"%"+parm.getValue().toString().toLowerCase()+"%"));
 						break;
 						case LESS_THAN:
 							list.add(builder.lessThan(root.get(parm.getName()).as(String.class),parm.getValue().toString()));

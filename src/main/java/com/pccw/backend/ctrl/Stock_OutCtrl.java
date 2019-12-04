@@ -84,27 +84,36 @@ public class Stock_OutCtrl  extends BaseCtrl<DbResLogMgt> {
                 }
             }
             //生成审批流数据
-           // ProcessCreateBean process = new ProcessCreateBean();
             DbResProcess process = new DbResProcess();
             process.setLogTxtBum(b.getLogTxtBum());
             process.setRepoId(b.getLogRepoOut());
-            process.setStatus("Pending");
+            process.setStatus(StaticVariable.PROCESS_PENDING_STATUS);
             process.setRemark(b.getRemark());
+            process.setActive("Y");
+            process.setCreateAt(t);
+            process.setUpdateAt(t);
             if(b.getLogOrderNature().equals(StaticVariable.LOGORDERNATURE_STOCK_OUT_STW)) {
                 process.setLogOrderNature(StaticVariable.LOGORDERNATURE_STOCK_OUT_STW);
             }else {
                 process.setLogOrderNature(StaticVariable.LOGORDERNATURE_STOCK_OUT_STS);
             }
-            //根据OrderNature查询flow
+            //根据OrderNature查询flow,flow和nature一对一关系
             DbResFlow resFlow =repoFlow.findByFlowNature(process.getLogOrderNature());
             process.setFlowId(resFlow.getId());
             ArrayList<DbResProcessDtl> processDtls= new ArrayList<>();
             for(int i=0;i<resFlow.getResFlowStepList().size();i++) {
                 DbResProcessDtl  resProcessDtl  =new DbResProcessDtl();
                 resProcessDtl.setFlowId(resFlow.getId());
+                resProcessDtl.setRemark(b.getRemark());
                 resProcessDtl.setStepId(resFlow.getResFlowStepList().get(i).getId());
                 resProcessDtl.setStepNum(resFlow.getResFlowStepList().get(i).getStepNum());
                 resProcessDtl.setRoleId(resFlow.getResFlowStepList().get(i).getRoleId());
+                //审批流初始化数据StepNum1默认PENDING,其他StepNum默认WAITING
+                if(resFlow.getResFlowStepList().get(i).getStepNum().equals("1")) {
+                    resProcessDtl.setStatus(StaticVariable.PROCESS_PENDING_STATUS);
+                }else {
+                    resProcessDtl.setStatus(StaticVariable.PROCESS_WAITING_STATUS);
+                }
                 processDtls.add(resProcessDtl);
             }
             process.setProcessDtls(processDtls);

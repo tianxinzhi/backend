@@ -18,9 +18,11 @@ public class SearchBean{
     @ApiModelProperty(value="时间区间",name="date",example="")
     private Date[] date;
 
+    @PredicateAnnotation(type = PredicateType.EQUEL)
     @ApiModelProperty(value="业务类型编码",name="logOrderNature",example="")
     private String logOrderNature;
 
+    @PredicateAnnotation(type = PredicateType.EQUEL)
     @ApiModelProperty(value="商店id",name="repoId",example="")
     private Long repoId;
 

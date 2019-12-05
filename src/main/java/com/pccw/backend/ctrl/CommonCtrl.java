@@ -2,6 +2,7 @@ package com.pccw.backend.ctrl;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.pccw.backend.bean.*;
@@ -123,4 +124,26 @@ public class CommonCtrl  extends GeneralCtrl{
         return this.JsonResultHandle(stockTypeRepository,new LabelAndValue());
     }
 
+    /**
+     * 根据id获取AccountName
+     * @param id
+     * @param accountRepo
+     * @return
+     */
+    public static String searchAccountById(long id,ResAccountRepository accountRepo){
+        String accountName = "";
+        try {
+            if(Objects.nonNull(id)){
+                if(id == 0){
+                    accountName = "system";
+                }else{
+                    accountName = accountRepo.findById(id).get().getAccountName();
+                }
+            }
+            return accountName;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return accountName;
+        }
+    }
 }

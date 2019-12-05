@@ -109,11 +109,11 @@ public class Process_ProcessCtrl extends BaseCtrl{
     private List<RecodeBean> getRecodes(List<DbResProcess> res) {
         return res.stream().map(r -> {
 
-            List<DbResLogMgt> logDtls = logMgtRepository.findDbResLogMgtByLogTxtBum(r.getLogTxtBum());
+            DbResLogMgt logDtls = logMgtRepository.findDbResLogMgtByLogTxtBum(r.getLogTxtBum());
 
             List<DtlRecodeBean> processDtls = r.getProcessDtls().stream().map(item -> {
                 String roleName = roleRepository.findById(item.getRoleId()).get().getRoleName();
-                Step step = new Step(item.getStatus(), roleName, getStepActive(item.getStatus()));
+                Step step = new Step(item.getStatus(), roleName, getStepActive(item.getStatus()),item.getStepNum());
                 DtlRecodeBean dtlRecodeBean = new DtlRecodeBean(roleName, step);
                 BeanUtils.copyProperties(item, dtlRecodeBean);
                 return dtlRecodeBean;
@@ -125,7 +125,7 @@ public class Process_ProcessCtrl extends BaseCtrl{
 
             Steps steps = new Steps("vertical", stepList);
 
-            return new RecodeBean(processDtls, logDtls, steps);
+            return new RecodeBean(r,processDtls, logDtls, steps);
         }).collect(Collectors.toList());
     }
 }

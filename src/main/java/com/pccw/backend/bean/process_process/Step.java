@@ -16,4 +16,5 @@ public class Step {
     private String title;
     private String desc;
     private String activity;
+    private String stepNum;
 }

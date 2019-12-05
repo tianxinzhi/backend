@@ -10,10 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.List;
@@ -22,6 +19,7 @@ import java.util.Objects;
 @Slf4j
 @RestController
 @RequestMapping("/process")
+@CrossOrigin(methods = RequestMethod.POST,origins = "*", allowCredentials = "false")
 public class Process_ProcessCtrl extends BaseCtrl{
 
     @Autowired

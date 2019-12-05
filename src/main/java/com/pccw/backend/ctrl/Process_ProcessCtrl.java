@@ -119,9 +119,11 @@ public class Process_ProcessCtrl extends BaseCtrl{
                 return dtlRecodeBean;
             }).collect(Collectors.toList());
 
-            List<Step> steps = processDtls.stream().map(item -> {
+            List<Step> stepList = processDtls.stream().map(item -> {
                 return item.getStep();
             }).collect(Collectors.toList());
+
+            Steps steps = new Steps("vertical", stepList);
 
             return new RecodeBean(processDtls, logDtls, steps);
         }).collect(Collectors.toList());

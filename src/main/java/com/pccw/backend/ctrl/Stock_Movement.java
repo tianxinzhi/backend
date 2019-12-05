@@ -4,7 +4,7 @@ package com.pccw.backend.ctrl;
 import com.alibaba.fastjson.JSON;
 import com.pccw.backend.bean.JsonResult;
 import com.pccw.backend.bean.StaticVariable;
-import com.pccw.backend.bean.process.SearchBean;
+import com.pccw.backend.bean.stock_movement.SearchBean;
 import com.pccw.backend.entity.DbResProcess;
 import com.pccw.backend.repository.ResAccountRepository;
 import com.pccw.backend.repository.ResProcessRepository;

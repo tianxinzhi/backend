@@ -14,6 +14,6 @@ import lombok.NoArgsConstructor;
 // @NoArgsConstructor
 @AllArgsConstructor
 public class ErrMsg {
-	private String key;
+	private String code;
     private String msg;
 }

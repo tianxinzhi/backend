@@ -16,12 +16,15 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * SMPException
+ * Author: KEN
+ * Date: 2/12/2019
+ * Desc: 所有控制器全局异常处理，并统一返回前端
  */
 @RestControllerAdvice(annotations = {RestController.class})
 @Slf4j
 public class SMPException {
 
+    //无效传参处理
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public JsonResult exception(MethodArgumentNotValidException e) {
         BindingResult bindingResult = e.getBindingResult();
@@ -39,6 +42,7 @@ public class SMPException {
         return JsonResult.fail(eMsgs);
     }
 
+    //其他运行时异常处理
     @ExceptionHandler(Exception.class)
     public JsonResult runtimeExceptionHandler(Exception e) {
         log.error("------------------------------");

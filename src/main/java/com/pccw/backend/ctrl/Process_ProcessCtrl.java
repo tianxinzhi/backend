@@ -125,7 +125,11 @@ public class Process_ProcessCtrl extends BaseCtrl{
 
             Steps steps = new Steps("vertical", stepList);
 
-            return new RecodeBean(r,processDtls, logDtls, steps);
+            RecodeBean recodeBean = new RecodeBean();
+            BeanUtils.copyProperties(r,recodeBean);
+            recodeBean.setLogDtls(logDtls);
+            recodeBean.setSteps(steps);
+            return recodeBean;
         }).collect(Collectors.toList());
     }
 }

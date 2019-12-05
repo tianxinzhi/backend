@@ -7,6 +7,7 @@ import com.pccw.backend.bean.masterfile_class.CreateBean;
 import com.pccw.backend.bean.masterfile_class.EditBean;
 import com.pccw.backend.bean.masterfile_class.SearchBean;
 import com.pccw.backend.entity.DbResClass;
+import com.pccw.backend.repository.ResAccountRepository;
 import com.pccw.backend.repository.ResClassRepository;
 import com.pccw.backend.util.Convertor;
 import io.swagger.annotations.Api;
@@ -36,17 +37,26 @@ public class MasterFile_ClassCtrl extends BaseCtrl<DbResClass> {
 
     @Autowired
     ResClassRepository repo;
+    @Autowired
+    ResAccountRepository accountRepo;
 
     @ApiOperation(value="搜索class",tags={"masterfile_class"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST, path = "/search")
     public JsonResult search(@RequestBody SearchBean b) {
         log.info(b.toString());
-//        return this.search(repo, b);
         try {
             Specification spec = Convertor.convertSpecification(b);
             Sort sort = new Sort(Sort.Direction.DESC,"id");
+            ArrayList<SearchBean> list = new ArrayList<>();
             List<DbResClass> res =repo.findAll(spec, PageRequest.of(b.getPageIndex(),b.getPageSize(),sort)).getContent();
-            return JsonResult.success(res);
+            res.forEach(d->{
+                SearchBean searchBean = new SearchBean();
+                BeanUtils.copyProperties(d,searchBean);
+                searchBean.setCreateAccountName(CommonCtrl.searchAccountById(d.getCreateBy(),accountRepo));
+                searchBean.setUpdateAccountName(CommonCtrl.searchAccountById(d.getUpdateBy(),accountRepo));
+                list.add(searchBean);
+            });
+            return JsonResult.success(list);
         } catch (Exception e) {
             log.info(e.getMessage());
             return JsonResult.fail(e);

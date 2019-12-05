@@ -7,6 +7,7 @@ import com.pccw.backend.bean.stock_category.EditBean;
 import com.pccw.backend.bean.stock_category.SearchBean;
 import com.pccw.backend.entity.DbResSkuRepo;
 import com.pccw.backend.entity.DbResStockType;
+import com.pccw.backend.repository.ResAccountRepository;
 import com.pccw.backend.repository.ResSkuRepoRepository;
 import com.pccw.backend.repository.ResStockTypeRepository;
 import com.pccw.backend.util.Convertor;
@@ -33,6 +34,8 @@ public class Stock_CategoryCtrl extends BaseCtrl<DbResSkuRepo> {
     private ResSkuRepoRepository repo;
     @Autowired
     private ResStockTypeRepository stockTypeRepository;
+    @Autowired
+    private ResAccountRepository accountRepo;
 
     @ApiOperation(value = "搜索category",tags = "stock_category",notes = "注意问题点")
     @RequestMapping(method = RequestMethod.POST,path = "/search")
@@ -48,6 +51,8 @@ public class Stock_CategoryCtrl extends BaseCtrl<DbResSkuRepo> {
                 sb.setSkuCode(skuRepo.getSku().getSkuCode());
                 sb.setStockTypeId(skuRepo.getId());
                 sb.setSkuDesc(skuRepo.getSku().getSkuDesc());
+                sb.setCreateAccountName(CommonCtrl.searchAccountById(skuRepo.getCreateBy(),accountRepo));
+                sb.setUpdateAccountName(CommonCtrl.searchAccountById(skuRepo.getUpdateBy(),accountRepo));
                 if(!Objects.isNull(skuRepo.getStockType())){
                     sb.setStockTypeName(skuRepo.getStockType().getStockTypeName());
                 }

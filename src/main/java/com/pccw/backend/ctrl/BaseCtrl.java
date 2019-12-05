@@ -62,6 +62,7 @@ public class BaseCtrl<T>{
     public JsonResult edit(BaseRepository repo, Class<T> cls,BaseBean b){
         try {
             b.setUpdateAt(new Date().getTime());
+            b.setActive("Y");
             saveAndFlush(repo, cls, b);
             return JsonResult.success(Arrays.asList());
         } catch (Exception e) {

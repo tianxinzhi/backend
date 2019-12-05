@@ -52,5 +52,7 @@ public class SearchBean extends BaseSearchBean {
     private DbResTypeSkuSpec dbResTypeSkuSpec;
     private List<Map> attrData;
     private List<Map> typeSkuList;
+    private String createAccountName;
+    private String updateAccountName;
     
 }

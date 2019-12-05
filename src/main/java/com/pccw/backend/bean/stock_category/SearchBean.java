@@ -33,6 +33,8 @@ public class SearchBean extends BaseSearchBean {
     private String stockTypeName;
     private Integer qty;
     private String skuDesc;
+    private String createAccountName;
+    private String updateAccountName;
 
     
 }

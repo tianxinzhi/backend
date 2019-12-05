@@ -89,10 +89,10 @@ import com.pccw.backend.bean.BaseSearchBean;
 						case GREATERTHAN_OR_EQUEL:
 							list.add(builder.greaterThanOrEqualTo(root.get(parm.getName()).as(String.class),parm.getValue().toString()));
 						break;
-						// case BETWEEN:
-						// String[] arr = (String[])parm.getValue();
+                        // case BETWEEN:
+                        // String[] arr = (String[])parm.getValue();
 							// list.add(builder.between(root.get(parm.getName()).as(String.class),arr[0],arr[1]);
-						// break;
+                        // break;
 						default:
 							break;
 					}

@@ -1,6 +1,7 @@
 package com.pccw.backend.bean.process_process;
 
 import com.pccw.backend.entity.DbResLogMgt;
+import com.pccw.backend.entity.DbResProcess;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,9 +17,12 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RecodeBean {
+
+    private DbResProcess process;
+
     private List<DtlRecodeBean> processDtls;
 
-    private List<DbResLogMgt> logDtls;
+    private DbResLogMgt logDtls;
 
     private Steps steps;
 }

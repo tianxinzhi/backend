@@ -16,11 +16,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class RecodeBean {
-
-    private DbResProcess process;
-
-    private List<DtlRecodeBean> processDtls;
+public class RecodeBean extends DbResProcess{
 
     private DbResLogMgt logDtls;
 

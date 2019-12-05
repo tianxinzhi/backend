@@ -9,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 
 
 import java.lang.reflect.Field;
-import java.sql.Date;
 import java.util.*;
 
 import javax.persistence.criteria.*;
@@ -70,10 +69,12 @@ import com.pccw.backend.bean.BaseSearchBean;
 
 					switch (code) {
 						case EQUEL:
-							list.add(builder.equal(root.get(parm.getName()).as(String.class),parm.getValue()));
+//							list.add(builder.equal(root.get(parm.getName()).as(String.class),parm.getValue()));
+							list.add(builder.equal(builder.lower(root.get(parm.getName()).as(String.class)),parm.getValue().toString().toLowerCase()));
 						break;
 						case LIKE:
-							list.add(builder.like(root.get(parm.getName()).as(String.class),"%"+parm.getValue()+"%"));
+//							list.add(builder.like(root.get(parm.getName()).as(String.class),"%"+parm.getValue()+"%"));
+							list.add(builder.like(builder.lower(root.get(parm.getName()).as(String.class)),"%"+parm.getValue().toString().toLowerCase()+"%"));
 						break;
 						case LESS_THAN:
 							list.add(builder.lessThan(root.get(parm.getName()).as(String.class),parm.getValue().toString()));
@@ -87,10 +88,10 @@ import com.pccw.backend.bean.BaseSearchBean;
 						case GREATERTHAN_OR_EQUEL:
 							list.add(builder.greaterThanOrEqualTo(root.get(parm.getName()).as(String.class),parm.getValue().toString()));
 						break;
-						// case BETWEEN:
-						// String[] arr = (String[])parm.getValue();
-							// list.add(builder.between(root.get(parm.getName()).as(String.class),arr[0],arr[1]);
-						// break;
+						 case BETWEEN:
+						Long[] arr = (Long[])parm.getValue();
+						list.add(builder.between(root.get(parm.getName()).as(Long.class),arr[0],arr[1]));
+						break;
 						default:
 							break;
 					}
@@ -162,4 +163,25 @@ import com.pccw.backend.bean.BaseSearchBean;
 		return sb.toString();
 	}
 
+	public static Date beginOfDay(Date date) {
+		if(Objects.isNull(date)) return null;
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		cal.set(Calendar.HOUR_OF_DAY,0);
+		cal.set(Calendar.MINUTE,0);
+		cal.set(Calendar.SECOND,0);
+		Date beginDate = cal.getTime();
+		return beginDate;
+	}
+
+	public static Date endOfDay(Date date) {
+		if(Objects.isNull(date)) return null;
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		cal.set(Calendar.HOUR_OF_DAY,23);
+		cal.set(Calendar.MINUTE,59);
+		cal.set(Calendar.SECOND,59);
+		Date endDate = cal.getTime();
+		return endDate;
+	}
 }

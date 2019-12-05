@@ -45,6 +45,8 @@ public class MasterFile_TypeCtrl extends BaseCtrl<DbResType> {
     ResClassTypeRepository resClassTypeRepository;
     @Autowired
     ResSpecRepository resSpecRepository;
+    @Autowired
+    ResAccountRepository resAccountRepository;
 
     @ApiOperation(value="搜索type",tags={"masterfile_type"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST, path = "/search")
@@ -77,6 +79,8 @@ public class MasterFile_TypeCtrl extends BaseCtrl<DbResType> {
                         if(!StringUtils.isEmpty(classNames)){
                             classNames = classNames.substring(0,classNames.length()-1);
                         }
+                        searchBean.setCreateAccountName(CommonCtrl.searchAccountById(type.getCreateBy(),resAccountRepository));
+                        searchBean.setUpdateAccountName(CommonCtrl.searchAccountById(type.getUpdateBy(),resAccountRepository));
                         searchBean.setClassName(classNames);
                         searchBean.setClassId(classIds);
                     }

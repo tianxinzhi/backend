@@ -19,6 +19,13 @@ public class JsonResult<T> {
 
     private String state;
 
+    /**
+     * 000 正常
+     * 888 传参错误
+     * 001 权限不足
+     * 002 非法请求（没有登录）
+     * 003 账号或者密码错误
+     */
     private String code;
 
     private String msg;

@@ -1,6 +1,10 @@
 package com.pccw.backend.aop;
 
+import java.util.Arrays;
+
 import com.alibaba.fastjson.JSONObject;
+import com.pccw.backend.bean.JsonResult;
+import com.pccw.backend.exception.BaseException;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.Signature;
@@ -27,6 +31,12 @@ public class CheckRightAspect {
     public void pointcut() {}
 
     @Before("pointcut()")
-    public void printParam(JoinPoint joinPoint){
+    public void printParam(JoinPoint joinPoint) throws BaseException {
+        // 【1】获取session关于account相关right
+        // 【2】获取ctrl名称（模块名称）和ctrl方法（模块按钮）
+        // 【3】判断right
+        // 【4】抛异常
+        // throw BaseException.getNoLoginException();
+        
     }
 }

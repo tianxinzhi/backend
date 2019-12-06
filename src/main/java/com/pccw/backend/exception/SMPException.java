@@ -49,23 +49,23 @@ public class SMPException {
         return JsonResult.fail(baseException);
     }
 
-    //其他运行时异常处理
-    @ExceptionHandler(Exception.class)
-    public JsonResult runtimeExceptionHandler(Exception e) {
-        log.error("------------------------------");
-        log.error("Runtime Exception: {}", e.getMessage());
-        log.error("------------------------------");
-        return JsonResult.fail(BaseException.getRuntimeException());
-    }
-
     //自定义业务逻辑相关异常处理
     @ExceptionHandler(BaseException.class)
-    public JsonResult baseExceptionHandler(Exception e) {
+    public JsonResult baseExceptionHandler(BaseException e) {
         log.error("------------------------------");
-        log.error("Runtime Exception: {}", ((BaseException)e).getMsg());
+        log.error("BaseException Exception: {}", e.getMsg());
         log.error("------------------------------");
-        return JsonResult.fail((BaseException)e);
+        return JsonResult.fail(e);
     }
+    // //其他运行时异常处理
+    // @ExceptionHandler(Exception.class)
+    // public JsonResult runtimeExceptionHandler(Exception e) {
+    //     log.error("------------------------------");
+    //     log.error("Runtime Exception: {}", e.getMessage());
+    //     log.error("------------------------------");
+    //     return JsonResult.fail(BaseException.getRuntimeException());
+    // }
+
 
 }
 

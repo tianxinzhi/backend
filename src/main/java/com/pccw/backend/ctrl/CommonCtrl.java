@@ -1,8 +1,6 @@
 package com.pccw.backend.ctrl;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.pccw.backend.bean.*;
@@ -22,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestController
 @RequestMapping("/common")
-@CrossOrigin(methods = RequestMethod.GET,origins = "*", allowCredentials = "false")
+@CrossOrigin(origins = "*", allowCredentials = "false")
 public class CommonCtrl  extends GeneralCtrl{
 
     @Autowired
@@ -130,7 +128,8 @@ public class CommonCtrl  extends GeneralCtrl{
      * @param accountRepo
      * @return
      */
-    public static String searchAccountById(long id,ResAccountRepository accountRepo){
+    public static JsonResult searchAccountById(long id,ResAccountRepository accountRepo){
+        List<Object> objects = new ArrayList<>();
         String accountName = "";
         try {
             if(Objects.nonNull(id)){
@@ -140,10 +139,42 @@ public class CommonCtrl  extends GeneralCtrl{
                     accountName = accountRepo.findById(id).get().getAccountName();
                 }
             }
-            return accountName;
+            objects.add(accountName);
+            return JsonResult.success(objects);
         } catch (Exception e) {
             e.printStackTrace();
-            return accountName;
+            return JsonResult.fail(e);
+        }
+    }
+
+    /**
+     * 根据specId查询attr&attrValue
+     * 返回指定格式给前端详情展示
+     * @param id
+     * @return
+     */
+    @ApiOperation(value="搜索spec_attr&attrValue",tags={"common"},notes="注意问题点")
+    @RequestMapping(method = RequestMethod.POST, path = "/specSearch")
+    public JsonResult specSearch(@RequestBody Long id) {
+        try {
+            List<Map> list = new ArrayList<>();
+            List<Map> attrList= type_repo.specSearch(id);
+            attrList.stream()
+                    .collect(Collectors.groupingBy(s -> s.get("attrName")))
+                    .forEach((k,v)->{
+                                HashMap<Object, Object> hm = new HashMap<>();
+                                List<String> attrValueList = new ArrayList<>();
+                                v.forEach((a)->{
+                                    attrValueList.add(a.get("attrValue").toString());
+                                });
+                                hm.put("attrName",k);
+                                hm.put("attrValue",attrValueList);
+                                list.add(hm);
+                            }
+                    );
+            return JsonResult.success(list);
+        } catch (Exception e) {
+            return JsonResult.fail(e);
         }
     }
 }

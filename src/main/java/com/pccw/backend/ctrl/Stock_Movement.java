@@ -19,9 +19,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * AuthRightCtrl
@@ -48,6 +47,21 @@ public class Stock_Movement extends BaseCtrl<DbResProcess> {
         try {
             //默认查询nature为approved的
             b.setStatus(StaticVariable.PROCESS_APPROVED_STATUS);
+            //准备between需要的日期范围条件
+            String[] createAt = b.getCreateAt();
+            if(Objects.nonNull(createAt)){
+                if(createAt.length == 2){
+                    List<Object> objects = new ArrayList<>();
+                    for (String s : createAt) {
+                        long time = new SimpleDateFormat("yyyy-MM-dd").parse(s).getTime();
+                        objects.add(String.valueOf(time));
+                    }
+                        String [] a = new String[objects.size()];
+                        b.setCreateAt(objects.toArray(a));
+                }else {
+                    b.setCreateAt(null);
+                }
+            }
             Specification spec = Convertor.convertSpecification(b);
             Sort sort = new Sort(Sort.Direction.DESC,"id");
             ArrayList<Map> list = new ArrayList<>();
@@ -55,7 +69,7 @@ public class Stock_Movement extends BaseCtrl<DbResProcess> {
             res.forEach(p-> {
                 Map map = JSON.parseObject(JSON.toJSONString(p), Map.class);
                 map.put("repoName",repoRepo.findById(p.getRepoId()).get().getRepoName());
-                map.put("createAccountName", CommonCtrl.searchAccountById(p.getCreateBy(), accountRepo));
+                map.put("createAccountName", (String)CommonCtrl.searchAccountById(p.getCreateBy(), accountRepo).getData().get(0));
                 list.add(map);
             });
             return JsonResult.success(list);

@@ -47,6 +47,8 @@ public class MasterFile_TypeCtrl extends BaseCtrl<DbResType> {
     ResSpecRepository resSpecRepository;
     @Autowired
     ResAccountRepository resAccountRepository;
+    @Autowired
+    CommonCtrl commonCtrl;
 
     @ApiOperation(value="搜索type",tags={"masterfile_type"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST, path = "/search")
@@ -66,7 +68,7 @@ public class MasterFile_TypeCtrl extends BaseCtrl<DbResType> {
                         searchBean.setSpecId(type.getDbResTypeSkuSpec().getSpecId());
                         DbResSpec sp = repo.findBySpecId(type.getDbResTypeSkuSpec().getSpecId());
                         searchBean.setSpecName(sp.getSpecName());
-                        searchBean.setAttrData(specSearch(searchBean.getSpecId()).getData());
+                        searchBean.setAttrData(commonCtrl.specSearch(searchBean.getSpecId()).getData());
                     }
                     if(type.getRelationOfTypeClass() != null && type.getRelationOfTypeClass().size() > 0){
                         List<DbResClassType> relationOfTypeClass = type.getRelationOfTypeClass();
@@ -79,8 +81,8 @@ public class MasterFile_TypeCtrl extends BaseCtrl<DbResType> {
                         if(!StringUtils.isEmpty(classNames)){
                             classNames = classNames.substring(0,classNames.length()-1);
                         }
-                        searchBean.setCreateAccountName(CommonCtrl.searchAccountById(type.getCreateBy(),resAccountRepository));
-                        searchBean.setUpdateAccountName(CommonCtrl.searchAccountById(type.getUpdateBy(),resAccountRepository));
+                        searchBean.setCreateAccountName((String)CommonCtrl.searchAccountById(type.getCreateBy(),resAccountRepository).getData().get(0));
+                        searchBean.setUpdateAccountName((String)CommonCtrl.searchAccountById(type.getUpdateBy(),resAccountRepository).getData().get(0));
                         searchBean.setClassName(classNames);
                         searchBean.setClassId(classIds);
                     }
@@ -190,30 +192,6 @@ public class MasterFile_TypeCtrl extends BaseCtrl<DbResType> {
             }
             repo.saveAndFlush(dbResType);
             return JsonResult.success(Arrays.asList());
-        } catch (Exception e) {
-            return JsonResult.fail(e);
-        }
-    }
-
-    @ApiOperation(value="搜索spec_attr",tags={"masterfile_type"},notes="注意问题点")
-    @RequestMapping(method = RequestMethod.POST, path = "/specSearch")
-        public JsonResult specSearch(@RequestBody long id) {
-        try {
-            List<Map> list = new ArrayList<>();
-            List<Map> attrList= repo.specSearch(id);
-            attrList.stream().collect(Collectors.groupingBy(s -> s.get("attrName")))
-                    .forEach((k,v)->{
-                            HashMap<Object, Object> hm = new HashMap<>();
-                            List<String> attrValueList = new ArrayList<>();
-                                v.forEach((a)->{
-                                attrValueList.add(a.get("attrValue").toString());
-                            });
-                            hm.put("attrName",k);
-                            hm.put("attrValue",attrValueList);
-                            list.add(hm);
-                    }
-            );
-            return JsonResult.success(list);
         } catch (Exception e) {
             return JsonResult.fail(e);
         }

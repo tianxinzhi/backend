@@ -22,7 +22,7 @@ import com.pccw.backend.bean.BaseSearchBean;
 /**
  * LastUpdatedBy: KEN,小明,wtw
  * LastUpdatedAt: 5/12/2019
- * Desc: 
+ * Desc: 转换工具类
  */
 
 @Aspect

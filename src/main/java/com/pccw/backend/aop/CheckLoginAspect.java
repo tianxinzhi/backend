@@ -1,7 +1,10 @@
 package com.pccw.backend.aop;
 
+import javax.servlet.http.HttpServletRequest;
+
 import com.alibaba.fastjson.JSONObject;
 import com.pccw.backend.exception.BaseException;
+import com.pccw.backend.util.Session;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.Signature;
@@ -11,6 +14,9 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -26,28 +32,24 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class CheckLoginAspect {
 
-    // @Autowired
-    // HttpRequest req;
+    @Autowired
+    HttpServletRequest request;
+
+    @Autowired
+    Session session;
 
     //execution表达式自行搜索引擎
-    @Pointcut("execution(* com.pccw.backend.ctrl.*.*(..))")
+    @Pointcut("execution(* com.pccw.backend.ctrl.*.*(..)) && !execution(* com.pccw.backend.ctrl.SystemCtrl.*(..))")
     public void pointcut() {}
 
     @Before("pointcut()")
     public void printParam(JoinPoint joinPoint) throws BaseException {
 
-        //获取请求的方法
-        Signature sig = joinPoint.getSignature();
-        String method = joinPoint.getTarget().getClass().getName() + "." + sig.getName();
+        String token = request.getHeader("TOKEN");
 
-        //获取请求的参数
-        Object[] args = joinPoint.getArgs();
-        //fastjson转换
-        String params = JSONObject.toJSONString(args);
+        if(!session.isLogin(token)){
+            throw BaseException.getNoLoginException();
+        }
 
-        //打印请求参数
-        log.info(method + ":" + params);
-
-        // throw BaseException.getNoLoginException();
     }
 }

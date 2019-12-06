@@ -2,6 +2,8 @@ package com.pccw.backend.util;
 
 import java.util.Objects;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpCookie;
@@ -19,6 +21,9 @@ public class Session<T> {
 
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
+
+    @Autowired
+    HttpServletRequest request;
     
     /**
      * 存
@@ -90,4 +95,20 @@ public class Session<T> {
     public boolean hasRight(String module,String ctrl){
         return true;
     }
+    /**
+     * 获取Session用户对象
+     * @return
+     */
+    public <T> T getUser(){
+        return get(request.getHeader("TOKEN"));
+    }
+
+    /**
+     * 获取用户TOKEN
+     * @return
+     */
+    public String getToken() {
+        return request.getHeader("TOKEN");
+    }
+    
 }

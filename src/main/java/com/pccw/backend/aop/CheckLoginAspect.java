@@ -32,8 +32,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class CheckLoginAspect {
 
-    @Autowired
-    HttpServletRequest request;
 
     @Autowired
     Session session;
@@ -45,9 +43,8 @@ public class CheckLoginAspect {
     @Before("pointcut()")
     public void printParam(JoinPoint joinPoint) throws BaseException {
 
-        String token = request.getHeader("TOKEN");
 
-        if(!session.isLogin(token)){
+        if(!session.isLogin(session.getToken())){
             throw BaseException.getNoLoginException();
         }
 

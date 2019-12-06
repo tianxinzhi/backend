@@ -48,11 +48,10 @@ public class SystemCtrl extends BaseCtrl<DbResAccount> {
             DbResAccount rwe = repo.getDbResAccountsByAccountNameAndAccountPassword(bean.getUsername(),bean.getPassword());
             if(Objects.isNull(rwe))
              return JsonResult.fail(BaseException.getAccAndPwdException());
-            // if(rwe==null){
-            //     return JsonResult.fail(new Exception());
-            // }
+
             //取数据库用户数据
             JSONObject obj = new JSONObject();
+            
             //取sessionId为token，存session
             session.set(hs.getId(), obj);
             

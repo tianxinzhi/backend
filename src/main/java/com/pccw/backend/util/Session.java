@@ -90,7 +90,4 @@ public class Session<T> {
     public boolean hasRight(String module,String ctrl){
         return true;
     }
-    public boolean setToken(String key){
-
-    }
 }

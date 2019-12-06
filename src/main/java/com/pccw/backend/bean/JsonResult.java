@@ -5,6 +5,8 @@ import java.lang.Thread.State;
 import java.util.Arrays;
 import java.util.List;
 
+import com.pccw.backend.exception.ErrMsg;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -56,5 +58,9 @@ public class JsonResult<T> {
      */
     public static <T> JsonResult<T> fail(List<T> data) {
         return new JsonResult<T>("failed","888", "API Validate Failed!", data);
+    }
+
+    public static <T> JsonResult<T> fail(ErrMsg e){
+        return new JsonResult<>("failed", e.getCode(), e.getMsg(), Arrays.asList());
     }
 }

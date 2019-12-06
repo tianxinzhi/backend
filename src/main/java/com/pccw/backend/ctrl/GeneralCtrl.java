@@ -94,7 +94,7 @@ public class GeneralCtrl {
             GeneralBean generalBean = bean;
             if (!Objects.isNull(annotation)) {
                 generalBean = setGeneralBean(item, annotation,bean);
-                log.info(generalBean.toString());
+                // log.info(generalBean.toString());
             }
             return generalBean;
         }).collect(Collectors.toList());

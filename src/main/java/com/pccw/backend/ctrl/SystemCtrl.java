@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.pccw.backend.bean.JsonResult;
 import com.pccw.backend.bean.system.LoginBean;
 import com.pccw.backend.entity.DbResAccount;
-import com.pccw.backend.exception.ErrMsg;
+import com.pccw.backend.exception.BaseException;
 import com.pccw.backend.repository.ResAccountRepository;
 import com.pccw.backend.util.Session;
 
@@ -42,7 +42,7 @@ public class SystemCtrl extends BaseCtrl<DbResAccount> {
         try {
             DbResAccount rwe = repo.getDbResAccountsByAccountNameAndAccountPassword(bean.getUsername(),bean.getPassword());
             if(Objects.isNull(rwe))
-             return JsonResult.fail(new ErrMsg("003", "XXXXXXXXXX"));
+             return JsonResult.fail(BaseException.getAccAndPwdException());
             // if(rwe==null){
             //     return JsonResult.fail(new Exception());
             // }

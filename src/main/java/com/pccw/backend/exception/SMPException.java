@@ -3,6 +3,8 @@ package com.pccw.backend.exception;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.pccw.backend.bean.JsonResult;
 
 import org.springframework.validation.BindingResult;
@@ -29,17 +31,22 @@ public class SMPException {
     public JsonResult exception(MethodArgumentNotValidException e) {
         BindingResult bindingResult = e.getBindingResult();
         List<ObjectError> allErrors = bindingResult.getAllErrors();
-        List<ErrMsg> eMsgs = new ArrayList<>();
+
+        JSONArray arr = new JSONArray();
 
         allErrors.forEach(objectError -> {
             FieldError fieldError = (FieldError)objectError;
-            ErrMsg msg = new ErrMsg(fieldError.getField(),fieldError.getDefaultMessage());
-            eMsgs.add(msg);
+            JSONObject obj = new JSONObject();
+            obj.put("code", fieldError.getField());
+            obj.put("msg",fieldError.getDefaultMessage());
+            arr.add(obj);
         });
         log.error("==============================");
-        log.error("Validate Exception:{}",eMsgs);
+        log.error("Validate Exception:{}",arr.toJSONString());
         log.error("==============================");
-        return JsonResult.fail(eMsgs);
+        BaseException baseException = BaseException.getArgumentNotValidException();
+        baseException.setMsg(arr.toJSONString());
+        return JsonResult.fail(baseException);
     }
 
     //其他运行时异常处理
@@ -48,7 +55,16 @@ public class SMPException {
         log.error("------------------------------");
         log.error("Runtime Exception: {}", e.getMessage());
         log.error("------------------------------");
-        return JsonResult.fail(e);
+        return JsonResult.fail(BaseException.getRuntimeException());
+    }
+
+    //自定义业务逻辑相关异常处理
+    @ExceptionHandler(BaseException.class)
+    public JsonResult baseExceptionHandler(Exception e) {
+        log.error("------------------------------");
+        log.error("Runtime Exception: {}", ((BaseException)e).getMsg());
+        log.error("------------------------------");
+        return JsonResult.fail((BaseException)e);
     }
 
 }

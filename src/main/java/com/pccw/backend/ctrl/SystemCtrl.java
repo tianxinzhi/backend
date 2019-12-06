@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 @Slf4j
@@ -36,6 +38,9 @@ public class SystemCtrl extends BaseCtrl<DbResAccount> {
     @Autowired
     HttpSession hs;
 
+    @Autowired
+    HttpServletResponse respose;
+
     @ApiOperation(value="用户登录",tags={"system"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST,value = "/login")
     public JsonResult login (@RequestBody LoginBean bean) {
@@ -46,11 +51,12 @@ public class SystemCtrl extends BaseCtrl<DbResAccount> {
             // if(rwe==null){
             //     return JsonResult.fail(new Exception());
             // }
-            JSONObject json = new JSONObject();
-            json.put("name", "ken");
-            json.put("age","18");
-            session.set(hs.getId(), json);
-            return JsonResult.success(Arrays.asList());
+            //取数据库用户数据
+            JSONObject obj = new JSONObject();
+            //取sessionId为token，存session
+            session.set(hs.getId(), obj);
+            
+            return JsonResult.success(Arrays.asList(hs.getId()));
         } catch (Exception e) {
             return JsonResult.fail(e);
         }

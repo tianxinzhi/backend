@@ -164,9 +164,7 @@ public class CommonCtrl  extends GeneralCtrl{
                     .forEach((k,v)->{
                                 HashMap<Object, Object> hm = new HashMap<>();
                                 List<String> attrValueList = new ArrayList<>();
-                                v.forEach((a)->{
-                                    attrValueList.add(a.get("attrValue").toString());
-                                });
+                                v.forEach((a)->{ attrValueList.add(a.get("attrValue").toString());});
                                 hm.put("attrName",k);
                                 hm.put("attrValue",attrValueList);
                                 list.add(hm);

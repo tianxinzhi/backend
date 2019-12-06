@@ -123,7 +123,7 @@ public class Process_ProcessCtrl extends BaseCtrl{
                 return item.getStep();
             }).collect(Collectors.toList());
 
-            Steps steps = new Steps("vertical", stepList);
+            Steps steps = new Steps("small","vertical", stepList);
 
             RecodeBean recodeBean = new RecodeBean();
             BeanUtils.copyProperties(r,recodeBean);

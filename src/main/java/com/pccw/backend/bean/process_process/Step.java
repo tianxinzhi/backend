@@ -15,6 +15,6 @@ import lombok.NoArgsConstructor;
 public class Step {
     private String title;
     private String desc;
-    private String activity;
+    private String active;
     private String stepNum;
 }

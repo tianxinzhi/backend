@@ -16,6 +16,8 @@ import java.util.List;
 @NoArgsConstructor
 public class Steps {
 
+    private String stepSize;
+
     private String StepDirection;
 
     private List<Step> step;

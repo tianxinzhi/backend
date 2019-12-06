@@ -145,24 +145,16 @@ public class Process_ProcessCtrl extends BaseCtrl{
             //log表信息
             DbResLogMgt logDtls = logMgtRepository.findDbResLogMgtByLogTxtBum(r.getLogTxtBum());
             //获取rolename 封装step数据
-            List<DtlRecodeBean> processDtls = r.getProcessDtls().stream().map(item -> {
+            List<Step> stepList = r.getProcessDtls().stream().map(item -> {
                 String roleName = roleRepository.findById(item.getRoleId()).get().getRoleName();
-                Step step = new Step(item.getStatus(), roleName, getStepActive(item.getStatus()),item.getStepNum());
-                DtlRecodeBean dtlRecodeBean = new DtlRecodeBean(roleName, step);
-                BeanUtils.copyProperties(item, dtlRecodeBean);
-                return dtlRecodeBean;
+                return new Step(item.getStatus(), roleName, getStepActive(item.getStatus()), item.getStepNum());
             }).collect(Collectors.toList());
-
-            List<Step> stepList = processDtls.stream().map(item -> {
-                return item.getStep();
-            }).collect(Collectors.toList());
-
-            Steps steps = new Steps("small","vertical", stepList);
-
+            //封装返回页面数据
             RecodeBean recodeBean = new RecodeBean();
             BeanUtils.copyProperties(r,recodeBean);
             recodeBean.setLogDtls(logDtls);
-            recodeBean.setSteps(steps);
+            recodeBean.setSteps(stepList);
+
             return recodeBean;
         }).collect(Collectors.toList());
     }

@@ -32,6 +32,17 @@ public class CheckRightAspect {
 
     @Before("pointcut()")
     public void printParam(JoinPoint joinPoint) throws BaseException {
+        //获取请求的方法
+        Signature sig = joinPoint.getSignature();
+        String method = joinPoint.getTarget().getClass().getName() + "." + sig.getName();
+
+        //获取请求的参数
+        Object[] args = joinPoint.getArgs();
+        //fastjson转换
+        String params = JSONObject.toJSONString(args);
+
+        //打印请求参数
+        log.info(method + ":" + params);
         // 【1】获取session关于account相关right
         // 【2】获取ctrl名称（模块名称）和ctrl方法（模块按钮）
         // 【3】判断right

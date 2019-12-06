@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.*;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
@@ -36,10 +37,7 @@ public class SystemCtrl extends BaseCtrl<DbResAccount> {
     Session session;
 
     @Autowired
-    HttpSession hs;
-
-    @Autowired
-    HttpServletResponse respose;
+    HttpServletRequest request;
 
     @ApiOperation(value="用户登录",tags={"system"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST,value = "/login")
@@ -50,12 +48,14 @@ public class SystemCtrl extends BaseCtrl<DbResAccount> {
              return JsonResult.fail(BaseException.getAccAndPwdException());
 
             //取数据库用户数据
+            // （代完成）
             JSONObject obj = new JSONObject();
             
             //取sessionId为token，存session
-            session.set(hs.getId(), obj);
+            String uuid = UUID.randomUUID().toString();
+            session.set(uuid, obj);
             
-            return JsonResult.success(Arrays.asList(hs.getId()));
+            return JsonResult.success(Arrays.asList(uuid));
         } catch (Exception e) {
             return JsonResult.fail(e);
         }
@@ -65,7 +65,8 @@ public class SystemCtrl extends BaseCtrl<DbResAccount> {
     @RequestMapping(method = RequestMethod.POST,value = "/logout")
     public JsonResult logout (@RequestBody LoginBean bean) {
         try {
-            session.delete(hs.getId());
+            String token = request.getHeader("TOKEN");
+            session.delete(token);
             return JsonResult.success(Arrays.asList());
         } catch (Exception e) {
             return JsonResult.fail(e);

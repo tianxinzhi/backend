@@ -5,23 +5,19 @@ import com.pccw.backend.bean.StaticVariable;
 import com.pccw.backend.bean.process_process.*;
 import com.pccw.backend.entity.DbResLogMgt;
 import com.pccw.backend.entity.DbResProcess;
-import com.pccw.backend.entity.DbResProcessDtl;
-import com.pccw.backend.entity.DbResRole;
 import com.pccw.backend.repository.ResLogMgtRepository;
 import com.pccw.backend.repository.ResProcessRepository;
 import com.pccw.backend.repository.ResRoleRepository;
 import com.pccw.backend.util.Convertor;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -39,6 +35,7 @@ public class Process_ProcessCtrl extends BaseCtrl{
     @Autowired
     ResLogMgtRepository logMgtRepository;
 
+    @ApiOperation(value = "搜索recode",tags = "Process",notes = "注意问题点")
     @RequestMapping(method = RequestMethod.POST,path = "/search")
     public JsonResult search(@RequestBody SearchBean bean){
         try {
@@ -50,29 +47,59 @@ public class Process_ProcessCtrl extends BaseCtrl{
         }
     }
 
+    @ApiOperation(value = "搜索my request",tags = "Process",notes = "注意问题点")
     @RequestMapping(method = RequestMethod.POST,path = "/myReqSearch")
     public JsonResult myReqSearch(@RequestBody ReqOrPedSearchBean bean){
         try {
             List<DbResProcess> res = getDbResProcesses(bean);
             List<RecodeBean> list = getRecodes(res);
-            return JsonResult.success(res);
+            return JsonResult.success(list);
         } catch (Exception e) {
             return JsonResult.fail(e);
         }
     }
 
-//    @RequestMapping(method = RequestMethod.POST,path = "/myPendingSearch")
-//    public JsonResult myPendingSearch(@RequestBody ReqOrPedSearchBean bean){
-//        try {
-//            List<DbResProcess> res = getDbResProcesses(bean);
-//
-//            return JsonResult.success(res);
-//        } catch (Exception e) {
-//            return JsonResult.fail(e);
-//        }
-//    }
+    @ApiOperation(value = "搜索pending for me",tags = "Process",notes = "注意问题点")
+    @RequestMapping(method = RequestMethod.POST,path = "/myPendingSearch")
+    public JsonResult myPendingSearch(@RequestBody ReqOrPedSearchBean bean){
+        try {
+            timeRangeHandle(bean);
 
+            String nature = bean.getLogOrderNature() == null ? "" : bean.getLogOrderNature();
+            String repoId = bean.getRepoId() == null ? "" : String.valueOf(bean.getRepoId());
+            String txtNum = bean.getLogTxtBum() == null ? "" : bean.getLogTxtBum();
+
+            List<Long> ids = processRepository.findIdsByPending(bean.getCreateBy(),nature,repoId,txtNum,bean.getCreateAt()[0],bean.getCreateAt()[1]);
+
+            List<DbResProcess> res = processRepository.findDbResProcessesByIdIn(ids);
+
+            List<RecodeBean> list = getRecodes(res);
+
+            return JsonResult.success(list);
+        } catch (Exception e) {
+            log.info(e.toString());
+            return JsonResult.fail(e);
+        }
+    }
+
+    /**
+     * 通过查询条件查询Process和Process明细数据
+     * @param bean
+     * @return
+     * @throws IllegalAccessException
+     */
     private List<DbResProcess> getDbResProcesses(@RequestBody SearchBean bean) throws IllegalAccessException {
+        timeRangeHandle(bean);
+        log.info(bean.toString());
+
+        return processRepository.findAll(Convertor.convertSpecification(bean));
+    }
+
+    /**
+     * 处理获取的时间范围字段
+     * @param bean
+     */
+    private void timeRangeHandle(@RequestBody SearchBean bean) {
         Date[] dateRange = Objects.nonNull(bean.getDate()) && bean.getDate().length>0 ? bean.getDate() : new Date[2];
 
         dateRange[0] = Convertor.beginOfDay(dateRange[0]);
@@ -80,11 +107,13 @@ public class Process_ProcessCtrl extends BaseCtrl{
 
         Long[] timeRange = {Objects.nonNull(dateRange[0]) ? dateRange[0].getTime() : 946656000000L,Objects.nonNull(dateRange[1]) ? dateRange[1].getTime() : 4102416000000L};
         bean.setCreateAt(timeRange);
-        log.info(bean.toString());
-
-        return processRepository.findAll(Convertor.convertSpecification(bean));
     }
 
+    /**
+     * 将字段转为对应的step状态
+     * @param str
+     * @return
+     */
     private String getStepActive(String str) {
         String status = "";
 
@@ -106,29 +135,26 @@ public class Process_ProcessCtrl extends BaseCtrl{
         return status;
     }
 
+    /**
+     * 封装返回页面的数据格式
+     * @param res
+     * @return
+     */
     private List<RecodeBean> getRecodes(List<DbResProcess> res) {
         return res.stream().map(r -> {
-
+            //log表信息
             DbResLogMgt logDtls = logMgtRepository.findDbResLogMgtByLogTxtBum(r.getLogTxtBum());
-
-            List<DtlRecodeBean> processDtls = r.getProcessDtls().stream().map(item -> {
+            //获取rolename 封装step数据
+            List<Step> stepList = r.getProcessDtls().stream().map(item -> {
                 String roleName = roleRepository.findById(item.getRoleId()).get().getRoleName();
-                Step step = new Step(item.getStatus(), roleName, getStepActive(item.getStatus()),item.getStepNum());
-                DtlRecodeBean dtlRecodeBean = new DtlRecodeBean(roleName, step);
-                BeanUtils.copyProperties(item, dtlRecodeBean);
-                return dtlRecodeBean;
+                return new Step(item.getStatus(), roleName, getStepActive(item.getStatus()), item.getStepNum());
             }).collect(Collectors.toList());
-
-            List<Step> stepList = processDtls.stream().map(item -> {
-                return item.getStep();
-            }).collect(Collectors.toList());
-
-            Steps steps = new Steps("small","vertical", stepList);
-
+            //封装返回页面数据
             RecodeBean recodeBean = new RecodeBean();
             BeanUtils.copyProperties(r,recodeBean);
             recodeBean.setLogDtls(logDtls);
-            recodeBean.setSteps(steps);
+            recodeBean.setSteps(stepList);
+
             return recodeBean;
         }).collect(Collectors.toList());
     }

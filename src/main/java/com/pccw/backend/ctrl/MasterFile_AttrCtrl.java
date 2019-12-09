@@ -70,7 +70,7 @@ public class MasterFile_AttrCtrl extends BaseCtrl<DbResAttr> {
             attr.setAttrAttrValueList(attrAttrValueList);
             repo.saveAndFlush(attr);
             return JsonResult.success(Arrays.asList());
-        } catch (BeansException | NumberFormatException e) {
+        } catch (Exception e) {
            return JsonResult.fail(e);
         }
     }

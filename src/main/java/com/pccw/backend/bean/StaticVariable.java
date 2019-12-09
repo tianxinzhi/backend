@@ -75,4 +75,9 @@ public class StaticVariable {
     public static final String PROCESS_WAITING_STATUS = "WAITING";
     public static final String PROCESS_PENDING_STATUS = "PENDING";
 
+
+
+
+
+
 }

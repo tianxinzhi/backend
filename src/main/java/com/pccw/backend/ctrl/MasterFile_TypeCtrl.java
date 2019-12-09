@@ -68,7 +68,7 @@ public class MasterFile_TypeCtrl extends BaseCtrl<DbResType> {
                         searchBean.setSpecId(type.getDbResTypeSkuSpec().getSpecId());
                         DbResSpec sp = repo.findBySpecId(type.getDbResTypeSkuSpec().getSpecId());
                         searchBean.setSpecName(sp.getSpecName());
-                        searchBean.setAttrData(commonCtrl.specSearch(searchBean.getSpecId()).getData());
+                        searchBean.setAttrData(specSearch(searchBean.getSpecId()).getData());
                     }
                     if(type.getRelationOfTypeClass() != null && type.getRelationOfTypeClass().size() > 0){
                         List<DbResClassType> relationOfTypeClass = type.getRelationOfTypeClass();
@@ -192,6 +192,35 @@ public class MasterFile_TypeCtrl extends BaseCtrl<DbResType> {
             }
             repo.saveAndFlush(dbResType);
             return JsonResult.success(Arrays.asList());
+        } catch (Exception e) {
+            return JsonResult.fail(e);
+        }
+    }
+
+    /**
+     * 根据specId查询attr&attrValue
+     * 返回指定格式给前端详情展示
+     * @param id
+     * @return
+     */
+    @ApiOperation(value="搜索spec_attr&attrValue",tags={"masterfile_type"},notes="注意问题点")
+    @RequestMapping(method = RequestMethod.POST, path = "/specSearch")
+    public JsonResult specSearch(@RequestBody Long id) {
+        try {
+            List<Map> list = new ArrayList<>();
+            List<Map> attrList= repo.specSearch(id);
+            attrList.stream()
+                    .collect(Collectors.groupingBy(s -> s.get("attrName")))
+                    .forEach((k,v)->{
+                                HashMap<Object, Object> hm = new HashMap<>();
+                                List<String> attrValueList = new ArrayList<>();
+                                v.forEach((a)->{ attrValueList.add(a.get("attrValue").toString());});
+                                hm.put("attrName",k);
+                                hm.put("attrValue",attrValueList);
+                                list.add(hm);
+                            }
+                    );
+            return JsonResult.success(list);
         } catch (Exception e) {
             return JsonResult.fail(e);
         }

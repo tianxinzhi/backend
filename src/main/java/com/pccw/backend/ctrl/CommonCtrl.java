@@ -148,32 +148,5 @@ public class CommonCtrl  extends GeneralCtrl{
         }
     }
 
-    /**
-     * 根据specId查询attr&attrValue
-     * 返回指定格式给前端详情展示
-     * @param id
-     * @return
-     */
-    @ApiOperation(value="搜索spec_attr&attrValue",tags={"common"},notes="注意问题点")
-    @RequestMapping(method = RequestMethod.POST, path = "/specSearch")
-    public JsonResult specSearch(@RequestBody Long id) {
-        try {
-            List<Map> list = new ArrayList<>();
-            List<Map> attrList= type_repo.specSearch(id);
-            attrList.stream()
-                    .collect(Collectors.groupingBy(s -> s.get("attrName")))
-                    .forEach((k,v)->{
-                                HashMap<Object, Object> hm = new HashMap<>();
-                                List<String> attrValueList = new ArrayList<>();
-                                v.forEach((a)->{ attrValueList.add(a.get("attrValue").toString());});
-                                hm.put("attrName",k);
-                                hm.put("attrValue",attrValueList);
-                                list.add(hm);
-                            }
-                    );
-            return JsonResult.success(list);
-        } catch (Exception e) {
-            return JsonResult.fail(e);
-        }
-    }
+
 }

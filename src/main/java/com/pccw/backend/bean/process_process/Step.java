@@ -17,4 +17,6 @@ public class Step {
     private String desc;
     private String active;
     private String stepNum;
+    private Long processDtlsId;
+    private String remark;
 }

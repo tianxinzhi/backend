@@ -104,7 +104,6 @@ public class Stock_OutCtrl  extends BaseCtrl<DbResLogMgt> {
             for(int i=0;i<resFlow.getResFlowStepList().size();i++) {
                 DbResProcessDtl  resProcessDtl  =new DbResProcessDtl();
                 resProcessDtl.setFlowId(resFlow.getId());
-                resProcessDtl.setRemark(b.getRemark());
                 resProcessDtl.setStepId(resFlow.getResFlowStepList().get(i).getId());
                 resProcessDtl.setStepNum(resFlow.getResFlowStepList().get(i).getStepNum());
                 resProcessDtl.setRoleId(resFlow.getResFlowStepList().get(i).getRoleId());

@@ -62,13 +62,14 @@ public class BaseCtrl<T>{
     public JsonResult edit(BaseRepository repo, Class<T> cls,BaseBean b){
         try {
             b.setUpdateAt(new Date().getTime());
+            b.setActive("Y");
             saveAndFlush(repo, cls, b);
             return JsonResult.success(Arrays.asList());
         } catch (Exception e) {
             return JsonResult.fail(e);
         }
     }
-    private void saveAndFlush(BaseRepository repo, Class<T> cls, BaseBean b) throws Exception{
+    private void saveAndFlush(BaseRepository repo, Class<T> cls, BaseBean b) throws Exception {
         try {         
             T entity = cls.newInstance();
             BeanUtils.copyProperties(b, entity);

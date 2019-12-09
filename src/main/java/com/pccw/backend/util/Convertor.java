@@ -9,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 
 
 import java.lang.reflect.Field;
-import java.sql.Date;
 import java.util.*;
 
 import javax.persistence.criteria.*;
@@ -21,8 +20,11 @@ import com.pccw.backend.bean.BaseSearchBean;
 
 
 /**
- * Convertor
+ * LastUpdatedBy: KEN,小明,wtw
+ * LastUpdatedAt: 5/12/2019
+ * Desc: 转换工具类
  */
+
 @Aspect
 @Slf4j
 @Component
@@ -164,4 +166,25 @@ import com.pccw.backend.bean.BaseSearchBean;
 		return sb.toString();
 	}
 
+	public static Date beginOfDay(Date date) {
+		if(Objects.isNull(date)) return null;
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		cal.set(Calendar.HOUR_OF_DAY,0);
+		cal.set(Calendar.MINUTE,0);
+		cal.set(Calendar.SECOND,0);
+		Date beginDate = cal.getTime();
+		return beginDate;
+	}
+
+	public static Date endOfDay(Date date) {
+		if(Objects.isNull(date)) return null;
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		cal.set(Calendar.HOUR_OF_DAY,23);
+		cal.set(Calendar.MINUTE,59);
+		cal.set(Calendar.SECOND,59);
+		Date endDate = cal.getTime();
+		return endDate;
+	}
 }

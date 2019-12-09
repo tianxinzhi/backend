@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -34,6 +35,36 @@ public class Process_ProcessCtrl extends BaseCtrl{
 
     @Autowired
     ResLogMgtRepository logMgtRepository;
+
+    @ApiOperation(value="process",tags={"process"},notes="说明")
+    @RequestMapping(method = RequestMethod.POST,path="/edit")
+    public JsonResult edit(@RequestBody EditBean b){
+        try{
+            log.info(b.toString());
+            long t = new Date().getTime();
+            Optional<DbResProcess> optional = processRepository.findById(b.getId());
+            DbResProcess dbResProcess = optional.get();
+            BeanUtils.copyProperties(dbResProcess,b);
+            b.setUpdateAt(t);
+            b.setStatus(b.getStatusPro());
+            for(int i=0;i<b.getSteps().size();i++) {
+                for(int j=0;j<b.getProcessDtls().size();j++) {
+                    if (b.getProcessDtls().get(j).getId().equals(b.getSteps().get(i).getProcessDtlsId()) ) {
+                          b.getProcessDtls().get(j).setUpdateAt(t);
+                          b.getProcessDtls().get(j).setActive("Y");
+                          b.getProcessDtls().get(j).setRemark(b.getSteps().get(i).getRemark());
+                          b.getProcessDtls().get(j).setStatus(b.getSteps().get(i).getTitle());
+                    }
+                }
+            }
+            return this.edit(processRepository, DbResProcess.class, b);
+        } catch (Exception e) {
+            log.info(e.getMessage());
+            return JsonResult.fail(e);
+        }
+
+    }
+
 
     @ApiOperation(value = "搜索recode",tags = "Process",notes = "注意问题点")
     @RequestMapping(method = RequestMethod.POST,path = "/search")
@@ -147,7 +178,7 @@ public class Process_ProcessCtrl extends BaseCtrl{
             //获取rolename 封装step数据
             List<Step> stepList = r.getProcessDtls().stream().map(item -> {
                 String roleName = roleRepository.findById(item.getRoleId()).get().getRoleName();
-                return new Step(item.getStatus(), roleName, getStepActive(item.getStatus()), item.getStepNum());
+                return new Step(item.getStatus(), roleName, getStepActive(item.getStatus()), item.getStepNum(),item.getId(),item.getRemark());
             }).collect(Collectors.toList());
             //封装返回页面数据
             RecodeBean recodeBean = new RecodeBean();

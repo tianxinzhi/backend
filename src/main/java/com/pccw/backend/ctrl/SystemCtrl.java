@@ -36,9 +36,6 @@ public class SystemCtrl extends BaseCtrl<DbResAccount> {
     @Autowired
     Session session;
 
-    @Autowired
-    HttpServletRequest request;
-
     @ApiOperation(value="用户登录",tags={"system"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST,value = "/login")
     public JsonResult login (@RequestBody LoginBean bean) {
@@ -65,8 +62,7 @@ public class SystemCtrl extends BaseCtrl<DbResAccount> {
     @RequestMapping(method = RequestMethod.POST,value = "/logout")
     public JsonResult logout (@RequestBody LoginBean bean) {
         try {
-            String token = request.getHeader("TOKEN");
-            session.delete(token);
+            session.delete(session.getToken());
             return JsonResult.success(Arrays.asList());
         } catch (Exception e) {
             return JsonResult.fail(e);

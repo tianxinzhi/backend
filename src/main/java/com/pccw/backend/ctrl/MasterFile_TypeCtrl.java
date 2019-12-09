@@ -81,8 +81,8 @@ public class MasterFile_TypeCtrl extends BaseCtrl<DbResType> {
                         if(!StringUtils.isEmpty(classNames)){
                             classNames = classNames.substring(0,classNames.length()-1);
                         }
-                        searchBean.setCreateAccountName((String)CommonCtrl.searchAccountById(type.getCreateBy(),resAccountRepository).getData().get(0));
-                        searchBean.setUpdateAccountName((String)CommonCtrl.searchAccountById(type.getUpdateBy(),resAccountRepository).getData().get(0));
+                        searchBean.setCreateAccountName((String)commonCtrl.searchAccountById(type.getCreateBy()).getData().get(0));
+                        searchBean.setUpdateAccountName((String)commonCtrl.searchAccountById(type.getUpdateBy()).getData().get(0));
                         searchBean.setClassName(classNames);
                         searchBean.setClassId(classIds);
                     }

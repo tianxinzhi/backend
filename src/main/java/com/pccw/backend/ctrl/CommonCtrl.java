@@ -47,6 +47,8 @@ public class CommonCtrl  extends GeneralCtrl{
     ResRoleRepository roleRepository;
     @Autowired
     ResStockTypeRepository stockTypeRepository;
+    @Autowired
+    ResAccountRepository accountRepository;
 
     @ApiOperation(value="获取res_right表的信息",tags={"common"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.GET,path="/rightModule")
@@ -125,10 +127,9 @@ public class CommonCtrl  extends GeneralCtrl{
     /**
      * 根据id获取AccountName
      * @param id
-     * @param accountRepo
      * @return
      */
-    public static JsonResult searchAccountById(long id,ResAccountRepository accountRepo){
+    public JsonResult searchAccountById(long id){
         List<Object> objects = new ArrayList<>();
         String accountName = "";
         try {
@@ -136,7 +137,7 @@ public class CommonCtrl  extends GeneralCtrl{
                 if(id == 0){
                     accountName = "system";
                 }else{
-                    accountName = accountRepo.findById(id).get().getAccountName();
+                    accountName = accountRepository.findById(id).get().getAccountName();
                 }
             }
             objects.add(accountName);

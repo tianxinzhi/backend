@@ -36,6 +36,8 @@ public class Stock_CategoryCtrl extends BaseCtrl<DbResSkuRepo> {
     private ResStockTypeRepository stockTypeRepository;
     @Autowired
     private ResAccountRepository accountRepo;
+    @Autowired
+    CommonCtrl commonCtrl;
 
     @ApiOperation(value = "搜索category",tags = "stock_category",notes = "注意问题点")
     @RequestMapping(method = RequestMethod.POST,path = "/search")
@@ -51,8 +53,8 @@ public class Stock_CategoryCtrl extends BaseCtrl<DbResSkuRepo> {
                 sb.setSkuCode(skuRepo.getSku().getSkuCode());
                 sb.setStockTypeId(skuRepo.getId());
                 sb.setSkuDesc(skuRepo.getSku().getSkuDesc());
-                sb.setCreateAccountName((String)CommonCtrl.searchAccountById(skuRepo.getCreateBy(),accountRepo).getData().get(0));
-                sb.setUpdateAccountName((String)CommonCtrl.searchAccountById(skuRepo.getUpdateBy(),accountRepo).getData().get(0));
+                sb.setCreateAccountName((String)commonCtrl.searchAccountById(skuRepo.getCreateBy()).getData().get(0));
+                sb.setUpdateAccountName((String)commonCtrl.searchAccountById(skuRepo.getUpdateBy()).getData().get(0));
                 if(!Objects.isNull(skuRepo.getStockType())){
                     sb.setStockTypeName(skuRepo.getStockType().getStockTypeName());
                 }

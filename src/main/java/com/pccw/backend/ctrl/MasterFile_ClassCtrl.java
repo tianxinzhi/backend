@@ -39,6 +39,8 @@ public class MasterFile_ClassCtrl extends BaseCtrl<DbResClass> {
     ResClassRepository repo;
     @Autowired
     ResAccountRepository accountRepo;
+    @Autowired
+    CommonCtrl commonCtrl;
 
     @ApiOperation(value="搜索class",tags={"masterfile_class"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST, path = "/search")
@@ -52,8 +54,8 @@ public class MasterFile_ClassCtrl extends BaseCtrl<DbResClass> {
             res.forEach(d->{
                 SearchBean searchBean = new SearchBean();
                 BeanUtils.copyProperties(d,searchBean);
-                searchBean.setCreateAccountName((String)CommonCtrl.searchAccountById(d.getCreateBy(),accountRepo).getData().get(0));
-                searchBean.setUpdateAccountName((String)CommonCtrl.searchAccountById(d.getUpdateBy(),accountRepo).getData().get(0));
+                searchBean.setCreateAccountName((String)commonCtrl.searchAccountById(d.getCreateBy()).getData().get(0));
+                searchBean.setUpdateAccountName((String)commonCtrl.searchAccountById(d.getUpdateBy()).getData().get(0));
                 list.add(searchBean);
             });
             return JsonResult.success(list);

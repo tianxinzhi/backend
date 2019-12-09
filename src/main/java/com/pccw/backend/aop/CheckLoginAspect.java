@@ -44,9 +44,9 @@ public class CheckLoginAspect {
     public void printParam(JoinPoint joinPoint) throws BaseException {
 
 
-        if(!session.isLogin(session.getToken())){
-            throw BaseException.getNoLoginException();
-        }
+        // if(!session.isLogin(session.getToken())){
+        //     throw BaseException.getNoLoginException();
+        // }
 
     }
 }

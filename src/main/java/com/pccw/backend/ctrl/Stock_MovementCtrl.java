@@ -32,7 +32,7 @@ import java.util.Map;
 @CrossOrigin(methods = RequestMethod.POST, origins = "*", allowCredentials = "false")
 @RequestMapping("/stock_movement")
 @Api(value="Stock_MovementCtrl",tags={"stock_movement"})
-public class Stock_Movement extends BaseCtrl<DbResProcess> {
+public class Stock_MovementCtrl extends BaseCtrl<DbResProcess> {
 
     @Autowired
     ResProcessRepository processRepo;

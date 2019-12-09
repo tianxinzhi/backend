@@ -69,7 +69,7 @@ public class BaseCtrl<T>{
             return JsonResult.fail(e);
         }
     }
-    private void saveAndFlush(BaseRepository repo, Class<T> cls, BaseBean b) throws Exception{
+    private void saveAndFlush(BaseRepository repo, Class<T> cls, BaseBean b) throws Exception {
         try {         
             T entity = cls.newInstance();
             BeanUtils.copyProperties(b, entity);

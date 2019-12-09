@@ -119,9 +119,9 @@ public class Stock_AdjustmentCtrl extends BaseCtrl<DbResLogMgt> {
     public JsonResult balanceSearch(@RequestBody SearchBean bean) {
         try {
             DbResSkuRepo skuRepo = skuRepoRepository.findQtyByRepoAndShopAndType(bean.getDtlRepoId(),bean.getDtlSkuId(),bean.getCatalog());
-            if(skuRepo==null){
-                return JsonResult.fail(Arrays.asList());
-            }
+            // if(skuRepo==null){
+            //     return JsonResult.fail(Arrays.asList());
+            // }
             return JsonResult.success(Arrays.asList(skuRepo));
         } catch (Exception e) {
             return JsonResult.fail(e);

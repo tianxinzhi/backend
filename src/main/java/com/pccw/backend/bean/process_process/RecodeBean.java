@@ -21,4 +21,6 @@ public class RecodeBean extends DbResProcess{
     private DbResLogMgt logDtls;
 
     private List<Step> steps;
+
+    private boolean checkable;
 }

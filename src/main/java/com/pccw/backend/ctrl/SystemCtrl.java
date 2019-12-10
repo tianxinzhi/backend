@@ -17,6 +17,7 @@ import org.springframework.http.HttpRequest;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -46,11 +47,18 @@ public class SystemCtrl extends BaseCtrl<DbResAccount> {
 
             //取数据库用户数据
             // （代完成）
-            JSONObject obj = new JSONObject();
-            
+//            JSONObject obj = new JSONObject();
+            Map<String,Object> map = new HashMap<>();
+            map.put("role",rwe.getAccountRoles().stream().map(role->{
+                return role.getRoleId();
+            }).collect(Collectors.toList()));
+            map.put("accountName",rwe.getAccountName());
+            map.put("account",rwe.getId());
+            JSONObject object = new JSONObject(map);
+
             //取sessionId为token，存session
             String uuid = UUID.randomUUID().toString();
-            session.set(uuid, obj);
+            session.set(uuid, object);
             
             return JsonResult.success(Arrays.asList(uuid));
         } catch (Exception e) {

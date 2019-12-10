@@ -32,7 +32,7 @@ import java.util.Map;
 @CrossOrigin(methods = RequestMethod.POST, origins = "*", allowCredentials = "false")
 @RequestMapping("/stock_movement")
 @Api(value="Stock_MovementCtrl",tags={"stock_movement"})
-public class Stock_Movement extends BaseCtrl<DbResProcess> {
+public class Stock_MovementCtrl extends BaseCtrl<DbResProcess> {
 
     @Autowired
     ResProcessRepository processRepo;
@@ -55,7 +55,7 @@ public class Stock_Movement extends BaseCtrl<DbResProcess> {
             res.forEach(p-> {
                 Map map = JSON.parseObject(JSON.toJSONString(p), Map.class);
                 map.put("repoName",repoRepo.findById(p.getRepoId()).get().getRepoName());
-                map.put("createAccountName", CommonCtrl.searchAccountById(p.getCreateBy(), accountRepo));
+//                map.put("createAccountName", CommonCtrl.searchAccountById(p.getCreateBy(), accountRepo));
                 list.add(map);
             });
             return JsonResult.success(list);

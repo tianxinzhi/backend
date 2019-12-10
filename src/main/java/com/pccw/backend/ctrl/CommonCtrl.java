@@ -130,26 +130,26 @@ public class CommonCtrl  extends GeneralCtrl{
         return this.JsonResultHandle(stockTypeRepository,new LabelAndValue());
     }
 
-    /**
-     * 根据id获取AccountName
-     * @param id
-     * @param accountRepo
-     * @return
-     */
-    public static String searchAccountById(long id,ResAccountRepository accountRepo){
-        String accountName = "";
-        try {
-            if(Objects.nonNull(id)){
-                if(id == 0){
-                    accountName = "system";
-                }else{
-                    accountName = accountRepo.findById(id).get().getAccountName();
-                }
-            }
-            return accountName;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return accountName;
-        }
-    }
+    // /**
+    //  * 根据id获取AccountName
+    //  * @param id
+    //  * @param accountRepo
+    //  * @return
+    //  */
+    // public static String searchAccountById(long id,ResAccountRepository accountRepo){
+    //     String accountName = "";
+    //     try {
+    //         if(Objects.nonNull(id)){
+    //             if(id == 0){
+    //                 accountName = "system";
+    //             }else{
+    //                 accountName = accountRepo.findById(id).get().getAccountName();
+    //             }
+    //         }
+    //         return accountName;
+    //     } catch (Exception e) {
+    //         e.printStackTrace();
+    //         return accountName;
+    //     }
+    // }
 }

@@ -2,8 +2,8 @@ package com.pccw.backend.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.pccw.backend.annotation.JsonResultParamHandle;
-import lombok.Getter;
-import lombok.Setter;
+
+import lombok.Data;
 
 import javax.persistence.*;
 import java.util.List;
@@ -15,8 +15,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "res_sku")
-@Getter
-@Setter
+@Data
 @SequenceGenerator(name="id_sku",sequenceName = "sku_seq",allocationSize = 1)
 @JsonResultParamHandle(param1 = "id",param2 = "skuCode")
 public class DbResSku extends Base {

@@ -1,24 +1,26 @@
 package com.pccw.backend.ctrl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.pccw.backend.bean.JsonResult;
 import com.pccw.backend.bean.StaticVariable;
 import com.pccw.backend.bean.process_process.*;
+import com.pccw.backend.entity.DbResAccount;
 import com.pccw.backend.entity.DbResLogMgt;
 import com.pccw.backend.entity.DbResProcess;
+import com.pccw.backend.entity.DbResProcessDtl;
+import com.pccw.backend.repository.ResAccountRepository;
 import com.pccw.backend.repository.ResLogMgtRepository;
 import com.pccw.backend.repository.ResProcessRepository;
 import com.pccw.backend.repository.ResRoleRepository;
 import com.pccw.backend.util.Convertor;
+import com.pccw.backend.util.Session;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -35,6 +37,12 @@ public class Process_ProcessCtrl extends BaseCtrl{
 
     @Autowired
     ResLogMgtRepository logMgtRepository;
+
+    @Autowired
+    ResAccountRepository accountRepository;
+
+    @Autowired
+    Session<Integer> session;
 
     @ApiOperation(value="process",tags={"process"},notes="说明")
     @RequestMapping(method = RequestMethod.POST,path="/edit")
@@ -71,7 +79,9 @@ public class Process_ProcessCtrl extends BaseCtrl{
     public JsonResult search(@RequestBody SearchBean bean){
         try {
             List<DbResProcess> res = getDbResProcesses(bean);
-            List<RecodeBean> list = getRecodes(res);
+            Map user = session.getUser();
+            String roles = user.get("role").toString();
+            List<RecodeBean> list = getRecodes(res,roles);
             return JsonResult.success(list);
         } catch (Exception e) {
             return JsonResult.fail(e);
@@ -83,7 +93,9 @@ public class Process_ProcessCtrl extends BaseCtrl{
     public JsonResult myReqSearch(@RequestBody ReqOrPedSearchBean bean){
         try {
             List<DbResProcess> res = getDbResProcesses(bean);
-            List<RecodeBean> list = getRecodes(res);
+            Map user = session.getUser();
+            String roles = user.get("role").toString();
+            List<RecodeBean> list = getRecodes(res,roles);
             return JsonResult.success(list);
         } catch (Exception e) {
             return JsonResult.fail(e);
@@ -104,7 +116,9 @@ public class Process_ProcessCtrl extends BaseCtrl{
 
             List<DbResProcess> res = processRepository.findDbResProcessesByIdIn(ids);
 
-            List<RecodeBean> list = getRecodes(res);
+            Map user = session.getUser();
+            String roles = user.get("role").toString();
+            List<RecodeBean> list = getRecodes(res,roles);
 
             return JsonResult.success(list);
         } catch (Exception e) {
@@ -171,8 +185,14 @@ public class Process_ProcessCtrl extends BaseCtrl{
      * @param res
      * @return
      */
-    private List<RecodeBean> getRecodes(List<DbResProcess> res) {
+    private List<RecodeBean> getRecodes(List<DbResProcess> res,String roles) {
         return res.stream().map(r -> {
+            //判断操作人是否具有当前审批权限
+            List<DbResProcessDtl> collect = r.getProcessDtls().stream().filter(item ->
+                    //判断当前状态为pending，且当前行的roleId存在于操作人的roleId中
+                    item.getStatus().equals(StaticVariable.PROCESS_PENDING_STATUS) && roles.contains(item.getRoleId().toString())
+            ).collect(Collectors.toList());
+            boolean checkable = collect.size() > 0 ;
             //log表信息
             DbResLogMgt logDtls = logMgtRepository.findDbResLogMgtByLogTxtBum(r.getLogTxtBum());
             //获取rolename 封装step数据
@@ -185,7 +205,7 @@ public class Process_ProcessCtrl extends BaseCtrl{
             BeanUtils.copyProperties(r,recodeBean);
             recodeBean.setLogDtls(logDtls);
             recodeBean.setSteps(stepList);
-
+            recodeBean.setCheckable(checkable);
             return recodeBean;
         }).collect(Collectors.toList());
     }

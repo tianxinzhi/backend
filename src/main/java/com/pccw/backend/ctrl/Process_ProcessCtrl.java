@@ -39,10 +39,7 @@ public class Process_ProcessCtrl extends BaseCtrl{
     ResLogMgtRepository logMgtRepository;
 
     @Autowired
-    ResAccountRepository accountRepository;
-
-    @Autowired
-    Session<Integer> session;
+    Session session;
 
     @ApiOperation(value="process",tags={"process"},notes="说明")
     @RequestMapping(method = RequestMethod.POST,path="/edit")
@@ -50,10 +47,12 @@ public class Process_ProcessCtrl extends BaseCtrl{
         try{
             log.info(b.toString());
             long t = new Date().getTime();
+
             Optional<DbResProcess> optional = processRepository.findById(b.getId());
             DbResProcess dbResProcess = optional.get();
             BeanUtils.copyProperties(dbResProcess,b);
             b.setUpdateAt(t);
+            //b.setUpdateBy();
             b.setStatus(b.getStatusPro());
             for(int i=0;i<b.getSteps().size();i++) {
                 for(int j=0;j<b.getProcessDtls().size();j++) {

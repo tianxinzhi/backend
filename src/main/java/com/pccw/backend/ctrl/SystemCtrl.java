@@ -37,6 +37,9 @@ public class SystemCtrl extends BaseCtrl<DbResAccount> {
     @Autowired
     Session session;
 
+    @Autowired
+    HttpServletRequest request;
+
     @ApiOperation(value="用户登录",tags={"system"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST,value = "/login")
     public JsonResult login (@RequestBody LoginBean bean) {
@@ -57,10 +60,11 @@ public class SystemCtrl extends BaseCtrl<DbResAccount> {
             JSONObject object = new JSONObject(map);
 
             //取sessionId为token，存session
-            String uuid = UUID.randomUUID().toString();
-            session.set(uuid, object);
+//            String uuid = UUID.randomUUID().toString();
+            String sessionId = request.getSession().getId();
+            session.set(sessionId, object);
             
-            return JsonResult.success(Arrays.asList(uuid));
+            return JsonResult.success(Arrays.asList(sessionId));
         } catch (Exception e) {
             return JsonResult.fail(e);
         }

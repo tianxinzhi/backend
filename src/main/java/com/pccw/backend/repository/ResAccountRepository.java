@@ -10,4 +10,6 @@ public interface ResAccountRepository extends BaseRepository<DbResAccount> {
     DbResAccount getDbResAccountsByAccountNameAndAccountPassword(String accountName,String accountPassword);
 
     DbResAccount findDbResAccountByAccountName(String name);
+
+    DbResAccount findDbResAccountById(Long id);
 }

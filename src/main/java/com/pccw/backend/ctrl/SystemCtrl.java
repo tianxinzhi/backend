@@ -17,6 +17,7 @@ import org.springframework.http.HttpRequest;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -36,6 +37,9 @@ public class SystemCtrl extends BaseCtrl<DbResAccount> {
     @Autowired
     Session session;
 
+    @Autowired
+    HttpServletRequest request;
+
     @ApiOperation(value="用户登录",tags={"system"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST,value = "/login")
     public JsonResult login (@RequestBody LoginBean bean) {
@@ -46,13 +50,21 @@ public class SystemCtrl extends BaseCtrl<DbResAccount> {
 
             //取数据库用户数据
             // （代完成）
-            JSONObject obj = new JSONObject();
-            
+//            JSONObject obj = new JSONObject();
+            Map<String,Object> map = new HashMap<>();
+            map.put("role",rwe.getAccountRoles().stream().map(role->{
+                return role.getRoleId();
+            }).collect(Collectors.toList()));
+            map.put("accountName",rwe.getAccountName());
+            map.put("account",rwe.getId());
+            JSONObject object = new JSONObject(map);
+
             //取sessionId为token，存session
-            String uuid = UUID.randomUUID().toString();
-            session.set(uuid, obj);
+//            String uuid = UUID.randomUUID().toString();
+            String sessionId = request.getSession().getId();
+            session.set(sessionId, object);
             
-            return JsonResult.success(Arrays.asList(uuid));
+            return JsonResult.success(Arrays.asList(sessionId));
         } catch (Exception e) {
             return JsonResult.fail(e);
         }

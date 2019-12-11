@@ -1,17 +1,13 @@
 package com.pccw.backend.ctrl;
 
-import com.alibaba.fastjson.JSONObject;
 import com.pccw.backend.bean.JsonResult;
 import com.pccw.backend.bean.StaticVariable;
 import com.pccw.backend.bean.process_process.*;
-import com.pccw.backend.entity.DbResAccount;
+import com.pccw.backend.entity.DbResFlow;
 import com.pccw.backend.entity.DbResLogMgt;
 import com.pccw.backend.entity.DbResProcess;
 import com.pccw.backend.entity.DbResProcessDtl;
-import com.pccw.backend.repository.ResAccountRepository;
-import com.pccw.backend.repository.ResLogMgtRepository;
-import com.pccw.backend.repository.ResProcessRepository;
-import com.pccw.backend.repository.ResRoleRepository;
+import com.pccw.backend.repository.*;
 import com.pccw.backend.util.Convertor;
 import com.pccw.backend.util.Session;
 import io.swagger.annotations.ApiOperation;
@@ -41,6 +37,9 @@ public class Process_ProcessCtrl extends BaseCtrl{
     @Autowired
     Session<Integer> session;
 
+    @Autowired
+    ResFlowRepository repoFlow;
+
     @ApiOperation(value="process",tags={"process"},notes="说明")
     @RequestMapping(method = RequestMethod.POST,path="/edit")
     public JsonResult edit(@RequestBody EditBean b){
@@ -64,8 +63,19 @@ public class Process_ProcessCtrl extends BaseCtrl{
                     }
                 }
             }
-            return this.edit(processRepository, DbResProcess.class, b);
 
+            JsonResult result = this.edit(processRepository, DbResProcess.class, b);
+
+            //审批流程修改成功，且最后一步审批通过，将log信息存入skuRepo表
+            if(b.getStatusPro().equals(StaticVariable.PROCESS_APPROVED_STATUS) && result.getCode().equals("000")){
+                //判断LogOrderNature从哪个表里取数据
+                b.getLogOrderNature();
+                //通过LogTxtBum查询相应数据
+                b.getLogTxtBum();
+                //调用插入方法
+            }
+
+            return result;
         } catch (Exception e) {
             log.info(e.getMessage());
             return JsonResult.fail(e);
@@ -209,4 +219,35 @@ public class Process_ProcessCtrl extends BaseCtrl{
             return recodeBean;
         }).collect(Collectors.toList());
     }
+
+    /**
+     *生成工作流数据
+     * @param process
+     */
+    public void joinToProcess(DbResProcess process) {
+        process.setStatus(StaticVariable.PROCESS_PENDING_STATUS);
+        process.setActive("Y");
+        //根据OrderNature查询flow,flow和nature一对一关系
+        DbResFlow resFlow =repoFlow.findByFlowNature(process.getLogOrderNature());
+        process.setFlowId(resFlow.getId());
+        ArrayList<DbResProcessDtl> processDtls= new ArrayList<>();
+        for(int i=0;i<resFlow.getResFlowStepList().size();i++) {
+            DbResProcessDtl  resProcessDtl  =new DbResProcessDtl();
+            resProcessDtl.setFlowId(resFlow.getId());
+            resProcessDtl.setStepId(resFlow.getResFlowStepList().get(i).getId());
+            resProcessDtl.setStepNum(resFlow.getResFlowStepList().get(i).getStepNum());
+            resProcessDtl.setRoleId(resFlow.getResFlowStepList().get(i).getRoleId());
+            //审批流初始化数据StepNum1默认PENDING,其他StepNum默认WAITING
+            if(resFlow.getResFlowStepList().get(i).getStepNum().equals("1")) {
+                resProcessDtl.setStatus(StaticVariable.PROCESS_PENDING_STATUS);
+            }else {
+                resProcessDtl.setStatus(StaticVariable.PROCESS_WAITING_STATUS);
+            }
+            processDtls.add(resProcessDtl);
+        }
+        process.setProcessDtls(processDtls);
+        processRepository.saveAndFlush(process);
+    }
+
+
 }

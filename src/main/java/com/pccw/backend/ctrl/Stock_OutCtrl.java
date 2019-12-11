@@ -119,20 +119,26 @@ public class Stock_OutCtrl  extends BaseCtrl<DbResLogMgt> {
             resProcess.saveAndFlush(process);
 
             //审批流完成后更新sku_repo
-            for(int i=0;i<b.getLine().size();i++) {
-                if (b.getLine().get(i).getDtlAction().equals("D")) {
-                    System.out.println(-b.getLine().get(i).getDtlQty());
-                    int res = skuRepoRepository.updateQtyByRepoAndShopAndTypeAndQty(b.getLogRepoOut(),b.getLine().get(i).getDtlSkuId(),3,-b.getLine().get(i).getDtlQty());
-                    if(res<=0) return JsonResult.fail(new Exception());
-                }
-            }
-           //
+           // UpdateSkuRepoQty(b);
+            //
             return this.create(repo, DbResLogMgt.class, b);
         } catch (Exception e) {
             return JsonResult.fail(e);
         }
     }
 
+
+    //审批流完成后更新sku_repo
+    public void UpdateSkuRepoQty(String logTxtNum) {
+
+//        for(int i=0;i<b.getLine().size();i++) {
+//            if (b.getLine().get(i).getDtlAction().equals("D")) {
+//                System.out.println(-b.getLine().get(i).getDtlQty());
+//                int res = skuRepoRepository.updateQtyByRepoAndShopAndTypeAndQty(b.getLogRepoOut(),b.getLine().get(i).getDtlSkuId(),3,-b.getLine().get(i).getDtlQty());
+//                //if(res<=0) return JsonResult.fail(new Exception());
+//            }
+//        }
+    }
 
 
 }

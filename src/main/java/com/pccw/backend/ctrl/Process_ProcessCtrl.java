@@ -39,7 +39,7 @@ public class Process_ProcessCtrl extends BaseCtrl{
     ResLogMgtRepository logMgtRepository;
 
     @Autowired
-    Session session;
+    Session<Integer> session;
 
     @ApiOperation(value="process",tags={"process"},notes="说明")
     @RequestMapping(method = RequestMethod.POST,path="/edit")
@@ -65,6 +65,7 @@ public class Process_ProcessCtrl extends BaseCtrl{
                 }
             }
             return this.edit(processRepository, DbResProcess.class, b);
+
         } catch (Exception e) {
             log.info(e.getMessage());
             return JsonResult.fail(e);

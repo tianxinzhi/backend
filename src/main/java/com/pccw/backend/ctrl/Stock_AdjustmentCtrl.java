@@ -63,6 +63,8 @@ public class Stock_AdjustmentCtrl extends BaseCtrl<DbResLogMgt> {
                 resAdjustReason.setRemark(bean.getRemark());
                 resAdjustReason.setCreateAt(bean.getCreateDate());
                 resAdjustReason.setUpdateAt(bean.getCreateDate());
+                resAdjustReason.setCreateBy(getAccount());
+                resAdjustReason.setUpdateBy(getAccount());
                 resAdjustReason.setActive("Y");
                 reasonRepository.saveAndFlush(resAdjustReason);
                 ent.setAdjustReasonId(resAdjustReason.getId());
@@ -70,8 +72,8 @@ public class Stock_AdjustmentCtrl extends BaseCtrl<DbResLogMgt> {
             ent.setCreateAt(bean.getCreateDate());
             ent.setUpdateAt(bean.getCreateDate());
             ent.setActive("Y");
-            ent.setCreateBy(bean.getCreateBy());
-            ent.setUpdateBy(bean.getUpdateBy());
+            ent.setCreateBy(getAccount());
+            ent.setUpdateBy(getAccount());
 
             List<DbResLogMgtDtl> lstMgtDtl = new LinkedList<>();
 
@@ -85,8 +87,8 @@ public class Stock_AdjustmentCtrl extends BaseCtrl<DbResLogMgt> {
                 mgtDtl.setLisStatus(StaticVariable.LISSTATUS_WAITING);
                 mgtDtl.setCreateAt(bean.getCreateDate());
                 mgtDtl.setUpdateAt(bean.getCreateDate());
-                mgtDtl.setCreateBy(bean.getCreateBy());
-                mgtDtl.setUpdateBy(bean.getUpdateBy());
+                mgtDtl.setCreateBy(getAccount());
+                mgtDtl.setUpdateBy(getAccount());
                 mgtDtl.setActive("Y");
                 mgtDtl.setResLogMgt(ent);
 

@@ -61,5 +61,5 @@ public interface  ResSkuRepoRepository extends BaseRepository<DbResSkuRepo>{
 
     List<DbResSkuRepo> findDbResSkuRepoByRepo(DbResRepo repo);
 
-    DbResSkuRepo findDbResSkuRepoByRepoaAndSkuAndStockType(DbResRepo repo, DbResSku sku, DbResStockType stockType);
+    DbResSkuRepo findDbResSkuRepoByRepoAndSkuAndStockType(DbResRepo repo, DbResSku sku, DbResStockType stockType);
 }

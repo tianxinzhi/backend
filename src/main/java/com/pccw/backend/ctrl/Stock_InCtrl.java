@@ -99,7 +99,7 @@ public class Stock_InCtrl extends BaseCtrl<DbResLogMgt>{
             dbResRepo.setId(bean.getLogRepoIn());
             DbResStockType dbResStockType = new DbResStockType();
             dbResStockType.setId(3L);
-            DbResSkuRepo skuRepo = skuRepoRepository.findDbResSkuRepoByRepoaAndSkuAndStockType(dbResRepo, dbResSku, dbResStockType);
+            DbResSkuRepo skuRepo = skuRepoRepository.findDbResSkuRepoByRepoAndSkuAndStockType(dbResRepo, dbResSku, dbResStockType);
 
             if (Objects.isNull(skuRepo)){
 

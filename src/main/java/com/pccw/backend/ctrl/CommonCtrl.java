@@ -124,29 +124,4 @@ public class CommonCtrl  extends GeneralCtrl{
         return this.JsonResultHandle(stockTypeRepository,new LabelAndValue());
     }
 
-    /**
-     * 根据id获取AccountName
-     * @param id
-     * @return
-     */
-    public JsonResult searchAccountById(long id){
-        List<Object> objects = new ArrayList<>();
-        String accountName = "";
-        try {
-            if(Objects.nonNull(id)){
-                if(id == 0){
-                    accountName = "system";
-                }else{
-                    accountName = accountRepository.findById(id).get().getAccountName();
-                }
-            }
-            objects.add(accountName);
-            return JsonResult.success(objects);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return JsonResult.fail(e);
-        }
-    }
-
-
 }

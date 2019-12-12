@@ -52,7 +52,7 @@ public class Stock_InCtrl extends BaseCtrl<DbResLogMgt>{
                 dbResRepo.setId(bean.getLogRepoIn());
                 DbResStockType dbResStockType = new DbResStockType();
                 dbResStockType.setId(3L);
-                DbResSkuRepo dbResSkuRepo = new DbResSkuRepo(null,dbResSku,dbResRepo,null,dbResStockType, Integer.parseInt(String.valueOf(lineList.get(i).getDtlQty())));
+                DbResSkuRepo dbResSkuRepo = new DbResSkuRepo(null,dbResSku,dbResRepo,null,dbResStockType, Integer.parseInt(String.valueOf(lineList.get(i).getDtlQty())),null);
                 rsrr.saveAndFlush(dbResSkuRepo);
             }
             bean.setLine(lineList);
@@ -100,7 +100,7 @@ public class Stock_InCtrl extends BaseCtrl<DbResLogMgt>{
                 dbResRepo.setId(bean.getLogRepoIn());
                 DbResStockType dbResStockType = new DbResStockType();
                 dbResStockType.setId(3L);
-                DbResSkuRepo dbResSkuRepo = new DbResSkuRepo(null,dbResSku,dbResRepo,null,dbResStockType, Integer.parseInt(String.valueOf(lineList.get(i).getDtlQty())));
+                DbResSkuRepo dbResSkuRepo = new DbResSkuRepo(null,dbResSku,dbResRepo,null,dbResStockType, Integer.parseInt(String.valueOf(lineList.get(i).getDtlQty())),null);
                 rsrr.saveAndFlush(dbResSkuRepo);
             }
             bean.setLine(lineList);

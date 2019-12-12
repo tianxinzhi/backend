@@ -71,7 +71,8 @@ public class Stock_MovementCtrl extends BaseCtrl<DbResProcess> {
             res.forEach(p-> {
                 Map map = JSON.parseObject(JSON.toJSONString(p), Map.class);
                 map.put("repoName",repoRepo.findById(p.getRepoId()).get().getRepoName());
-                map.put("createAccountName",commonCtrl.searchAccountById(p.getCreateBy()).getData().get(0));
+                String createAccountName = p.getCreateBy() == 0 ? "system":accountRepo.findById(p.getCreateBy()).get().getAccountName();
+                map.put("createAccountName",createAccountName);
                 list.add(map);
             });
             return JsonResult.success(list);

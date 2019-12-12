@@ -54,8 +54,8 @@ public class MasterFile_ClassCtrl extends BaseCtrl<DbResClass> {
             res.forEach(d->{
                 SearchBean searchBean = new SearchBean();
                 BeanUtils.copyProperties(d,searchBean);
-                searchBean.setCreateAccountName((String)commonCtrl.searchAccountById(d.getCreateBy()).getData().get(0));
-                searchBean.setUpdateAccountName((String)commonCtrl.searchAccountById(d.getUpdateBy()).getData().get(0));
+                searchBean.setCreateAccountName(d.getCreateBy() == 0 ? "system":accountRepo.findById(d.getCreateBy()).get().getAccountName());
+                searchBean.setUpdateAccountName(d.getUpdateBy() == 0 ? "system":accountRepo.findById(d.getUpdateBy()).get().getAccountName());
                 list.add(searchBean);
             });
             return JsonResult.success(list);

@@ -81,8 +81,8 @@ public class MasterFile_TypeCtrl extends BaseCtrl<DbResType> {
                         if(!StringUtils.isEmpty(classNames)){
                             classNames = classNames.substring(0,classNames.length()-1);
                         }
-                        searchBean.setCreateAccountName((String)commonCtrl.searchAccountById(type.getCreateBy()).getData().get(0));
-                        searchBean.setUpdateAccountName((String)commonCtrl.searchAccountById(type.getUpdateBy()).getData().get(0));
+                        searchBean.setCreateAccountName(type.getCreateBy() == 0 ? "system":resAccountRepository.findById(type.getCreateBy()).get().getAccountName());
+                        searchBean.setUpdateAccountName(type.getUpdateBy() == 0 ? "system":resAccountRepository.findById(type.getUpdateBy()).get().getAccountName());
                         searchBean.setClassName(classNames);
                         searchBean.setClassId(classIds);
                     }
@@ -212,12 +212,12 @@ public class MasterFile_TypeCtrl extends BaseCtrl<DbResType> {
             attrList.stream()
                     .collect(Collectors.groupingBy(s -> s.get("attrName")))
                     .forEach((k,v)->{
-                                HashMap<Object, Object> hm = new HashMap<>();
-                                List<String> attrValueList = new ArrayList<>();
-                                v.forEach((a)->{ attrValueList.add(a.get("attrValue").toString());});
-                                hm.put("attrName",k);
-                                hm.put("attrValue",attrValueList);
-                                list.add(hm);
+                          HashMap<Object, Object> hm = new HashMap<>();
+                          List<String> attrValueList = new ArrayList<>();
+                          v.forEach((a)->{ attrValueList.add(a.get("attrValue").toString());});
+                          hm.put("attrName",k);
+                          hm.put("attrValue",attrValueList);
+                          list.add(hm);
                             }
                     );
             return JsonResult.success(list);

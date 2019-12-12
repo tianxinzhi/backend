@@ -47,7 +47,7 @@ public class SystemCtrl extends BaseCtrl<DbResAccount> {
             //取数据库用户数据
             // （代完成）
             JSONObject obj = new JSONObject();
-            
+
             //取sessionId为token，存session
             String uuid = UUID.randomUUID().toString();
             session.set(uuid, obj);

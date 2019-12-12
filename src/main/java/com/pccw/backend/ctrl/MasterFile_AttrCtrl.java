@@ -50,8 +50,8 @@ public class MasterFile_AttrCtrl extends BaseCtrl<DbResAttr> {
             attr.setActive("Y");
             attr.setCreateAt(System.currentTimeMillis());
             attr.setUpdateAt(System.currentTimeMillis());
-            attr.setCreateBy(bean.getCreateBy());
-            attr.setUpdateBy(bean.getUpdateBy());
+            attr.setCreateBy(getAccount());
+            attr.setUpdateBy(getAccount());
             List<DbResAttrAttrValue> attrAttrValueList = new LinkedList<>();
 
             for(String value:bean.getAttrValues()){
@@ -63,8 +63,8 @@ public class MasterFile_AttrCtrl extends BaseCtrl<DbResAttr> {
                 attrAttrValue.setActive("Y");
                 attrAttrValue.setCreateAt(System.currentTimeMillis());
                 attrAttrValue.setUpdateAt(System.currentTimeMillis());
-                attrAttrValue.setCreateBy(bean.getCreateBy());
-                attrAttrValue.setUpdateBy(bean.getUpdateBy());
+                attrAttrValue.setCreateBy(getAccount());
+                attrAttrValue.setUpdateBy(getAccount());
                 attrAttrValueList.add(attrAttrValue);
             }
             attr.setAttrAttrValueList(attrAttrValueList);
@@ -89,8 +89,8 @@ public class MasterFile_AttrCtrl extends BaseCtrl<DbResAttr> {
             resAttr.setAttrDesc(b.getAttrDesc());
             resAttr.setAttrName(b.getAttrName());
             resAttr.setUpdateAt(System.currentTimeMillis());
-            resAttr.setCreateBy(b.getCreateBy());
-            resAttr.setUpdateBy(b.getUpdateBy());
+            resAttr.setCreateBy(getAccount());
+            resAttr.setUpdateBy(getAccount());
             List<DbResAttrAttrValue> attrAttrValueList = resAttr.getAttrAttrValueList();
             attrAttrValueList.clear();
             for(String valueId:b.getAttrValues()){
@@ -102,8 +102,8 @@ public class MasterFile_AttrCtrl extends BaseCtrl<DbResAttr> {
                 resAttrAttrValue.setActive("Y");
                 resAttrAttrValue.setCreateAt(System.currentTimeMillis());
                 resAttrAttrValue.setUpdateAt(System.currentTimeMillis());
-                resAttrAttrValue.setCreateBy(b.getCreateBy());
-                resAttrAttrValue.setUpdateBy(b.getUpdateBy());
+                resAttrAttrValue.setCreateBy(getAccount());
+                resAttrAttrValue.setUpdateBy(getAccount());
                 resAttrAttrValue.setAttr(resAttr);
                 resAttrAttrValue.setAttrValue(attrValue);
                 attrAttrValueList.add(resAttrAttrValue);
@@ -125,6 +125,8 @@ public class MasterFile_AttrCtrl extends BaseCtrl<DbResAttr> {
             for (DbResAttr resAttr : attrList) {
                 ResultBean resultBean = new ResultBean();
                 BeanUtils.copyProperties(resAttr,resultBean);
+                resultBean.setCreateAccountName(getAccountName(resAttr.getCreateBy()));
+                resultBean.setUpdateAccountName(getAccountName(resAttr.getUpdateBy()));
                 String[] attrValues = new String[resAttr.getAttrAttrValueList().size()];
                 long[] attrValueIds = new long[resAttr.getAttrAttrValueList().size()];
                 for(int i=0;i<resAttr.getAttrAttrValueList().size();i++) {

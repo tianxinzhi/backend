@@ -13,7 +13,8 @@ import lombok.NoArgsConstructor;
 @ApiModel(value = "Account 模块 - SearchBean", description = "")
 public class SearchBean extends BaseSearchBean {
 
-    private long id;
+    @PredicateAnnotation(type = PredicateType.EQUEL)
+    private Long id;
 
     private Long[] roles;
 

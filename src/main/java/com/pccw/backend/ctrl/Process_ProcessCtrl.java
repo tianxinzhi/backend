@@ -38,7 +38,7 @@ public class Process_ProcessCtrl extends BaseCtrl{
     ResAccountRepository accountRepository;
 
     @Autowired
-    Session<Integer> session;
+    Session<Map> session;
 
     @Autowired
     ResFlowRepository repoFlow;
@@ -70,10 +70,7 @@ public class Process_ProcessCtrl extends BaseCtrl{
             //审批流程修改成功，且最后一步审批通过，将log信息存入skuRepo表
             if(b.getStatusPro().equals(StaticVariable.PROCESS_APPROVED_STATUS) && result.getCode().equals("000")){
                 //判断LogOrderNature从哪个表里取数据
-                b.getLogOrderNature();
-                //通过LogTxtBum查询相应数据
-                b.getLogTxtBum();
-                //调用插入方法
+
             }
 
             return result;

@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 import java.util.Map;
 
-public interface ResStockInRepository<T> extends BaseRepository<DbResLogMgt>{
+public interface ResStockInRepository extends BaseRepository<DbResLogMgt>{
 
     @Query(value = "SELECT RLM.LOG_TXT_NUM log_Txt_Bum,RLM.CREATE_AT ,\n" +
             "(SELECT RES_REPO.REPO_CODE FROM RES_REPO WHERE RES_REPO.id=RLM.LOG_REPO_IN) as LOG_REPO_to,\n" +
@@ -24,4 +24,6 @@ public interface ResStockInRepository<T> extends BaseRepository<DbResLogMgt>{
             "and RLMD.STATUS = 'INT'\n" +
             "and rlm.LOG_TXT_NUM = ?1",nativeQuery = true)
     List<Map> getStockOutInfo(String logTxtNum);
+
+    DbResLogMgt findDbResLogMgtByLogTxtBum(String logTxtBum);
 }

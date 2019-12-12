@@ -7,7 +7,9 @@ import com.pccw.backend.bean.*;
 import com.pccw.backend.repository.BaseRepository;
 import com.pccw.backend.util.Convertor;
 
+import com.pccw.backend.util.Session;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +22,9 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class BaseCtrl<T>{
+
+    @Autowired
+    Session<Map> session;
 
     public <G extends BaseSearchBean> JsonResult search(BaseRepository repo, G b) {
         try {
@@ -52,6 +57,8 @@ public class BaseCtrl<T>{
             b.setCreateAt(t);
             b.setUpdateAt(t);
             b.setActive("Y");
+            Map user = session.getUser();
+            b.setCreateBy(Long.parseLong(user.get("account").toString()));
             saveAndFlush(repo, cls, b);       
             return JsonResult.success(Arrays.asList());
         } catch (Exception e) {
@@ -63,6 +70,8 @@ public class BaseCtrl<T>{
         try {
             b.setUpdateAt(new Date().getTime());
             b.setActive("Y");
+            Map user = session.getUser();
+            b.setUpdateBy(Long.parseLong(user.get("account").toString()));
             saveAndFlush(repo, cls, b);
             return JsonResult.success(Arrays.asList());
         } catch (Exception e) {

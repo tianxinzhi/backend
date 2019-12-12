@@ -43,6 +43,12 @@ public class Process_ProcessCtrl extends BaseCtrl{
     @Autowired
     ResFlowRepository repoFlow;
 
+    @Autowired
+    Stock_OutCtrl  outCtrl;
+
+    @Autowired
+    Stock_InCtrl inCtrl;
+
     @ApiOperation(value="process",tags={"process"},notes="说明")
     @RequestMapping(method = RequestMethod.POST,path="/edit")
     public JsonResult edit(@RequestBody EditBean b){
@@ -71,8 +77,18 @@ public class Process_ProcessCtrl extends BaseCtrl{
 
             //审批流程修改成功，且最后一步审批通过，将log信息存入skuRepo表
             if(b.getStatusPro().equals(StaticVariable.PROCESS_APPROVED_STATUS) && result.getCode().equals("000")){
-                //判断LogOrderNature从哪个表里取数据
-
+                //根据LogOrderNature判断从哪个ctrl更新数据
+                if(b.getLogOrderNature().equals(StaticVariable.LOGORDERNATURE_STOCK_OUT_STS)||b.getLogOrderNature().equals(StaticVariable.LOGORDERNATURE_STOCK_OUT_STW)){
+                    outCtrl.UpdateSkuRepoQty(b.getLogTxtBum());
+                }else if(b.getLogOrderNature().equals(StaticVariable.LOGORDERNATURE_STOCK_IN_STS)||b.getLogOrderNature().equals(StaticVariable.LOGORDERNATURE_STOCK_IN_WITHOUT_PO_STW)){
+                    inCtrl.UpdateSkuRepoQty(b.getLogTxtBum());
+                }else if(b.getLogOrderNature().equals(StaticVariable.LOGORDERNATURE_STOCK_IN_FROM_WAREHOUSE)){
+                    inCtrl.UpdateSkuRepoQty(b.getLogTxtBum());
+                } else if(b.getLogOrderNature().equals(StaticVariable.LOGORDERNATURE_STOCK_TAKE_ADJUSTMENT)){
+                    inCtrl.UpdateSkuRepoQty(b.getLogTxtBum());
+                }else if(b.getLogOrderNature().equals(StaticVariable.LOGORDERNATURE_REPLENISHMENT_REQUEST)){
+                    inCtrl.UpdateSkuRepoQty(b.getLogTxtBum());
+                }
             }
 
             return result;
@@ -226,6 +242,8 @@ public class Process_ProcessCtrl extends BaseCtrl{
      */
     public void joinToProcess(DbResProcess process) {
         process.setStatus(StaticVariable.PROCESS_PENDING_STATUS);
+        Map user = session.getUser();
+        process.setCreateBy(Long.parseLong(user.get("account").toString()));
         process.setActive("Y");
         //根据OrderNature查询flow,flow和nature一对一关系
         DbResFlow resFlow =repoFlow.findByFlowNature(process.getLogOrderNature());

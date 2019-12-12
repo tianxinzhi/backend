@@ -4,8 +4,13 @@ import com.alibaba.fastjson.JSONObject;
 import com.pccw.backend.bean.JsonResult;
 import com.pccw.backend.bean.system.LoginBean;
 import com.pccw.backend.entity.DbResAccount;
+import com.pccw.backend.entity.DbResRight;
+import com.pccw.backend.entity.DbResRole;
+import com.pccw.backend.entity.DbResRoleRight;
 import com.pccw.backend.exception.BaseException;
 import com.pccw.backend.repository.ResAccountRepository;
+import com.pccw.backend.repository.ResRightRepository;
+import com.pccw.backend.repository.ResRoleRepository;
 import com.pccw.backend.util.Session;
 
 import io.swagger.annotations.Api;
@@ -18,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -35,6 +41,12 @@ public class SystemCtrl extends BaseCtrl<DbResAccount> {
     ResAccountRepository repo;
 
     @Autowired
+    ResRoleRepository roleRepository;
+
+    @Autowired
+    ResRightRepository rightRepository;
+
+    @Autowired
     Session session;
 
     @Autowired
@@ -48,10 +60,31 @@ public class SystemCtrl extends BaseCtrl<DbResAccount> {
             if(Objects.isNull(rwe))
              return JsonResult.fail(BaseException.getAccAndPwdException());
 
+            List<Long> roleIds = rwe.getAccountRoles().stream().map(role -> {
+                return role.getRoleId();
+            }).collect(Collectors.toList());
+
+            List<DbResRole> roles = roleRepository.findAllById(roleIds);
+
+//            List<List<Long>> collect = roles.stream().map(r -> {
+//                return r.getResRoleRightList().stream().map(role -> {
+//                    return role.getRightId();
+//                }).collect(Collectors.toList());
+//            }).collect(Collectors.toList());
+            List rightId = new ArrayList();
+            for(DbResRole role:roles){
+                role.getResRoleRightList();
+                for(DbResRoleRight right : role.getResRoleRightList()){
+                    rightId.add(right.getRightId());
+                }
+            }
+            List<DbResRight> rights = rightRepository.findAllById(rightId);
+
             //取数据库用户数据
             // （代完成）
 //            JSONObject obj = new JSONObject();
             Map<String,Object> map = new HashMap<>();
+            map.put("right",rights);
             map.put("role",rwe.getAccountRoles().stream().map(role->{
                 return role.getRoleId();
             }).collect(Collectors.toList()));

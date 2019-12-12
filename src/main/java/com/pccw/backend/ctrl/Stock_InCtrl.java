@@ -41,7 +41,6 @@ public class Stock_InCtrl extends BaseCtrl<DbResLogMgt>{
             long t = new Date().getTime();
             bean.setLogOrderNature(StaticVariable.LOGORDERNATURE_STOCK_IN_WITHOUT_PO_STW);
             List<DbResLogMgtDtl> lineList = bean.getLine();
-//            List<DbResSkuRepo> skuRepoList = new ArrayList<DbResSkuRepo>();
             for (int i = 0; i <lineList.size() ; i++) {
                 lineList.get(i).setDtlSubin(StaticVariable.DTLSUBIN_AVAILABLE);
                 lineList.get(i).setDtlAction(StaticVariable.DTLACTION_ADD);
@@ -50,19 +49,7 @@ public class Stock_InCtrl extends BaseCtrl<DbResLogMgt>{
                 lineList.get(i).setCreateAt(t);
                 lineList.get(i).setUpdateAt(t);
                 lineList.get(i).setId(null);
-
-
-//                DbResSku dbResSku = new DbResSku();
-//                dbResSku.setId(lineList.get(i).getDtlSkuId());
-//                DbResRepo dbResRepo = new DbResRepo();
-//                dbResRepo.setId(bean.getLogRepoIn());
-//                DbResStockType dbResStockType = new DbResStockType();
-//                dbResStockType.setId(3L);
-//                DbResSkuRepo dbResSkuRepo = new DbResSkuRepo(null,dbResSku,dbResRepo,null,dbResStockType, Integer.parseInt(String.valueOf(lineList.get(i).getDtlQty())));
-//                rsrr.saveAndFlush(dbResSkuRepo);
             }
-
-//            skuIntoRepo(bean, lineList);
 
             bean.setLine(lineList);
 
@@ -107,6 +94,10 @@ public class Stock_InCtrl extends BaseCtrl<DbResLogMgt>{
             DbResStockType dbResStockType = new DbResStockType();
             dbResStockType.setId(3L);
             DbResSkuRepo dbResSkuRepo = new DbResSkuRepo(null,dbResSku,dbResRepo,null,dbResStockType, Integer.parseInt(String.valueOf(line.getDtlQty())));
+            dbResSkuRepo.setCreateBy(bean.getCreateBy());
+            dbResSkuRepo.setCreateAt(bean.getCreateAt());
+            dbResSkuRepo.setUpdateAt(bean.getCreateAt());
+            dbResSkuRepo.setUpdateBy(bean.getCreateBy());
             rsrr.saveAndFlush(dbResSkuRepo);
         }
     }
@@ -140,16 +131,6 @@ public class Stock_InCtrl extends BaseCtrl<DbResLogMgt>{
                 lineList.get(i).setCreateAt(t);
                 lineList.get(i).setUpdateAt(t);
                 lineList.get(i).setId(null);
-
-
-//                DbResSku dbResSku = new DbResSku();
-//                dbResSku.setId(lineList.get(i).getDtlSkuId());
-//                DbResRepo dbResRepo = new DbResRepo();
-//                dbResRepo.setId(bean.getLogRepoIn());
-//                DbResStockType dbResStockType = new DbResStockType();
-//                dbResStockType.setId(3L);
-//                DbResSkuRepo dbResSkuRepo = new DbResSkuRepo(null,dbResSku,dbResRepo,null,dbResStockType, Integer.parseInt(String.valueOf(lineList.get(i).getDtlQty())));
-//                rsrr.saveAndFlush(dbResSkuRepo);
             }
             bean.setLine(lineList);
 

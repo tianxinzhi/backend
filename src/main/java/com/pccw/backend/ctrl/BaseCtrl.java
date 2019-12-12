@@ -4,10 +4,14 @@ package com.pccw.backend.ctrl;
 import java.util.*;
 
 import com.pccw.backend.bean.*;
+import com.pccw.backend.entity.Base;
 import com.pccw.backend.repository.BaseRepository;
+import com.pccw.backend.repository.ResAccountRepository;
 import com.pccw.backend.util.Convertor;
 
+import com.pccw.backend.util.Session;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import lombok.extern.slf4j.Slf4j;
@@ -21,15 +25,25 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class BaseCtrl<T>{
 
+    @Autowired
+    Session<Map> session;
+
+    @Autowired
+    ResAccountRepository accountRepository;
+
     public <G extends BaseSearchBean> JsonResult search(BaseRepository repo, G b) {
         try {
             log.info(b.toString());
             Specification<T> spec = Convertor.<T>convertSpecification(b);
-
             List<T> res =repo.findAll(spec,PageRequest.of(b.getPageIndex(),b.getPageSize())).getContent();
-
+            for (T re : res) {
+                Base base = (Base)re;
+                base.setCreateAccountName(getAccountName(base.getCreateBy()));
+                base.setUpdateAccountName(getAccountName(base.getUpdateBy()));
+            }
             return JsonResult.success(res);
         } catch (Exception e) {
+            e.printStackTrace();
             log.info(e.getMessage());
             return JsonResult.fail(e);
         }
@@ -41,6 +55,7 @@ public class BaseCtrl<T>{
             
             return JsonResult.success(Arrays.asList());
         } catch (Exception e) {
+            e.printStackTrace();
             return JsonResult.fail(e);
         }
     }
@@ -52,9 +67,13 @@ public class BaseCtrl<T>{
             b.setCreateAt(t);
             b.setUpdateAt(t);
             b.setActive("Y");
+           // Map user = session.getUser();
+            b.setCreateBy(getAccount());
+            b.setUpdateBy(getAccount());
             saveAndFlush(repo, cls, b);       
             return JsonResult.success(Arrays.asList());
         } catch (Exception e) {
+            e.printStackTrace();
             return JsonResult.fail(e);
         }
     }
@@ -63,9 +82,12 @@ public class BaseCtrl<T>{
         try {
             b.setUpdateAt(new Date().getTime());
             b.setActive("Y");
+            //Map user = session.getUser();
+            b.setUpdateBy(getAccount());
             saveAndFlush(repo, cls, b);
             return JsonResult.success(Arrays.asList());
         } catch (Exception e) {
+            e.printStackTrace();
             return JsonResult.fail(e);
         }
     }
@@ -78,5 +100,14 @@ public class BaseCtrl<T>{
         } catch (Exception e) {
             throw e;
         }
+    }
+
+    long getAccount() {
+        Map user = session.getUser();
+        return Long.parseLong(user.get("account").toString());
+    }
+
+    String getAccountName(long account) {
+        return account==0?"System":accountRepository.findDbResAccountById(account).getAccountName();
     }
 }

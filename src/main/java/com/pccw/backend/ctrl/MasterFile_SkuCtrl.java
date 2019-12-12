@@ -30,6 +30,9 @@ import javax.validation.constraints.NotNull;
 import java.util.*;
 import java.util.stream.Stream;
 
+/**
+ * @Author xiaozhi
+ */
 @Slf4j
 @RestController
 @CrossOrigin(methods = RequestMethod.POST,origins = "*", allowCredentials = "false")
@@ -61,8 +64,8 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> {
             sku.setActive("Y");
             sku.setCreateAt(System.currentTimeMillis());
             sku.setUpdateAt(System.currentTimeMillis());
-            sku.setCreateBy(bean.getCreateBy());
-            sku.setUpdateBy(bean.getUpdateBy());
+            sku.setCreateBy(getAccount());
+            sku.setUpdateBy(getAccount());
             sku.setSkuOrigin(StaticVariable.SKU_ORIGIN_FROM_WITHPO);
 
             List<DbResSkuType> skuTypeList = new LinkedList<>();
@@ -72,6 +75,8 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> {
             skuType.setActive("Y");
             skuType.setCreateAt(System.currentTimeMillis());
             skuType.setUpdateAt(System.currentTimeMillis());
+            skuType.setCreateBy(getAccount());
+            skuType.setUpdateBy(getAccount());
             skuTypeList.add(skuType);
 
             List<DbResSkuAttrValue> skuAttrValueList = new LinkedList<>();
@@ -84,8 +89,8 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> {
                     skuAttrValue.setActive("Y");
                     skuAttrValue.setCreateAt(System.currentTimeMillis());
                     skuAttrValue.setUpdateAt(System.currentTimeMillis());
-                    skuAttrValue.setCreateBy(bean.getCreateBy());
-                    skuAttrValue.setUpdateBy(bean.getUpdateBy());
+                    skuAttrValue.setCreateBy(getAccount());
+                    skuAttrValue.setUpdateBy(getAccount());
                     skuAttrValueList.add(skuAttrValue);
                 }
             }
@@ -117,6 +122,7 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> {
 
             return JsonResult.success(Arrays.asList());
         } catch (Exception e) {
+            e.printStackTrace();
             return JsonResult.fail(e);
         }
     }
@@ -137,10 +143,8 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> {
             sku.setSkuName(bean.getSkuName());
             sku.setSkuDesc(bean.getSkuDesc());
             sku.setUpdateAt(System.currentTimeMillis());
-            sku.setCreateBy(bean.getCreateBy());
-            sku.setUpdateBy(bean.getUpdateBy());
-            sku.setCreateBy(bean.getCreateBy());
-            sku.setUpdateBy(bean.getUpdateBy());
+            sku.setCreateBy(getAccount());
+            sku.setUpdateBy(getAccount());
             sku.setSkuOrigin(StaticVariable.SKU_ORIGIN_FROM_WITHPO);
             List<DbResSkuAttrValue> skuAttrValueList = sku.getSkuAttrValueList();
             List<DbResSkuType> skuTypeList = sku.getSkuTypeList();
@@ -155,8 +159,8 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> {
             skuType.setActive("Y");
             skuType.setCreateAt(System.currentTimeMillis());
             skuType.setUpdateAt(System.currentTimeMillis());
-            skuType.setCreateBy(bean.getCreateBy());
-            skuType.setUpdateBy(bean.getUpdateBy());
+            skuType.setCreateBy(getAccount());
+            skuType.setUpdateBy(getAccount());
             skuTypeList.add(skuType);
 
             for(int i=0;i<bean.getAttrs().length;i++){
@@ -171,8 +175,8 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> {
                     skuAttrValue.setActive("Y");
                     skuAttrValue.setCreateAt(System.currentTimeMillis());
                     skuAttrValue.setUpdateAt(System.currentTimeMillis());
-                    skuAttrValue.setCreateBy(bean.getCreateBy());
-                    skuAttrValue.setUpdateBy(bean.getUpdateBy());
+                    skuAttrValue.setCreateBy(getAccount());
+                    skuAttrValue.setUpdateBy(getAccount());
                     skuAttrValueList.add(skuAttrValue);
                 }
             }
@@ -197,6 +201,7 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> {
 
             return JsonResult.success(Arrays.asList());
         } catch (Exception e) {
+            e.printStackTrace();
             return JsonResult.fail(e);
         }
     }
@@ -209,6 +214,7 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> {
             List<DbResSku> skuList = skuRepo.findAll(spec, PageRequest.of(bean.getPageIndex(),bean.getPageSize())).getContent();
             List<ResultBean> skuResultBeans = new LinkedList<>();
             for (DbResSku sku : skuList) {
+
                 EditBean ebean = new EditBean();
                 ebean.setId(sku.getId());
                 JsonResult typeResult =  skuSearch(ebean);
@@ -216,8 +222,9 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> {
                 List<Map> tableDatas = new LinkedList<>();
                 if(typeResult.getData()!=null && typeResult.getData().size()>0) {
                     ResultBean resultBean = (ResultBean) typeResult.getData().get(0);
+                    resultBean.setCreateAccountName(getAccountName(sku.getCreateBy()));
+                    resultBean.setUpdateAccountName(getAccountName(sku.getUpdateBy()));
                     BeanUtils.copyProperties(sku,resultBean);
-
                     for (int i=0;i<resultBean.getAttrNames().length;i++) {
                         Map<String,Object> map = new HashMap<>();
                         map.put("attrName",resultBean.getAttrNames()[i]);
@@ -258,6 +265,7 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> {
             }
             return  JsonResult.success(skuResultBeans);
         } catch (IllegalArgumentException | IllegalAccessException | BeansException e) {
+            e.printStackTrace();
             return  JsonResult.fail(e);
         }
     }
@@ -327,6 +335,7 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> {
             }
             return JsonResult.success(skuResultBeans);
         } catch (NumberFormatException e) {
+            e.printStackTrace();
             return JsonResult.fail(e);
         }
     }
@@ -371,6 +380,7 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> {
             }
             return JsonResult.success(skuResultBeans);
         } catch (NumberFormatException e) {
+            e.printStackTrace();
             return JsonResult.fail(e);
         }
     }

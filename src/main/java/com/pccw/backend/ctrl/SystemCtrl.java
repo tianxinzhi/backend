@@ -60,7 +60,7 @@ public class SystemCtrl extends BaseCtrl<DbResAccount> {
             JSONObject object = new JSONObject(map);
 
             //取sessionId为token，存session
-//            String uuid = UUID.randomUUID().toString();
+        //    String sessionId = UUID.randomUUID().toString();
             String sessionId = request.getSession().getId();
             session.set(sessionId, object);
             
@@ -74,7 +74,7 @@ public class SystemCtrl extends BaseCtrl<DbResAccount> {
     @RequestMapping(method = RequestMethod.POST,value = "/logout")
     public JsonResult logout (@RequestBody LoginBean bean) {
         try {
-            session.delete(session.getToken());
+            // session.delete(session.getToken());
             return JsonResult.success(Arrays.asList());
         } catch (Exception e) {
             return JsonResult.fail(e);

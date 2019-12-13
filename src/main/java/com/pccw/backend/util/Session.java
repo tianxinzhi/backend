@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.http.HttpCookie;
 import org.springframework.stereotype.Component;
 
@@ -74,7 +75,8 @@ public class Session<T> {
      */
     public boolean hasKey(String key){
         try {
-            return redisTemplate.hasKey(key);
+            Object obj = redisTemplate.opsForValue().get(key);
+            return Objects.isNull(obj)?false:true;
         } catch (Exception e) {
             log.error(e.getMessage());
             return false;

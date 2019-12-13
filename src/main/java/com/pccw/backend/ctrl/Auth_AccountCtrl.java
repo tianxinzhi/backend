@@ -55,6 +55,8 @@ public class Auth_AccountCtrl extends BaseCtrl<DbResAccount> {
             account.setActive("Y");
             account.setCreateAt(System.currentTimeMillis());
             account.setUpdateAt(System.currentTimeMillis());
+            account.setCreateBy(this.getAccount());
+            account.setUpdateBy(this.getAccount());
             account.setAccountRoles(accountRoles);
             repo.saveAndFlush(account);
             return JsonResult.success(Arrays.asList());
@@ -90,6 +92,7 @@ public class Auth_AccountCtrl extends BaseCtrl<DbResAccount> {
             account.setActive("Y");
             account.setCreateAt(System.currentTimeMillis());
             account.setUpdateAt(System.currentTimeMillis());
+            account.setUpdateAt(this.getAccount());
             repo.saveAndFlush(account);
             return JsonResult.success(Arrays.asList());
         } catch (BeansException e) {
@@ -119,6 +122,8 @@ public class Auth_AccountCtrl extends BaseCtrl<DbResAccount> {
                 }
                 resBean.setRoles(roles);
                 resBean.setRoleNames(roleNames);
+                resBean.setCreateAccountName(getAccountName(resBean.getCreateBy()));
+                resBean.setUpdateAccountName(getAccountName(resBean.getUpdateBy()));
                 resList.add(resBean);
             }
             return JsonResult.success(resList);
@@ -127,22 +132,22 @@ public class Auth_AccountCtrl extends BaseCtrl<DbResAccount> {
         }
     }
 
-    @ApiOperation(value="根据用户ID搜索用户",tags={"auth_account"},notes="注意问题点")
-    @RequestMapping(method = RequestMethod.POST,path = "/searchById")
-    public JsonResult searchById(@RequestBody long id){
-        try {
-            List<Object> list = new ArrayList<>();
-            Optional<DbResAccount> optional = repo.findById(id);
-            try{
-                DbResAccount dbResAccount = optional.get();
-                list.add(dbResAccount);
-            }catch (Exception ex){
-                return null;
-            }
-            return JsonResult.success(list);
-        } catch (Exception e) {
-            return JsonResult.fail(e);
-        }
-    }
+//    @ApiOperation(value="根据用户ID搜索用户",tags={"auth_account"},notes="注意问题点")
+//    @RequestMapping(method = RequestMethod.POST,path = "/searchById")
+//    public JsonResult searchById(@RequestBody long id){
+//        try {
+//            List<Object> list = new ArrayList<>();
+//            Optional<DbResAccount> optional = repo.findById(id);
+//            try{
+//                DbResAccount dbResAccount = optional.get();
+//                list.add(dbResAccount);
+//            }catch (Exception ex){
+//                return null;
+//            }
+//            return JsonResult.success(list);
+//        } catch (Exception e) {
+//            return JsonResult.fail(e);
+//        }
+//    }
 
 }

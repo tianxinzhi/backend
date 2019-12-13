@@ -38,15 +38,16 @@ public class CheckLoginAspect {
 
     //execution表达式自行搜索引擎
     @Pointcut("execution(* com.pccw.backend.ctrl.*.*(..)) && !execution(* com.pccw.backend.ctrl.SystemCtrl.*(..)) && !execution(* com.pccw.backend.ctrl.CommonCtrl.*(..))")
+
     public void pointcut() {}
 
     @Before("pointcut()")
     public void printParam(JoinPoint joinPoint) throws BaseException {
 
 
-        // if(!session.isLogin(session.getToken())){
-        //     throw BaseException.getNoLoginException();
-        // }
+         if(!session.isLogin(session.getToken())){
+             throw BaseException.getNoLoginException();
+         }
 
     }
 }

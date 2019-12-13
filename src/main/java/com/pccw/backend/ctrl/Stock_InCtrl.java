@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @RestController
@@ -30,6 +31,9 @@ public class Stock_InCtrl extends BaseCtrl<DbResLogMgt>{
 
     @Autowired
     ResSkuRepoRepository rsrr;
+
+    @Autowired
+    ResSkuRepoRepository skuRepoRepository;
 
     @Autowired
     Process_ProcessCtrl processProcessCtrl;
@@ -46,6 +50,8 @@ public class Stock_InCtrl extends BaseCtrl<DbResLogMgt>{
                 lineList.get(i).setDtlAction(StaticVariable.DTLACTION_ADD);
                 lineList.get(i).setStatus(StaticVariable.STATUS_AVAILABLE);
                 lineList.get(i).setLisStatus(StaticVariable.LISSTATUS_WAITING);
+                lineList.get(i).setLogTxtBum(bean.getLogTxtBum());
+                lineList.get(i).setDtlRepoId(bean.getLogRepoIn());
                 lineList.get(i).setCreateAt(t);
                 lineList.get(i).setUpdateAt(t);
                 lineList.get(i).setId(null);
@@ -60,7 +66,7 @@ public class Stock_InCtrl extends BaseCtrl<DbResLogMgt>{
                 DbResProcess process = new DbResProcess();
 
                 process.setLogTxtBum(bean.getLogTxtBum());
-                process.setRepoId(bean.getLogRepoOut());
+                process.setRepoId(bean.getLogRepoIn());
                 process.setRemark(bean.getRemark());
                 process.setCreateAt(t);
                 process.setUpdateAt(t);
@@ -93,12 +99,20 @@ public class Stock_InCtrl extends BaseCtrl<DbResLogMgt>{
             dbResRepo.setId(bean.getLogRepoIn());
             DbResStockType dbResStockType = new DbResStockType();
             dbResStockType.setId(3L);
-            DbResSkuRepo dbResSkuRepo = new DbResSkuRepo(null,dbResSku,dbResRepo,null,dbResStockType, Integer.parseInt(String.valueOf(line.getDtlQty())),null);
-            dbResSkuRepo.setCreateBy(bean.getCreateBy());
-            dbResSkuRepo.setCreateAt(bean.getCreateAt());
-            dbResSkuRepo.setUpdateAt(bean.getCreateAt());
-            dbResSkuRepo.setUpdateBy(bean.getCreateBy());
-            rsrr.saveAndFlush(dbResSkuRepo);
+            DbResSkuRepo skuRepo = skuRepoRepository.findDbResSkuRepoByRepoAndSkuAndStockType(dbResRepo, dbResSku, dbResStockType);
+
+            if (Objects.isNull(skuRepo)){
+
+                DbResSkuRepo dbResSkuRepo = new DbResSkuRepo(null,dbResSku,dbResRepo,null,dbResStockType, Integer.parseInt(String.valueOf(line.getDtlQty())));
+                dbResSkuRepo.setCreateBy(bean.getCreateBy());
+                dbResSkuRepo.setCreateAt(bean.getCreateAt());
+                dbResSkuRepo.setUpdateAt(bean.getCreateAt());
+                dbResSkuRepo.setUpdateBy(bean.getCreateBy());
+                rsrr.saveAndFlush(dbResSkuRepo);
+            }else {
+                skuRepoRepository.updateQtyByRepoAndShopAndTypeAndQty(bean.getLogRepoIn(),line.getDtlSkuId(),3L,line.getDtlQty());
+            }
+
         }
     }
 

@@ -39,7 +39,8 @@ public class Stock_ReplenishmentCtrl extends BaseCtrl<DbResLogRepl> {
     ResProcessRepository resProcess;
     @Autowired
     ResFlowRepository repoFlow;
-
+    @Autowired
+    Process_ProcessCtrl processProcessCtrl;
     /**
      * 收货
      * @param b
@@ -51,6 +52,8 @@ public class Stock_ReplenishmentCtrl extends BaseCtrl<DbResLogRepl> {
     public JsonResult create(@RequestBody CreateReplBean b) {
         try {
             long t = new Date().getTime();
+            b.setCreateBy(getAccount());
+            b.setUpdateBy(getAccount());
             b.setCreateAt(t);
             b.setActive("Y");
             if(StaticVariable.LOGORDERNATURE_REPLENISHMENT_REQUEST.equals(b.getReplType())){
@@ -73,6 +76,7 @@ public class Stock_ReplenishmentCtrl extends BaseCtrl<DbResLogRepl> {
             List<CreateReplDtlBean> dtls = b.getLine();
             for(CreateReplDtlBean dt:dtls){
                 dt.setCreateAt(t);
+                dt.setCreateBy(getAccount());
                 dt.setLogTxtBum(b.getLogTxtBum());
                 DbResLogReplDtl dtl = new DbResLogReplDtl();
                 BeanUtils.copyProperties(dt, dtl);
@@ -105,49 +109,60 @@ public class Stock_ReplenishmentCtrl extends BaseCtrl<DbResLogRepl> {
                 dtl.setDbResLogRepl(repl);
                 repl.getLine().add(dtl);
             }
-
-            //生成审批流数据
-            DbResProcess process = new DbResProcess();
-            process.setLogTxtBum(b.getLogTxtBum());
-            process.setRepoId(b.getLogRepoIn());
-            process.setStatus(StaticVariable.PROCESS_PENDING_STATUS);
-            process.setRemark(b.getRemark());
-            process.setActive("Y");
-            process.setCreateAt(t);
-            process.setUpdateAt(t);
-            if(StaticVariable.LOGORDERNATURE_REPLENISHMENT_REQUEST.equals(b.getReplType())) {
-                process.setLogOrderNature(StaticVariable.LOGORDERNATURE_REPLENISHMENT_REQUEST);
-            }else {
-                process.setLogOrderNature(StaticVariable.LOGORDERNATURE_STOCK_IN_FROM_WAREHOUSE);
-            }
-            //根据OrderNature查询flow,flow和nature一对一关系
-            DbResFlow resFlow =repoFlow.findByFlowNature(process.getLogOrderNature());
-            process.setFlowId(resFlow.getId());
-            ArrayList<DbResProcessDtl> processDtls= new ArrayList<>();
-            for(int i=0;i<resFlow.getResFlowStepList().size();i++) {
-                DbResProcessDtl  resProcessDtl  =new DbResProcessDtl();
-                resProcessDtl.setFlowId(resFlow.getId());
-                resProcessDtl.setRemark(b.getRemark());
-                resProcessDtl.setStepId(resFlow.getResFlowStepList().get(i).getId());
-                resProcessDtl.setStepNum(resFlow.getResFlowStepList().get(i).getStepNum());
-                resProcessDtl.setRoleId(resFlow.getResFlowStepList().get(i).getRoleId());
-                //审批流初始化数据StepNum1默认PENDING,其他StepNum默认WAITING
-                if(resFlow.getResFlowStepList().get(i).getStepNum().equals("1")) {
-                    resProcessDtl.setStatus(StaticVariable.PROCESS_PENDING_STATUS);
-                }else {
-                    resProcessDtl.setStatus(StaticVariable.PROCESS_WAITING_STATUS);
-                }
-                processDtls.add(resProcessDtl);
-            }
-            process.setProcessDtls(processDtls);
-            resProcess.saveAndFlush(process);
-
             repo.saveAndFlush(repl);
+
+                //创建工作流对象
+//                DbResProcess process = new DbResProcess();
+//                process.setLogTxtBum(b.getLogTxtBum());
+//                process.setRepoId(b.getLogRepoIn());
+//                process.setRemark(b.getRemark());
+//                process.setCreateAt(t);
+//                process.setUpdateAt(t);
+//                process.setLogOrderNature(b.getLogOrderNature());
+//                //生成工作流数据
+//                processProcessCtrl.joinToProcess(process);
+
             return JsonResult.success(Arrays.asList());
         } catch (Exception e) {
             System.out.println(e);
             return JsonResult.fail(e);
         }
+    }
+
+    /**
+     * stock replenishment 修改表 skuRepo
+     * @param logTxtBum
+     */
+    public void UpdateSkuRepoQty(String logTxtBum) {
+
+        DbResLogRepl cb = repo.findDbResLogReplByLogTxtBum(logTxtBum);
+        List<DbResLogReplDtl> line = cb.getLine();
+        long t = new Date().getTime();
+        //插入表res_sku_repo 添加或修改qty(工作流加入后 需要process的status为approve状态时再入库sku_repo)
+        line.forEach(dtl->{
+            if(!StaticVariable.LOGORDERNATURE_REPLENISHMENT_REQUEST.equals(cb.getLogOrderNature())){
+                DbResSkuRepo skuShop = rsRepo.findQtyByRepoAndShopAndType(cb.getRepoIdTo(), dtl.getDtlSkuId(), 3l);
+                if(!Objects.isNull(skuShop)){
+                    DbResSkuRepo skuShop1 = rsRepo.findById(skuShop.getId()).get();
+                    skuShop1.setQty((int) (skuShop.getQty()+dtl.getDtlQty()));
+                    skuShop1.setUpdateAt(t);
+                    skuShop1.setUpdateBy(getAccount());
+                }else{
+                    DbResSkuRepo skuShop2 = new DbResSkuRepo();
+                    skuShop2.setCreateAt(t);
+                    skuShop2.setCreateBy(getAccount());
+                    skuShop2.setUpdateAt(t);
+                    skuShop2.setUpdateBy(getAccount());
+                    skuShop2.setActive("Y");
+                    skuShop2.setQty((int) dtl.getDtlQty());
+                    skuShop2.setRepo(rRepo.findById(cb.getRepoIdTo()).get());
+                    skuShop2.setStockType(rstRepo.findById(3l).get());
+                    skuShop2.setSku(resSkuRepo.findById(dtl.getDtlSkuId()).get());
+                    rsRepo.saveAndFlush(skuShop2);
+                }
+            }
+        });
+
     }
 
     @RequestMapping(method = RequestMethod.POST,path="/searchReplenishmentInfo")

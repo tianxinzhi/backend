@@ -78,7 +78,9 @@ public class MasterFile_ClassCtrl extends BaseCtrl<DbResClass> {
         try {
             long t = new Date().getTime();
             b.setCreateAt(t);
+            b.setCreateBy(getAccount());
             b.setUpdateAt(t);
+            b.setUpdateBy(getAccount());
             b.setActive("Y");
             if(StringUtils.isEmpty(b.getParentClassId())){
                 b.setParentClassId("0");
@@ -100,6 +102,7 @@ public class MasterFile_ClassCtrl extends BaseCtrl<DbResClass> {
             Optional<DbResClass> opt = repo.findById(b.getId());
             DbResClass dbResClass = opt.get();
             b.setUpdateAt(new Date().getTime());
+            b.setUpdateBy(getAccount());
             b.setCreateAt(dbResClass.getCreateAt());
             b.setActive(dbResClass.getActive());
             if(StringUtils.isEmpty(b.getParentClassId())){

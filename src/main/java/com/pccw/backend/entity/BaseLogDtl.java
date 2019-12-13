@@ -34,7 +34,7 @@ public class BaseLogDtl extends Base {
 
 	// Good / Faulty / Intran
 	@Column(name = "dtl_subin", length = 32)
-	private String dtlSubin;
+		private String dtlSubin;
 
 	// W - waiting LIS to handle / D - Done
 	@Column(name = "lis_status", length = 4)

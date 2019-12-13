@@ -110,7 +110,9 @@ public class MasterFile_TypeCtrl extends BaseCtrl<DbResType> {
         try {
             long t = new Date().getTime();
             b.setCreateAt(t);
+            b.setCreateBy(getAccount());
             b.setUpdateAt(t);
+            b.setUpdateBy(getAccount());
             b.setActive("Y");
             DbResType dbResType = new DbResType();
             BeanUtils.copyProperties(b, dbResType);
@@ -125,7 +127,9 @@ public class MasterFile_TypeCtrl extends BaseCtrl<DbResType> {
                     dbResClassType.setClasss(dbResClass);
                     dbResClassType.setType(dbResType);
                     dbResClassType.setCreateAt(t);
+                    dbResClassType.setCreateBy(getAccount());
                     dbResClassType.setUpdateAt(t);
+                    dbResClassType.setUpdateBy(getAccount());
                     dbResClassType.setActive("Y");
                     classTypeList.add(dbResClassType);
                 }
@@ -134,7 +138,9 @@ public class MasterFile_TypeCtrl extends BaseCtrl<DbResType> {
             //保存数据到res_type_sku_spec表
             DbResTypeSkuSpec dbResTypeSkuSpec = new DbResTypeSkuSpec();
             dbResTypeSkuSpec.setCreateAt(t);
+            dbResTypeSkuSpec.setCreateBy(getAccount());
             dbResTypeSkuSpec.setUpdateAt(t);
+            dbResTypeSkuSpec.setUpdateBy(getAccount());
             dbResTypeSkuSpec.setActive("Y");
             dbResTypeSkuSpec.setType(dbResType);
             dbResTypeSkuSpec.setSpecId(b.getSpecId());
@@ -158,6 +164,7 @@ public class MasterFile_TypeCtrl extends BaseCtrl<DbResType> {
             List<DbResClassType> relationOfTypeClass = dbResType.getRelationOfTypeClass();
             relationOfTypeClass.clear();
             dbResType.setUpdateAt(t);
+            dbResType.setUpdateBy(getAccount());
             dbResType.setTypeCode(b.getTypeCode());
             dbResType.setTypeDesc(b.getTypeDesc());
             dbResType.setTypeName(b.getTypeName());
@@ -171,7 +178,9 @@ public class MasterFile_TypeCtrl extends BaseCtrl<DbResType> {
                     classType.setClasss(dbResClass);
                     classType.setType(dbResType);
                     classType.setCreateAt(t);
+                    classType.setCreateBy(getAccount());
                     classType.setUpdateAt(t);
+                    classType.setUpdateBy(getAccount());
                     classType.setActive("Y");
                     relationOfTypeClass.add(classType);
                 }
@@ -184,7 +193,9 @@ public class MasterFile_TypeCtrl extends BaseCtrl<DbResType> {
             }else{
                 DbResTypeSkuSpec dts = new DbResTypeSkuSpec();
                 dts.setCreateAt(t);
+                dts.setCreateBy(getAccount());
                 dts.setUpdateAt(t);
+                dts.setUpdateBy(getAccount());
                 dts.setActive("Y");
                 dts.setSpecId(b.getSpecId());
                 dts.setType(dbResType);

@@ -101,7 +101,7 @@ public class MasterFile_SpecCtrl extends BaseCtrl<DbResSpec> {
             System.out.println(b.getResSpecAttrList());
             for(int i=0;i<b.getResSpecAttrList().size();i++) {
                 for(int j=0;j<dbResSpec.getResSpecAttrList().size();j++) {
-                    if (dbResSpec.getResSpecAttrList().get(j).getId()==b.getResSpecAttrList().get(i).getId()) {
+                    if (dbResSpec.getResSpecAttrList().get(j).getId().equals(b.getResSpecAttrList().get(i).getId())) {
                         b.getResSpecAttrList().get(i).setUpdateAt(t);
                         b.getResSpecAttrList().get(i).setCreateAt(dbResSpec.getResSpecAttrList().get(j).getCreateAt());
                         b.getResSpecAttrList().get(i).setActive("Y");

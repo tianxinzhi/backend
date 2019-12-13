@@ -18,4 +18,6 @@ public class BaseBean implements Serializable {
     private long updateAt;
     private long updateBy;
     private String active;
+    private String createAccountName;
+    private String updateAccountName;
 }

@@ -44,4 +44,12 @@ public class Base implements Serializable{
         // Y - avaliable , N - deleted
         @Column(name = "active",length = 4)
         private String active;
+
+        //详情展示createBy用
+        @Transient
+        private String createAccountName;
+
+        //详情展示updateBy用
+        @Transient
+        private String updateAccountName;
 }

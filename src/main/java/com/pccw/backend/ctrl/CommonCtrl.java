@@ -83,7 +83,13 @@ public class CommonCtrl  extends GeneralCtrl{
     @ApiOperation(value="获取res_attr_value表的AttrValue和id信息",tags={"common"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.GET,path="/attrValueModule")
     public JsonResult<LabelAndValue> searchAttrValue() {
-        return this.JsonResultHandle(attr_value_repo,new LabelAndValue());
+//        return this.JsonResultHandle(attr_value_repo,new LabelAndValue());
+        List<DbResAttrValue> list = attr_value_repo.findAll();
+        List<LabelAndValue> res = list.stream().map(item -> {
+            return  Objects.nonNull(item.getAttrValue()) ? new LabelAndValue(item.getId(), item.getAttrValue(), null) : new LabelAndValue(item.getId(), item.getValueFrom()+"~"+item.getValueTo(),null );
+        }).collect(Collectors.toList());
+
+        return JsonResult.success(res);
     }
 
     @ApiOperation(value="获取res_class表的ClassName和id信息",tags={"common"},notes="注意问题点")

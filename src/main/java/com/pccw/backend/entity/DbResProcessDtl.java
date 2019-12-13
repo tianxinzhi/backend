@@ -8,7 +8,7 @@ import javax.persistence.*;
 @Data
 @Table(name = "res_process_dtl")
 @SequenceGenerator(name = "id_process_dtl",sequenceName = "process_dtl_seq",allocationSize = 1)
-public class DbResProcessDtl {
+public class DbResProcessDtl extends Base{
 
     @Id
     @Column(name = "id")
@@ -32,7 +32,5 @@ public class DbResProcessDtl {
 
     @Column(name = "remark",length = 512)
     private String remark;
-
-
 
 }

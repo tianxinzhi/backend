@@ -1,8 +1,6 @@
 package com.pccw.backend.ctrl;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.pccw.backend.bean.*;
@@ -22,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestController
 @RequestMapping("/common")
-@CrossOrigin(methods = RequestMethod.GET,origins = "*", allowCredentials = "false")
+@CrossOrigin(origins = "*", allowCredentials = "false")
 public class CommonCtrl  extends GeneralCtrl{
 
     @Autowired
@@ -49,6 +47,8 @@ public class CommonCtrl  extends GeneralCtrl{
     ResRoleRepository roleRepository;
     @Autowired
     ResStockTypeRepository stockTypeRepository;
+    @Autowired
+    ResAccountRepository accountRepository;
 
     @ApiOperation(value="获取res_right表的信息",tags={"common"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.GET,path="/rightModule")
@@ -130,26 +130,4 @@ public class CommonCtrl  extends GeneralCtrl{
         return this.JsonResultHandle(stockTypeRepository,new LabelAndValue());
     }
 
-    // /**
-    //  * 根据id获取AccountName
-    //  * @param id
-    //  * @param accountRepo
-    //  * @return
-    //  */
-    // public static String searchAccountById(long id,ResAccountRepository accountRepo){
-    //     String accountName = "";
-    //     try {
-    //         if(Objects.nonNull(id)){
-    //             if(id == 0){
-    //                 accountName = "system";
-    //             }else{
-    //                 accountName = accountRepo.findById(id).get().getAccountName();
-    //             }
-    //         }
-    //         return accountName;
-    //     } catch (Exception e) {
-    //         e.printStackTrace();
-    //         return accountName;
-    //     }
-    // }
 }

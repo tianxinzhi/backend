@@ -19,9 +19,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * AuthRightCtrl
@@ -40,6 +39,8 @@ public class Stock_MovementCtrl extends BaseCtrl<DbResProcess> {
     ResAccountRepository accountRepo;
     @Autowired
     ResRepoRepository repoRepo;
+    @Autowired
+    CommonCtrl commonCtrl;
 
     @ApiOperation(value="搜索Stock_Movement",tags={"stock_movement"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST, path = "/search")
@@ -48,6 +49,24 @@ public class Stock_MovementCtrl extends BaseCtrl<DbResProcess> {
         try {
             //默认查询nature为approved的
             b.setStatus(StaticVariable.PROCESS_APPROVED_STATUS);
+            //准备between需要的日期范围条件
+            String[] createAt = b.getCreateAt();
+            if(Objects.nonNull(createAt)){
+                if(createAt.length == 2){
+                    List<Object> objects = new ArrayList<>();
+                    SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+                        long time = df.parse(createAt[0]).getTime();
+                        objects.add(String.valueOf(time));
+                        Calendar cal = Calendar.getInstance();
+                        cal.setTime(df.parse(createAt[1]));
+                        cal.add(Calendar.DATE,1);
+                        objects.add(String.valueOf(cal.getTime().getTime()));
+                        String[] a = new String[objects.size()];
+                        b.setCreateAt(objects.toArray(a));
+                }else {
+                    b.setCreateAt(null);
+                }
+            }
             Specification spec = Convertor.convertSpecification(b);
             Sort sort = new Sort(Sort.Direction.DESC,"id");
             ArrayList<Map> list = new ArrayList<>();
@@ -55,7 +74,8 @@ public class Stock_MovementCtrl extends BaseCtrl<DbResProcess> {
             res.forEach(p-> {
                 Map map = JSON.parseObject(JSON.toJSONString(p), Map.class);
                 map.put("repoName",repoRepo.findById(p.getRepoId()).get().getRepoName());
-//                map.put("createAccountName", CommonCtrl.searchAccountById(p.getCreateBy(), accountRepo));
+                String createAccountName = p.getCreateBy() == 0 ? "system":accountRepo.findById(p.getCreateBy()).get().getAccountName();
+                map.put("createAccountName",createAccountName);
                 list.add(map);
             });
             return JsonResult.success(list);

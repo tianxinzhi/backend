@@ -1,11 +1,14 @@
 package com.pccw.backend.ctrl;
 
 import com.pccw.backend.annotation.JsonResultParamHandle;
+import com.pccw.backend.bean.BaseBean;
 import com.pccw.backend.bean.GeneralBean;
 import com.pccw.backend.bean.JsonResult;
 import com.pccw.backend.repository.BaseRepository;
+import com.pccw.backend.util.Convertor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 
 import javax.persistence.JoinColumn;
 import java.lang.reflect.Constructor;
@@ -74,9 +77,12 @@ public class GeneralCtrl {
      * @param <E>
      * @return
      */
-    private <E> List<GeneralBean> getDefualtSearchBeans(BaseRepository repo, GeneralBean bean) {
+    private <E> List<GeneralBean> getDefualtSearchBeans(BaseRepository repo, GeneralBean bean) throws IllegalAccessException {
         Sort sort = new Sort(Sort.Direction.DESC, "id");
-        List<E> list = repo.findAll(sort);
+        BaseBean baseBean = new BaseBean();
+        baseBean.setActive("Y");
+        Specification<Object> specification = Convertor.convertSpecification(baseBean);
+        List<E> list = repo.findAll(specification,sort);
 //        List<E> list = repo.findAll();
         return getCollect(bean, list);
     }

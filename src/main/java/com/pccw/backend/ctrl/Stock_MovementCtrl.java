@@ -54,11 +54,14 @@ public class Stock_MovementCtrl extends BaseCtrl<DbResProcess> {
             if(Objects.nonNull(createAt)){
                 if(createAt.length == 2){
                     List<Object> objects = new ArrayList<>();
-                    for (String s : createAt) {
-                        long time = new SimpleDateFormat("yyyy-MM-dd").parse(s).getTime();
+                    SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+                        long time = df.parse(createAt[0]).getTime();
                         objects.add(String.valueOf(time));
-                    }
-                        String [] a = new String[objects.size()];
+                        Calendar cal = Calendar.getInstance();
+                        cal.setTime(df.parse(createAt[1]));
+                        cal.add(Calendar.DATE,1);
+                        objects.add(String.valueOf(cal.getTime().getTime()));
+                        String[] a = new String[objects.size()];
                         b.setCreateAt(objects.toArray(a));
                 }else {
                     b.setCreateAt(null);

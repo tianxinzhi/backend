@@ -194,17 +194,17 @@ public class Stock_CategoryCtrl extends BaseCtrl<DbResLogMgt> {
             resLogMgtRepository.saveAndFlush(dbResLogMgt);
 
             //创建工作流对象
-//            DbResProcess process = new DbResProcess();
-//
-//            process.setLogTxtBum(b.getLogTxtBum());
-//            process.setRepoId(b.getLogRepoOut());
-//            process.setRemark(b.getRemark());
-//            process.setCreateAt(t);
-//            process.setUpdateAt(t);
-//            process.setLogOrderNature(b.getLogOrderNature());
-//
-//            //生成工作流数据
-//            processProcessCtrl.joinToProcess(process);
+            DbResProcess process = new DbResProcess();
+
+            process.setLogTxtBum(b.getLogTxtBum());
+            process.setRepoId(b.getLogRepoOut());
+            process.setRemark(b.getRemark());
+            process.setCreateAt(t);
+            process.setUpdateAt(t);
+            process.setLogOrderNature(b.getLogOrderNature());
+
+            //生成工作流数据
+            processProcessCtrl.joinToProcess(process);
             return JsonResult.success(Arrays.asList());
         } catch (Exception e) {
             return JsonResult.fail(e);

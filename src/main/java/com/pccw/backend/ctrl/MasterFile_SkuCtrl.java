@@ -8,15 +8,12 @@ import com.pccw.backend.bean.masterfile_sku.CreateBean;
 import com.pccw.backend.bean.masterfile_sku.EditBean;
 import com.pccw.backend.bean.masterfile_sku.SearchBean;
 import com.pccw.backend.bean.masterfile_sku.ResultBean;
+import com.pccw.backend.cusinterface.ICheck;
 import com.pccw.backend.entity.*;
-import com.pccw.backend.repository.ResAttrRepository;
-import com.pccw.backend.repository.ResSkuRepository;
-import com.pccw.backend.repository.ResSkuTypeRepository;
-import com.pccw.backend.repository.ResStockTypeRepository;
+import com.pccw.backend.repository.*;
 import com.pccw.backend.util.Convertor;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
@@ -26,9 +23,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.constraints.NotNull;
 import java.util.*;
-import java.util.stream.Stream;
 
 /**
  * @Author xiaozhi
@@ -38,7 +33,7 @@ import java.util.stream.Stream;
 @CrossOrigin(methods = RequestMethod.POST,origins = "*", allowCredentials = "false")
 @RequestMapping("masterfile_sku")
 @Api(value="MasterFile_SkuCtrl",tags={"masterfile_sku"})
-public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> {
+public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> implements ICheck {
 
     @Autowired
     ResSkuRepository skuRepo;
@@ -222,9 +217,9 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> {
                 List<Map> tableDatas = new LinkedList<>();
                 if(typeResult.getData()!=null && typeResult.getData().size()>0) {
                     ResultBean resultBean = (ResultBean) typeResult.getData().get(0);
+                    BeanUtils.copyProperties(sku,resultBean);
                     resultBean.setCreateAccountName(getAccountName(sku.getCreateBy()));
                     resultBean.setUpdateAccountName(getAccountName(sku.getUpdateBy()));
-                    BeanUtils.copyProperties(sku,resultBean);
                     for (int i=0;i<resultBean.getAttrNames().length;i++) {
                         Map<String,Object> map = new HashMap<>();
                         map.put("attrName",resultBean.getAttrNames()[i]);
@@ -385,4 +380,14 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> {
         }
     }
 
+    @ApiOperation(value="禁用sku",tags={"masterfile_sku"},notes="注意问题点")
+    @RequestMapping(method = RequestMethod.POST,value = "/disable")
+    public JsonResult disable(@RequestBody BaseDeleteBean ids) {
+        return this.disable(skuRepo,ids,MasterFile_SkuCtrl.class);
+    }
+
+    @Override
+    public long checkCanDisable(Object obj, BaseRepository... check) {
+        return 0;
+    }
 }

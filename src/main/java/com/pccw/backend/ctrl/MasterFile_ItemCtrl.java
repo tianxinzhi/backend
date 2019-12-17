@@ -3,7 +3,9 @@ package com.pccw.backend.ctrl;
 import com.pccw.backend.bean.BaseDeleteBean;
 import com.pccw.backend.bean.JsonResult;
 import com.pccw.backend.bean.masterfile_item.*;
+import com.pccw.backend.cusinterface.ICheck;
 import com.pccw.backend.entity.DbResItem;
+import com.pccw.backend.repository.BaseRepository;
 import com.pccw.backend.repository.ResItemRepository;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -16,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin(methods = RequestMethod.POST,origins = "*", allowCredentials = "false")
 @RequestMapping("/masterfile_item")
 @Api(value = "MasterFile_ItemCtrl",tags = "masterfile_item")
-public class MasterFile_ItemCtrl extends BaseCtrl<DbResItem> {
+public class MasterFile_ItemCtrl extends BaseCtrl<DbResItem> implements ICheck {
     @Autowired
     ResItemRepository resItemRepository;
   @ApiOperation(value = "搜索item",tags = "masterfile_item",notes = "注意问题点")
@@ -44,4 +46,14 @@ public class MasterFile_ItemCtrl extends BaseCtrl<DbResItem> {
       return this.delete(resItemRepository,ids);
     }
 
+  @ApiOperation(value="禁用item",tags={"masterfile_item"},notes="注意问题点")
+  @RequestMapping(method = RequestMethod.POST,value = "/disable")
+  public JsonResult disable(@RequestBody BaseDeleteBean ids) {
+    return this.disable(resItemRepository,ids,MasterFile_ItemCtrl.class);
+  }
+
+  @Override
+  public long checkCanDisable(Object obj, BaseRepository... check) {
+    return 0;
+  }
 }

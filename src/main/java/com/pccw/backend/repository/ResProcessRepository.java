@@ -17,7 +17,7 @@ public interface ResProcessRepository extends BaseRepository<DbResProcess> {
             "\t RES_PROCESS rp,\n" +
             "\t RES_PROCESS_DTL rpd\n" +
             "WHERE\n" +
-            "\tRPD.PROCESS_ID = RP.ID\n" +
+            "\tRPD.PROCESS_ID = RP.ID   AND  rp.STATUS='PENDING'  AND rpd.STATUS='PENDING'  \n" +
             "AND  exists  \n" +
             "(\n" +
             "\tSELECT\n" +

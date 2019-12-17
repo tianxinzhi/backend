@@ -32,5 +32,5 @@ public class SearchBean{
 
     @PredicateAnnotation(type = PredicateType.BETWEEN)
     @ApiModelProperty(value="数据库中的时间查询范围",name="createAt",example="")
-    private Long[] createAt;
+    private String[] createAt;
 }

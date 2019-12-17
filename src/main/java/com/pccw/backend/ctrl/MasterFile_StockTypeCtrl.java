@@ -6,7 +6,9 @@ import com.pccw.backend.bean.JsonResult;
 import com.pccw.backend.bean.masterfile_stocktype.CreateBean;
 import com.pccw.backend.bean.masterfile_stocktype.EditBean;
 import com.pccw.backend.bean.masterfile_stocktype.SearchBean;
+import com.pccw.backend.cusinterface.ICheck;
 import com.pccw.backend.entity.DbResStockType;
+import com.pccw.backend.repository.BaseRepository;
 import com.pccw.backend.repository.ResStockTypeRepository;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -23,7 +25,7 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin(methods = RequestMethod.POST,origins = "*", allowCredentials = "false")
 @RequestMapping("/masterfile_stock_type")
 @Api(value="MasterFile_StockTypeCtrl",tags={"masterfile_stock_type"})
-public class MasterFile_StockTypeCtrl extends BaseCtrl<DbResStockType> {
+public class MasterFile_StockTypeCtrl extends BaseCtrl<DbResStockType> implements ICheck {
 
     @Autowired
     ResStockTypeRepository repo;
@@ -53,4 +55,14 @@ public class MasterFile_StockTypeCtrl extends BaseCtrl<DbResStockType> {
         return this.edit(repo, DbResStockType.class, b);
     }
 
+    @ApiOperation(value="禁用stock_type",tags={"masterfile_stock_type"},notes="注意问题点")
+    @RequestMapping(method = RequestMethod.POST,value = "/disable")
+    public JsonResult disable(@RequestBody BaseDeleteBean ids) {
+        return this.disable(repo,ids,MasterFile_StockTypeCtrl.class);
+    }
+
+    @Override
+    public long checkCanDisable(Object obj, BaseRepository... check) {
+        return 0;
+    }
 }

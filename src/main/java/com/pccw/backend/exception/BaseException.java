@@ -14,6 +14,7 @@ public class BaseException extends Exception {
     public static final String EXCEPTION_CODE_NOLOGINEXCEPTION = "002";
     public static final String EXCEPTION_CODE_NORIGHTEXCEPTION = "001";
     public static final String EXCEPTION_CODE_ARGUMENTNOTVALIDEXCEPTION = "004";
+    public static final String EXCEPTION_CODE_DATAUSEDEXCEPTION = "005";//数据被使用
 
     private String code;
 
@@ -54,5 +55,7 @@ public class BaseException extends Exception {
     public static BaseException getNoRightException() {
         return BaseException.getException(BaseException.EXCEPTION_CODE_NORIGHTEXCEPTION);
     }
-
+    public static BaseException getDataUsedException(long id) {
+        return BaseException.getException(BaseException.EXCEPTION_CODE_DATAUSEDEXCEPTION,id+" is used,can not disable!");
+    }
 }

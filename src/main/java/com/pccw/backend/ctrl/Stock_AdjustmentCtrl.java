@@ -42,6 +42,8 @@ public class Stock_AdjustmentCtrl extends BaseCtrl<DbResLogMgt> {
     ResAdjustReasonRepository reasonRepository;
     @Autowired
     ResStockTypeRepository stockTypeRepository;
+    @Autowired
+    Process_ProcessCtrl processProcessCtrl;
 
     @ApiOperation(value="调货",tags={"stock_adjustment"},notes="说明")
     @RequestMapping("/confirm")
@@ -109,10 +111,25 @@ public class Stock_AdjustmentCtrl extends BaseCtrl<DbResLogMgt> {
 
             ent.setLine(lstMgtDtl);
             logMgtRepository.saveAndFlush(ent);
-
+            //生成工作流数据
+            DbResProcess process = new DbResProcess();
+            process.setLogTxtBum(bean.getTransactionNumber());
+            process.setRepoId(bean.getLogRepoIn());
+            process.setRemark(bean.getRemark());
+            process.setCreateAt(System.currentTimeMillis());
+            process.setUpdateAt(System.currentTimeMillis());
+            process.setLogOrderNature(StaticVariable.LOGORDERNATURE_STOCK_TAKE_ADJUSTMENT);
+            processProcessCtrl.joinToProcess(process);
             return JsonResult.success(Arrays.asList());
         } catch (BeansException e) {
             return JsonResult.fail(e);
+        }
+    }
+
+    public void UpdateSkuRepoQty(String logTxtBum) {
+        DbResLogMgt bean = logMgtRepository.findDbResLogMgtByLogTxtBum(logTxtBum);
+        for(DbResLogMgtDtl dtl:bean.getLine()) {
+            skuRepoRepository.updateQtyByRepoAndShopAndTypeAndQty(bean.getLogRepoOut(),dtl.getDtlSkuId(),dtl.getDtlRepoId(),dtl.getDtlQty());
         }
     }
 

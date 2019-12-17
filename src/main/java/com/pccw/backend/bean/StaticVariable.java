@@ -49,6 +49,7 @@ public class StaticVariable {
     public static final String DTLSUBIN_RESERVED = "Reserved";
     public static final String DTLSUBIN_RESERVED_WITH_AO = "Reserved With AO";
     public static final String DTLSUBIN_DEMO = "Demo";
+    public static final String DTLSUBIN_RESERVED_WITH_REMOTE = "Reserved With Remote";
 
     public static final String LISSTATUS_WAITING = "W";
     public static final String LISSTATUS_DONE = "D";
@@ -59,6 +60,7 @@ public class StaticVariable {
     public static final String STATUS_RESERVED = "RES";
     public static final String STATUS_RESERVED_WITH_AO = "RAO";
     public static final String STATUS_DEMO = "DEM";
+    public static final String STATUS_RESERVED_WITH_REMOTE = "RRO";
 
 
 

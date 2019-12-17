@@ -52,5 +52,7 @@ public class DbResSkuRepo extends Base{
 	@Column(name = "qty")
 	private int qty;
 
-	
+	// remark
+	@Column(name = "remark",length = 512)
+	private String remark;
 }

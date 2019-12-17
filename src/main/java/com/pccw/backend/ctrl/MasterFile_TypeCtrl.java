@@ -48,6 +48,8 @@ public class MasterFile_TypeCtrl extends BaseCtrl<DbResType> implements ICheck {
     ResSpecRepository resSpecRepository;
     @Autowired
     ResAccountRepository resAccountRepository;
+    @Autowired
+    CommonCtrl commonCtrl;
 
     @ApiOperation(value="搜索type",tags={"masterfile_type"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST, path = "/search")
@@ -80,8 +82,8 @@ public class MasterFile_TypeCtrl extends BaseCtrl<DbResType> implements ICheck {
                         if(!StringUtils.isEmpty(classNames)){
                             classNames = classNames.substring(0,classNames.length()-1);
                         }
-//                        searchBean.setCreateAccountName(CommonCtrl.searchAccountById(type.getCreateBy(),resAccountRepository));
-//                        searchBean.setUpdateAccountName(CommonCtrl.searchAccountById(type.getUpdateBy(),resAccountRepository));
+                        searchBean.setCreateAccountName(type.getCreateBy() == 0 ? "system":resAccountRepository.findById(type.getCreateBy()).get().getAccountName());
+                        searchBean.setUpdateAccountName(type.getUpdateBy() == 0 ? "system":resAccountRepository.findById(type.getUpdateBy()).get().getAccountName());
                         searchBean.setClassName(classNames);
                         searchBean.setClassId(classIds);
                     }
@@ -109,7 +111,9 @@ public class MasterFile_TypeCtrl extends BaseCtrl<DbResType> implements ICheck {
         try {
             long t = new Date().getTime();
             b.setCreateAt(t);
+            b.setCreateBy(getAccount());
             b.setUpdateAt(t);
+            b.setUpdateBy(getAccount());
             b.setActive("Y");
             DbResType dbResType = new DbResType();
             BeanUtils.copyProperties(b, dbResType);
@@ -124,7 +128,9 @@ public class MasterFile_TypeCtrl extends BaseCtrl<DbResType> implements ICheck {
                     dbResClassType.setClasss(dbResClass);
                     dbResClassType.setType(dbResType);
                     dbResClassType.setCreateAt(t);
+                    dbResClassType.setCreateBy(getAccount());
                     dbResClassType.setUpdateAt(t);
+                    dbResClassType.setUpdateBy(getAccount());
                     dbResClassType.setActive("Y");
                     classTypeList.add(dbResClassType);
                 }
@@ -133,7 +139,9 @@ public class MasterFile_TypeCtrl extends BaseCtrl<DbResType> implements ICheck {
             //保存数据到res_type_sku_spec表
             DbResTypeSkuSpec dbResTypeSkuSpec = new DbResTypeSkuSpec();
             dbResTypeSkuSpec.setCreateAt(t);
+            dbResTypeSkuSpec.setCreateBy(getAccount());
             dbResTypeSkuSpec.setUpdateAt(t);
+            dbResTypeSkuSpec.setUpdateBy(getAccount());
             dbResTypeSkuSpec.setActive("Y");
             dbResTypeSkuSpec.setType(dbResType);
             dbResTypeSkuSpec.setSpecId(b.getSpecId());
@@ -157,6 +165,7 @@ public class MasterFile_TypeCtrl extends BaseCtrl<DbResType> implements ICheck {
             List<DbResClassType> relationOfTypeClass = dbResType.getRelationOfTypeClass();
             relationOfTypeClass.clear();
             dbResType.setUpdateAt(t);
+            dbResType.setUpdateBy(getAccount());
             dbResType.setTypeCode(b.getTypeCode());
             dbResType.setTypeDesc(b.getTypeDesc());
             dbResType.setTypeName(b.getTypeName());
@@ -170,7 +179,9 @@ public class MasterFile_TypeCtrl extends BaseCtrl<DbResType> implements ICheck {
                     classType.setClasss(dbResClass);
                     classType.setType(dbResType);
                     classType.setCreateAt(t);
+                    classType.setCreateBy(getAccount());
                     classType.setUpdateAt(t);
+                    classType.setUpdateBy(getAccount());
                     classType.setActive("Y");
                     relationOfTypeClass.add(classType);
                 }
@@ -183,7 +194,9 @@ public class MasterFile_TypeCtrl extends BaseCtrl<DbResType> implements ICheck {
             }else{
                 DbResTypeSkuSpec dts = new DbResTypeSkuSpec();
                 dts.setCreateAt(t);
+                dts.setCreateBy(getAccount());
                 dts.setUpdateAt(t);
+                dts.setUpdateBy(getAccount());
                 dts.setActive("Y");
                 dts.setSpecId(b.getSpecId());
                 dts.setType(dbResType);
@@ -196,24 +209,29 @@ public class MasterFile_TypeCtrl extends BaseCtrl<DbResType> implements ICheck {
         }
     }
 
-    @ApiOperation(value="搜索spec_attr",tags={"masterfile_type"},notes="注意问题点")
+    /**
+     * 根据specId查询attr&attrValue
+     * 返回指定格式给前端详情展示
+     * @param id
+     * @return
+     */
+    @ApiOperation(value="搜索spec_attr&attrValue",tags={"masterfile_type"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST, path = "/specSearch")
-        public JsonResult specSearch(@RequestBody long id) {
+    public JsonResult specSearch(@RequestBody Long id) {
         try {
             List<Map> list = new ArrayList<>();
             List<Map> attrList= repo.specSearch(id);
-            attrList.stream().collect(Collectors.groupingBy(s -> s.get("attrName")))
+            attrList.stream()
+                    .collect(Collectors.groupingBy(s -> s.get("attrName")))
                     .forEach((k,v)->{
-                            HashMap<Object, Object> hm = new HashMap<>();
-                            List<String> attrValueList = new ArrayList<>();
-                                v.forEach((a)->{
-                                attrValueList.add(a.get("attrValue").toString());
-                            });
-                            hm.put("attrName",k);
-                            hm.put("attrValue",attrValueList);
-                            list.add(hm);
-                    }
-            );
+                          HashMap<Object, Object> hm = new HashMap<>();
+                          List<String> attrValueList = new ArrayList<>();
+                          v.forEach((a)->{ attrValueList.add(a.get("attrValue").toString());});
+                          hm.put("attrName",k);
+                          hm.put("attrValue",attrValueList);
+                          list.add(hm);
+                            }
+                    );
             return JsonResult.success(list);
         } catch (Exception e) {
             return JsonResult.fail(e);

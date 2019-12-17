@@ -41,6 +41,8 @@ public class MasterFile_ClassCtrl extends BaseCtrl<DbResClass> implements ICheck
     ResClassRepository repo;
     @Autowired
     ResAccountRepository accountRepo;
+    @Autowired
+    CommonCtrl commonCtrl;
 
     @ApiOperation(value="搜索class",tags={"masterfile_class"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST, path = "/search")
@@ -54,8 +56,8 @@ public class MasterFile_ClassCtrl extends BaseCtrl<DbResClass> implements ICheck
             res.forEach(d->{
                 SearchBean searchBean = new SearchBean();
                 BeanUtils.copyProperties(d,searchBean);
-//                searchBean.setCreateAccountName(CommonCtrl.searchAccountById(d.getCreateBy(),accountRepo));
-//                searchBean.setUpdateAccountName(CommonCtrl.searchAccountById(d.getUpdateBy(),accountRepo));
+                searchBean.setCreateAccountName(d.getCreateBy() == 0 ? "system":accountRepo.findById(d.getCreateBy()).get().getAccountName());
+                searchBean.setUpdateAccountName(d.getUpdateBy() == 0 ? "system":accountRepo.findById(d.getUpdateBy()).get().getAccountName());
                 list.add(searchBean);
             });
             return JsonResult.success(list);
@@ -78,7 +80,9 @@ public class MasterFile_ClassCtrl extends BaseCtrl<DbResClass> implements ICheck
         try {
             long t = new Date().getTime();
             b.setCreateAt(t);
+            b.setCreateBy(getAccount());
             b.setUpdateAt(t);
+            b.setUpdateBy(getAccount());
             b.setActive("Y");
             if(StringUtils.isEmpty(b.getParentClassId())){
                 b.setParentClassId("0");
@@ -100,6 +104,7 @@ public class MasterFile_ClassCtrl extends BaseCtrl<DbResClass> implements ICheck
             Optional<DbResClass> opt = repo.findById(b.getId());
             DbResClass dbResClass = opt.get();
             b.setUpdateAt(new Date().getTime());
+            b.setUpdateBy(getAccount());
             b.setCreateAt(dbResClass.getCreateAt());
             b.setActive(dbResClass.getActive());
             if(StringUtils.isEmpty(b.getParentClassId())){

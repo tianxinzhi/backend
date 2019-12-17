@@ -6,6 +6,7 @@ import com.pccw.backend.bean.JsonResult;
 import com.pccw.backend.bean.masterfile_type.CreateBean;
 import com.pccw.backend.bean.masterfile_type.EditBean;
 import com.pccw.backend.bean.masterfile_type.SearchBean;
+import com.pccw.backend.cusinterface.ICheck;
 import com.pccw.backend.entity.*;
 import com.pccw.backend.repository.*;
 import com.pccw.backend.util.Convertor;
@@ -33,7 +34,7 @@ import java.util.stream.Collectors;
 @CrossOrigin(methods = RequestMethod.POST, origins = "*", allowCredentials = "false")
 @RequestMapping("/masterfile_type")
 @Api(value="MasterFile_TypeCtrl",tags={"masterfile_type"})
-public class MasterFile_TypeCtrl extends BaseCtrl<DbResType> {
+public class MasterFile_TypeCtrl extends BaseCtrl<DbResType> implements ICheck {
 
     @Autowired
     ResTypeRepository repo;
@@ -237,4 +238,14 @@ public class MasterFile_TypeCtrl extends BaseCtrl<DbResType> {
         }
     }
 
+    @ApiOperation(value="禁用type",tags={"masterfile_type"},notes="注意问题点")
+    @RequestMapping(method = RequestMethod.POST,value = "/disable")
+    public JsonResult disable(@RequestBody BaseDeleteBean ids) {
+        return this.disable(repo,ids,MasterFile_TypeCtrl.class);
+    }
+
+    @Override
+    public long checkCanDisable(Object obj, BaseRepository... check) {
+        return 0;
+    }
 }

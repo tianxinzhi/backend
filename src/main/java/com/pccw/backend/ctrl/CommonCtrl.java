@@ -4,14 +4,23 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import com.pccw.backend.bean.*;
+import com.pccw.backend.bean.masterfile_attr_value.SearchBean;
 import com.pccw.backend.entity.*;
 import com.pccw.backend.repository.*;
 
+import com.pccw.backend.util.Convertor;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.bind.annotation.*;
 
 import lombok.extern.slf4j.Slf4j;
+
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
 /**
  * AuthRightCtrl
@@ -83,13 +92,20 @@ public class CommonCtrl  extends GeneralCtrl{
     @ApiOperation(value="获取res_attr_value表的AttrValue和id信息",tags={"common"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.GET,path="/attrValueModule")
     public JsonResult<LabelAndValue> searchAttrValue() {
-//        return this.JsonResultHandle(attr_value_repo,new LabelAndValue());
-        List<DbResAttrValue> list = attr_value_repo.findAll();
-        List<LabelAndValue> res = list.stream().map(item -> {
-            return  Objects.nonNull(item.getAttrValue()) ? new LabelAndValue(item.getId(), item.getAttrValue(), null) : new LabelAndValue(item.getId(), item.getValueFrom()+"~"+item.getValueTo(),null );
-        }).collect(Collectors.toList());
+            Sort sort = new Sort(Sort.Direction.DESC, "id");
+            Specification<DbResAttrValue> spec = new Specification<DbResAttrValue>() {
+                @Override
+                public Predicate toPredicate(Root<DbResAttrValue> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
+                    Predicate predicate = criteriaBuilder.equal(root.get("active").as(String.class), "Y");
+                    return predicate;
+                }
+            };
+            List<DbResAttrValue> list = attr_value_repo.findAll(spec,sort);
+            List<LabelAndValue> res = list.stream().map(item -> {
+                return  Objects.nonNull(item.getAttrValue()) ? new LabelAndValue(item.getId(), item.getAttrValue(), null) : new LabelAndValue(item.getId(), item.getValueFrom()+"~"+item.getValueTo(),null );
+            }).collect(Collectors.toList());
 
-        return JsonResult.success(res);
+            return JsonResult.success(res);
     }
 
     @ApiOperation(value="获取res_class表的ClassName和id信息",tags={"common"},notes="注意问题点")
@@ -113,9 +129,17 @@ public class CommonCtrl  extends GeneralCtrl{
     @ApiOperation(value="获取res_adjust_reason表的adjustReasonName和id信息",tags={"common"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.GET,path="/adjustReasonModule")
     public JsonResult<LabelAndValue> searchAdjustReason(){
-        List<DbResAdjustReason> list =  adjustReasonRepository.findAll().stream().filter
-                (reason -> !reason.getAdjustReasonName().equals("Other Reason")).collect(Collectors.toList());
-        return this.customSearchJsonResultHandle(new LabelAndValue(),list);
+            Sort sort = new Sort(Sort.Direction.DESC, "id");
+            Specification<DbResAdjustReason> spec = new Specification<DbResAdjustReason>() {
+             @Override
+             public Predicate toPredicate(Root<DbResAdjustReason> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
+                   Predicate predicate = criteriaBuilder.equal(root.get("active").as(String.class), "Y");
+                  return predicate;
+                }
+            };
+            List<DbResAdjustReason> list =  adjustReasonRepository.findAll(spec,sort).stream().filter
+                    (reason -> !reason.getAdjustReasonName().equals("Other Reason")).collect(Collectors.toList());
+            return this.customSearchJsonResultHandle(new LabelAndValue(),list);
     }
 
     @ApiOperation(value="获取res_role表的roleName和id信息",tags={"common"},notes="注意问题点")

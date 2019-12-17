@@ -55,17 +55,19 @@ public class Process_ProcessCtrl extends BaseCtrl{
         try{
             log.info(b.toString());
             long t = new Date().getTime();
-
+            Map user = session.getUser();
+            Long accountId = Long.parseLong(user.get("account").toString());
             Optional<DbResProcess> optional = processRepository.findById(b.getId());
             DbResProcess dbResProcess = optional.get();
             BeanUtils.copyProperties(dbResProcess,b);
             b.setUpdateAt(t);
-            //b.setUpdateBy();
+            b.setUpdateBy(accountId);
             b.setStatus(b.getStatusPro());
             for(int i=0;i<b.getSteps().size();i++) {
                 for(int j=0;j<b.getProcessDtls().size();j++) {
                     if (b.getProcessDtls().get(j).getId().equals(b.getSteps().get(i).getProcessDtlsId()) ) {
                           b.getProcessDtls().get(j).setUpdateAt(t);
+                          b.getProcessDtls().get(j).setUpdateAt(accountId);
                           b.getProcessDtls().get(j).setActive("Y");
                           b.getProcessDtls().get(j).setRemark(b.getSteps().get(i).getRemark());
                           b.getProcessDtls().get(j).setStatus(b.getSteps().get(i).getTitle());
@@ -118,8 +120,9 @@ public class Process_ProcessCtrl extends BaseCtrl{
     @RequestMapping(method = RequestMethod.POST,path = "/myReqSearch")
     public JsonResult myReqSearch(@RequestBody ReqOrPedSearchBean bean){
         try {
-            List<DbResProcess> res = getDbResProcesses(bean);
             Map user = session.getUser();
+            bean.setCreateBy(Long.parseLong(user.get("account").toString()));
+            List<DbResProcess> res = getDbResProcesses(bean);
             String roles = user.get("role").toString();
             List<RecodeBean> list = getRecodes(res,roles);
             return JsonResult.success(list);
@@ -137,12 +140,12 @@ public class Process_ProcessCtrl extends BaseCtrl{
             String nature = bean.getLogOrderNature() == null ? "" : bean.getLogOrderNature();
             String repoId = bean.getRepoId() == null ? "" : String.valueOf(bean.getRepoId());
             String txtNum = bean.getLogTxtBum() == null ? "" : bean.getLogTxtBum();
-
-            List<Long> ids = processRepository.findIdsByPending(bean.getCreateBy(),nature,repoId,txtNum,bean.getCreateAt()[0],bean.getCreateAt()[1]);
+            Map user = session.getUser();
+            Long accountId =  Long.parseLong(user.get("account").toString());
+            //查询当前登陆人的role 可处理 审批step当前状态是PENDING的process
+            List<Long> ids = processRepository.findIdsByPending(accountId,nature,repoId,txtNum,Long.parseLong(bean.getCreateAt()[0]),Long.parseLong(bean.getCreateAt()[1]));
 
             List<DbResProcess> res = processRepository.findDbResProcessesByIdIn(ids);
-
-            Map user = session.getUser();
             String roles = user.get("role").toString();
             List<RecodeBean> list = getRecodes(res,roles);
 
@@ -176,7 +179,7 @@ public class Process_ProcessCtrl extends BaseCtrl{
         dateRange[0] = Convertor.beginOfDay(dateRange[0]);
         dateRange[1] = Convertor.endOfDay(dateRange[1]);
 
-        Long[] timeRange = {Objects.nonNull(dateRange[0]) ? dateRange[0].getTime() : 946656000000L,Objects.nonNull(dateRange[1]) ? dateRange[1].getTime() : 4102416000000L};
+        String[] timeRange = {Objects.nonNull(dateRange[0]) ? ""+dateRange[0].getTime() : "1576339200239",Objects.nonNull(dateRange[1]) ? ""+dateRange[1].getTime() : "4070966399164"};
         bean.setCreateAt(timeRange);
     }
 
@@ -224,7 +227,13 @@ public class Process_ProcessCtrl extends BaseCtrl{
             //获取rolename 封装step数据
             List<Step> stepList = r.getProcessDtls().stream().map(item -> {
                 String roleName = roleRepository.findById(item.getRoleId()).get().getRoleName();
-                return new Step(item.getStatus(), roleName, getStepActive(item.getStatus()), item.getStepNum(),item.getId(),item.getRemark());
+                String accountName = this.getAccountName(item.getUpdateBy());
+                //已审批的desc 显示审批意见，未操作数据显示roleName
+                if(item.getStatus().equals(StaticVariable.PROCESS_APPROVED_STATUS)||item.getStatus().equals(StaticVariable.PROCESS_REJECTED_STATUS)){
+                    return new Step(accountName, item.getRemark(), getStepActive(item.getStatus()), item.getStepNum(),item.getId(),item.getRemark());
+                }else {
+                     return new Step(roleName, "", getStepActive(item.getStatus()), item.getStepNum(),item.getId(),item.getRemark());
+                }
             }).collect(Collectors.toList());
             //封装返回页面数据
             RecodeBean recodeBean = new RecodeBean();
@@ -241,9 +250,12 @@ public class Process_ProcessCtrl extends BaseCtrl{
      * @param process
      */
     public void joinToProcess(DbResProcess process) {
+        long t = new Date().getTime();
         process.setStatus(StaticVariable.PROCESS_PENDING_STATUS);
         Map user = session.getUser();
-        process.setCreateBy(Long.parseLong(user.get("account").toString()));
+        Long accountId = Long.parseLong(user.get("account").toString());
+        process.setCreateAt(t);
+        process.setCreateBy(accountId);
         process.setActive("Y");
         //根据OrderNature查询flow,flow和nature一对一关系
         DbResFlow resFlow =repoFlow.findByFlowNature(process.getLogOrderNature());
@@ -255,6 +267,8 @@ public class Process_ProcessCtrl extends BaseCtrl{
             resProcessDtl.setStepId(resFlow.getResFlowStepList().get(i).getId());
             resProcessDtl.setStepNum(resFlow.getResFlowStepList().get(i).getStepNum());
             resProcessDtl.setRoleId(resFlow.getResFlowStepList().get(i).getRoleId());
+            resProcessDtl.setCreateAt(t);
+            resProcessDtl.setCreateBy(accountId);
             //审批流初始化数据StepNum1默认PENDING,其他StepNum默认WAITING
             if(resFlow.getResFlowStepList().get(i).getStepNum().equals("1")) {
                 resProcessDtl.setStatus(StaticVariable.PROCESS_PENDING_STATUS);

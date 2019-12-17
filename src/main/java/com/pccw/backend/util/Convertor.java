@@ -92,8 +92,8 @@ import com.pccw.backend.bean.BaseSearchBean;
 							list.add(builder.greaterThanOrEqualTo(root.get(parm.getName()).as(String.class),parm.getValue().toString()));
 						break;
 						 case BETWEEN:
-						Long[] arr = (Long[])parm.getValue();
-						list.add(builder.between(root.get(parm.getName()).as(Long.class),arr[0],arr[1]));
+						String[] arr = (String[])parm.getValue();
+						list.add(builder.between(root.get(parm.getName()).as(String.class),arr[0],arr[1]));
 						break;
 						default:
 							break;

@@ -87,7 +87,6 @@ public class Stock_ReplenishmentCtrl extends BaseCtrl<DbResLogRepl> {
                     dtl.setDtlSubin(StaticVariable.DTLSUBIN_GOOD);
                     dtl.setLisStatus(StaticVariable.LISSTATUS_WAITING);
                     dtl.setStatus(StaticVariable.STATUS_AVAILABLE);
-
                     //插入表res_sku_repo 添加或修改qty(工作流加入后 需要process的status为approve状态时再入库sku_repo)
                     /*DbResSkuRepo skuShop = rsRepo.findQtyByRepoAndShopAndType(b.getRepoIdTo(), dtl.getDtlSkuId(), 3l);
                     if(!Objects.isNull(skuShop)){
@@ -112,15 +111,15 @@ public class Stock_ReplenishmentCtrl extends BaseCtrl<DbResLogRepl> {
             repo.saveAndFlush(repl);
 
                 //创建工作流对象
-//                DbResProcess process = new DbResProcess();
-//                process.setLogTxtBum(b.getLogTxtBum());
-//                process.setRepoId(b.getLogRepoIn());
-//                process.setRemark(b.getRemark());
-//                process.setCreateAt(t);
-//                process.setUpdateAt(t);
-//                process.setLogOrderNature(b.getLogOrderNature());
-//                //生成工作流数据
-//                processProcessCtrl.joinToProcess(process);
+                DbResProcess process = new DbResProcess();
+                process.setLogTxtBum(b.getLogTxtBum());
+                process.setRepoId(b.getLogRepoIn());
+                process.setRemark(b.getRemark());
+                process.setCreateAt(t);
+                process.setUpdateAt(t);
+                process.setLogOrderNature(b.getLogOrderNature());
+                //生成工作流数据
+                processProcessCtrl.joinToProcess(process);
 
             return JsonResult.success(Arrays.asList());
         } catch (Exception e) {

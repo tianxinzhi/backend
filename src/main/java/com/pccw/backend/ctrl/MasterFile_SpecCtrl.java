@@ -6,7 +6,9 @@ import com.pccw.backend.bean.JsonResult;
 import com.pccw.backend.bean.masterfile_spec.CreateBean;
 import com.pccw.backend.bean.masterfile_spec.EditBean;
 import com.pccw.backend.bean.masterfile_spec.SearchBean;
+import com.pccw.backend.cusinterface.ICheck;
 import com.pccw.backend.entity.DbResSpec;
+import com.pccw.backend.repository.BaseRepository;
 import com.pccw.backend.repository.ResSpecRepository;
 import com.pccw.backend.util.Convertor;
 import io.swagger.annotations.Api;
@@ -30,7 +32,7 @@ import java.util.*;
 @CrossOrigin(methods = RequestMethod.POST,origins = "*", allowCredentials = "false")
 @RequestMapping("/masterfile_spec")
 @Api(value="MasterFile_SpecCtrl",tags={"masterfile_spec"})
-public class MasterFile_SpecCtrl extends BaseCtrl<DbResSpec> {
+public class MasterFile_SpecCtrl extends BaseCtrl<DbResSpec> implements ICheck {
 
     @Autowired
     ResSpecRepository repo;
@@ -158,5 +160,15 @@ public class MasterFile_SpecCtrl extends BaseCtrl<DbResSpec> {
         }
     }
 
+    @ApiOperation(value="禁用spec",tags={"masterfile_spec"},notes="注意问题点")
+    @RequestMapping(method = RequestMethod.POST,value = "/disable")
+    public JsonResult disable(@RequestBody BaseDeleteBean ids) {
+        return this.disable(repo,ids,MasterFile_SpecCtrl.class);
+    }
 
+
+    @Override
+    public long checkCanDisable(Object obj, BaseRepository... check) {
+        return 0;
+    }
 }

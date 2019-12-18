@@ -9,6 +9,9 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotNull;
+import java.util.List;
+
 /**
  * SearchCondition
  */
@@ -16,7 +19,7 @@ import lombok.NoArgsConstructor;
  @Data
 @NoArgsConstructor
  @ApiModel(value = "Process 模块 - SearchBean", description = "")
-public class SearchBean extends BaseSearchBean {
+public class SearchBean {
 
     @PredicateAnnotation(type = PredicateType.LIKE)
     @ApiModelProperty(value="状态",name="status",example="")
@@ -30,8 +33,19 @@ public class SearchBean extends BaseSearchBean {
     @ApiModelProperty(value="商店Id",name="repoId",example="")
     private Long repoId;
 
-//    @PredicateAnnotation(type = PredicateType.BETWEEN)
-//    @ApiModelProperty(value="日期",name="creatAt",example="")
-//    private List createAtRange;
+    @PredicateAnnotation(type = PredicateType.BETWEEN)
+    @ApiModelProperty(value="时间范围",name="creatAt",example="")
+    private String[] createAt;
+
+    @NotNull
+    private Integer pageIndex=0;
+    @NotNull
+    private Integer pageSize=10;
+//    private long createAt;
+    private long createBy;
+    private long updateAt;
+    private long updateBy;
+    private String active;
+
     
 }

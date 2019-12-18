@@ -42,6 +42,8 @@ public class Stock_AdjustmentCtrl extends BaseCtrl<DbResLogMgt> {
     ResAdjustReasonRepository reasonRepository;
     @Autowired
     ResStockTypeRepository stockTypeRepository;
+    @Autowired
+    Process_ProcessCtrl processProcessCtrl;
 
     @ApiOperation(value="调货",tags={"stock_adjustment"},notes="说明")
     @RequestMapping("/confirm")
@@ -103,16 +105,46 @@ public class Stock_AdjustmentCtrl extends BaseCtrl<DbResLogMgt> {
                     mgtDtl.setStatus(status);
                 }
                 lstMgtDtl.add(mgtDtl);
-                int res = skuRepoRepository.updateQtyByRepoAndShopAndTypeAndQty(bean.getLogRepoOut(),dtl.getDtlSkuId(),dtl.getCatalog(),dtl.getDtlQty());
-                if(res<=0) return JsonResult.fail(new Exception());
             }
 
             ent.setLine(lstMgtDtl);
             logMgtRepository.saveAndFlush(ent);
-
+            //生成工作流数据
+            DbResProcess process = new DbResProcess();
+            process.setLogTxtBum(bean.getTransactionNumber());
+            process.setRepoId(bean.getLogRepoIn());
+            process.setRemark(bean.getRemark());
+            process.setCreateAt(System.currentTimeMillis());
+            process.setUpdateAt(System.currentTimeMillis());
+            process.setLogOrderNature(StaticVariable.LOGORDERNATURE_STOCK_TAKE_ADJUSTMENT);
+            processProcessCtrl.joinToProcess(process);
             return JsonResult.success(Arrays.asList());
         } catch (BeansException e) {
             return JsonResult.fail(e);
+        }
+    }
+
+    public void UpdateSkuRepoQty(String logTxtBum) {
+        DbResLogMgt bean = logMgtRepository.findDbResLogMgtByLogTxtBum(logTxtBum);
+        for(DbResLogMgtDtl dtl:bean.getLine()) {
+            int stockType = 0;
+            switch (dtl.getDtlSubin()) {
+                case StaticVariable.DTLSUBIN_DEMO:
+                    stockType = 1;break;
+                case StaticVariable.DTLSUBIN_FAULTY:
+                    stockType = 2;break;
+                case StaticVariable.DTLSUBIN_AVAILABLE:
+                    stockType = 3;break;
+                case StaticVariable.DTLSUBIN_RESERVED:
+                    stockType = 4;break;
+                case StaticVariable.DTLSUBIN_INTRANSIT:
+                    stockType = 5;break;
+                case StaticVariable.DTLSUBIN_RESERVED_WITH_AO:
+                    stockType = 6;break;
+                case StaticVariable.DTLSUBIN_RESERVED_WITH_REMOTE:
+                    stockType = 7;break;
+            }
+           skuRepoRepository.updateQtyByRepoAndShopAndTypeAndQty(bean.getLogRepoOut(),dtl.getDtlSkuId(),stockType,dtl.getDtlQty());
         }
     }
 

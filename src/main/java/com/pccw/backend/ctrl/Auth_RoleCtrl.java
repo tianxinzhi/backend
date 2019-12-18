@@ -5,11 +5,12 @@ import java.util.*;
 import com.pccw.backend.bean.auth_role.*;
 import com.pccw.backend.bean.BaseDeleteBean;
 import com.pccw.backend.bean.JsonResult;
+import com.pccw.backend.cusinterface.ICheck;
+import com.pccw.backend.entity.DbResAccountRole;
 import com.pccw.backend.entity.DbResRight;
 import com.pccw.backend.entity.DbResRole;
 import com.pccw.backend.entity.DbResRoleRight;
-import com.pccw.backend.repository.ResRightRepository;
-import com.pccw.backend.repository.ResRoleRepository;
+import com.pccw.backend.repository.*;
 import com.pccw.backend.util.Convertor;
 
 import org.springframework.beans.BeanUtils;
@@ -36,13 +37,16 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/auth_role")
 @CrossOrigin(methods = RequestMethod.POST,origins = "*", allowCredentials = "false")
 @Api(value="AuthRoleCtrl",tags={"auth_role"})
-public class Auth_RoleCtrl extends BaseCtrl<DbResRole>{
+public class Auth_RoleCtrl extends BaseCtrl<DbResRole> implements ICheck {
 
     @Autowired
     ResRoleRepository repo;
 
     @Autowired
     ResRightRepository repoRight;
+
+    @Autowired
+    ResAccountRoleRepository accountRoleRepository;
 
     @RequestMapping(method = RequestMethod.POST,path="/search")
     @ApiOperation(value="搜索角色",tags={"auth_role"},notes="注意问题点")
@@ -97,6 +101,8 @@ public class Auth_RoleCtrl extends BaseCtrl<DbResRole>{
             b.setCreateAt(t);
             b.setActive("Y");
             b.setUpdateAt(t);
+            b.setCreateBy(getAccount());
+            b.setUpdateBy(getAccount());
             DbResRole role =new DbResRole();
             BeanUtils.copyProperties(b,role);
             List<DbResRoleRight> roleRightList = new LinkedList<>();
@@ -106,6 +112,8 @@ public class Auth_RoleCtrl extends BaseCtrl<DbResRole>{
                 roleRight.setActive("Y");
                 roleRight.setCreateAt(System.currentTimeMillis());
                 roleRight.setUpdateAt(System.currentTimeMillis());
+                roleRight.setCreateBy(getAccount());
+                roleRight.setUpdateBy(getAccount());
                 roleRightList.add(roleRight);
             }
             role.setResRoleRightList(roleRightList);
@@ -127,6 +135,7 @@ public class Auth_RoleCtrl extends BaseCtrl<DbResRole>{
             role.setRoleDesc(b.getRoleDesc());
             role.setRoleName(b.getRoleName());
             role.setUpdateAt(System.currentTimeMillis());
+            role.setUpdateBy(getAccount());
             List<DbResRoleRight> roleRightList = role.getResRoleRightList();
             roleRightList.clear();
             for(String valueId:b.getRightId()){
@@ -134,7 +143,10 @@ public class Auth_RoleCtrl extends BaseCtrl<DbResRole>{
                 roleRight.setRightId(Long.parseLong(valueId));
                 roleRight.setRoleId(role.getId());
                 roleRight.setActive("Y");
+                roleRight.setCreateAt(System.currentTimeMillis());
                 roleRight.setUpdateAt(System.currentTimeMillis());
+                roleRight.setCreateBy(getAccount());
+                roleRight.setUpdateBy(getAccount());
                 roleRightList.add(roleRight);
             }
             role.setResRoleRightList(roleRightList);
@@ -146,5 +158,23 @@ public class Auth_RoleCtrl extends BaseCtrl<DbResRole>{
             return JsonResult.fail(e);
         }
     }
-    
+
+    @ApiOperation(value="禁用auth_role",tags={"auth_role"},notes="注意问题点")
+    @RequestMapping(method = RequestMethod.POST,value = "/disable")
+    public JsonResult disable(@RequestBody BaseDeleteBean ids) {
+        return this.disable(repo,ids,Auth_RoleCtrl.class,accountRoleRepository);
+    }
+
+    @Override
+    public long checkCanDisable(Object obj, BaseRepository... check) {
+        ResAccountRoleRepository tRepo = (ResAccountRoleRepository)check[0];
+        BaseDeleteBean bean = (BaseDeleteBean)obj;
+        for (Long id : bean.getIds()) {
+            List<DbResAccountRole> accountRoles = tRepo.getDbResAccountRolesByRoleId(id);
+            if ( accountRoles != null && accountRoles.size()>0 ) {
+                return id;
+            }
+        }
+        return 0;
+    }
 }

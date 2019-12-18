@@ -112,7 +112,7 @@ public class Stock_AdjustmentCtrl extends BaseCtrl<DbResLogMgt> {
             //生成工作流数据
             DbResProcess process = new DbResProcess();
             process.setLogTxtBum(bean.getTransactionNumber());
-            process.setRepoId(bean.getLogRepoIn());
+            process.setRepoId(bean.getLogRepoOut());
             process.setRemark(bean.getRemark());
             process.setCreateAt(System.currentTimeMillis());
             process.setUpdateAt(System.currentTimeMillis());

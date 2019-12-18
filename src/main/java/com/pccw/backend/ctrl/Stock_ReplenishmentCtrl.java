@@ -113,7 +113,7 @@ public class Stock_ReplenishmentCtrl extends BaseCtrl<DbResLogRepl> {
                 //创建工作流对象
                 DbResProcess process = new DbResProcess();
                 process.setLogTxtBum(b.getLogTxtBum());
-                process.setRepoId(b.getLogRepoIn());
+                process.setRepoId(b.getRepoIdTo());
                 process.setRemark(b.getRemark());
                 process.setCreateAt(t);
                 process.setUpdateAt(t);

@@ -70,7 +70,7 @@ public class Process_ProcessCtrl extends BaseCtrl{
                           b.getProcessDtls().get(j).setUpdateAt(accountId);
                           b.getProcessDtls().get(j).setActive("Y");
                           b.getProcessDtls().get(j).setRemark(b.getSteps().get(i).getRemark());
-                          b.getProcessDtls().get(j).setStatus(b.getSteps().get(i).getTitle());
+                          b.getProcessDtls().get(j).setStatus(b.getSteps().get(i).getStatus());
                     }
                 }
             }
@@ -230,9 +230,9 @@ public class Process_ProcessCtrl extends BaseCtrl{
                 String accountName = this.getAccountName(item.getUpdateBy());
                 //已审批的desc 显示审批意见，未操作数据显示roleName
                 if(item.getStatus().equals(StaticVariable.PROCESS_APPROVED_STATUS)||item.getStatus().equals(StaticVariable.PROCESS_REJECTED_STATUS)){
-                    return new Step(accountName, item.getRemark(), getStepActive(item.getStatus()), item.getStepNum(),item.getId(),item.getRemark());
+                    return new Step(accountName, item.getRemark(), getStepActive(item.getStatus()), item.getStepNum(),item.getId(),item.getRemark(),item.getStatus());
                 }else {
-                     return new Step(roleName, "", getStepActive(item.getStatus()), item.getStepNum(),item.getId(),item.getRemark());
+                     return new Step(roleName, "", getStepActive(item.getStatus()), item.getStepNum(),item.getId(),item.getRemark(),item.getStatus());
                 }
             }).collect(Collectors.toList());
             //封装返回页面数据

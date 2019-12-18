@@ -105,8 +105,6 @@ public class Stock_AdjustmentCtrl extends BaseCtrl<DbResLogMgt> {
                     mgtDtl.setStatus(status);
                 }
                 lstMgtDtl.add(mgtDtl);
-                int res = skuRepoRepository.updateQtyByRepoAndShopAndTypeAndQty(bean.getLogRepoOut(),dtl.getDtlSkuId(),dtl.getCatalog(),dtl.getDtlQty());
-                if(res<=0) return JsonResult.fail(new Exception());
             }
 
             ent.setLine(lstMgtDtl);
@@ -129,7 +127,24 @@ public class Stock_AdjustmentCtrl extends BaseCtrl<DbResLogMgt> {
     public void UpdateSkuRepoQty(String logTxtBum) {
         DbResLogMgt bean = logMgtRepository.findDbResLogMgtByLogTxtBum(logTxtBum);
         for(DbResLogMgtDtl dtl:bean.getLine()) {
-            skuRepoRepository.updateQtyByRepoAndShopAndTypeAndQty(bean.getLogRepoOut(),dtl.getDtlSkuId(),dtl.getDtlRepoId(),dtl.getDtlQty());
+            int stockType = 0;
+            switch (dtl.getDtlSubin()) {
+                case StaticVariable.DTLSUBIN_DEMO:
+                    stockType = 1;break;
+                case StaticVariable.DTLSUBIN_FAULTY:
+                    stockType = 2;break;
+                case StaticVariable.DTLSUBIN_AVAILABLE:
+                    stockType = 3;break;
+                case StaticVariable.DTLSUBIN_RESERVED:
+                    stockType = 4;break;
+                case StaticVariable.DTLSUBIN_INTRANSIT:
+                    stockType = 5;break;
+                case StaticVariable.DTLSUBIN_RESERVED_WITH_AO:
+                    stockType = 6;break;
+                case StaticVariable.DTLSUBIN_RESERVED_WITH_REMOTE:
+                    stockType = 7;break;
+            }
+           skuRepoRepository.updateQtyByRepoAndShopAndTypeAndQty(bean.getLogRepoOut(),dtl.getDtlSkuId(),stockType,dtl.getDtlQty());
         }
     }
 

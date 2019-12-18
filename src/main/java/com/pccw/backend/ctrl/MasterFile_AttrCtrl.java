@@ -94,7 +94,7 @@ public class MasterFile_AttrCtrl extends BaseCtrl<DbResAttr> implements ICheck {
             resAttr.setAttrDesc(b.getAttrDesc());
             resAttr.setAttrName(b.getAttrName());
             resAttr.setUpdateAt(System.currentTimeMillis());
-            resAttr.setCreateBy(getAccount());
+            //resAttr.setCreateBy(getAccount());
             resAttr.setUpdateBy(getAccount());
             List<DbResAttrAttrValue> attrAttrValueList = resAttr.getAttrAttrValueList();
             attrAttrValueList.clear();

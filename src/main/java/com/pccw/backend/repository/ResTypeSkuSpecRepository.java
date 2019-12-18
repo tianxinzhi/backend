@@ -12,4 +12,6 @@ public interface ResTypeSkuSpecRepository extends BaseRepository<DbResTypeSkuSpe
    /* @Query(value = "select * from RES_TYPE t,RES_SPEC s where t.active =s.SPEC_ID"
             ,nativeQuery =true )  //t.active qqq, s.SPEC_NAME www
     List<DbResTypeSkuSpec> findTest();*/
+
+   List<DbResTypeSkuSpec> getDbResTypeSkuSpecsBySpecId(long specId);
 }

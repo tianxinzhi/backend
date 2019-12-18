@@ -6,6 +6,7 @@ import java.util.*;
 import com.pccw.backend.bean.*;
 import com.pccw.backend.cusinterface.ICheck;
 import com.pccw.backend.entity.Base;
+import com.pccw.backend.entity.DbResAccount;
 import com.pccw.backend.entity.DbResAttrAttrValue;
 import com.pccw.backend.entity.DbResAttrValue;
 import com.pccw.backend.exception.BaseException;
@@ -133,7 +134,15 @@ public class BaseCtrl<T>{
     }
 
     String getAccountName(long account) {
-        return account==0?"System":accountRepository.findDbResAccountById(account).getAccountName();
+        String name = "";
+        if(account==0){
+            name = "System";
+        }
+        DbResAccount accountName = accountRepository.findDbResAccountById(account);
+        if(accountName != null){
+            name = accountName.getAccountName();
+        }
+        return name;
     }
 
 }

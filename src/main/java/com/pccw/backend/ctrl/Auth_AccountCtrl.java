@@ -48,7 +48,8 @@ public class Auth_AccountCtrl extends BaseCtrl<DbResAccount> {
                 accountRole.setActive("Y");
                 accountRole.setCreateAt(System.currentTimeMillis());
                 accountRole.setUpdateAt(System.currentTimeMillis());
-
+                accountRole.setCreateBy(getAccount());
+                accountRole.setUpdateBy(getAccount());
                 accountRoles.add(accountRole);
             }
             BeanUtils.copyProperties(bean,account);
@@ -85,14 +86,15 @@ public class Auth_AccountCtrl extends BaseCtrl<DbResAccount> {
                 accountRole.setActive("Y");
                 accountRole.setCreateAt(System.currentTimeMillis());
                 accountRole.setUpdateAt(System.currentTimeMillis());
-
+                accountRole.setCreateBy(getAccount());
+                accountRole.setUpdateBy(getAccount());
                 accountRoles.add(accountRole);
             }
             BeanUtils.copyProperties(b,account);
             account.setActive("Y");
-            account.setCreateAt(System.currentTimeMillis());
+            //account.setCreateAt(System.currentTimeMillis());
             account.setUpdateAt(System.currentTimeMillis());
-            account.setUpdateAt(this.getAccount());
+            account.setUpdateBy(this.getAccount());
             repo.saveAndFlush(account);
             return JsonResult.success(Arrays.asList());
         } catch (BeansException e) {

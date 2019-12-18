@@ -47,6 +47,9 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> implements ICheck {
     @Autowired
     ResStockTypeRepository stockTypeRepository;
 
+    @Autowired
+    ResSkuRepoRepository skuRepoRepository;
+
     @ApiOperation(value="创建sku",tags={"masterfile_sku"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST,value = "/create")
     public JsonResult create(@RequestBody CreateBean bean) {
@@ -138,15 +141,15 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> implements ICheck {
             sku.setSkuName(bean.getSkuName());
             sku.setSkuDesc(bean.getSkuDesc());
             sku.setUpdateAt(System.currentTimeMillis());
-            sku.setCreateBy(getAccount());
+            //sku.setCreateBy(getAccount());
             sku.setUpdateBy(getAccount());
             sku.setSkuOrigin(StaticVariable.SKU_ORIGIN_FROM_WITHPO);
             List<DbResSkuAttrValue> skuAttrValueList = sku.getSkuAttrValueList();
             List<DbResSkuType> skuTypeList = sku.getSkuTypeList();
-            List<DbResSkuRepo> skuRepoList = sku.getSkuRepoList();
+            //List<DbResSkuRepo> skuRepoList = sku.getSkuRepoList();
             skuAttrValueList.clear();
             skuTypeList.clear();
-            skuRepoList.clear();
+            //skuRepoList.clear();
 
             DbResSkuType skuType = new DbResSkuType();
             skuType.setSku(sku);
@@ -383,11 +386,21 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> implements ICheck {
     @ApiOperation(value="禁用sku",tags={"masterfile_sku"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST,value = "/disable")
     public JsonResult disable(@RequestBody BaseDeleteBean ids) {
-        return this.disable(skuRepo,ids,MasterFile_SkuCtrl.class);
+        return this.disable(skuRepo,ids,MasterFile_SkuCtrl.class,skuRepoRepository);
     }
 
     @Override
     public long checkCanDisable(Object obj, BaseRepository... check) {
+        ResSkuRepoRepository tRepo = (ResSkuRepoRepository)check[0];
+        BaseDeleteBean bean = (BaseDeleteBean)obj;
+        for (Long id : bean.getIds()) {
+            DbResSku sku = new DbResSku();
+            sku.setId(id);
+            List<DbResSkuRepo> skuRepos = tRepo.getDbResSkuReposBySku(sku);
+            if ( skuRepos != null && skuRepos.size()>0 ) {
+                return id;
+            }
+        }
         return 0;
     }
 }

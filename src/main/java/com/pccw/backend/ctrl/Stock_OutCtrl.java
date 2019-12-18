@@ -104,12 +104,16 @@ public class Stock_OutCtrl  extends BaseCtrl<DbResLogMgt> {
 
     //审批流完成后更新sku_repo
     public void UpdateSkuRepoQty(String logTxtNum) {
-        DbResLogMgt  b =repo.findDbResLogMgtByLogTxtBum(logTxtNum);
-        for(int i=0;i<b.getLine().size();i++) {
-            if (b.getLine().get(i).getDtlAction().equals("D")) {
-                System.out.println(-b.getLine().get(i).getDtlQty());
-                int res = skuRepoRepository.updateQtyByRepoAndShopAndTypeAndQty(b.getLogRepoOut(),b.getLine().get(i).getDtlSkuId(),3,-b.getLine().get(i).getDtlQty());
+        try {
+            DbResLogMgt  b =repo.findDbResLogMgtByLogTxtBum(logTxtNum);
+            for(int i=0;i<b.getLine().size();i++) {
+                if (b.getLine().get(i).getDtlAction().equals("D")) {
+                    System.out.println(-b.getLine().get(i).getDtlQty());
+                    int res = skuRepoRepository.updateQtyByRepoAndShopAndTypeAndQty(b.getLogRepoOut(),b.getLine().get(i).getDtlSkuId(),3,-b.getLine().get(i).getDtlQty());
+                }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

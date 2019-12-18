@@ -16,6 +16,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -49,6 +50,9 @@ public class Process_ProcessCtrl extends BaseCtrl{
     @Autowired
     Stock_InCtrl inCtrl;
 
+    @Autowired
+    Stock_AdjustmentCtrl adjCtrl;
+
     @ApiOperation(value="process",tags={"process"},notes="说明")
     @RequestMapping(method = RequestMethod.POST,path="/edit")
     public JsonResult edit(@RequestBody EditBean b){
@@ -78,39 +82,25 @@ public class Process_ProcessCtrl extends BaseCtrl{
             JsonResult result = this.edit(processRepository, DbResProcess.class, b);
 
             //审批流程修改成功，且最后一步审批通过，将log信息存入skuRepo表
-//            if(b.getStatusPro().equals(StaticVariable.PROCESS_APPROVED_STATUS) && result.getCode().equals("000")){
-//                //根据LogOrderNature判断从哪个ctrl更新数据
-//                if(b.getLogOrderNature().equals(StaticVariable.LOGORDERNATURE_STOCK_OUT_STS)||b.getLogOrderNature().equals(StaticVariable.LOGORDERNATURE_STOCK_OUT_STW)){
-//                    outCtrl.UpdateSkuRepoQty(b.getLogTxtBum());
-//                }else if(b.getLogOrderNature().equals(StaticVariable.LOGORDERNATURE_STOCK_IN_STS)||b.getLogOrderNature().equals(StaticVariable.LOGORDERNATURE_STOCK_IN_WITHOUT_PO_STW)){
-//                    inCtrl.UpdateSkuRepoQty(b.getLogTxtBum());
-//                }else if(b.getLogOrderNature().equals(StaticVariable.LOGORDERNATURE_STOCK_IN_FROM_WAREHOUSE)){
-//                    inCtrl.UpdateSkuRepoQty(b.getLogTxtBum());
-//                } else if(b.getLogOrderNature().equals(StaticVariable.LOGORDERNATURE_STOCK_TAKE_ADJUSTMENT)){
-//                    inCtrl.UpdateSkuRepoQty(b.getLogTxtBum());
-//                }else if(b.getLogOrderNature().equals(StaticVariable.LOGORDERNATURE_REPLENISHMENT_REQUEST)){
-//                    inCtrl.UpdateSkuRepoQty(b.getLogTxtBum());
-//                }
-//            }
-            //改
-            String stockCtrl = new String();
             if(b.getStatusPro().equals(StaticVariable.PROCESS_APPROVED_STATUS) && result.getCode().equals("000")){
                 //根据LogOrderNature判断从哪个ctrl更新数据
                 if(b.getLogOrderNature().equals(StaticVariable.LOGORDERNATURE_STOCK_OUT_STS)||b.getLogOrderNature().equals(StaticVariable.LOGORDERNATURE_STOCK_OUT_STW)){
-                    stockCtrl="com.pccw.backend.ctrl.Stock_OutCtrl";
+                    outCtrl.UpdateSkuRepoQty(b.getLogTxtBum());
                 }else if(b.getLogOrderNature().equals(StaticVariable.LOGORDERNATURE_STOCK_IN_STS)||b.getLogOrderNature().equals(StaticVariable.LOGORDERNATURE_STOCK_IN_WITHOUT_PO_STW)){
                     inCtrl.UpdateSkuRepoQty(b.getLogTxtBum());
                 }else if(b.getLogOrderNature().equals(StaticVariable.LOGORDERNATURE_STOCK_IN_FROM_WAREHOUSE)){
                     inCtrl.UpdateSkuRepoQty(b.getLogTxtBum());
                 } else if(b.getLogOrderNature().equals(StaticVariable.LOGORDERNATURE_STOCK_TAKE_ADJUSTMENT)){
-                    inCtrl.UpdateSkuRepoQty(b.getLogTxtBum());
+                    adjCtrl.UpdateSkuRepoQty(b.getLogTxtBum());
                 }else if(b.getLogOrderNature().equals(StaticVariable.LOGORDERNATURE_REPLENISHMENT_REQUEST)){
                     inCtrl.UpdateSkuRepoQty(b.getLogTxtBum());
                 }
             }
-            //改
-
-
+//            String stockCtrl = new String();
+//            Class<?> stockClass = Class.forName(stockCtrl);
+//            Method stockMethod = stockClass.getMethod("UpdateSkuRepoQty",String.class);
+//            Object stockObject = stockClass.newInstance();
+//            stockMethod.invoke(stockObject,b.getLogTxtBum());
             return result;
         } catch (Exception e) {
             log.info(e.getMessage());

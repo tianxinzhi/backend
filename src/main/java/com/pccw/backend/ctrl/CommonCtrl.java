@@ -55,6 +55,8 @@ public class CommonCtrl  extends GeneralCtrl{
     @Autowired
     ResRoleRepository roleRepository;
     @Autowired
+    ResFlowRepository  flowRepository;
+    @Autowired
     ResStockTypeRepository stockTypeRepository;
     @Autowired
     ResAccountRepository accountRepository;
@@ -146,6 +148,12 @@ public class CommonCtrl  extends GeneralCtrl{
     @RequestMapping(method = RequestMethod.GET,path="/roleModule")
     public JsonResult<LabelAndValue> searchRole(){
         return this.JsonResultHandle(roleRepository,new LabelAndValue());
+    }
+
+    @ApiOperation(value="获取res_flow表的Nature和id信息",tags={"common"},notes="注意问题点")
+    @RequestMapping(method = RequestMethod.GET,path="/flowModule")
+    public JsonResult<LabelAndValue> searchFlowNature(){
+        return this.JsonResultHandle(flowRepository,new LabelAndValue());
     }
 
     @ApiOperation(value="获取res_stock_type表的stockTypeName和id信息",tags={"common"},notes="注意问题点")

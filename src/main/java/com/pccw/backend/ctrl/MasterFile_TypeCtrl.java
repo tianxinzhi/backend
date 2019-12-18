@@ -46,10 +46,6 @@ public class MasterFile_TypeCtrl extends BaseCtrl<DbResType> implements ICheck {
     ResClassTypeRepository resClassTypeRepository;
     @Autowired
     ResSpecRepository resSpecRepository;
-    @Autowired
-    ResAccountRepository resAccountRepository;
-    @Autowired
-    CommonCtrl commonCtrl;
 
     @ApiOperation(value="搜索type",tags={"masterfile_type"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST, path = "/search")
@@ -82,8 +78,8 @@ public class MasterFile_TypeCtrl extends BaseCtrl<DbResType> implements ICheck {
                         if(!StringUtils.isEmpty(classNames)){
                             classNames = classNames.substring(0,classNames.length()-1);
                         }
-                        searchBean.setCreateAccountName(type.getCreateBy() == 0 ? "system":resAccountRepository.findById(type.getCreateBy()).get().getAccountName());
-                        searchBean.setUpdateAccountName(type.getUpdateBy() == 0 ? "system":resAccountRepository.findById(type.getUpdateBy()).get().getAccountName());
+                        searchBean.setCreateAccountName(getAccountName(type.getCreateBy()));
+                        searchBean.setUpdateAccountName(getAccountName(type.getUpdateBy()));
                         searchBean.setClassName(classNames);
                         searchBean.setClassId(classIds);
                     }
@@ -241,11 +237,19 @@ public class MasterFile_TypeCtrl extends BaseCtrl<DbResType> implements ICheck {
     @ApiOperation(value="禁用type",tags={"masterfile_type"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST,value = "/disable")
     public JsonResult disable(@RequestBody BaseDeleteBean ids) {
-        return this.disable(repo,ids,MasterFile_TypeCtrl.class);
+        return this.disable(repo,ids,MasterFile_TypeCtrl.class,repo);
     }
 
     @Override
     public long checkCanDisable(Object obj, BaseRepository... check) {
+        ResTypeRepository repo = (ResTypeRepository)check[0];
+        BaseDeleteBean bean = (BaseDeleteBean)obj;
+        for(Long id:bean.getIds()) {
+            List typeSkuList = repo.searchTypeInSku(id);
+            if (typeSkuList != null && typeSkuList.size() > 0) {
+                return id;
+            }
+        }
         return 0;
     }
 }

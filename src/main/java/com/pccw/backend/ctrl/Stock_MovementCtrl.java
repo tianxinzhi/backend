@@ -36,11 +36,7 @@ public class Stock_MovementCtrl extends BaseCtrl<DbResProcess> {
     @Autowired
     ResProcessRepository processRepo;
     @Autowired
-    ResAccountRepository accountRepo;
-    @Autowired
     ResRepoRepository repoRepo;
-    @Autowired
-    CommonCtrl commonCtrl;
 
     @ApiOperation(value="搜索Stock_Movement",tags={"stock_movement"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST, path = "/search")
@@ -74,8 +70,7 @@ public class Stock_MovementCtrl extends BaseCtrl<DbResProcess> {
             res.forEach(p-> {
                 Map map = JSON.parseObject(JSON.toJSONString(p), Map.class);
                 map.put("repoName",repoRepo.findById(p.getRepoId()).get().getRepoName());
-                String createAccountName = p.getCreateBy() == 0 ? "system":accountRepo.findById(p.getCreateBy()).get().getAccountName();
-                map.put("createAccountName",createAccountName);
+                map.put("createAccountName",getAccountName(p.getCreateBy()));
                 list.add(map);
             });
             return JsonResult.success(list);

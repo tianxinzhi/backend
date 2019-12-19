@@ -10,4 +10,5 @@ public interface ResSkuTypeRepository extends BaseRepository<DbResSkuType> {
   DbResSkuType findBySkuAndTypeId(DbResSku sku, long typeId);
 
     DbResSkuType findBySku(DbResSku sku);
+
 }

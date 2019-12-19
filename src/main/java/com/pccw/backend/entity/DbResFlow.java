@@ -6,6 +6,7 @@ import java.util.List;
 import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.pccw.backend.annotation.JsonResultParamHandle;
 import lombok.Data;
 
 /**
@@ -16,6 +17,7 @@ import lombok.Data;
  @Data
  @Table(name = "res_flow")
  @SequenceGenerator(name="id_flow",sequenceName = "flow_seq",allocationSize = 1)
+ @JsonResultParamHandle(param1 = "id",param2 = "flowNature")
 public class DbResFlow extends Base{
     @Id
     @Column(name = "id")

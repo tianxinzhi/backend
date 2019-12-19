@@ -6,11 +6,13 @@ import com.pccw.backend.bean.masterfile_attr.CreateBean;
 import com.pccw.backend.bean.masterfile_attr.EditBean;
 import com.pccw.backend.bean.masterfile_attr.ResultBean;
 import com.pccw.backend.bean.masterfile_attr.SearchBean;
+import com.pccw.backend.cusinterface.ICheck;
 import com.pccw.backend.entity.DbResAttr;
 import com.pccw.backend.entity.DbResAttrAttrValue;
 import com.pccw.backend.entity.DbResAttrValue;
-import com.pccw.backend.repository.ResAttrRepository;
-import com.pccw.backend.repository.ResAttrValueRepository;
+import com.pccw.backend.entity.DbResSpecAttr;
+import com.pccw.backend.exception.BaseException;
+import com.pccw.backend.repository.*;
 import com.pccw.backend.util.Convertor;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -31,13 +33,16 @@ import java.util.List;
 @CrossOrigin(methods = RequestMethod.POST,origins = "*", allowCredentials = "false")
 @RequestMapping("masterfile_attr")
 @Api(value="MasterFile_AttrCtrl",tags={"masterfile_attr"})
-public class MasterFile_AttrCtrl extends BaseCtrl<DbResAttr> {
+public class MasterFile_AttrCtrl extends BaseCtrl<DbResAttr> implements ICheck {
 
     @Autowired
     ResAttrRepository repo;
 
     @Autowired
     ResAttrValueRepository valueRepo;
+
+    @Autowired
+    ResSpecAttrRepository specAttrRepository;
 
     @ApiOperation(value="创建attr",tags={"masterfile_attr"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST,value = "/create")
@@ -89,7 +94,7 @@ public class MasterFile_AttrCtrl extends BaseCtrl<DbResAttr> {
             resAttr.setAttrDesc(b.getAttrDesc());
             resAttr.setAttrName(b.getAttrName());
             resAttr.setUpdateAt(System.currentTimeMillis());
-            resAttr.setCreateBy(getAccount());
+            //resAttr.setCreateBy(getAccount());
             resAttr.setUpdateBy(getAccount());
             List<DbResAttrAttrValue> attrAttrValueList = resAttr.getAttrAttrValueList();
             attrAttrValueList.clear();
@@ -131,7 +136,7 @@ public class MasterFile_AttrCtrl extends BaseCtrl<DbResAttr> {
                 long[] attrValueIds = new long[resAttr.getAttrAttrValueList().size()];
                 for(int i=0;i<resAttr.getAttrAttrValueList().size();i++) {
                     DbResAttrValue attrValue = resAttr.getAttrAttrValueList().get(i).getAttrValue();
-                    attrValues[i] = attrValue.getAttrValue();
+                    attrValues[i] = attrValue.getAttrValue() != null ? attrValue.getAttrValue() : attrValue.getValueFrom()+"~"+attrValue.getValueTo();
                     attrValueIds[i] = attrValue.getId();
                 }
                 resultBean.setId(resAttr.getId());
@@ -173,5 +178,26 @@ public class MasterFile_AttrCtrl extends BaseCtrl<DbResAttr> {
         } catch (BeansException e) {
             return JsonResult.fail(e);
         }
+    }
+
+    @ApiOperation(value="禁用attr",tags={"masterfile_attr"},notes="注意问题点")
+    @RequestMapping(method = RequestMethod.POST,value = "/disable")
+    public JsonResult disable(@RequestBody BaseDeleteBean ids) {
+        return this.disable(repo,ids,MasterFile_AttrCtrl.class,specAttrRepository);
+    }
+
+    @Override
+    public long checkCanDisable(Object obj,BaseRepository... repo) {
+        ResSpecAttrRepository tRepo = (ResSpecAttrRepository)repo[0];
+        BaseDeleteBean bean = (BaseDeleteBean)obj;
+        for (Long id : bean.getIds()) {
+            DbResAttrValue attrValue = new DbResAttrValue();
+            attrValue.setId(id);
+            List<DbResSpecAttr> specAttrs = tRepo.findDbResSpecAttrsByAttrId(id+"");
+            if ( specAttrs != null && specAttrs.size()>0 ) {
+                return id;
+            }
+        }
+        return 0;
     }
 }

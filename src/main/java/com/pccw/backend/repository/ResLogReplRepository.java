@@ -1,5 +1,6 @@
 package com.pccw.backend.repository;
 
+import com.pccw.backend.entity.DbResLogMgt;
 import com.pccw.backend.entity.DbResLogRepl;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -25,4 +26,6 @@ public interface ResLogReplRepository extends BaseRepository<DbResLogRepl> {
             "and RLRD.STATUS IS NULL\n" +
             "and RLRD.DTL_ACTION IS NULL",nativeQuery = true)
     List<Map> getReplenishmentInfo(String bathcID,String dnNum);
+
+    DbResLogRepl findDbResLogReplByLogTxtBum(String logTxtBum);
 }

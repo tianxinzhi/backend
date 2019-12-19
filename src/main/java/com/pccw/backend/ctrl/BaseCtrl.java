@@ -4,9 +4,15 @@ package com.pccw.backend.ctrl;
 import java.util.*;
 
 import com.pccw.backend.bean.*;
+import com.pccw.backend.cusinterface.ICheck;
 import com.pccw.backend.entity.Base;
+import com.pccw.backend.entity.DbResAccount;
+import com.pccw.backend.entity.DbResAttrAttrValue;
+import com.pccw.backend.entity.DbResAttrValue;
+import com.pccw.backend.exception.BaseException;
 import com.pccw.backend.repository.BaseRepository;
 import com.pccw.backend.repository.ResAccountRepository;
+import com.pccw.backend.repository.ResAttrAttrValueRepository;
 import com.pccw.backend.util.Convertor;
 
 import com.pccw.backend.util.Session;
@@ -67,7 +73,6 @@ public class BaseCtrl<T>{
             b.setCreateAt(t);
             b.setUpdateAt(t);
             b.setActive("Y");
-           // Map user = session.getUser();
             b.setCreateBy(getAccount());
             b.setUpdateBy(getAccount());
             saveAndFlush(repo, cls, b);       
@@ -82,7 +87,6 @@ public class BaseCtrl<T>{
         try {
             b.setUpdateAt(new Date().getTime());
             b.setActive("Y");
-            //Map user = session.getUser();
             b.setUpdateBy(getAccount());
             saveAndFlush(repo, cls, b);
             return JsonResult.success(Arrays.asList());
@@ -102,12 +106,43 @@ public class BaseCtrl<T>{
         }
     }
 
+    public JsonResult disable(BaseRepository repo, BaseDeleteBean ids,Class<?> cl,BaseRepository... checks) {
+        try {
+
+            ICheck check = (ICheck) cl.newInstance();
+            long id = check.checkCanDisable(ids,checks);
+            if(id>0){
+                return JsonResult.fail(BaseException.getDataUsedException(id));
+            }
+            for (Long priKey : ids.getIds()) {
+                Base base = (Base)repo.findById(priKey).get();
+                base.setActive("N");
+                base.setUpdateAt(System.currentTimeMillis());
+                base.setUpdateBy(getAccount());
+                repo.saveAndFlush(base);
+            }
+            return JsonResult.success(Arrays.asList());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return JsonResult.fail(e);
+        }
+    }
+
     long getAccount() {
         Map user = session.getUser();
         return Long.parseLong(user.get("account").toString());
     }
 
     String getAccountName(long account) {
-        return account==0?"System":accountRepository.findDbResAccountById(account).getAccountName();
+        String name = "";
+        if(account==0){
+            name = "System";
+        }
+        DbResAccount accountName = accountRepository.findDbResAccountById(account);
+        if(accountName != null){
+            name = accountName.getAccountName();
+        }
+        return name;
     }
+
 }

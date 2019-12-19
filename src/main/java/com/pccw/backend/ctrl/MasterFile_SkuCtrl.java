@@ -8,15 +8,12 @@ import com.pccw.backend.bean.masterfile_sku.CreateBean;
 import com.pccw.backend.bean.masterfile_sku.EditBean;
 import com.pccw.backend.bean.masterfile_sku.SearchBean;
 import com.pccw.backend.bean.masterfile_sku.ResultBean;
+import com.pccw.backend.cusinterface.ICheck;
 import com.pccw.backend.entity.*;
-import com.pccw.backend.repository.ResAttrRepository;
-import com.pccw.backend.repository.ResSkuRepository;
-import com.pccw.backend.repository.ResSkuTypeRepository;
-import com.pccw.backend.repository.ResStockTypeRepository;
+import com.pccw.backend.repository.*;
 import com.pccw.backend.util.Convertor;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
@@ -26,9 +23,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.constraints.NotNull;
 import java.util.*;
-import java.util.stream.Stream;
 
 /**
  * @Author xiaozhi
@@ -38,7 +33,7 @@ import java.util.stream.Stream;
 @CrossOrigin(methods = RequestMethod.POST,origins = "*", allowCredentials = "false")
 @RequestMapping("masterfile_sku")
 @Api(value="MasterFile_SkuCtrl",tags={"masterfile_sku"})
-public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> {
+public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> implements ICheck {
 
     @Autowired
     ResSkuRepository skuRepo;
@@ -51,6 +46,9 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> {
 
     @Autowired
     ResStockTypeRepository stockTypeRepository;
+
+    @Autowired
+    ResSkuRepoRepository skuRepoRepository;
 
     @ApiOperation(value="创建sku",tags={"masterfile_sku"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST,value = "/create")
@@ -143,15 +141,15 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> {
             sku.setSkuName(bean.getSkuName());
             sku.setSkuDesc(bean.getSkuDesc());
             sku.setUpdateAt(System.currentTimeMillis());
-            sku.setCreateBy(getAccount());
+            //sku.setCreateBy(getAccount());
             sku.setUpdateBy(getAccount());
             sku.setSkuOrigin(StaticVariable.SKU_ORIGIN_FROM_WITHPO);
             List<DbResSkuAttrValue> skuAttrValueList = sku.getSkuAttrValueList();
             List<DbResSkuType> skuTypeList = sku.getSkuTypeList();
-            List<DbResSkuRepo> skuRepoList = sku.getSkuRepoList();
+            //List<DbResSkuRepo> skuRepoList = sku.getSkuRepoList();
             skuAttrValueList.clear();
             skuTypeList.clear();
-            skuRepoList.clear();
+            //skuRepoList.clear();
 
             DbResSkuType skuType = new DbResSkuType();
             skuType.setSku(sku);
@@ -222,9 +220,9 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> {
                 List<Map> tableDatas = new LinkedList<>();
                 if(typeResult.getData()!=null && typeResult.getData().size()>0) {
                     ResultBean resultBean = (ResultBean) typeResult.getData().get(0);
+                    BeanUtils.copyProperties(sku,resultBean);
                     resultBean.setCreateAccountName(getAccountName(sku.getCreateBy()));
                     resultBean.setUpdateAccountName(getAccountName(sku.getUpdateBy()));
-                    BeanUtils.copyProperties(sku,resultBean);
                     for (int i=0;i<resultBean.getAttrNames().length;i++) {
                         Map<String,Object> map = new HashMap<>();
                         map.put("attrName",resultBean.getAttrNames()[i]);
@@ -385,4 +383,24 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> {
         }
     }
 
+    @ApiOperation(value="禁用sku",tags={"masterfile_sku"},notes="注意问题点")
+    @RequestMapping(method = RequestMethod.POST,value = "/disable")
+    public JsonResult disable(@RequestBody BaseDeleteBean ids) {
+        return this.disable(skuRepo,ids,MasterFile_SkuCtrl.class,skuRepoRepository);
+    }
+
+    @Override
+    public long checkCanDisable(Object obj, BaseRepository... check) {
+        ResSkuRepoRepository tRepo = (ResSkuRepoRepository)check[0];
+        BaseDeleteBean bean = (BaseDeleteBean)obj;
+        for (Long id : bean.getIds()) {
+            DbResSku sku = new DbResSku();
+            sku.setId(id);
+            List<DbResSkuRepo> skuRepos = tRepo.getDbResSkuReposBySku(sku);
+            if ( skuRepos != null && skuRepos.size()>0 ) {
+                return id;
+            }
+        }
+        return 0;
+    }
 }

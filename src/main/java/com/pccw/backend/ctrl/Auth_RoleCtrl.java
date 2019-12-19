@@ -59,6 +59,8 @@ public class Auth_RoleCtrl extends BaseCtrl<DbResRole> implements ICheck {
             List<Map> rightList = new ArrayList<>();
             SearchBean resultBean = new SearchBean();
             BeanUtils.copyProperties(resRole,resultBean);
+            resultBean.setCreateAccountName(getAccountName(resRole.getCreateBy()));
+            resultBean.setUpdateAccountName(getAccountName(resRole.getUpdateBy()));
             String[] rightNames = new String[resRole.getResRoleRightList().size()];
             long[] rightIds  = new long[resRole.getResRoleRightList().size()];
             for(int i=0;i<resRole.getResRoleRightList().size();i++) {

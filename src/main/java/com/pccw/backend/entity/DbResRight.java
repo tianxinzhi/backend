@@ -30,5 +30,13 @@ public class DbResRight extends Base{
 
     @Column(name="right_url")
     private String rightUrl;
+
+    /**
+     * List 目录
+     * Menu 菜单
+     * Button 按钮
+     */
+    @Column(name = "right_type")
+    private String rightType;
     
 }

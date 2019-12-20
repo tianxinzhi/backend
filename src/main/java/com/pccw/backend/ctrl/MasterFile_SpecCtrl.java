@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLOutput;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * MF_RepoCtrl
@@ -143,21 +144,17 @@ public class MasterFile_SpecCtrl extends BaseCtrl<DbResSpec> implements ICheck {
         try {
             List<Map> list = new ArrayList<>();
             List<Map> attrList= repo.attrSearch(id);
-            for(Map m:attrList){
-                if(m.get("attrValue") != null){
-                    String attrValue = m.get("attrValue").toString();
-                    List attrValueList = new ArrayList();
-                    if(attrValue.contains(",")){
-                        attrValueList = Arrays.asList(attrValue.split(","));
-                    }else {
-                        attrValueList.add(m.get("attrValue"));
-                    }
-                    HashMap<Object, Object> hm = new HashMap<>();
-                    hm.put("attrName",m.get("attrName"));
-                    hm.put("attrValue",attrValueList);
-                    list.add(hm);
-                }
-            }
+            attrList.stream()
+                    .collect(Collectors.groupingBy(s -> s.get("attrName")))
+                    .forEach((k,v)->{
+                                HashMap<Object, Object> hm = new HashMap<>();
+                                List<String> attrValueList = new ArrayList<>();
+                                v.forEach((a)->{ attrValueList.add(a.get("attrValue").toString());});
+                                hm.put("attrName",k);
+                                hm.put("attrValue",attrValueList);
+                                list.add(hm);
+                            }
+                    );
             return JsonResult.success(list);
         } catch (Exception e) {
             return JsonResult.fail(e);

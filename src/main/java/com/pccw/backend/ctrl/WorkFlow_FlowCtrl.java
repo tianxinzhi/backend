@@ -2,15 +2,18 @@ package com.pccw.backend.ctrl;
 
 import com.pccw.backend.bean.JsonResult;
 import com.pccw.backend.bean.workflow_flow.*;
+import com.pccw.backend.cusinterface.ICheck;
 import com.pccw.backend.entity.DbResFlow;
 import com.pccw.backend.entity.DbResFlowStep;
 import com.pccw.backend.entity.DbResRole;
+import com.pccw.backend.repository.BaseRepository;
 import com.pccw.backend.repository.ResFlowRepository;
 import com.pccw.backend.bean.BaseDeleteBean;
 
 
 import com.pccw.backend.repository.ResRoleRepository;
 import com.pccw.backend.util.Convertor;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -34,7 +37,7 @@ import java.util.stream.Collectors;
 @RestController
 @CrossOrigin(methods = RequestMethod.POST,origins = "*", allowCredentials = "false")
 @RequestMapping("/workflow_flow")
-public class WorkFlow_FlowCtrl extends BaseCtrl<DbResFlow>{
+public class WorkFlow_FlowCtrl extends BaseCtrl<DbResFlow> implements ICheck {
 
     @Autowired
     ResFlowRepository repo;
@@ -54,6 +57,8 @@ public class WorkFlow_FlowCtrl extends BaseCtrl<DbResFlow>{
                 for (DbResFlow flow:res){
                     SearchBean searchBean = new SearchBean();
                     BeanUtils.copyProperties(flow, searchBean);
+                    searchBean.setCreateAccountName(getAccountName(flow.getCreateBy()));
+                    searchBean.setUpdateAccountName(getAccountName(flow.getUpdateBy()));
                     List<Map> stepList = new ArrayList<>();
                     List<DbResFlowStep> sortedList = flow.getResFlowStepList().stream().sorted(Comparator.comparing(DbResFlowStep::getStepNum)).collect(Collectors.toList());
 
@@ -93,6 +98,8 @@ public class WorkFlow_FlowCtrl extends BaseCtrl<DbResFlow>{
             for(int i=0;i<b.getResFlowStepList().size();i++) {
                 b.getResFlowStepList().get(i).setUpdateAt(t);
                 b.getResFlowStepList().get(i).setCreateAt(t);
+                b.getResFlowStepList().get(i).setCreateBy(getAccount());
+                b.getResFlowStepList().get(i).setUpdateBy(getAccount());
                 b.getResFlowStepList().get(i).setActive("Y");
             }
             return this.create(repo, DbResFlow.class, b);
@@ -115,10 +122,14 @@ public class WorkFlow_FlowCtrl extends BaseCtrl<DbResFlow>{
                     if (dbResFlow.getResFlowStepList().get(j).getId()==b.getResFlowStepList().get(i).getId()) {
                         b.getResFlowStepList().get(i).setUpdateAt(t);
                         b.getResFlowStepList().get(i).setCreateAt(dbResFlow.getResFlowStepList().get(j).getCreateAt());
+                        b.getResFlowStepList().get(i).setCreateBy(getAccount());
+                        b.getResFlowStepList().get(i).setUpdateBy(getAccount());
                         b.getResFlowStepList().get(i).setActive("Y");
                     }else if(Objects.isNull(b.getResFlowStepList().get(i).getId())){
                         b.getResFlowStepList().get(i).setUpdateAt(t);
                         b.getResFlowStepList().get(i).setCreateAt(t);
+                        b.getResFlowStepList().get(i).setCreateBy(getAccount());
+                        b.getResFlowStepList().get(i).setUpdateBy(getAccount());
                         b.getResFlowStepList().get(i).setActive("Y");
                     }
                 }
@@ -130,5 +141,16 @@ public class WorkFlow_FlowCtrl extends BaseCtrl<DbResFlow>{
             return JsonResult.fail(e);
         }
 
+    }
+
+    @ApiOperation(value="禁用workflow_flow",tags={"workflow_flow"},notes="注意问题点")
+    @RequestMapping(method = RequestMethod.POST,value = "/disable")
+    public JsonResult disable(@RequestBody BaseDeleteBean ids) {
+        return this.disable(repo,ids,WorkFlow_FlowCtrl.class);
+    }
+
+    @Override
+    public long checkCanDisable(Object obj, BaseRepository... check) {
+        return 0;
     }
 }

@@ -54,6 +54,8 @@ public class MasterFile_SpecCtrl extends BaseCtrl<DbResSpec> implements ICheck {
                 for (DbResSpec spec:res){
                     SearchBean searchBean = new SearchBean();
                     BeanUtils.copyProperties(spec, searchBean);
+                    searchBean.setCreateAccountName(getAccountName(spec.getCreateBy()));
+                    searchBean.setUpdateAccountName(getAccountName(spec.getUpdateBy()));
                     if(spec.getResSpecAttrList() != null){
                         searchBean.setAttrData(specSearch(spec.getId()).getData());
                     }
@@ -84,6 +86,8 @@ public class MasterFile_SpecCtrl extends BaseCtrl<DbResSpec> implements ICheck {
            for(int i=0;i<b.getResSpecAttrList().size();i++) {
                b.getResSpecAttrList().get(i).setUpdateAt(t);
                b.getResSpecAttrList().get(i).setCreateAt(t);
+               b.getResSpecAttrList().get(i).setUpdateBy(getAccount());
+               b.getResSpecAttrList().get(i).setCreateBy(getAccount());
                b.getResSpecAttrList().get(i).setActive("Y");
            }
            return this.create(repo, DbResSpec.class, b);
@@ -111,10 +115,14 @@ public class MasterFile_SpecCtrl extends BaseCtrl<DbResSpec> implements ICheck {
                     if (dbResSpec.getResSpecAttrList().get(j).getId().equals(b.getResSpecAttrList().get(i).getId())) {
                         b.getResSpecAttrList().get(i).setUpdateAt(t);
                         b.getResSpecAttrList().get(i).setCreateAt(dbResSpec.getResSpecAttrList().get(j).getCreateAt());
+                        b.getResSpecAttrList().get(i).setUpdateBy(getAccount());
+                        b.getResSpecAttrList().get(i).setCreateBy(getAccount());
                         b.getResSpecAttrList().get(i).setActive("Y");
                     }else if(Objects.isNull(b.getResSpecAttrList().get(i).getId())){
                         b.getResSpecAttrList().get(i).setUpdateAt(t);
                         b.getResSpecAttrList().get(i).setCreateAt(t);
+                        b.getResSpecAttrList().get(i).setUpdateBy(getAccount());
+                        b.getResSpecAttrList().get(i).setCreateBy(getAccount());
                         b.getResSpecAttrList().get(i).setActive("Y");
                     }
                 }

@@ -17,4 +17,6 @@ import org.springframework.stereotype.Repository;
 public interface ResRightRepository extends BaseRepository<DbResRight> {
 
     List<DbResRight> findByRightPid(Long pid);
+
+    DbResRight findDbResRightById(Long pid);
 }

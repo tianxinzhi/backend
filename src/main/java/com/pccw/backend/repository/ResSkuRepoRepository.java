@@ -25,7 +25,8 @@ public interface  ResSkuRepoRepository extends BaseRepository<DbResSkuRepo>{
             "sum(nvl(decode(RST.STOCKTYPE_NAME ,'Reserved(RES)',RSR.QTY),0))  RESQTY,\n" +
             "sum(nvl(decode(RST.STOCKTYPE_NAME ,'Available(AVL)',RSR.QTY),0)) AVLQTY,\n" +
             "sum(nvl(decode(RST.STOCKTYPE_NAME ,'Demo(DEM)',RSR.QTY),0))      DEMQTY,\n" +
-            "sum(nvl(decode(RST.STOCKTYPE_NAME ,'Reserved With AO(RAO)',RSR.QTY),0)) RAOQTY\n" +
+            "sum(nvl(decode(RST.STOCKTYPE_NAME ,'Reserved With AO(RAO)',RSR.QTY),0)) RAOQTY,\n" +
+            "sum(nvl(decode(RST.STOCKTYPE_NAME ,'Reserved With Remote(RRO)',RSR.QTY),0)) RROQTY\n" +
             "FROM   \n" +
             "  RES_SKU RS,\n" +
             "  RES_REPO RR,\n" +

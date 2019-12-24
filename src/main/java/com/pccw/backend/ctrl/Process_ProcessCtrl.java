@@ -61,12 +61,14 @@ public class Process_ProcessCtrl extends BaseCtrl{
             long t = new Date().getTime();
             Map user = session.getUser();
             Long accountId = Long.parseLong(user.get("account").toString());
+            String remark = b.getRemark();
             Optional<DbResProcess> optional = processRepository.findById(b.getId());
             DbResProcess dbResProcess = optional.get();
             BeanUtils.copyProperties(dbResProcess,b);
             b.setUpdateAt(t);
             b.setUpdateBy(accountId);
             b.setStatus(b.getStatusPro());
+            b.setRemark(remark);
             for(int i=0;i<b.getSteps().size();i++) {
                 for(int j=0;j<b.getProcessDtls().size();j++) {
                     if (b.getProcessDtls().get(j).getId().equals(b.getSteps().get(i).getProcessDtlsId()) ) {
@@ -232,36 +234,32 @@ public class Process_ProcessCtrl extends BaseCtrl{
             boolean checkable = collect.size() > 0 ;
             //log表信息 根据nature从相应的entity取process详情页展示log信息
             LogProDtlBean logDtls =new LogProDtlBean();
-            DbResLogMgt reslog = logMgtRepository.findDbResLogMgtByLogTxtBum(r.getLogTxtBum());
-            logDtls.setCreateAt(reslog.getCreateAt());
-            logDtls.setLogRepoIn(reslog.getLogRepoIn());
-            logDtls.setLogRepoOut(reslog.getLogRepoOut());
-            logDtls.setLogTxtBum(reslog.getLogTxtBum());
-            logDtls.setRemark(reslog.getRemark());
-            logDtls.setDtlQty(reslog.getLine().get(0).getDtlQty());
-            logDtls.setDtlSkuId(reslog.getLine().get(0).getDtlSkuId());
-//            if(r.getLogOrderNature().equals("RREQ")){
-//                //DbResLogRepl查询有问题
-//                DbResLogRepl reslog = logReplRepository.findDbResLogReplByLogTxtBum(r.getLogTxtBum());
-//                logDtls.setCreateAt(reslog.getCreateAt());
-//                logDtls.setLogRepoIn(reslog.getRepoIdTo());
-//                logDtls.setLogRepoOut(reslog.getRepoIdFrom());
-//                logDtls.setLogTxtBum(reslog.getLogTxtBum());
-//                logDtls.setRemark(reslog.getRemark());
-//                logDtls.setDtlQty(reslog.getLine().get(0).getDtlQty());
-//                logDtls.setDtlSkuId(reslog.getLine().get(0).getDtlSkuId());
-//            }else{
-//                DbResLogMgt reslog = logMgtRepository.findDbResLogMgtByLogTxtBum(r.getLogTxtBum());
-//                logDtls.setCreateAt(reslog.getCreateAt());
-//                logDtls.setLogRepoIn(reslog.getLogRepoIn());
-//                logDtls.setLogRepoOut(reslog.getLogRepoOut());
-//                logDtls.setLogTxtBum(reslog.getLogTxtBum());
-//                logDtls.setRemark(reslog.getRemark());
-//                logDtls.setDtlQty(reslog.getLine().get(0).getDtlQty());
-//                logDtls.setDtlSkuId(reslog.getLine().get(0).getDtlSkuId());
-//            }
+            if(r.getLogOrderNature().equals("RREQ")){
+                //DbResLogRepl查询有问题
+                DbResLogRepl resLog = logReplRepository.findDbResLogReplByLogTxtBum(r.getLogTxtBum());
+                logDtls.setCreateAt(resLog.getCreateAt());
+                logDtls.setLogRepoIn(resLog.getRepoIdTo());
+                logDtls.setLogRepoOut(resLog.getRepoIdFrom());
+                logDtls.setLogTxtBum(resLog.getLogTxtBum());
+                logDtls.setRemark(resLog.getRemark());
+                 List<LogProDtlLineBean> logLine =resLog.getLine().stream().map(item ->{
+                        return new LogProDtlLineBean(item.getDtlSkuId(),item.getDtlQty());
+                        }).collect(Collectors.toList());
+                logDtls.setLine(logLine);
+            }else{
+                DbResLogMgt resLog = logMgtRepository.findDbResLogMgtByLogTxtBum(r.getLogTxtBum());
+                logDtls.setCreateAt(resLog.getCreateAt());
+                logDtls.setLogRepoIn(resLog.getLogRepoIn());
+                logDtls.setLogRepoOut(resLog.getLogRepoOut());
+                logDtls.setLogTxtBum(resLog.getLogTxtBum());
+                logDtls.setRemark(resLog.getRemark());
+                List<LogProDtlLineBean> logLine =resLog.getLine().stream().map(item ->{
+                        return new LogProDtlLineBean(item.getDtlSkuId(),item.getDtlQty());
+                        }).collect(Collectors.toList());
+                logDtls.setLine(logLine);
+            }
             //获取rolename 封装step数据
-            List<Step> stepList = r.getProcessDtls().stream().map(item -> {
+            List<Step> stepList = r.getProcessDtls().stream().sorted(Comparator.comparing(DbResProcessDtl::getStepNum)).map(item -> {
                 String roleName = roleRepository.findById(item.getRoleId()).get().getRoleName();
                 String accountName = this.getAccountName(item.getUpdateBy());
                 //已审批的desc 显示审批意见，未操作数据显示roleName

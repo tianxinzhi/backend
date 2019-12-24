@@ -154,7 +154,7 @@ public class CommonCtrl  extends GeneralCtrl{
     @ApiOperation(value="获取res_flow表的Nature和id信息",tags={"common"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.GET,path="/flowModule")
     public JsonResult searchFlowNature(){
-        List<String> natureList = Stream.of("ASG","RET","EXC","ARS","CARS","APU","RREQ","SOTS","SIFS","SOTW","SIFW","SIWPO","ST","STA","SCC").collect(Collectors.toList());
+        List<String> natureList = Stream.of("ASG","STHR","RET","EXC","ARS","CARS","APU","RREQ","SOTS","SIFS","SOTW","SIFW","SIWPO","ST","STA","SCC").collect(Collectors.toList());
         Sort sort = new Sort(Sort.Direction.DESC, "id");
         Specification<DbResFlow> spec = new Specification<DbResFlow>() {
             @Override

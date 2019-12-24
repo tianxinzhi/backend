@@ -14,10 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -120,9 +118,17 @@ public class Stock_InCtrl extends BaseCtrl<DbResLogMgt>{
     @RequestMapping(method = RequestMethod.POST,path="/searchStockOutInfo")
     public JsonResult searchStockOutInfo(@RequestBody SearchBean bean){
         try {
-            List stockOutInfo = rsipo.getStockOutInfo(bean.getLogTxtNum());
-            List res = ResultRecode.returnHumpNameForList(stockOutInfo);
-
+//            List stockOutInfo = rsipo.getStockOutInfo(bean.getLogTxtNum());
+//            List res = ResultRecode.returnHumpNameForList(stockOutInfo);
+            List<String> natures = new ArrayList<>();
+            natures.add("SOTS");
+            natures.add("SOTW");
+            List<DbResLogMgt> collect = rsipo.findAllByLogOrderNatureInAndLogRepoInEquals(natures, 8L);
+            List<Object> res = collect.stream().map(r -> {
+                List<DbResLogMgtDtl> Line = r.getLine().stream().filter(line -> line.getStatus().equals("INT")).collect(Collectors.toList());
+                r.setLine(Line);
+                return r;
+            }).collect(Collectors.toList());
             return JsonResult.success(res);
         }catch (Exception e){
             return JsonResult.fail(e);

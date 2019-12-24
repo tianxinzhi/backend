@@ -4,7 +4,7 @@ package com.pccw.backend.ctrl;
 import com.pccw.backend.bean.JsonResult;
 import com.pccw.backend.bean.StaticVariable;
 import com.pccw.backend.bean.stock_category.CategoryLogMgtBean;
-import com.pccw.backend.bean.stock_category.SearchBean;
+import com.pccw.backend.bean.stock_threshold.SearchBean;
 import com.pccw.backend.bean.stock_threshold.ThresholdLogMgtBean;
 import com.pccw.backend.entity.*;
 import com.pccw.backend.repository.*;
@@ -44,7 +44,7 @@ public class Stock_ThresholdCtrl extends BaseCtrl<DbResLogMgt> {
                 });
             }
             JsonResult jsonResult = this.create(resLogMgtRepository, DbResLogMgt.class, b);
-//            //创建工作流对象
+            //创建工作流对象
 //            if(jsonResult.getCode().equals("000")) {
 //                DbResProcess process = new DbResProcess();
 //                process.setLogTxtBum(b.getLogTxtBum());
@@ -62,4 +62,16 @@ public class Stock_ThresholdCtrl extends BaseCtrl<DbResLogMgt> {
         }
     }
 
+    @ApiOperation(value="搜索threshold",tags={"stock_threshold"},notes="注意问题点")
+    @RequestMapping(method = RequestMethod.POST, path = "/search")
+    public JsonResult search(@RequestBody SearchBean b) {
+        try {
+            String repoId = Objects.isNull(b.getRepoId()) ? "" : b.getRepoId();
+            String skuId = Objects.isNull(b.getSkuId()) ? "" : b.getSkuId();
+            List<Map> list = resLogMgtRepository.getStockThreshold(repoId,skuId);
+            return JsonResult.success(list);
+        } catch (Exception e) {
+            return JsonResult.fail(e);
+        }
+    }
 }

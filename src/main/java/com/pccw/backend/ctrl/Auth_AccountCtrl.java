@@ -5,9 +5,11 @@ import com.pccw.backend.bean.JsonResult;
 import com.pccw.backend.bean.auth_account.CreateBean;
 import com.pccw.backend.bean.auth_account.EditBean;
 import com.pccw.backend.bean.auth_account.SearchBean;
+import com.pccw.backend.cusinterface.ICheck;
 import com.pccw.backend.entity.DbResAccount;
 import com.pccw.backend.entity.DbResAccountRole;
 import com.pccw.backend.entity.DbResRole;
+import com.pccw.backend.repository.BaseRepository;
 import com.pccw.backend.repository.ResAccountRepository;
 import com.pccw.backend.repository.ResRoleRepository;
 import com.pccw.backend.util.Convertor;
@@ -21,6 +23,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.Serializable;
 import java.util.*;
 
 @Slf4j
@@ -28,7 +31,7 @@ import java.util.*;
 @CrossOrigin(methods = RequestMethod.POST,origins = "*", allowCredentials = "false")
 @RequestMapping("auth_account")
 @Api(value="Auth_AccountCtrl",tags={"auth_account"})
-public class Auth_AccountCtrl extends BaseCtrl<DbResAccount> {
+public class Auth_AccountCtrl extends BaseCtrl<DbResAccount> implements ICheck {
 
     @Autowired
     ResAccountRepository repo;
@@ -134,22 +137,15 @@ public class Auth_AccountCtrl extends BaseCtrl<DbResAccount> {
         }
     }
 
-//    @ApiOperation(value="根据用户ID搜索用户",tags={"auth_account"},notes="注意问题点")
-//    @RequestMapping(method = RequestMethod.POST,path = "/searchById")
-//    public JsonResult searchById(@RequestBody long id){
-//        try {
-//            List<Object> list = new ArrayList<>();
-//            Optional<DbResAccount> optional = repo.findById(id);
-//            try{
-//                DbResAccount dbResAccount = optional.get();
-//                list.add(dbResAccount);
-//            }catch (Exception ex){
-//                return null;
-//            }
-//            return JsonResult.success(list);
-//        } catch (Exception e) {
-//            return JsonResult.fail(e);
-//        }
-//    }
+    @ApiOperation(value="禁用auth_account",tags={"auth_account"},notes="注意问题点")
+    @RequestMapping(method = RequestMethod.POST,value = "/disable")
+    public JsonResult disable(@RequestBody BaseDeleteBean ids) {
+        return this.disable(repo,ids,Auth_AccountCtrl.class);
+    }
+
+    @Override
+    public long checkCanDisable(Object obj, BaseRepository... check) {
+        return 0;
+    }
 
 }

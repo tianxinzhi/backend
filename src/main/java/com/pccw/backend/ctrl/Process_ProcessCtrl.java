@@ -3,10 +3,7 @@ package com.pccw.backend.ctrl;
 import com.pccw.backend.bean.JsonResult;
 import com.pccw.backend.bean.StaticVariable;
 import com.pccw.backend.bean.process_process.*;
-import com.pccw.backend.entity.DbResFlow;
-import com.pccw.backend.entity.DbResLogMgt;
-import com.pccw.backend.entity.DbResProcess;
-import com.pccw.backend.entity.DbResProcessDtl;
+import com.pccw.backend.entity.*;
 import com.pccw.backend.repository.*;
 import com.pccw.backend.util.Convertor;
 import com.pccw.backend.util.Session;
@@ -34,6 +31,9 @@ public class Process_ProcessCtrl extends BaseCtrl{
 
     @Autowired
     ResLogMgtRepository logMgtRepository;
+
+    @Autowired
+    ResLogReplRepository logReplRepository;
 
     @Autowired
     ResAccountRepository accountRepository;
@@ -71,7 +71,7 @@ public class Process_ProcessCtrl extends BaseCtrl{
                 for(int j=0;j<b.getProcessDtls().size();j++) {
                     if (b.getProcessDtls().get(j).getId().equals(b.getSteps().get(i).getProcessDtlsId()) ) {
                           b.getProcessDtls().get(j).setUpdateAt(t);
-                          b.getProcessDtls().get(j).setUpdateAt(accountId);
+                          b.getProcessDtls().get(j).setUpdateBy(accountId);
                           b.getProcessDtls().get(j).setActive("Y");
                           b.getProcessDtls().get(j).setRemark(b.getSteps().get(i).getRemark());
                           b.getProcessDtls().get(j).setStatus(b.getSteps().get(i).getStatus());
@@ -230,8 +230,36 @@ public class Process_ProcessCtrl extends BaseCtrl{
                     item.getStatus().equals(StaticVariable.PROCESS_PENDING_STATUS) && roles.contains(item.getRoleId().toString())
             ).collect(Collectors.toList());
             boolean checkable = collect.size() > 0 ;
-            //log表信息
-            DbResLogMgt logDtls = logMgtRepository.findDbResLogMgtByLogTxtBum(r.getLogTxtBum());
+            //log表信息 根据nature从相应的entity取process详情页展示log信息
+            LogProDtlBean logDtls =new LogProDtlBean();
+            DbResLogMgt reslog = logMgtRepository.findDbResLogMgtByLogTxtBum(r.getLogTxtBum());
+            logDtls.setCreateAt(reslog.getCreateAt());
+            logDtls.setLogRepoIn(reslog.getLogRepoIn());
+            logDtls.setLogRepoOut(reslog.getLogRepoOut());
+            logDtls.setLogTxtBum(reslog.getLogTxtBum());
+            logDtls.setRemark(reslog.getRemark());
+            logDtls.setDtlQty(reslog.getLine().get(0).getDtlQty());
+            logDtls.setDtlSkuId(reslog.getLine().get(0).getDtlSkuId());
+//            if(r.getLogOrderNature().equals("RREQ")){
+//                //DbResLogRepl查询有问题
+//                DbResLogRepl reslog = logReplRepository.findDbResLogReplByLogTxtBum(r.getLogTxtBum());
+//                logDtls.setCreateAt(reslog.getCreateAt());
+//                logDtls.setLogRepoIn(reslog.getRepoIdTo());
+//                logDtls.setLogRepoOut(reslog.getRepoIdFrom());
+//                logDtls.setLogTxtBum(reslog.getLogTxtBum());
+//                logDtls.setRemark(reslog.getRemark());
+//                logDtls.setDtlQty(reslog.getLine().get(0).getDtlQty());
+//                logDtls.setDtlSkuId(reslog.getLine().get(0).getDtlSkuId());
+//            }else{
+//                DbResLogMgt reslog = logMgtRepository.findDbResLogMgtByLogTxtBum(r.getLogTxtBum());
+//                logDtls.setCreateAt(reslog.getCreateAt());
+//                logDtls.setLogRepoIn(reslog.getLogRepoIn());
+//                logDtls.setLogRepoOut(reslog.getLogRepoOut());
+//                logDtls.setLogTxtBum(reslog.getLogTxtBum());
+//                logDtls.setRemark(reslog.getRemark());
+//                logDtls.setDtlQty(reslog.getLine().get(0).getDtlQty());
+//                logDtls.setDtlSkuId(reslog.getLine().get(0).getDtlSkuId());
+//            }
             //获取rolename 封装step数据
             List<Step> stepList = r.getProcessDtls().stream().map(item -> {
                 String roleName = roleRepository.findById(item.getRoleId()).get().getRoleName();

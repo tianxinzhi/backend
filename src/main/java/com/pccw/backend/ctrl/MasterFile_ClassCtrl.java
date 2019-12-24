@@ -104,6 +104,7 @@ public class MasterFile_ClassCtrl extends BaseCtrl<DbResClass> implements ICheck
             b.setUpdateAt(new Date().getTime());
             b.setUpdateBy(getAccount());
             b.setCreateAt(dbResClass.getCreateAt());
+            b.setCreateBy(dbResClass.getCreateBy());
             b.setActive(dbResClass.getActive());
             if(StringUtils.isEmpty(b.getParentClassId())){
                 b.setParentClassId("0");

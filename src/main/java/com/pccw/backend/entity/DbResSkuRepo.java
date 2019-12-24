@@ -50,7 +50,7 @@ public class DbResSkuRepo extends Base{
 //	private String subinId;
 
 	@Column(name = "qty")
-	private int qty;
+	private Long qty;
 
 	// remark
 	@Column(name = "remark",length = 512)

@@ -2,6 +2,7 @@ package com.pccw.backend.ctrl;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.pccw.backend.bean.*;
 import com.pccw.backend.bean.masterfile_attr_value.SearchBean;
@@ -152,8 +153,24 @@ public class CommonCtrl  extends GeneralCtrl{
 
     @ApiOperation(value="获取res_flow表的Nature和id信息",tags={"common"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.GET,path="/flowModule")
-    public JsonResult<LabelAndValue> searchFlowNature(){
-        return this.JsonResultHandle(flowRepository,new LabelAndValue());
+    public JsonResult searchFlowNature(){
+        List<String> natureList = Stream.of("ASG","RET","EXC","ARS","CARS","APU","RREQ","SOTS","SIFS","SOTW","SIFW","SIWPO","ST","STA","SCC").collect(Collectors.toList());
+        Sort sort = new Sort(Sort.Direction.DESC, "id");
+        Specification<DbResFlow> spec = new Specification<DbResFlow>() {
+            @Override
+            public Predicate toPredicate(Root<DbResFlow> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
+                Predicate predicate = criteriaBuilder.equal(root.get("active").as(String.class), "Y");
+                return predicate;
+            }
+        };
+        List<String> flowNatureList =  flowRepository.findAll(spec,sort).stream().map(flow -> {
+            return flow.getFlowNature();
+        }).collect(Collectors.toList());
+        List<LabelAndValue> resultlist = natureList.stream().filter(item -> !flowNatureList.contains(item)).map(r -> {
+            return new LabelAndValue(r, r, null);
+        }).collect(Collectors.toList());
+
+        return JsonResult.success(resultlist);
     }
 
     @ApiOperation(value="获取res_stock_type表的stockTypeName和id信息",tags={"common"},notes="注意问题点")

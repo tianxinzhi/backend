@@ -235,7 +235,7 @@ public class Stock_CategoryCtrl extends BaseCtrl<DbResLogMgt> {
             if(StaticVariable.DTLACTION_DEDUCT.equals(l.getDtlAction())){
                 skuRepo.setUpdateAt(t);
                 skuRepo.setUpdateBy(getAccount());
-                int qty = (int) (skuRepo.getQty() - l.getDtlQty());
+                Long qty =  (skuRepo.getQty() - l.getDtlQty());
                 skuRepo.setQty(qty);
             }else {
                 //dtlAction为A时  skuRepo对应的sku的qty做加法
@@ -249,11 +249,11 @@ public class Stock_CategoryCtrl extends BaseCtrl<DbResLogMgt> {
                     toSkuRepo.setCreateBy(getAccount());
                     toSkuRepo.setStockType(dbResStockType);
                     toSkuRepo.setId(null);
-                    toSkuRepo.setQty((int) l.getDtlQty());
+                    toSkuRepo.setQty(l.getDtlQty());
                     repo.saveAndFlush(toSkuRepo);
                 }else {
                     DbResSkuRepo skuRepo1 = repo.findById(dbsr.getId()).get();
-                    skuRepo1.setQty((int) (dbsr.getQty()+l.getDtlQty()));
+                    skuRepo1.setQty((dbsr.getQty()+l.getDtlQty()));
                     skuRepo1.setUpdateAt(t);
                     skuRepo1.setUpdateBy(getAccount());
                 }

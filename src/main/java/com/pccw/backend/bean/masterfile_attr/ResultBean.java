@@ -6,6 +6,9 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+import java.util.Map;
+
 @Data
 @NoArgsConstructor
 @ApiModel(value="Attr模块 - EditBean",description="attr搜索返回的结果")
@@ -25,5 +28,7 @@ public class ResultBean extends BaseBean {
 
     @ApiModelProperty(value="属性值",name="attrValues",example="[1,2]")
     private long[] attrValues;
+
+    private List<Map> attrData;
 }
 

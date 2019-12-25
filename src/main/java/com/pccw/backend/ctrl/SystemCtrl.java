@@ -85,6 +85,8 @@ public class SystemCtrl extends BaseCtrl<DbResAccount> {
             map.put("accountName", rwe.getAccountName());
             //用户id
             map.put("account", rwe.getId());
+            //用户所属组织
+            map.put("orgIds",repo.findRepoByAccountId(rwe.getId()));
             JSONObject object = new JSONObject(map);
 
             //取sessionId为token，存session
@@ -131,6 +133,10 @@ public class SystemCtrl extends BaseCtrl<DbResAccount> {
             for (DbResRoleRight right : role.getResRoleRightList()) {
                 rightId.add(right.getRightId());
             }
+        }
+        //如果登录人的id中包含0（SMP最高权限）
+        if(rightId.contains(0L)){
+            return new ArrayList<Long>(Arrays.asList(0L));
         }
         //去重后的权限id
         return rightId.stream().distinct().collect(Collectors.toList());

@@ -28,7 +28,5 @@ public class LogProDtlBean {
 
     private String remark;
 
-    private long dtlSkuId;
-
-    private long dtlQty;
+    List<LogProDtlLineBean> line;
 }

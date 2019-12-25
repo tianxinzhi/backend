@@ -85,6 +85,8 @@ public class SystemCtrl extends BaseCtrl<DbResAccount> {
             map.put("accountName", rwe.getAccountName());
             //用户id
             map.put("account", rwe.getId());
+            //用户所属组织
+            map.put("orgIds",repo.findRepoByAccountId(rwe.getId()));
             JSONObject object = new JSONObject(map);
 
             //取sessionId为token，存session
@@ -132,6 +134,10 @@ public class SystemCtrl extends BaseCtrl<DbResAccount> {
                 rightId.add(right.getRightId());
             }
         }
+        //如果登录人的id中包含0（SMP最高权限）
+        if(rightId.contains(0L)){
+            return new ArrayList<Long>(Arrays.asList(0L));
+        }
         //去重后的权限id
         return rightId.stream().distinct().collect(Collectors.toList());
     }
@@ -155,7 +161,9 @@ public class SystemCtrl extends BaseCtrl<DbResAccount> {
             if (treeNode.getTpye().equals("Button")) {
                 if (accountButtonMap.containsKey(treeNode.getParentName())) {
                     List list = accountButtonMap.get(treeNode.getParentName());
-                    list.add(treeNode.getName());
+                    List nList = new ArrayList(list);
+                    nList.add(treeNode.getName());
+//                    list.add(treeNode.getName());
                 } else {
                     List list = new ArrayList();
                     list.add(treeNode.getName());
@@ -196,14 +204,15 @@ public class SystemCtrl extends BaseCtrl<DbResAccount> {
     private List<TreeNode> getUserMenu(List<Long> rightIdList, HashMap<Long, TreeNode> nodeMap) {
         Iterator<Long> idIterator = rightIdList.iterator();
         Map<Long, TreeNode> accoutRightMap = new HashMap();
+        //如果有SMP最大权限则直接返回最大权限
+        if(rightIdList.contains(0L)){
+            return nodeMap.get(0L).getChildren();
+        }
         //找到当前节点的父节点，并把当前节点放入父节点，并递归
         while (idIterator.hasNext()) {
             Long key = idIterator.next();
             TreeNode treeNode = nodeMap.get(key);
             Long parentId = treeNode.getParentId();
-            if (parentId == null) {
-                return treeNode.getChildren();
-            }
             if (treeNode.getTpye().equals("Button")) {//如果当前节点是Button，则从父节点开始递归
                 TreeNode parentNode = nodeMap.get(parentId);
                 parentNode.setChildren(Arrays.asList());

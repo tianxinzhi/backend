@@ -8,8 +8,10 @@ import com.pccw.backend.bean.masterfile_spec.EditBean;
 import com.pccw.backend.bean.masterfile_spec.SearchBean;
 import com.pccw.backend.cusinterface.ICheck;
 import com.pccw.backend.entity.DbResSpec;
+import com.pccw.backend.entity.DbResTypeSkuSpec;
 import com.pccw.backend.repository.BaseRepository;
 import com.pccw.backend.repository.ResSpecRepository;
+import com.pccw.backend.repository.ResTypeSkuSpecRepository;
 import com.pccw.backend.util.Convertor;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLOutput;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * MF_RepoCtrl
@@ -36,6 +39,8 @@ public class MasterFile_SpecCtrl extends BaseCtrl<DbResSpec> implements ICheck {
 
     @Autowired
     ResSpecRepository repo;
+    @Autowired
+    ResTypeSkuSpecRepository  typeSkuSpecRepository;
 
     @ApiOperation(value="查询spec",tags={"masterfile_spec"},notes="说明")
     @RequestMapping(method = RequestMethod.POST,path="/search")
@@ -49,6 +54,8 @@ public class MasterFile_SpecCtrl extends BaseCtrl<DbResSpec> implements ICheck {
                 for (DbResSpec spec:res){
                     SearchBean searchBean = new SearchBean();
                     BeanUtils.copyProperties(spec, searchBean);
+                    searchBean.setCreateAccountName(getAccountName(spec.getCreateBy()));
+                    searchBean.setUpdateAccountName(getAccountName(spec.getUpdateBy()));
                     if(spec.getResSpecAttrList() != null){
                         searchBean.setAttrData(specSearch(spec.getId()).getData());
                     }
@@ -79,6 +86,8 @@ public class MasterFile_SpecCtrl extends BaseCtrl<DbResSpec> implements ICheck {
            for(int i=0;i<b.getResSpecAttrList().size();i++) {
                b.getResSpecAttrList().get(i).setUpdateAt(t);
                b.getResSpecAttrList().get(i).setCreateAt(t);
+               b.getResSpecAttrList().get(i).setUpdateBy(getAccount());
+               b.getResSpecAttrList().get(i).setCreateBy(getAccount());
                b.getResSpecAttrList().get(i).setActive("Y");
            }
            return this.create(repo, DbResSpec.class, b);
@@ -106,10 +115,14 @@ public class MasterFile_SpecCtrl extends BaseCtrl<DbResSpec> implements ICheck {
                     if (dbResSpec.getResSpecAttrList().get(j).getId().equals(b.getResSpecAttrList().get(i).getId())) {
                         b.getResSpecAttrList().get(i).setUpdateAt(t);
                         b.getResSpecAttrList().get(i).setCreateAt(dbResSpec.getResSpecAttrList().get(j).getCreateAt());
+                        b.getResSpecAttrList().get(i).setUpdateBy(getAccount());
+                        b.getResSpecAttrList().get(i).setCreateBy(getAccount());
                         b.getResSpecAttrList().get(i).setActive("Y");
                     }else if(Objects.isNull(b.getResSpecAttrList().get(i).getId())){
                         b.getResSpecAttrList().get(i).setUpdateAt(t);
                         b.getResSpecAttrList().get(i).setCreateAt(t);
+                        b.getResSpecAttrList().get(i).setUpdateBy(getAccount());
+                        b.getResSpecAttrList().get(i).setCreateBy(getAccount());
                         b.getResSpecAttrList().get(i).setActive("Y");
                     }
                 }
@@ -139,21 +152,17 @@ public class MasterFile_SpecCtrl extends BaseCtrl<DbResSpec> implements ICheck {
         try {
             List<Map> list = new ArrayList<>();
             List<Map> attrList= repo.attrSearch(id);
-            for(Map m:attrList){
-                if(m.get("attrValue") != null){
-                    String attrValue = m.get("attrValue").toString();
-                    List attrValueList = new ArrayList();
-                    if(attrValue.contains(",")){
-                        attrValueList = Arrays.asList(attrValue.split(","));
-                    }else {
-                        attrValueList.add(m.get("attrValue"));
-                    }
-                    HashMap<Object, Object> hm = new HashMap<>();
-                    hm.put("attrName",m.get("attrName"));
-                    hm.put("attrValue",attrValueList);
-                    list.add(hm);
-                }
-            }
+            attrList.stream()
+                    .collect(Collectors.groupingBy(s -> s.get("attrName")))
+                    .forEach((k,v)->{
+                                HashMap<Object, Object> hm = new HashMap<>();
+                                List<String> attrValueList = new ArrayList<>();
+                                v.forEach((a)->{ attrValueList.add(a.get("attrValue").toString());});
+                                hm.put("attrName",k);
+                                hm.put("attrValue",attrValueList);
+                                list.add(hm);
+                            }
+                    );
             return JsonResult.success(list);
         } catch (Exception e) {
             return JsonResult.fail(e);
@@ -163,12 +172,20 @@ public class MasterFile_SpecCtrl extends BaseCtrl<DbResSpec> implements ICheck {
     @ApiOperation(value="禁用spec",tags={"masterfile_spec"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST,value = "/disable")
     public JsonResult disable(@RequestBody BaseDeleteBean ids) {
-        return this.disable(repo,ids,MasterFile_SpecCtrl.class);
+        return this.disable(repo,ids,MasterFile_SpecCtrl.class,typeSkuSpecRepository);
     }
 
 
     @Override
     public long checkCanDisable(Object obj, BaseRepository... check) {
+        BaseDeleteBean bean = (BaseDeleteBean) obj;
+        ResTypeSkuSpecRepository repo = (ResTypeSkuSpecRepository)check[0];
+        for (Long id : bean.getIds()) {
+            List<DbResTypeSkuSpec> dbResTypeSkuSpecs = repo.getDbResTypeSkuSpecsBySpecId(id);
+            if(dbResTypeSkuSpecs!=null&&dbResTypeSkuSpecs.size()>0){
+                return id;
+            }
+        }
         return 0;
     }
 }

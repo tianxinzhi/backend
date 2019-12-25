@@ -1,6 +1,8 @@
 package com.pccw.backend.aop;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 import com.alibaba.fastjson.JSONObject;
 import com.pccw.backend.bean.JsonResult;
@@ -49,8 +51,25 @@ public class CheckRightAspect {
         //打印请求参数
         log.info(method + ":" + params);
         // 【1】获取session关于account相关right
-        // 【2】获取ctrl名称（模块名称）和ctrl方法（模块按钮）
-        // 【3】判断right
+//        Object user = session.getUser();
+//        Map<String,Map<String, List<String>>> map = JSONObject.parseObject(JSONObject.toJSONString(user), Map.class);
+//        Map<String, List<String>> rightMap = map.get("right");
+//        // 【2】获取ctrl名称（模块名称）和ctrl方法（模块按钮）
+//        String[] split = method.split("\\.");
+//        String[] classSplit = split[split.length - 2].split("_");
+//        String button = split[split.length - 1];
+//        String moduleCtrlName = classSplit[classSplit.length - 1];
+//        String module = moduleCtrlName.substring(0, moduleCtrlName.indexOf("Ctrl"));
+//
+//        // 【3】判断right
+//        if (rightMap.containsKey(module)){
+//            List<String> buttons = rightMap.get(module);
+//            if(buttons.size()>0 && !buttons.contains(button)){
+//                throw BaseException.getNoRightException();
+//            }
+//        }else {
+//            throw BaseException.getNoRightException();
+//        }
         // 【4】抛异常
         // throw BaseException.getNoLoginException();
         

@@ -8,9 +8,11 @@ import com.pccw.backend.bean.masterfile_class.EditBean;
 import com.pccw.backend.bean.masterfile_class.SearchBean;
 import com.pccw.backend.cusinterface.ICheck;
 import com.pccw.backend.entity.DbResClass;
+import com.pccw.backend.entity.DbResClassType;
 import com.pccw.backend.repository.BaseRepository;
 import com.pccw.backend.repository.ResAccountRepository;
 import com.pccw.backend.repository.ResClassRepository;
+import com.pccw.backend.repository.ResClassTypeRepository;
 import com.pccw.backend.util.Convertor;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -39,10 +41,6 @@ public class MasterFile_ClassCtrl extends BaseCtrl<DbResClass> implements ICheck
 
     @Autowired
     ResClassRepository repo;
-    @Autowired
-    ResAccountRepository accountRepo;
-    @Autowired
-    CommonCtrl commonCtrl;
 
     @ApiOperation(value="搜索class",tags={"masterfile_class"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST, path = "/search")
@@ -56,8 +54,8 @@ public class MasterFile_ClassCtrl extends BaseCtrl<DbResClass> implements ICheck
             res.forEach(d->{
                 SearchBean searchBean = new SearchBean();
                 BeanUtils.copyProperties(d,searchBean);
-                searchBean.setCreateAccountName(d.getCreateBy() == 0 ? "system":accountRepo.findById(d.getCreateBy()).get().getAccountName());
-                searchBean.setUpdateAccountName(d.getUpdateBy() == 0 ? "system":accountRepo.findById(d.getUpdateBy()).get().getAccountName());
+                searchBean.setCreateAccountName(getAccountName(d.getCreateBy()));
+                searchBean.setUpdateAccountName(getAccountName(d.getUpdateBy()));
                 list.add(searchBean);
             });
             return JsonResult.success(list);
@@ -106,6 +104,7 @@ public class MasterFile_ClassCtrl extends BaseCtrl<DbResClass> implements ICheck
             b.setUpdateAt(new Date().getTime());
             b.setUpdateBy(getAccount());
             b.setCreateAt(dbResClass.getCreateAt());
+            b.setCreateBy(dbResClass.getCreateBy());
             b.setActive(dbResClass.getActive());
             if(StringUtils.isEmpty(b.getParentClassId())){
                 b.setParentClassId("0");
@@ -121,11 +120,19 @@ public class MasterFile_ClassCtrl extends BaseCtrl<DbResClass> implements ICheck
     @ApiOperation(value="禁用class",tags={"masterfile_class"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST,value = "/disable")
     public JsonResult disable(@RequestBody BaseDeleteBean ids) {
-        return this.disable(repo,ids,MasterFile_ClassCtrl.class);
+        return this.disable(repo,ids,MasterFile_ClassCtrl.class,repo);
     }
 
     @Override
     public long checkCanDisable(Object obj, BaseRepository... check) {
+        ResClassRepository tRepo = (ResClassRepository)check[0];
+        BaseDeleteBean bean = (BaseDeleteBean)obj;
+        for (Long id : bean.getIds()) {
+                DbResClass dbResClass = tRepo.findById(id).get();
+            if (dbResClass.getRelationOfTypeClass() != null && dbResClass.getRelationOfTypeClass().size()>0 ) {
+                return id;
+            }
+        }
         return 0;
     }
 }

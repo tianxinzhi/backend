@@ -113,7 +113,7 @@ public class Stock_ReplenishmentCtrl extends BaseCtrl<DbResLogRepl> {
                 //创建工作流对象
                 DbResProcess process = new DbResProcess();
                 process.setLogTxtBum(b.getLogTxtBum());
-                process.setRepoId(b.getLogRepoIn());
+                process.setRepoId(b.getRepoIdTo());
                 process.setRemark(b.getRemark());
                 process.setCreateAt(t);
                 process.setUpdateAt(t);
@@ -143,7 +143,7 @@ public class Stock_ReplenishmentCtrl extends BaseCtrl<DbResLogRepl> {
                 DbResSkuRepo skuShop = rsRepo.findQtyByRepoAndShopAndType(cb.getRepoIdTo(), dtl.getDtlSkuId(), 3l);
                 if(!Objects.isNull(skuShop)){
                     DbResSkuRepo skuShop1 = rsRepo.findById(skuShop.getId()).get();
-                    skuShop1.setQty((int) (skuShop.getQty()+dtl.getDtlQty()));
+                    skuShop1.setQty((skuShop.getQty()+dtl.getDtlQty()));
                     skuShop1.setUpdateAt(t);
                     skuShop1.setUpdateBy(getAccount());
                 }else{
@@ -153,7 +153,7 @@ public class Stock_ReplenishmentCtrl extends BaseCtrl<DbResLogRepl> {
                     skuShop2.setUpdateAt(t);
                     skuShop2.setUpdateBy(getAccount());
                     skuShop2.setActive("Y");
-                    skuShop2.setQty((int) dtl.getDtlQty());
+                    skuShop2.setQty(dtl.getDtlQty());
                     skuShop2.setRepo(rRepo.findById(cb.getRepoIdTo()).get());
                     skuShop2.setStockType(rstRepo.findById(3l).get());
                     skuShop2.setSku(resSkuRepo.findById(dtl.getDtlSkuId()).get());

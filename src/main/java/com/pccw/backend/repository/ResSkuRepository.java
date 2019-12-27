@@ -20,6 +20,9 @@ public interface ResSkuRepository extends BaseRepository<DbResSku> {
             "LEFT JOIN    RES_SPEC rs ON rs.id = rsa.SPEC_ID WHERE rsa.SPEC_ID " +
             "= (SELECT rtss.SPEC_ID  FROM  RES_TYPE_SKU_SPEC rtss WHERE rtss.TYPE_ID = ?1)" +
             "GROUP BY ra.ATTR_NAME,rsa.SPEC_ID, rs.SPEC_NAME , ra.ID ORDER BY rsa.SPEC_ID ",nativeQuery = true)
+    /**
+     * 根据type查询spec及其attr相关信息
+     */
     List<Map> getAllSpecsByType(@Param("typeId") long typeId);
 
     @Query(value = "select T3.type_name typeName,T3.id type,t5.spec_name specName,t5.id spec,t6.attr_name attrName,t6.id attr, " +
@@ -31,5 +34,9 @@ public interface ResSkuRepository extends BaseRepository<DbResSku> {
             "left join RES_ATTR t6 on t6.id = t2.attr_id " +
             "left join RES_ATTR_VALUE t7 on t7.id = t2.attr_value_id " +
             "where T1.sku_id  = ?1 GROUP BY T3.type_name ,T3.id ,t5.spec_name,t5.id ,t6.attr_name ,t6.id ",nativeQuery = true)
+    /**
+     * 根据sku查询type，spec，attr，attrValue信息
+     */
     List<Map> getTypeDtlsBySku(@Param("skuId") long skuId);
+
 }

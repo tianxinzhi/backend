@@ -27,5 +27,19 @@ public class CreateBean extends BaseBean{
 
     @ApiModelProperty(value="权限类型",name="rightType",example="Button")
     private String rightType;
+
+    /**
+     * 权限标识
+     * 菜单 ——> 类名
+     * 按钮 ——> 方法路由
+     */
+    @ApiModelProperty(value="权限标识",name="rightIdentifier",example="Auth_RightCtrl")
+    private String rightIdentifier;
+
+    /**
+     * 显示排序
+     */
+    @ApiModelProperty(value="显示排序",name="sortNum",example="1")
+    private Long sortNum;
     
 }

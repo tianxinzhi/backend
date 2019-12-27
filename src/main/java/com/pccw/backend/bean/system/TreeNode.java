@@ -30,5 +30,9 @@ public class TreeNode {
 
     private String tpye;
 
+    private String identifier;
+
+    private Long sortNo;
+
     private List<TreeNode> children;
 }

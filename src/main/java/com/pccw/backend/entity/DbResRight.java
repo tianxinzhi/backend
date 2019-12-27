@@ -38,5 +38,18 @@ public class DbResRight extends Base{
      */
     @Column(name = "right_type")
     private String rightType;
-    
+
+    /**
+     * 权限标识
+     * 菜单 ——> 类名
+     * 按钮 ——> 方法路由
+     */
+    @Column(name = "right_identifier")
+    private String rightIdentifier;
+
+    /**
+     * 显示排序
+     */
+    @Column(name = "sort_num")
+    private Long sortNum;
 }

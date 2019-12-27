@@ -31,6 +31,9 @@ public class StaticVariable {
     public static final String LOGORDERNATURE_STOCK_RESERVE = "RES";
     public static final String LOGORDERNATURE_STOCK_CANCEL_RESERVE = "CRES";
     public static final String LOGORDERNATURE_TRANSFER_TO_WAREHOUSE = "TRW";
+    public static final String LOGORDERNATURE_STOCK_THRESHOLD = "STHR";
+    public static final String LOGORDERNATURE_STOCK_CATEGORY = "SCC";
+
     
     public static final String STATUS_WAITING = "W";
     public static final String STATUS_DONE = "D";

@@ -1,5 +1,6 @@
 package com.pccw.backend.ctrl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.pccw.backend.bean.JsonResult;
 import com.pccw.backend.bean.ResultRecode;
 import com.pccw.backend.bean.StaticVariable;
@@ -8,6 +9,7 @@ import com.pccw.backend.bean.stock_in.SearchBean;
 import com.pccw.backend.entity.*;
 import com.pccw.backend.repository.ResSkuRepoRepository;
 import com.pccw.backend.repository.ResStockInRepository;
+import com.pccw.backend.util.Session;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +37,9 @@ public class Stock_InCtrl extends BaseCtrl<DbResLogMgt>{
 
     @Autowired
     Process_ProcessCtrl processProcessCtrl;
+
+    @Autowired
+    Session session;
 
     @ApiOperation(value="stock_in",tags={"stock_in"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST,value = "/create")
@@ -120,10 +125,18 @@ public class Stock_InCtrl extends BaseCtrl<DbResLogMgt>{
         try {
 //            List stockOutInfo = rsipo.getStockOutInfo(bean.getLogTxtNum());
 //            List res = ResultRecode.returnHumpNameForList(stockOutInfo);
+            Object sessionUser = session.getUser();
+            Map<String,List> map = JSONObject.parseObject(JSONObject.toJSONString(sessionUser), Map.class);
+            List<Integer> orgIds = new ArrayList(map.get("orgIds"));
+            List<Long> ids = orgIds.stream().map(id -> {
+                return Long.parseLong(id.toString());
+            }).collect(Collectors.toList());
+
             List<String> natures = new ArrayList<>();
             natures.add("SOTS");
             natures.add("SOTW");
-            List<DbResLogMgt> collect = rsipo.findAllByLogOrderNatureInAndLogRepoInEquals(natures, 8L);
+
+            List<DbResLogMgt> collect = rsipo.findAllByLogOrderNatureInAndLogRepoInIn(natures, ids);
             List<Object> res = collect.stream().map(r -> {
                 List<DbResLogMgtDtl> Line = r.getLine().stream().filter(line -> line.getStatus().equals("INT")).collect(Collectors.toList());
                 r.setLine(Line);

@@ -29,7 +29,7 @@ public class ExceptionLog extends Exception{
     private static  Session<Map> session;
 
     @Autowired
-    HttpServletRequest rq;
+    private HttpServletRequest rq;
     private static  HttpServletRequest request;
 
     @PostConstruct

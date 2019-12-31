@@ -24,9 +24,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 @Slf4j
 @RestController
@@ -128,17 +126,26 @@ public class MasterFile_AttrCtrl extends BaseCtrl<DbResAttr> implements ICheck {
             List<DbResAttr> attrList = repo.findAll(spec,PageRequest.of(bean.getPageIndex(),bean.getPageSize())).getContent();
             List<ResultBean> resultBeans = new LinkedList<>();
             for (DbResAttr resAttr : attrList) {
+                List<Map> attrDataMap = new LinkedList<>();
                 ResultBean resultBean = new ResultBean();
                 BeanUtils.copyProperties(resAttr,resultBean);
                 resultBean.setCreateAccountName(getAccountName(resAttr.getCreateBy()));
                 resultBean.setUpdateAccountName(getAccountName(resAttr.getUpdateBy()));
                 String[] attrValues = new String[resAttr.getAttrAttrValueList().size()];
                 long[] attrValueIds = new long[resAttr.getAttrAttrValueList().size()];
+
+                String[] value = new String[resAttr.getAttrAttrValueList().size()];
                 for(int i=0;i<resAttr.getAttrAttrValueList().size();i++) {
                     DbResAttrValue attrValue = resAttr.getAttrAttrValueList().get(i).getAttrValue();
                     attrValues[i] = attrValue.getAttrValue() != null ? attrValue.getAttrValue() : attrValue.getValueFrom()+"~"+attrValue.getValueTo();
                     attrValueIds[i] = attrValue.getId();
+                    value[i] = attrValue.getAttrValue();
                 }
+                Map<String,Object> map = new HashMap<>();
+                map.put("attrName",resAttr.getAttrName());
+                map.put("attrValue",attrValues);
+                attrDataMap.add(map);
+                resultBean.setAttrData(attrDataMap);
                 resultBean.setId(resAttr.getId());
                 resultBean.setAttrValueNames(attrValues);
                 resultBean.setAttrValues(attrValueIds);

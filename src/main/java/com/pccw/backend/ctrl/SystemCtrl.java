@@ -159,18 +159,26 @@ public class SystemCtrl extends BaseCtrl<DbResAccount> {
             TreeNode treeNode = map1.get(key);
 
             if (treeNode.getTpye().equals("Button")) {
-                if (accountButtonMap.containsKey(treeNode.getParentName())) {
-                    List list = accountButtonMap.get(treeNode.getParentName());
+                TreeNode parentTreeNode = map1.get(treeNode.getParentId());
+//                if (accountButtonMap.containsKey(treeNode.getParentName())) {
+                if (accountButtonMap.containsKey(parentTreeNode.getIdentifier())){
+//                    List list = accountButtonMap.get(treeNode.getParentName());
+                    List list = accountButtonMap.get(parentTreeNode.getIdentifier());
                     List nList = new ArrayList(list);
-                    nList.add(treeNode.getName());
+                    nList.add(treeNode.getIdentifier());
+                    accountButtonMap.put(parentTreeNode.getIdentifier(),nList);
+//                    nList.add(treeNode.getName());
 //                    list.add(treeNode.getName());
                 } else {
                     List list = new ArrayList();
-                    list.add(treeNode.getName());
-                    accountButtonMap.put(treeNode.getParentName(), list);
+//                    list.add(treeNode.getName());
+                    list.add(treeNode.getIdentifier());
+//                    accountButtonMap.put(treeNode.getParentName(), list);
+                    accountButtonMap.put(parentTreeNode.getIdentifier(),list);
                 }
             } else if (treeNode.getTpye().equals("Menu")) {
-                accountButtonMap.put(treeNode.getName(), Arrays.asList());
+//                accountButtonMap.put(treeNode.getName(), Arrays.asList());
+                accountButtonMap.put(treeNode.getIdentifier(),Arrays.asList());
             } else if (treeNode.getTpye().equals("List")) {
                 List<TreeNode> children = treeNode.getChildren();
                 setListRight(accountButtonMap, children);
@@ -187,7 +195,8 @@ public class SystemCtrl extends BaseCtrl<DbResAccount> {
     private void setListRight(Map<String, List> accountButtonMap, List<TreeNode> children) {
         for (int i = 0; i < children.size(); i++) {
             if(children.get(i).getTpye().equals("Menu")){
-                accountButtonMap.put(children.get(i).getName(), Arrays.asList());
+//                accountButtonMap.put(children.get(i).getName(), Arrays.asList());
+                accountButtonMap.put(children.get(i).getIdentifier(), Arrays.asList());
             }else {
                 setListRight(accountButtonMap,children.get(i).getChildren());
             }
@@ -206,7 +215,13 @@ public class SystemCtrl extends BaseCtrl<DbResAccount> {
         Map<Long, TreeNode> accoutRightMap = new HashMap();
         //如果有SMP最大权限则直接返回最大权限
         if(rightIdList.contains(0L)){
-            return nodeMap.get(0L).getChildren();
+            return nodeMap.get(0L).getChildren().stream().sorted((n1,n2)->{
+                if(n1.getSortNo().longValue() >= n2.getSortNo().longValue()){
+                  return n1.getSortNo().compareTo(n2.getSortNo());
+                }else {
+                    return n1.getSortNo().compareTo(n2.getSortNo());
+                }
+            }).collect(Collectors.toList());
         }
         //找到当前节点的父节点，并把当前节点放入父节点，并递归
         while (idIterator.hasNext()) {
@@ -228,7 +243,13 @@ public class SystemCtrl extends BaseCtrl<DbResAccount> {
         //构建返回到前端的菜单树
         List<TreeNode> recode = accoutRightMap.values().stream().collect(Collectors.toList());
         List<TreeNode> userMenu = recode.get(0).getChildren();
-        return userMenu;
+        return userMenu.stream().sorted((n1,n2)->{
+            if(n1.getSortNo().longValue() >= n2.getSortNo().longValue()){
+                return n1.getSortNo().compareTo(n2.getSortNo());
+            }else {
+                return n1.getSortNo().compareTo(n2.getSortNo());
+            }
+        }).collect(Collectors.toList());
     }
 
     /**
@@ -243,7 +264,7 @@ public class SystemCtrl extends BaseCtrl<DbResAccount> {
         List<TreeNode> nodes = allRight.stream().map(r -> {
             DbResRight parentRight = rightRepository.findDbResRightById(r.getRightPid());
             String moduleName = Objects.nonNull(parentRight) ? parentRight.getRightName() : null;
-            return new TreeNode(r.getId(), r.getRightPid(), r.getRightName(), moduleName, r.getRightUrl(), true, r.getRightType(), new ArrayList<TreeNode>());
+            return new TreeNode(r.getId(), r.getRightPid(), r.getRightName(), moduleName, r.getRightUrl(), true, r.getRightType(),r.getRightIdentifier(),r.getSortNum(), new ArrayList<TreeNode>());
         }).collect(Collectors.toList());
 
         //构建map

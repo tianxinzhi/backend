@@ -33,7 +33,7 @@ public class DbResLogException {
 	
 //	@Column(name = "log_exception_fileName", length = 64)
 //	private String fileName;
-//
+
 //	@Column(name = "log_exception_methodName", length = 64)
 //	private String methodName;
 

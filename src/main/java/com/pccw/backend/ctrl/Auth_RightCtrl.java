@@ -47,6 +47,7 @@ public class Auth_RightCtrl extends BaseCtrl<DbResRight> implements ICheck {
     @ApiOperation(value="搜索权限",tags={"auth_right"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST,path="/search")
     public JsonResult search(@RequestBody @Valid SearchBean b) {
+        b.setPageSize(200);
         return this.search(repo, b);
     }
     

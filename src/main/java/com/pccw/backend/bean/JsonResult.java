@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.pccw.backend.exception.BaseException;
 
+import com.pccw.backend.exception.ExceptionLog;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -43,13 +44,24 @@ public class JsonResult<T> {
     public static <T> JsonResult<T> fail(Exception e){
         BaseException baseException = BaseException.getRuntimeException();
         baseException.setMsg(e.getMessage());
-        return new JsonResult<T>("failed", baseException.getCode(),baseException.getMsg(), Arrays.asList());
+        try{
+            ExceptionLog.exceptionLogHandle(baseException);
+            return new JsonResult<T>("failed", baseException.getCode(),baseException.getMsg(), Arrays.asList());
+        }catch (Exception e1){
+            return new JsonResult<T>("failed", "888",e1.getMessage(), Arrays.asList());
+        }
     }
     /**
      * quick method to return a JsonResult when FAILED
      * @return
      */
     public static <T> JsonResult<T> fail(BaseException e){
-        return new JsonResult<T>("failed", e.getCode(),e.getMsg(), Arrays.asList());
+        try {
+            ExceptionLog.exceptionLogHandle(e);
+            return new JsonResult<T>("failed", e.getCode(),e.getMsg(), Arrays.asList());
+        }catch (Exception e1){
+            return new JsonResult<T>("failed", "888",e1.getMessage(), Arrays.asList());
+        }
+
     }
 }

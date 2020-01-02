@@ -1,7 +1,9 @@
 package com.pccw.backend.ctrl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.pccw.backend.bean.JsonResult;
+import com.pccw.backend.bean.ResultRecode;
 import com.pccw.backend.bean.system.LoginBean;
 import com.pccw.backend.bean.system.TreeNode;
 import com.pccw.backend.entity.DbResAccount;
@@ -63,15 +65,12 @@ public class SystemCtrl extends BaseCtrl<DbResAccount> {
 
             //获取用户权限
             List<Long> rightIdList = getUserRightIds(rwe);
-
-            //构建所有权限的树形结构
-            HashMap<Long, TreeNode> nodeMap = getAllRightMap();
-
+            //根据权限id构建权限树
+            HashMap<Long, TreeNode> nodeMap = generateRightTree(rightIdList);
             //构建用户可操作权限的K,V(module，button)数据结构
             Map<String, List> accountButtonMap = getAccountButtonMap(rightIdList, nodeMap);
-
             //按照用户权限，筛选出对应菜单
-            List<TreeNode> userMenu = getUserMenu(rightIdList, nodeMap);
+            List<TreeNode> userMenu = getUserMenu(nodeMap);
 
             //处理存入redis的用户信息
             Map<String, Object> map = new HashMap<>();
@@ -96,7 +95,6 @@ public class SystemCtrl extends BaseCtrl<DbResAccount> {
             List<Object> list = new ArrayList();
             list.add(sessionId);
             list.add(userMenu);
-
             return JsonResult.success(list);
         } catch (Exception e) {
             return JsonResult.fail(e);
@@ -143,130 +141,39 @@ public class SystemCtrl extends BaseCtrl<DbResAccount> {
     }
 
     /**
-     * 构建用户可操作权限的K,V(module，button)数据结构
-     *
-     * @param rightIdList 登录人权限id
-     * @param nodeMap     所有权限的树形结构
-     * @return K, V(module ， button)
-     */
-    private Map<String, List> getAccountButtonMap(List<Long> rightIdList, HashMap<Long, TreeNode> nodeMap) {
-        Map<String, List> accountButtonMap = new HashMap<>();
-        HashMap<Long, TreeNode> map1 = new HashMap<>();
-        map1.putAll(nodeMap);
-        Iterator<Long> iterator = rightIdList.iterator();
-        while (iterator.hasNext()) {
-            Long key = iterator.next();
-            TreeNode treeNode = map1.get(key);
-
-            if (treeNode.getTpye().equals("Button")) {
-                TreeNode parentTreeNode = map1.get(treeNode.getParentId());
-//                if (accountButtonMap.containsKey(treeNode.getParentName())) {
-                if (accountButtonMap.containsKey(parentTreeNode.getIdentifier())){
-//                    List list = accountButtonMap.get(treeNode.getParentName());
-                    List list = accountButtonMap.get(parentTreeNode.getIdentifier());
-                    List nList = new ArrayList(list);
-                    nList.add(treeNode.getIdentifier());
-                    accountButtonMap.put(parentTreeNode.getIdentifier(),nList);
-//                    nList.add(treeNode.getName());
-//                    list.add(treeNode.getName());
-                } else {
-                    List list = new ArrayList();
-//                    list.add(treeNode.getName());
-                    list.add(treeNode.getIdentifier());
-//                    accountButtonMap.put(treeNode.getParentName(), list);
-                    accountButtonMap.put(parentTreeNode.getIdentifier(),list);
-                }
-            } else if (treeNode.getTpye().equals("Menu")) {
-//                accountButtonMap.put(treeNode.getName(), Arrays.asList());
-                accountButtonMap.put(treeNode.getIdentifier(),Arrays.asList());
-            } else if (treeNode.getTpye().equals("List")) {
-                List<TreeNode> children = treeNode.getChildren();
-                setListRight(accountButtonMap, children);
-            }
-        }
-        return accountButtonMap;
-    }
-
-    /**
-     *  递归寻找下级目录
-     * @param accountButtonMap
-     * @param children
-     */
-    private void setListRight(Map<String, List> accountButtonMap, List<TreeNode> children) {
-        for (int i = 0; i < children.size(); i++) {
-            if(children.get(i).getTpye().equals("Menu")){
-//                accountButtonMap.put(children.get(i).getName(), Arrays.asList());
-                accountButtonMap.put(children.get(i).getIdentifier(), Arrays.asList());
-            }else {
-                setListRight(accountButtonMap,children.get(i).getChildren());
-            }
-        }
-    }
-
-    /**
-     * 根据用户权限，筛选出对应的权限树
-     *
-     * @param rightIdList 登录人权限id
-     * @param nodeMap     所有权限的树形结构
-     * @return 对应权限的树
-     */
-    private List<TreeNode> getUserMenu(List<Long> rightIdList, HashMap<Long, TreeNode> nodeMap) {
-        Iterator<Long> idIterator = rightIdList.iterator();
-        Map<Long, TreeNode> accoutRightMap = new HashMap();
-        //如果有SMP最大权限则直接返回最大权限
-        if(rightIdList.contains(0L)){
-            return nodeMap.get(0L).getChildren().stream().sorted((n1,n2)->{
-                if(n1.getSortNo().longValue() >= n2.getSortNo().longValue()){
-                  return n1.getSortNo().compareTo(n2.getSortNo());
-                }else {
-                    return n1.getSortNo().compareTo(n2.getSortNo());
-                }
-            }).collect(Collectors.toList());
-        }
-        //找到当前节点的父节点，并把当前节点放入父节点，并递归
-        while (idIterator.hasNext()) {
-            Long key = idIterator.next();
-            TreeNode treeNode = nodeMap.get(key);
-            Long parentId = treeNode.getParentId();
-            if (treeNode.getTpye().equals("Button")) {//如果当前节点是Button，则从父节点开始递归
-                TreeNode parentNode = nodeMap.get(parentId);
-                parentNode.setChildren(Arrays.asList());
-                findParent(accoutRightMap, nodeMap, parentNode, parentNode.getParentId());
-
-            } else {
-                if (treeNode.getTpye().equals("Menu")) {
-                    treeNode.setChildren(Arrays.asList());
-                }
-                findParent(accoutRightMap, nodeMap, treeNode, parentId);
-            }
-        }
-        //构建返回到前端的菜单树
-        List<TreeNode> recode = accoutRightMap.values().stream().collect(Collectors.toList());
-        List<TreeNode> userMenu = recode.get(0).getChildren();
-        return userMenu.stream().sorted((n1,n2)->{
-            if(n1.getSortNo().longValue() >= n2.getSortNo().longValue()){
-                return n1.getSortNo().compareTo(n2.getSortNo());
-            }else {
-                return n1.getSortNo().compareTo(n2.getSortNo());
-            }
-        }).collect(Collectors.toList());
-    }
-
-    /**
-     * 构建所有权限的树形结构
-     *
+     * 构建用户菜单
+     * @param nodeMap
      * @return
      */
-    private HashMap<Long, TreeNode> getAllRightMap() {
-        //查询所有权限
-        List<DbResRight> allRight = rightRepository.findAll();
-        //构建TreeNode数据结构
-        List<TreeNode> nodes = allRight.stream().map(r -> {
-            DbResRight parentRight = rightRepository.findDbResRightById(r.getRightPid());
-            String moduleName = Objects.nonNull(parentRight) ? parentRight.getRightName() : null;
-            return new TreeNode(r.getId(), r.getRightPid(), r.getRightName(), moduleName, r.getRightUrl(), true, r.getRightType(),r.getRightIdentifier(),r.getSortNum(), new ArrayList<TreeNode>());
+    private List<TreeNode> getUserMenu(HashMap<Long, TreeNode> nodeMap) {
+        return nodeMap.get(0L).getChildren().stream().sorted((n1, n2) -> {
+            if (n1.getSortNo().longValue() >= n2.getSortNo().longValue()) {
+                return n1.getSortNo().compareTo(n2.getSortNo());
+            } else {
+                return n1.getSortNo().compareTo(n2.getSortNo());
+            }
+        }).collect(Collectors.toList());
+    }
+
+    /**
+     * 按照登录人权限构建树
+     * @param rightIdList
+     * @return
+     */
+    private HashMap<Long, TreeNode> generateRightTree(List<Long> rightIdList) {
+        //根据rightId，递归查找父节点和子节点
+        List<Map<String,Object>> rightTreeList = rightRepository.findRightTreeByIds(rightIdList);
+
+        List<Map<String, Object>> maps = ResultRecode.returnHumpNameForList(rightTreeList);
+        List<DbResRight> rights = maps.stream().map(r -> {
+            return JSON.parseObject(JSON.toJSONString(r), DbResRight.class);
         }).collect(Collectors.toList());
 
+        List<TreeNode> nodes = rights.stream().map(r -> {
+            DbResRight parentRight = rightRepository.findDbResRightById(r.getRightPid());
+            String moduleName = Objects.nonNull(parentRight) ? parentRight.getRightName() : null;
+            return new TreeNode(r.getId(), r.getRightPid(), r.getRightName(), moduleName, r.getRightUrl(), true, r.getRightType(), r.getRightIdentifier(), r.getSortNum(), new ArrayList<TreeNode>());
+        }).collect(Collectors.toList());
         //构建map
         Iterator<TreeNode> nodeIterator = nodes.iterator();
         HashMap<Long, TreeNode> nodeMap = new HashMap<Long, TreeNode>();
@@ -292,37 +199,56 @@ public class SystemCtrl extends BaseCtrl<DbResAccount> {
     }
 
     /**
-     * 寻找父节点
+     * 构建用户可操作权限的K,V(module，button)数据结构
      *
-     * @param accoutRightMap 用户权限的map
-     * @param nodeMap        所有权限的Map
-     * @param treeNode       当前节点
-     * @param parentId       父节点id
+     * @param rightIdList 登录人权限id
+     * @param nodeMap     所有权限的树形结构
+     * @return K, V(module ， button)
      */
-    private void findParent(Map<Long, TreeNode> accoutRightMap, HashMap<Long, TreeNode> nodeMap, TreeNode treeNode, Long parentId) {
-        if (nodeMap.containsKey(parentId)) {
-            TreeNode parentNode = new TreeNode();
-            if (accoutRightMap.containsKey(parentId)) {
-                parentNode = accoutRightMap.get(parentId);
-                List<TreeNode> children = parentNode.getChildren();
+    private Map<String, List> getAccountButtonMap(List<Long> rightIdList, HashMap<Long, TreeNode> nodeMap) {
+        Map<String, List> accountButtonMap = new HashMap<>();
+        HashMap<Long, TreeNode> map1 = new HashMap<>();
+        map1.putAll(nodeMap);
+        Iterator<Long> iterator = rightIdList.iterator();
+        while (iterator.hasNext()) {
+            Long key = iterator.next();
+            TreeNode treeNode = map1.get(key);
 
-                List<Long> ids = children.stream().map(r -> {
-                    return r.getId();
-                }).collect(Collectors.toList());
-
-                if (!ids.contains(treeNode.getId())) {
-                    children.add(treeNode);
+            if (treeNode.getTpye().equals("Button")) {
+                TreeNode parentTreeNode = map1.get(treeNode.getParentId());
+                if (accountButtonMap.containsKey(parentTreeNode.getIdentifier())){
+                    List list = accountButtonMap.get(parentTreeNode.getIdentifier());
+                    List nList = new ArrayList(list);
+                    nList.add(treeNode.getIdentifier());
+                    accountButtonMap.put(parentTreeNode.getIdentifier(),nList);
+                } else {
+                    List list = new ArrayList();
+                    list.add(treeNode.getIdentifier());
+                    accountButtonMap.put(parentTreeNode.getIdentifier(),list);
                 }
-
-            } else {
-                parentNode = nodeMap.get(parentId);
-                List list = new ArrayList();
-                list.add(treeNode);
-                parentNode.setChildren(list);
+            } else if (treeNode.getTpye().equals("Menu")) {
+                accountButtonMap.put(treeNode.getIdentifier(),Arrays.asList());
+            } else if (treeNode.getTpye().equals("List")) {
+                List<TreeNode> children = treeNode.getChildren();
+                setListRight(accountButtonMap, children);
             }
-            accoutRightMap.put(parentId, parentNode);
-            Long pId = parentNode.getParentId();
-            findParent(accoutRightMap, nodeMap, parentNode, pId);
+        }
+        return accountButtonMap;
+    }
+
+    /**
+     *  递归寻找下级目录
+     * @param accountButtonMap
+     * @param children
+     */
+    private void setListRight(Map<String, List> accountButtonMap, List<TreeNode> children) {
+        for (int i = 0; i < children.size(); i++) {
+            if(children.get(i).getTpye().equals("Menu")){
+                accountButtonMap.put(children.get(i).getIdentifier(), Arrays.asList());
+            }else {
+                setListRight(accountButtonMap,children.get(i).getChildren());
+            }
         }
     }
+
 }

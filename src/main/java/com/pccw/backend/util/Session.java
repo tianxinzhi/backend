@@ -102,7 +102,7 @@ public class Session<T> {
      * @return
      */
     public <T> T getUser(){
-        return get(request.getHeader("TOKEN"));
+        return this.<T>get(request.getHeader("TOKEN"));
     }
 
     /**

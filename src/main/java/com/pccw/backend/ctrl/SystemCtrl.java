@@ -35,7 +35,7 @@ import javax.servlet.http.HttpSession;
 
 @Slf4j
 @RestController
-@CrossOrigin(methods = RequestMethod.POST, origins = "*", allowCredentials = "false")
+@CrossOrigin(methods = {RequestMethod.POST,RequestMethod.GET}, origins = "*", allowCredentials = "false")
 @RequestMapping("system")
 @Api(value = "SystemCtrl", tags = {"system"})
 public class SystemCtrl extends BaseCtrl<DbResAccount> {
@@ -110,6 +110,22 @@ public class SystemCtrl extends BaseCtrl<DbResAccount> {
         } catch (Exception e) {
             return JsonResult.fail(e);
         }
+    }
+
+    @ApiOperation(value = "提交right变更时，更新用户菜单", tags = {"system"}, notes = "注意问题点")
+    @RequestMapping(method = RequestMethod.GET,value = "/menuReload")
+    public JsonResult menuReload(){
+        Map user = (Map)session.getUser();
+        String accountId = user.get("account").toString();
+        long id = Long.parseLong(accountId);
+        DbResAccount account = repo.findDbResAccountById(id);
+        //获取用户权限
+        List<Long> rightIdList = getUserRightIds(account);
+        //根据权限id构建权限树
+        HashMap<Long, TreeNode> nodeMap = generateRightTree(rightIdList);
+        //按照用户权限，筛选出对应菜单
+        List<TreeNode> userMenu = getUserMenu(nodeMap);
+        return JsonResult.success(userMenu);
     }
 
     /**

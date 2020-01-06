@@ -71,7 +71,8 @@ public class Stock_MovementCtrl extends BaseCtrl<DbResProcess> {
             Sort sort = new Sort(Sort.Direction.DESC,"id");
             ArrayList<Map> list = new ArrayList<>();
             List<DbResProcess> res = processRepo.findAll(spec, PageRequest.of(b.getPageIndex(),b.getPageSize(),sort)).getContent();
-            res.forEach(p-> {
+            if(!Objects.isNull(res) && res.size() > 0){
+            for(DbResProcess p:res){
                 Map map = JSON.parseObject(JSON.toJSONString(p), Map.class);
                 map.put("createAccountName",getAccountName(p.getCreateBy()));
                 //movemenet根据不同的nature显示不同的详情
@@ -83,8 +84,9 @@ public class Stock_MovementCtrl extends BaseCtrl<DbResProcess> {
                     List<DbResLogReplDtl> line = dbResLogRepl.getLine();
                     ArrayList<Object> skuQtyList = new ArrayList<>();
                     for(DbResLogReplDtl dtl:line){
+                        StringBuilder sb = new StringBuilder();
                         String skuName = skuRepo.findById(dtl.getDtlSkuId()).get().getSkuName();
-                        String skuQtyString = "SkuName"+": "+skuName+" , Qty"+": "+dtl.getDtlQty();
+                        String skuQtyString = sb.append("SkuName: ").append(skuName).append(" , Qty: ").append(dtl.getDtlQty()).toString();
                         skuQtyList.add(skuQtyString);
                     }
                     map.put("sku",skuQtyList);
@@ -96,8 +98,9 @@ public class Stock_MovementCtrl extends BaseCtrl<DbResProcess> {
                             || StaticVariable.LOGORDERNATURE_STOCK_TAKE_ADJUSTMENT.equals(p.getLogOrderNature())){
                         map.put("repoName",fromName);
                     }else{
+                        StringBuilder sb = new StringBuilder();
                         String toName = repoRepo.findById(dbResLogMgt.getLogRepoIn()).get().getRepoName();
-                        map.put("repoName","From: "+fromName+" , To: "+toName);
+                        map.put("repoName",sb.append("From: ").append(fromName).append(" , To: ").append(toName).toString());
                     }
                     List<DbResLogMgtDtl> line = dbResLogMgt.getLine();
                     ArrayList<Object> skuQtyList = new ArrayList<>();
@@ -108,10 +111,10 @@ public class Stock_MovementCtrl extends BaseCtrl<DbResProcess> {
                             if(StaticVariable.LOGORDERNATURE_STOCK_OUT_STS.equals(p.getLogOrderNature())
                                     ||StaticVariable.LOGORDERNATURE_STOCK_OUT_STW.equals(p.getLogOrderNature())){
                                 if(StaticVariable.DTLSUBIN_GOOD.equals(dtl.getDtlSubin())){
-                                    skuQtyString = "SkuName"+": "+skuName+" , Qty"+": "+dtl.getDtlQty();
+                                    skuQtyString = "SkuName: "+skuName+" , Qty: "+dtl.getDtlQty();
                                 }
                             }else{
-                                skuQtyString = "SkuName"+": "+skuName+" , Qty"+": "+dtl.getDtlQty();
+                                skuQtyString = "SkuName: "+skuName+" , Qty: "+dtl.getDtlQty();
                             }
                             if(!"".equals(skuQtyString)){
                                 skuQtyList.add(skuQtyString);
@@ -119,10 +122,12 @@ public class Stock_MovementCtrl extends BaseCtrl<DbResProcess> {
                         }
                     }else{
                         for (int i = 0; i <line.size(); i=i+2) {
+                            StringBuilder sb = new StringBuilder();
                             String skuQtyString = "";
                             String skuName = skuRepo.findById(line.get(i).getDtlSkuId()).get().getSkuName();
-                            skuQtyString = "SkuName"+": "+skuName+" , Qty"+": "+line.get(i).getDtlQty()
-                                    +" , From StockCategory: "+line.get(i).getDtlSubin()+" , To StockCategory: "+line.get(i+1).getDtlSubin();
+                            skuQtyString = sb.append("SkuName: ").append(skuName).append(" , Qty: ").append(line.get(i).getDtlQty()).append(" , From StockCategory: ").append(line.get(i).getDtlSubin())
+                                    .append(" , To StockCategory: ")
+                                    .append(line.get(i+1).getDtlSubin()).toString();
                             skuQtyList.add(skuQtyString);
                         }
                     }
@@ -130,7 +135,7 @@ public class Stock_MovementCtrl extends BaseCtrl<DbResProcess> {
                 }
 
                 list.add(map);
-            });
+            }};
             return JsonResult.success(list);
         } catch (Exception e) {
             log.info(e.getMessage());

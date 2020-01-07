@@ -51,11 +51,9 @@ public class Auth_RightCtrl extends BaseCtrl<DbResRight> implements ICheck {
     @ApiOperation(value="搜索权限",tags={"auth_right"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST,path="/search")
     public JsonResult search(@RequestBody @Valid SearchBean b) {
-//        b.setPageSize(200);
         try {
             Specification<DbResRight> spec = Convertor.convertSpecification(b);
             List<DbResRight> res = repo.findAll(spec).stream().filter(r-> Objects.nonNull(r.getRightPid())).collect(Collectors.toList());
-//        return this.search(repo, b);
             return JsonResult.success(res);
         } catch (IllegalAccessException e) {
             return JsonResult.fail(e);

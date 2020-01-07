@@ -60,6 +60,7 @@ public class Stock_AdjustmentCtrl extends BaseCtrl<DbResLogMgt> {
             if(bean.getReason()!=0){
                 ent.setAdjustReasonId(bean.getReason());
             } else {
+                //自定义adjust Reason时插入新数据
                 DbResAdjustReason resAdjustReason = new DbResAdjustReason();
                 resAdjustReason.setAdjustReasonName("Other Reason");
                 resAdjustReason.setRemark(bean.getRemark());
@@ -124,6 +125,10 @@ public class Stock_AdjustmentCtrl extends BaseCtrl<DbResLogMgt> {
         }
     }
 
+    /**
+     * process完成后更新sku库存
+     * @param logTxtBum
+     */
     public void UpdateSkuRepoQty(String logTxtBum) {
         DbResLogMgt bean = logMgtRepository.findDbResLogMgtByLogTxtBum(logTxtBum);
         for(DbResLogMgtDtl dtl:bean.getLine()) {

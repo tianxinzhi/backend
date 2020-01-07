@@ -149,6 +149,12 @@ public class WorkFlow_FlowCtrl extends BaseCtrl<DbResFlow> implements ICheck {
         return this.disable(repo,ids,WorkFlow_FlowCtrl.class);
     }
 
+    @ApiOperation(value="启用workflow_flow",tags={"workflow_flow"},notes="注意问题点")
+    @RequestMapping(method = RequestMethod.POST,value = "/enable")
+    public JsonResult enable(@RequestBody BaseDeleteBean ids) {
+        return this.enable(repo,ids);
+    }
+
     @Override
     public long checkCanDisable(Object obj, BaseRepository... check) {
         return 0;

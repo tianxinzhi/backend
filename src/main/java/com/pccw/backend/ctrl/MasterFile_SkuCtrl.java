@@ -216,7 +216,9 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> implements ICheck {
                 EditBean ebean = new EditBean();
                 ebean.setId(sku.getId());
                 JsonResult typeResult =  skuSearch(ebean);
+                //前端详情展示attr
                 List<Map> attrDataMap = new LinkedList<>();
+                //sku组件数据结构
                 List<Map> tableDatas = new LinkedList<>();
                 if(typeResult.getData()!=null && typeResult.getData().size()>0) {
                     ResultBean resultBean = (ResultBean) typeResult.getData().get(0);
@@ -387,6 +389,12 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> implements ICheck {
     @RequestMapping(method = RequestMethod.POST,value = "/disable")
     public JsonResult disable(@RequestBody BaseDeleteBean ids) {
         return this.disable(skuRepo,ids,MasterFile_SkuCtrl.class,skuRepoRepository);
+    }
+
+    @ApiOperation(value="启用sku",tags={"masterfile_sku"},notes="注意问题点")
+    @RequestMapping(method = RequestMethod.POST,value = "/enable")
+    public JsonResult enable(@RequestBody BaseDeleteBean ids) {
+        return this.enable(skuRepo,ids);
     }
 
     @Override

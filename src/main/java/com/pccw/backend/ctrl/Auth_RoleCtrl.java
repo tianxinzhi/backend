@@ -167,6 +167,12 @@ public class Auth_RoleCtrl extends BaseCtrl<DbResRole> implements ICheck {
         return this.disable(repo,ids,Auth_RoleCtrl.class,accountRoleRepository);
     }
 
+    @ApiOperation(value="启用auth_role",tags={"auth_role"},notes="注意问题点")
+    @RequestMapping(method = RequestMethod.POST,value = "/enable")
+    public JsonResult enable(@RequestBody BaseDeleteBean ids) {
+        return this.enable(repo,ids);
+    }
+
     @Override
     public long checkCanDisable(Object obj, BaseRepository... check) {
         ResAccountRoleRepository tRepo = (ResAccountRoleRepository)check[0];

@@ -65,6 +65,12 @@ public class MasterFile_AdjustReasonCtrl extends BaseCtrl<DbResAdjustReason> imp
         return this.disable(repo,ids,MasterFile_AdjustReasonCtrl.class,mgtRepository);
     }
 
+    @ApiOperation(value="启用adjust_reason",tags={"masterfile_adjust_reason"},notes="注意问题点")
+    @RequestMapping(method = RequestMethod.POST,value = "/enable")
+    public JsonResult enable(@RequestBody BaseDeleteBean ids) {
+        return this.enable(repo,ids);
+    }
+
     @Override
     public long checkCanDisable(Object obj, BaseRepository... check) {
         ResLogMgtRepository tRepo = (ResLogMgtRepository)check[0];

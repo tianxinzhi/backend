@@ -8,7 +8,9 @@ import com.pccw.backend.exception.BaseException;
 import com.pccw.backend.util.Session;
 
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
+import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
@@ -74,4 +76,32 @@ public class CheckRightAspect {
         // throw BaseException.getNoLoginException();
         
     }
+
+    /**
+     * 方法执行时间
+     * @return
+     *//*
+    @Around("pointcut()")
+    public Object aroundMethod(ProceedingJoinPoint joinPoint){
+        long beginTime = System.currentTimeMillis();
+
+        //请求的方法名
+        String className = joinPoint.getTarget().getClass().getName();
+        String methodName = joinPoint.getSignature().getName();
+        String loggerType = className + "." + methodName;
+
+        Object result = null;
+        try {
+            //执行目标方法
+            result = joinPoint.proceed();
+//            System.out.println("【返回通知】：the method 【" + loggerType + "】 ends with " + result);
+        } catch (Throwable e) {
+            System.out.println("【异常通知】：the method 【" + loggerType + "】 occurs exception " + e);
+        }
+
+        // 执行时长(毫秒)
+        long time = System.currentTimeMillis() - beginTime;
+        System.out.println("【后置通知】：the method 【" + loggerType + "】-----------------end.----------------- time:" + time+"ms");
+        return result;
+    }*/
 }

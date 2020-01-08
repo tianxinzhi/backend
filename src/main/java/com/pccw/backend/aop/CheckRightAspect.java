@@ -52,8 +52,7 @@ public class CheckRightAspect {
         //打印请求参数
         log.info(method + ":" + params);
         // 【1】获取session关于account相关right
-        Object user = session.getUser();
-        Map<String,Map<String, List<String>>> map = JSONObject.parseObject(JSONObject.toJSONString(user), Map.class);
+        Map<String,Map<String, List<String>>> map = (Map<String,Map<String, List<String>>>)session.getUser();
         Map<String, List<String>> rightMap = map.get("right");
 //        // 【2】获取ctrl名称（模块名称）和ctrl方法的路由（模块按钮）
         String className = joinPoint.getTarget().getClass().getName();

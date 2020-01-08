@@ -39,6 +39,10 @@ public class ExceptionLog{
         request = rq;
     }
 
+    /**
+     * 将异常日志插入日志表中
+     * @param e
+     */
     public static void exceptionLogHandle(BaseException e){
             Map user = session.getUser();
             Long accountId = null;

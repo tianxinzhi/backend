@@ -4,6 +4,7 @@ package com.pccw.backend.ctrl;
 import com.pccw.backend.bean.JsonResult;
 import com.pccw.backend.bean.StaticVariable;
 import com.pccw.backend.bean.stock_category.CategoryLogMgtBean;
+import com.pccw.backend.bean.stock_threshold.EditBean;
 import com.pccw.backend.bean.stock_threshold.SearchBean;
 import com.pccw.backend.bean.stock_threshold.ThresholdLogMgtBean;
 import com.pccw.backend.entity.*;
@@ -45,17 +46,17 @@ public class Stock_ThresholdCtrl extends BaseCtrl<DbResLogMgt> {
             }
             JsonResult jsonResult = this.create(resLogMgtRepository, DbResLogMgt.class, b);
             //创建工作流对象
-//            if(jsonResult.getCode().equals("000")) {
-//                DbResProcess process = new DbResProcess();
-//                process.setLogTxtBum(b.getLogTxtBum());
-//                process.setRepoId(b.getLogRepoOut());
-//                process.setRemark(b.getRemark());
-//                process.setCreateAt(t);
-//                process.setUpdateAt(t);
-//                process.setLogOrderNature(b.getLogOrderNature());
-//                //生成工作流数据
-//                processProcessCtrl.joinToProcess(process);
-//            }
+            if(jsonResult.getCode().equals("000")) {
+                DbResProcess process = new DbResProcess();
+                process.setLogTxtBum(b.getLogTxtBum());
+                process.setRepoId(b.getLogRepoOut());
+                process.setRemark(b.getRemark());
+                process.setCreateAt(t);
+                process.setUpdateAt(t);
+                process.setLogOrderNature(b.getLogOrderNature());
+                //生成工作流数据
+                processProcessCtrl.joinToProcess(process);
+            }
             return jsonResult;
         } catch (Exception e) {
             return JsonResult.fail(e);
@@ -68,8 +69,32 @@ public class Stock_ThresholdCtrl extends BaseCtrl<DbResLogMgt> {
         try {
             String repoId = Objects.isNull(b.getRepoId()) ? "" : b.getRepoId();
             String skuId = Objects.isNull(b.getSkuId()) ? "" : b.getSkuId();
+            //查询所有预警数据
             List<Map> list = resLogMgtRepository.getStockThreshold(repoId,skuId);
             return JsonResult.success(list);
+        } catch (Exception e) {
+            return JsonResult.fail(e);
+        }
+    }
+
+    @ApiOperation(value="编辑threshold",tags={"stock_threshold"},notes="注意问题点")
+    @RequestMapping(method = RequestMethod.POST, path = "/edit")
+    public JsonResult edit(@RequestBody EditBean b) {
+        try {
+            long t = new Date().getTime();
+            resLogMgtRepository.updateDbResLogMgtDtlById(b.getQtyy(),b.getId());
+            //创建工作流对象
+            DbResProcess dbResProcess = new DbResProcess();
+            dbResProcess.setLogTxtBum(b.getLogTxtBum());
+            dbResProcess.setRepoId(b.getRepoId());
+            dbResProcess.setRemark(b.getRemark());
+            dbResProcess.setCreateAt(t);
+            dbResProcess.setUpdateAt(t);
+            dbResProcess.setLogOrderNature(StaticVariable.LOGORDERNATURE_STOCK_THRESHOLD);
+            //生成工作流数据
+            processProcessCtrl.joinToProcess(dbResProcess);
+
+            return JsonResult.success(Arrays.asList());
         } catch (Exception e) {
             return JsonResult.fail(e);
         }

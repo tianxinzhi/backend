@@ -15,7 +15,9 @@ import javax.validation.Valid;
 import com.pccw.backend.bean.BaseDeleteBean;
 
 import com.pccw.backend.repository.ResRoleRightRepository;
+import com.pccw.backend.util.Convertor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,6 +29,8 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * AuthRightCtrl
@@ -47,8 +51,13 @@ public class Auth_RightCtrl extends BaseCtrl<DbResRight> implements ICheck {
     @ApiOperation(value="搜索权限",tags={"auth_right"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST,path="/search")
     public JsonResult search(@RequestBody @Valid SearchBean b) {
-        b.setPageSize(200);
-        return this.search(repo, b);
+        try {
+            Specification<DbResRight> spec = Convertor.convertSpecification(b);
+            List<DbResRight> res = repo.findAll(spec).stream().filter(r-> Objects.nonNull(r.getRightPid())).collect(Collectors.toList());
+            return JsonResult.success(res);
+        } catch (IllegalAccessException e) {
+            return JsonResult.fail(e);
+        }
     }
     
     @RequestMapping(method = RequestMethod.POST,path = "/delete")
@@ -73,6 +82,12 @@ public class Auth_RightCtrl extends BaseCtrl<DbResRight> implements ICheck {
     @RequestMapping(method = RequestMethod.POST,value = "/disable")
     public JsonResult disable(@RequestBody BaseDeleteBean ids) {
         return this.disable(repo,ids,Auth_RightCtrl.class,roleRightRepository);
+    }
+
+    @ApiOperation(value="启用auth_right",tags={"auth_right"},notes="注意问题点")
+    @RequestMapping(method = RequestMethod.POST,value = "/enable")
+    public JsonResult enable(@RequestBody BaseDeleteBean ids) {
+        return this.enable(repo,ids);
     }
 
     @Override

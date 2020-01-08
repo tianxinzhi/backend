@@ -18,7 +18,7 @@ import java.util.Objects;
  * Desc: 异常日志处理
  */
 @Component
-public class ExceptionLog extends Exception{
+public class ExceptionLog{
 
     @Autowired
     private ResExceptionLogRepository relr;

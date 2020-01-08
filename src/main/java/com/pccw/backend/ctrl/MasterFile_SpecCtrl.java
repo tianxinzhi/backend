@@ -175,6 +175,12 @@ public class MasterFile_SpecCtrl extends BaseCtrl<DbResSpec> implements ICheck {
         return this.disable(repo,ids,MasterFile_SpecCtrl.class,typeSkuSpecRepository);
     }
 
+    @ApiOperation(value="启用spec",tags={"masterfile_spec"},notes="注意问题点")
+    @RequestMapping(method = RequestMethod.POST,value = "/enable")
+    public JsonResult enable(@RequestBody BaseDeleteBean ids) {
+        return this.enable(repo,ids);
+    }
+
 
     @Override
     public long checkCanDisable(Object obj, BaseRepository... check) {

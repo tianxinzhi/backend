@@ -28,7 +28,7 @@ public class DbResProcess extends Base{
     @Column(name = "process_status")
     private String processStatus;
 
-    @Column(name = "log_orderNature", length = 8)
+    @Column(name = "log_orderNature",length = 512)
     private String logOrderNature;
 
     @Column(name = "flow_id")

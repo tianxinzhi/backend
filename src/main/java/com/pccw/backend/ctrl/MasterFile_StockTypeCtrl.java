@@ -69,6 +69,12 @@ public class MasterFile_StockTypeCtrl extends BaseCtrl<DbResStockType> implement
         return this.disable(repo,ids,MasterFile_StockTypeCtrl.class,skuRepoRepository);
     }
 
+    @ApiOperation(value="启用stock_type",tags={"masterfile_stock_type"},notes="注意问题点")
+    @RequestMapping(method = RequestMethod.POST,value = "/enable")
+    public JsonResult enable(@RequestBody BaseDeleteBean ids) {
+        return this.enable(repo,ids);
+    }
+
     @Override
     public long checkCanDisable(Object obj, BaseRepository... check) {
         ResSkuRepoRepository tRepo = (ResSkuRepoRepository)check[0];

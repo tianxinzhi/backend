@@ -143,6 +143,12 @@ public class Auth_AccountCtrl extends BaseCtrl<DbResAccount> implements ICheck {
         return this.disable(repo,ids,Auth_AccountCtrl.class);
     }
 
+    @ApiOperation(value="启用auth_account",tags={"auth_account"},notes="注意问题点")
+    @RequestMapping(method = RequestMethod.POST,value = "/enable")
+    public JsonResult enable(@RequestBody BaseDeleteBean ids) {
+        return this.enable(repo,ids);
+    }
+
     @Override
     public long checkCanDisable(Object obj, BaseRepository... check) {
         return 0;

@@ -70,6 +70,12 @@ public class MasterFile_RepoCtrl extends BaseCtrl<DbResRepo> implements ICheck {
         return this.disable(repo,ids,MasterFile_RepoCtrl.class,skuRepoRepository);
     }
 
+    @ApiOperation(value="启用repo",tags={"masterfile_repo"},notes="注意问题点")
+    @RequestMapping(method = RequestMethod.POST,value = "/enable")
+    public JsonResult enable(@RequestBody BaseDeleteBean ids) {
+        return this.enable(repo,ids);
+    }
+
     @Override
     public long checkCanDisable(Object obj, BaseRepository... check) {
         ResSkuRepoRepository tRepo = (ResSkuRepoRepository)check[0];

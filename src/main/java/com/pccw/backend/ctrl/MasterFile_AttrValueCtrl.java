@@ -60,11 +60,13 @@ public class MasterFile_AttrValueCtrl extends BaseCtrl<DbResAttrValue> implement
     @ApiOperation(value="禁用attr_value",tags={"masterfile_attr_value"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST,value = "/disable")
     public JsonResult disable(@RequestBody BaseDeleteBean ids) {
-//        long id =checkCanDisable(attrAttrValueRepository,ids);
-//        if(id>0){
-//            return JsonResult.fail(BaseException.getDataUsedException(id));
-//        }
         return this.disable(repo,ids,MasterFile_AttrValueCtrl.class,attrAttrValueRepository);
+    }
+
+    @ApiOperation(value="启用attr_value",tags={"masterfile_attr_value"},notes="注意问题点")
+    @RequestMapping(method = RequestMethod.POST,value = "/enable")
+    public JsonResult enable(@RequestBody BaseDeleteBean ids) {
+        return this.enable(repo,ids);
     }
 
     @Override

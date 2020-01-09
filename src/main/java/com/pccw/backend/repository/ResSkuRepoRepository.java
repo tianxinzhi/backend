@@ -48,18 +48,23 @@ public interface  ResSkuRepoRepository extends BaseRepository<DbResSkuRepo>{
     @Query(value = "update res_sku_repo set qty = qty + ?4 where repo_id = ?1 and sku_id = ?2 and stock_type_id = ?3",nativeQuery = true)
     int updateQtyByRepoAndShopAndTypeAndQty(@Param("shop") long shop,@Param("sku") long sku,@Param("stockType")long stockType,@Param("qty")long qty);
 
+
+    /**
+     * @param id
+     * @param repoType
+     * repoTo类型是商店，查询stock_type为Available(AVL) ；repoTo类型是仓库，查询所有；
+     * @return
+     */
     @Query(value = "select rs.id  dtl_Sku_Id, rs.sku_code  sku_Code from res_sku rs \n" +
             "where exists \n" +
             "    (select * from res_sku_repo  rsr\n" +
             "       where rsr.repo_id= ?1 and  rsr.sku_id=rs.id\n" +
             "        and rsr.stock_type_id =\n" +
-            "         decode( (select count(1)  \n" +
-            "                  from res_repo tor\n" +
-            "                  where tor.id= ?2  and tor.repo_type='W' )\n" +
-            "                   ,0\n" +
+            "         decode(    ?2 \n" +
+            "                   ,'S' \n" +
             "                   ,3\n" +
             "                   ,rsr.stock_type_id ) )",nativeQuery = true)
-    List<Map<String, Object>> findByTypeIdAndRepoId(@Param("idFrom") Long id, @Param("idTo") Long idTo);
+    List<Map<String, Object>> findByTypeIdAndRepoId(@Param("idFrom") Long id, @Param("repoType") String repoType);
 
     List<DbResSkuRepo> findDbResSkuRepoByRepo(DbResRepo repo);
 

@@ -18,7 +18,7 @@ import java.util.Objects;
  * Desc: 异常日志处理
  */
 @Component
-public class ExceptionLog extends Exception{
+public class ExceptionLog{
 
     @Autowired
     private ResExceptionLogRepository relr;
@@ -39,6 +39,10 @@ public class ExceptionLog extends Exception{
         request = rq;
     }
 
+    /**
+     * 将异常日志插入日志表中
+     * @param e
+     */
     public static void exceptionLogHandle(BaseException e){
             Map user = session.getUser();
             Long accountId = null;

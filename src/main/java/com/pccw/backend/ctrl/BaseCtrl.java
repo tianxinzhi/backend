@@ -7,12 +7,9 @@ import com.pccw.backend.bean.*;
 import com.pccw.backend.cusinterface.ICheck;
 import com.pccw.backend.entity.Base;
 import com.pccw.backend.entity.DbResAccount;
-import com.pccw.backend.entity.DbResAttrAttrValue;
-import com.pccw.backend.entity.DbResAttrValue;
 import com.pccw.backend.exception.BaseException;
 import com.pccw.backend.repository.BaseRepository;
 import com.pccw.backend.repository.ResAccountRepository;
-import com.pccw.backend.repository.ResAttrAttrValueRepository;
 import com.pccw.backend.util.Convertor;
 
 import com.pccw.backend.util.Session;
@@ -117,6 +114,22 @@ public class BaseCtrl<T>{
             for (Long priKey : ids.getIds()) {
                 Base base = (Base)repo.findById(priKey).get();
                 base.setActive("N");
+                base.setUpdateAt(System.currentTimeMillis());
+                base.setUpdateBy(getAccount());
+                repo.saveAndFlush(base);
+            }
+            return JsonResult.success(Arrays.asList());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return JsonResult.fail(e);
+        }
+    }
+
+    public JsonResult enable(BaseRepository repo, BaseDeleteBean ids) {
+        try {
+            for (Long priKey : ids.getIds()) {
+                Base base = (Base)repo.findById(priKey).get();
+                base.setActive("Y");
                 base.setUpdateAt(System.currentTimeMillis());
                 base.setUpdateBy(getAccount());
                 repo.saveAndFlush(base);

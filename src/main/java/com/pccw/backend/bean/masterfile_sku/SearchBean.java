@@ -27,9 +27,5 @@ public class SearchBean extends BaseSearchBean {
     @PredicateAnnotation(type = PredicateType.LIKE)
     @ApiModelProperty(value="sku详情",name="skuDesc",example="")
     private String skuDesc;
-
-    private long type;
-
-    private long sku;
 //    private List<DbResSkuType> skuTypeList;
 }

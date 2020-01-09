@@ -30,6 +30,10 @@ public class SearchBean{
     @ApiModelProperty(value="Txtnumber",name="logTxtBum",example="")
     private String logTxtBum;
 
+    //@PredicateAnnotation(type = PredicateType.LIKE)
+    @ApiModelProperty(value="filter",name="filter",example="")
+    private String filter;
+
     @PredicateAnnotation(type = PredicateType.BETWEEN)
     @ApiModelProperty(value="数据库中的时间查询范围",name="createAt",example="")
     private String[] createAt;

@@ -123,6 +123,12 @@ public class MasterFile_ClassCtrl extends BaseCtrl<DbResClass> implements ICheck
         return this.disable(repo,ids,MasterFile_ClassCtrl.class,repo);
     }
 
+    @ApiOperation(value="启用class",tags={"masterfile_class"},notes="注意问题点")
+    @RequestMapping(method = RequestMethod.POST,value = "/enable")
+    public JsonResult enable(@RequestBody BaseDeleteBean ids) {
+        return this.enable(repo,ids);
+    }
+
     @Override
     public long checkCanDisable(Object obj, BaseRepository... check) {
         ResClassRepository tRepo = (ResClassRepository)check[0];

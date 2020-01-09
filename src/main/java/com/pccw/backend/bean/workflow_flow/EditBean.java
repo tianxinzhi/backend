@@ -26,7 +26,7 @@ public class EditBean extends BaseBean {
 
     private String flowNature;
 
-    @ApiModelProperty(value="dtlList",name="dtlList",example="")
+    @ApiModelProperty(value="resFlowStepList",name="resFlowStepList",example="")
     private List<FlowStepEditBean> resFlowStepList;
 
 }

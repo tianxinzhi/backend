@@ -240,6 +240,12 @@ public class MasterFile_TypeCtrl extends BaseCtrl<DbResType> implements ICheck {
         return this.disable(repo,ids,MasterFile_TypeCtrl.class,repo);
     }
 
+    @ApiOperation(value="启用type",tags={"masterfile_type"},notes="注意问题点")
+    @RequestMapping(method = RequestMethod.POST,value = "/enable")
+    public JsonResult enable(@RequestBody BaseDeleteBean ids) {
+        return this.enable(repo,ids);
+    }
+
     @Override
     public long checkCanDisable(Object obj, BaseRepository... check) {
         ResTypeRepository repo = (ResTypeRepository)check[0];

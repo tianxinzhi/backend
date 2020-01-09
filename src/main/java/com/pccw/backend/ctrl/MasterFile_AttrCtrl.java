@@ -126,6 +126,7 @@ public class MasterFile_AttrCtrl extends BaseCtrl<DbResAttr> implements ICheck {
             List<DbResAttr> attrList = repo.findAll(spec,PageRequest.of(bean.getPageIndex(),bean.getPageSize())).getContent();
             List<ResultBean> resultBeans = new LinkedList<>();
             for (DbResAttr resAttr : attrList) {
+                //attr数据展示
                 List<Map> attrDataMap = new LinkedList<>();
                 ResultBean resultBean = new ResultBean();
                 BeanUtils.copyProperties(resAttr,resultBean);
@@ -191,6 +192,12 @@ public class MasterFile_AttrCtrl extends BaseCtrl<DbResAttr> implements ICheck {
     @RequestMapping(method = RequestMethod.POST,value = "/disable")
     public JsonResult disable(@RequestBody BaseDeleteBean ids) {
         return this.disable(repo,ids,MasterFile_AttrCtrl.class,specAttrRepository);
+    }
+
+    @ApiOperation(value="启用attr",tags={"masterfile_attr"},notes="注意问题点")
+    @RequestMapping(method = RequestMethod.POST,value = "/enable")
+    public JsonResult enable(@RequestBody BaseDeleteBean ids) {
+        return this.enable(repo,ids);
     }
 
     @Override

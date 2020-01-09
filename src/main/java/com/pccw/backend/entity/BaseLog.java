@@ -28,7 +28,7 @@ public class BaseLog extends Base{
         // SIWPO(stock in without PO)
         // ST(Stock Take) / STA(Stock Take Adjustment) 
         // SCC(stock change category)
-        @Column(name = "log_orderNature", length = 8)
+        @Column(name = "log_orderNature", length = 512)
         private String logOrderNature;
         
         // W - waiting LIS to handle / D - Done

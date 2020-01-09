@@ -116,55 +116,74 @@ public class Process_ProcessCtrl extends BaseCtrl{
     @RequestMapping(method = RequestMethod.POST,path = "/search")
     public JsonResult search(@RequestBody SearchBean bean){
         try {
-            List<DbResProcess> res = getDbResProcesses(bean);
             Map user = session.getUser();
             String roles = user.get("role").toString();
-            List<RecodeBean> list = getRecodes(res,roles);
+            List<DbResProcess> res  =new ArrayList<DbResProcess>();
+            if(bean.getFilter()!=null&&bean.getFilter().equals("Pending For Me")){
+                timeRangeHandle(bean);
+                String nature = bean.getLogOrderNature() == null ? "" : bean.getLogOrderNature();
+                String repoId = bean.getRepoId() == null ? "" : String.valueOf(bean.getRepoId());
+                String txtNum = bean.getLogTxtBum() == null ? "" : bean.getLogTxtBum();
+                Long accountId =  Long.parseLong(user.get("account").toString());
+                //查询当前登陆人的role 可处理 审批step当前状态是PENDING的process
+                List<Long> ids = processRepository.findIdsByPending(accountId,nature,repoId,txtNum,Long.parseLong(bean.getCreateAt()[0]),Long.parseLong(bean.getCreateAt()[1]));
+                res = processRepository.findDbResProcessesByIdIn(ids);
+            }else if(bean.getFilter()!=null&&bean.getFilter().equals("My Request")){
+                ReqOrPedSearchBean  reqOrPed=new ReqOrPedSearchBean();
+                BeanUtils.copyProperties(bean,reqOrPed);
+                reqOrPed.setCreateBy(Long.parseLong(user.get("account").toString()));
+                res = getDbResProcesses(reqOrPed);
+            }else {
+                res = getDbResProcesses(bean);
+            }
+            List<RecodeBean> list = getRecodes(res,roles).stream().sorted(Comparator.comparing(RecodeBean::getCreateAt)).collect(Collectors.toList());
             return JsonResult.success(list);
         } catch (Exception e) {
             return JsonResult.fail(e);
         }
     }
 
-    @ApiOperation(value = "搜索my request",tags = "Process",notes = "注意问题点")
-    @RequestMapping(method = RequestMethod.POST,path = "/myReqSearch")
-    public JsonResult myReqSearch(@RequestBody ReqOrPedSearchBean bean){
-        try {
-            Map user = session.getUser();
-            bean.setCreateBy(Long.parseLong(user.get("account").toString()));
-            List<DbResProcess> res = getDbResProcesses(bean);
-            String roles = user.get("role").toString();
-            List<RecodeBean> list = getRecodes(res,roles);
-            return JsonResult.success(list);
-        } catch (Exception e) {
-            return JsonResult.fail(e);
-        }
-    }
 
-    @ApiOperation(value = "搜索pending for me",tags = "Process",notes = "注意问题点")
-    @RequestMapping(method = RequestMethod.POST,path = "/myPendingSearch")
-    public JsonResult myPendingSearch(@RequestBody ReqOrPedSearchBean bean){
-        try {
-            timeRangeHandle(bean);
-
-            String nature = bean.getLogOrderNature() == null ? "" : bean.getLogOrderNature();
-            String repoId = bean.getRepoId() == null ? "" : String.valueOf(bean.getRepoId());
-            String txtNum = bean.getLogTxtBum() == null ? "" : bean.getLogTxtBum();
-            Map user = session.getUser();
-            Long accountId =  Long.parseLong(user.get("account").toString());
-            //查询当前登陆人的role 可处理 审批step当前状态是PENDING的process
-            List<Long> ids = processRepository.findIdsByPending(accountId,nature,repoId,txtNum,Long.parseLong(bean.getCreateAt()[0]),Long.parseLong(bean.getCreateAt()[1]));
-
-            List<DbResProcess> res = processRepository.findDbResProcessesByIdIn(ids);
-            String roles = user.get("role").toString();
-            List<RecodeBean> list = getRecodes(res,roles);
-
-            return JsonResult.success(list);
-        } catch (Exception e) {
-            log.info(e.toString());
-            return JsonResult.fail(e);
-        }
-    }
+//    @ApiOperation(value = "搜索my request",tags = "Process",notes = "注意问题点")
+//    @RequestMapping(method = RequestMethod.POST,path = "/myReqSearch")
+//    public JsonResult  myReqSearch(@RequestBody ReqOrPedSearchBean bean){
+//        try {
+//            Map user = session.getUser();
+//            bean.setCreateBy(Long.parseLong(user.get("account").toString()));
+//            List<DbResProcess> res = getDbResProcesses(bean);
+//            String roles = user.get("role").toString();
+//            List<RecodeBean> list = getRecodes(res,roles);
+//            //return list;
+//            return JsonResult.success(list);
+//        } catch (Exception e) {
+//            return JsonResult.fail(e);
+//        }
+//    }
+//
+//    @ApiOperation(value = "搜索pending for me",tags = "Process",notes = "注意问题点")
+//    @RequestMapping(method = RequestMethod.POST,path = "/myPendingSearch")
+//    public JsonResult myPendingSearch(@RequestBody ReqOrPedSearchBean bean){
+//        try {
+//            timeRangeHandle(bean);
+//
+//            String nature = bean.getLogOrderNature() == null ? "" : bean.getLogOrderNature();
+//            String repoId = bean.getRepoId() == null ? "" : String.valueOf(bean.getRepoId());
+//            String txtNum = bean.getLogTxtBum() == null ? "" : bean.getLogTxtBum();
+//            Map user = session.getUser();
+//            Long accountId =  Long.parseLong(user.get("account").toString());
+//            //查询当前登陆人的role 可处理 审批step当前状态是PENDING的process
+//            List<Long> ids = processRepository.findIdsByPending(accountId,nature,repoId,txtNum,Long.parseLong(bean.getCreateAt()[0]),Long.parseLong(bean.getCreateAt()[1]));
+//
+//            List<DbResProcess> res = processRepository.findDbResProcessesByIdIn(ids);
+//            String roles = user.get("role").toString();
+//            List<RecodeBean> list = getRecodes(res,roles);
+//
+//            return JsonResult.success(list);
+//        } catch (Exception e) {
+//            log.info(e.toString());
+//            return JsonResult.fail(e);
+//        }
+//    }
 
     /**
      * 通过查询条件查询Process和Process明细数据

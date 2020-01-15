@@ -1,7 +1,9 @@
 package com.pccw.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 import javax.persistence.*;
+import java.util.List;
 
 
 /**
@@ -33,7 +35,19 @@ public class DbResLogRor extends BaseLog {
     @Column(name="log_orderType",length = 1)
     private String logOrderType;
 
+    @Column(name="sales_id",length = 10)
+    private String salesId;
 
+    @Column(name="tx_date",length = 20)
+    private String txDate;
+
+    @Column(name="biz_date",length = 20)
+    private String bizDate;
+
+    @JsonManagedReference
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "log_ror_id")
+    private List<DbResLogRorDtl> line;
 
 
 }

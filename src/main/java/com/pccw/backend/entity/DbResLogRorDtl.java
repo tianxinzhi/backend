@@ -8,8 +8,11 @@ import javax.persistence.*;
 /**
  * ROR = RESOURCE ORDER REQUEST
  */
-@Data
+@Getter
+@Setter
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "res_log_ror_dtl")
 @SequenceGenerator(name="id_logRorDtl",sequenceName = "logRorDtl_seq",allocationSize = 1)
 public class DbResLogRorDtl extends BaseLogDtl {
@@ -20,15 +23,17 @@ public class DbResLogRorDtl extends BaseLogDtl {
 	private Long id;
 
 	@Column(name="dtl_skuId")
-	private long dtlSkuId;
-
+//	private long dtlSkuId;
+	private String dtlSkuId;
 
 	@Column(name="dtl_itemId")
-	private long dtlItemId;
-	
+//	private long dtlItemId;
+	private String dtlItemId;
+
 	@Column(name="dtl_repoId")
-	private long dtlRepoId;
-	
+//	private long dtlRepoId;
+	private String dtlRepoId;
+
 	@Column(name="dtl_qty")
 	private long dtlQty;
 

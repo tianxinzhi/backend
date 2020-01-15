@@ -9,9 +9,12 @@ import java.util.List;
 /**
  * ROR = RESOURCE ORDER REQUEST
  */
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "res_log_ror")
+@AllArgsConstructor
+@NoArgsConstructor
 @SequenceGenerator(name="id_logRor",sequenceName = "logRor_seq",allocationSize = 1)
 public class DbResLogRor extends BaseLog {
     @Id

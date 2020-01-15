@@ -22,6 +22,4 @@ public interface ResTypeRepository extends BaseRepository<DbResType> {
    @Query(value = "from DbResSpec where id =?1")
    DbResSpec findBySpecId(@Param("id") long id);
 
-   @Query(value = "SELECT rst.ID from RES_SKU_TYPE rst where rst.TYPE_ID = ?1", nativeQuery = true)
-   List<Map> searchTypeInSku(@Param("id") long id);
 }

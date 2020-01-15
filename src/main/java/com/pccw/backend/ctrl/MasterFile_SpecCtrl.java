@@ -99,7 +99,7 @@ public class MasterFile_SpecCtrl extends BaseCtrl<DbResSpec> implements ICheck {
     }
 
 
-    @ApiOperation(value="查询spec",tags={"masterfile_spec"},notes="说明")
+    @ApiOperation(value="编辑spec",tags={"masterfile_spec"},notes="说明")
     @RequestMapping(method = RequestMethod.POST,path="/edit")
     public JsonResult edit(@RequestBody EditBean b){
         try{
@@ -137,17 +137,23 @@ public class MasterFile_SpecCtrl extends BaseCtrl<DbResSpec> implements ICheck {
     }
 
 
-    @ApiOperation(value="查询spec",tags={"masterfile_spec"},notes="说明")
-    @RequestMapping(method = RequestMethod.POST,path="/editById")
-    public JsonResult editById(@RequestBody SearchBean b){
-        log.info(b.toString());
-        try {
-            return JsonResult.success(repo.findById(1L));
-        } catch (Exception e) {
-            return JsonResult.fail(e);
-        }
-    }
+//    @ApiOperation(value="查询spec",tags={"masterfile_spec"},notes="说明")
+//    @RequestMapping(method = RequestMethod.POST,path="/editById")
+//    public JsonResult editById(@RequestBody SearchBean b){
+//        log.info(b.toString());
+//        try {
+//            return JsonResult.success(repo.findById(1L));
+//        } catch (Exception e) {
+//            return JsonResult.fail(e);
+//        }
+//    }
 
+    /**
+     * 根据specId查询attr&attrValue
+     * 返回指定格式给前端详情展示
+     * @param id
+     * @return
+     */
     public JsonResult specSearch(@RequestBody long id) {
         try {
             List<Map> list = new ArrayList<>();

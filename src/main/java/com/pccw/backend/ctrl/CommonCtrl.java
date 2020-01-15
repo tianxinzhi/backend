@@ -124,7 +124,7 @@ public class CommonCtrl  extends GeneralCtrl{
     }
 
     @ApiOperation(value="获取res_attr_attr_value表的AttrId和AttrValueId信息",tags={"common"},notes="注意问题点")
-    @RequestMapping(method = RequestMethod.GET,path="/attratrrvalueModule")
+    @RequestMapping(method = RequestMethod.GET,path="/attrAttrValueModule")
     public JsonResult<LabelAndValue> searchAttrAttrValue(){
         return this.JsonResultHandle(attr_attr_value_repo,new LabelAndValue());
     }

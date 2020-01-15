@@ -40,6 +40,9 @@ public class CreateBean extends BaseBean {
     @ApiModelProperty(value="logTxtBum",name="logTxtBum",example="")
     private String remark;
 
+    @ApiModelProperty(value="logTxtBum",name="logTxtBum",example="")
+    private String repoType;
+
     @ApiModelProperty(value="dtlList",name="dtlList",example="")
     private List<DbResLogMgtDtl> line;
 

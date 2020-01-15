@@ -21,7 +21,7 @@ public class SearchBean extends BaseSearchBean {
     @ApiModelProperty(value="门店id",name="repoId",example="")
     private long fromRepoId;
 
-    @ApiModelProperty(value="门店id",name="repoId",example="")
-    private long toRepoId;
+    @ApiModelProperty(value="类型",name="repoType",example="")
+    private String repoType;
     
 }

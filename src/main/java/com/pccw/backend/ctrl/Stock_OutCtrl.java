@@ -41,12 +41,12 @@ public class Stock_OutCtrl  extends BaseCtrl<DbResLogMgt> {
 
 
 
-    @ApiOperation(value="查询shop",tags={"masterfile_repo"},notes="说明")
+    @ApiOperation(value="",tags={""},notes="说明")
     @RequestMapping(method = RequestMethod.POST,path="/search")
     public JsonResult search(@RequestBody SearchBean b) {
         log.info(b.toString());
         try {
-            List<Map<String, Object>> list = skuRepoRepository.findByTypeIdAndRepoId(b.getFromRepoId(),b.getToRepoId());
+            List<Map<String, Object>> list = skuRepoRepository.findByTypeIdAndRepoId(b.getFromRepoId(),b.getRepoType());
             List<Map<String, Object>> humpNameForList = ResultRecode.returnHumpNameForList(list);
             return JsonResult.success(humpNameForList);
 
@@ -73,12 +73,12 @@ public class Stock_OutCtrl  extends BaseCtrl<DbResLogMgt> {
                     b.getLine().get(i).setDtlRepoId(b.getLogRepoOut());
                 }else {
                     b.getLine().get(i).setDtlRepoId(b.getLogRepoIn());
-                    int res = repoRepository.getRepoType(b.getLogRepoIn());
-                    if(res>0) {
+                    if(b.getRepoType().equals("W")) {
                         b.setLogOrderNature(StaticVariable.LOGORDERNATURE_STOCK_OUT_STW);
                     }else {
                         b.setLogOrderNature(StaticVariable.LOGORDERNATURE_STOCK_OUT_STS);
                     }
+
                 }
             }
             JsonResult result =this.create(repo, DbResLogMgt.class, b);
@@ -101,8 +101,10 @@ public class Stock_OutCtrl  extends BaseCtrl<DbResLogMgt> {
         }
     }
 
-
-    //审批流完成后更新sku_repo
+    /**
+     * 审批流完成后更新sku_repo
+     * @param logTxtNum
+     */
     public void UpdateSkuRepoQty(String logTxtNum) {
         try {
             DbResLogMgt  b =repo.findDbResLogMgtByLogTxtBum(logTxtNum);

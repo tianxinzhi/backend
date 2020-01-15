@@ -30,7 +30,7 @@ public class SearchBean{
     @ApiModelProperty(value="Txtnumber",name="logTxtBum",example="")
     private String logTxtBum;
 
-    @PredicateAnnotation(type = PredicateType.LIKE)
+    //@PredicateAnnotation(type = PredicateType.LIKE)
     @ApiModelProperty(value="filter",name="filter",example="")
     private String filter;
 

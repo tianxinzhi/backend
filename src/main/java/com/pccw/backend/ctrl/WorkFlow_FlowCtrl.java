@@ -45,6 +45,7 @@ public class WorkFlow_FlowCtrl extends BaseCtrl<DbResFlow> implements ICheck {
     @Autowired
     ResRoleRepository repoRole;
 
+    @ApiOperation(value="查询workflow_flow",tags={"workflow_flow"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST,path="/search")
     public JsonResult search(@RequestBody SearchBean b) {
 
@@ -84,11 +85,13 @@ public class WorkFlow_FlowCtrl extends BaseCtrl<DbResFlow> implements ICheck {
 
     }
 
+    @ApiOperation(value="删除workflow_flow",tags={"workflow_flow"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST,path = "/delete")
     public JsonResult delete(@RequestBody BaseDeleteBean ids){
         return this.delete(repo,ids);
     }
 
+    @ApiOperation(value="创建workflow_flow",tags={"workflow_flow"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST,path="/create")
     public JsonResult create(@RequestBody CreateBean b){
        try{
@@ -109,6 +112,7 @@ public class WorkFlow_FlowCtrl extends BaseCtrl<DbResFlow> implements ICheck {
          }
     }
 
+    @ApiOperation(value="编辑workflow_flow",tags={"workflow_flow"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST,path="/edit")
     public JsonResult edit(@RequestBody EditBean b){
         try{
@@ -119,7 +123,7 @@ public class WorkFlow_FlowCtrl extends BaseCtrl<DbResFlow> implements ICheck {
             b.setCreateAt(dbResFlow.getCreateAt());
             for(int i=0;i<b.getResFlowStepList().size();i++) {
                 for(int j=0;j<dbResFlow.getResFlowStepList().size();j++) {
-                    if (dbResFlow.getResFlowStepList().get(j).getId()==b.getResFlowStepList().get(i).getId()) {
+                    if (dbResFlow.getResFlowStepList().get(j).getId().equals(b.getResFlowStepList().get(i).getId())) {
                         b.getResFlowStepList().get(i).setUpdateAt(t);
                         b.getResFlowStepList().get(i).setCreateAt(dbResFlow.getResFlowStepList().get(j).getCreateAt());
                         b.getResFlowStepList().get(i).setCreateBy(getAccount());

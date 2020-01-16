@@ -92,14 +92,22 @@ public class Stock_MovementCtrl extends BaseCtrl<DbResProcess> {
                     map.put("sku",skuQtyList);
                 }else {
                     DbResLogMgt dbResLogMgt = logMgtRepo.findDbResLogMgtByLogTxtBum(p.getLogTxtBum());
-                    String fromName = repoRepo.findById(dbResLogMgt.getLogRepoOut()).get().getRepoName();
+                    String fromName = "";
+                    if(Objects.nonNull(dbResLogMgt.getLogRepoOut()) && dbResLogMgt.getLogRepoOut() != 0){
+                        fromName = repoRepo.findById(dbResLogMgt.getLogRepoOut()).get().getRepoName();
+                    }
+                    String toName = "";
+                    if(Objects.nonNull(dbResLogMgt.getLogRepoIn()) && dbResLogMgt.getLogRepoIn() != 0){
+                        toName = repoRepo.findById(dbResLogMgt.getLogRepoIn()).get().getRepoName();
+                    }
                     if(StaticVariable.LOGORDERNATURE_STOCK_THRESHOLD.equals(p.getLogOrderNature())
                             || StaticVariable.LOGORDERNATURE_STOCK_CATEGORY.equals(p.getLogOrderNature())
                             || StaticVariable.LOGORDERNATURE_STOCK_TAKE_ADJUSTMENT.equals(p.getLogOrderNature())){
                         map.put("repoName",fromName);
-                    }else{
+                    }else if(StaticVariable.LOGORDERNATURE_STOCK_IN_WITHOUT_PO_STW.equals(p.getLogOrderNature())){
+                        map.put("repoName",toName);
+                    }else {
                         StringBuilder sb = new StringBuilder();
-                        String toName = repoRepo.findById(dbResLogMgt.getLogRepoIn()).get().getRepoName();
                         map.put("repoName",sb.append("From: ").append(fromName).append(" , To: ").append(toName).toString());
                     }
                     List<DbResLogMgtDtl> line = dbResLogMgt.getLine();
@@ -113,8 +121,12 @@ public class Stock_MovementCtrl extends BaseCtrl<DbResProcess> {
                                 if(StaticVariable.DTLSUBIN_GOOD.equals(dtl.getDtlSubin())){
                                     skuQtyString = "SkuName: "+skuName+" , Qty: "+dtl.getDtlQty();
                                 }
-                            }else{
-                                skuQtyString = "SkuName: "+skuName+" , Qty: "+dtl.getDtlQty();
+                            }else {
+                                if(StaticVariable.LOGORDERNATURE_STOCK_TAKE_ADJUSTMENT.equals(p.getLogOrderNature())){
+                                    skuQtyString = "SkuName: "+skuName+" , Qty: "+dtl.getDtlQty()+" , StockType: "+dtl.getDtlSubin()+" , Action: "+dtl.getDtlAction();
+                                }else {
+                                    skuQtyString = "SkuName: " + skuName + " , Qty: " + dtl.getDtlQty();
+                                }
                             }
                             if(!"".equals(skuQtyString)){
                                 skuQtyList.add(skuQtyString);

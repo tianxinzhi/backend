@@ -14,6 +14,9 @@ import java.util.List;
 @ApiModel(value="NR_Normal_Reserve - CreateDtlBean",description="")
 public class CreateDtlBean extends BaseBean {
 
+    @ApiModelProperty(value="Normal_Reserve",name="detail_id",example="")
+    private String detail_id;
+
     @ApiModelProperty(value="Normal_Reserve",name="sku_id",example="")
 //    private long dtlSkuId;
     private String sku_id;

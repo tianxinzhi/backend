@@ -6,6 +6,7 @@ import com.pccw.backend.bean.nr_normal_reserve.CreateBean;
 import com.pccw.backend.bean.nr_normal_reserve.CreateDtlBean;
 import com.pccw.backend.entity.*;
 import com.pccw.backend.repository.ResLogRorRepository;
+import com.pccw.backend.util.CollectionBuilder;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -26,8 +27,10 @@ public class Normal_ReserveCtrl extends BaseCtrl<DbResLogRor> {
 
     @ApiOperation(value="创建Normal_ReserveCtrl",tags={"Normal_ReserveCtrl"},notes="说明")
     @RequestMapping(method = RequestMethod.POST,path="/create")
-    public JsonResult create(@RequestBody CreateBean b){
+    public Map create(@RequestBody CreateBean b){
         try {
+            ArrayList<Object> list = new ArrayList<>();
+
             //处理头表数据
             long time = new Date().getTime();
             DbResLogRor dbResLogRor = new DbResLogRor(null,b.getOrder_system(),b.getOrder_id(),null,"N",b.getSales_id(),b.getTx_date(),b.getBiz_date(),null);
@@ -47,6 +50,14 @@ public class Normal_ReserveCtrl extends BaseCtrl<DbResLogRor> {
             List<CreateDtlBean> item_details = b.getItem_details();
             if(Objects.nonNull(item_details) && item_details.size() > 0){
                 item_details.forEach(d->{
+                    //Output数据
+                    Map<Object, Object> map = CollectionBuilder.builder(new HashMap<>()).put("detail_id", d.getDetail_id()).put("sku_id", d.getSku_id()).put("quantity", d.getQuantity())
+                            .put("item_id", d.getItem_id())
+                            .put("repo_id", d.getRepo_id())
+                            .put("ccc", d.getCcc())
+                            .put("wo", d.getWo()).build();
+                    list.add(map);
+
                     DbResLogRorDtl dbResLogRorDtl = new DbResLogRorDtl(null,d.getSku_id(),d.getItem_id(),d.getRepo_id(),d.getQuantity(),d.getCcc(),d.getWo(),dbResLogRor);
                     dbResLogRorDtl.setActive("Y");
                     dbResLogRorDtl.setCreateAt(time);
@@ -91,9 +102,15 @@ public class Normal_ReserveCtrl extends BaseCtrl<DbResLogRor> {
             process.setLogOrderNature(b.getLogOrderNature());
             //生成工作流数据
             processProcessCtrl.joinToProcess(process);*/
-            return JsonResult.success(Arrays.asList());
+
+            String tx_id = "";
+            Map outputdata = CollectionBuilder.builder(new HashMap<>()).put("tx_id",null).put("item_details",list).build();
+            Map jsonResult = CollectionBuilder.builder(new HashMap<>()).put("state", "success").put("code", "200").put("msg", "stock update successfully").put("data", outputdata).build();
+            return jsonResult;
+//            return new JsonResult("success","200","stock update successfully",Arrays.asList(outputdata));
         } catch (Exception e) {
-            return JsonResult.fail(e);
+//            return JsonResult.fail(e);
+            return CollectionBuilder.builder(new HashMap<>()).put("state", "failed").put("code", "200").put("msg", "stock update successfully").put("data", null).build();
         }
     }
 }

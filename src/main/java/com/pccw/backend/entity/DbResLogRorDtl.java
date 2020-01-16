@@ -44,6 +44,9 @@ public class DbResLogRorDtl extends BaseLogDtl {
 	@Column(name="wo")
 	private String wo;
 
+	@Column(name="detail_id")
+	private String detailId;
+
 	@JsonBackReference
 	@JoinColumn(name = "log_ror_id")
 	@ManyToOne(targetEntity = DbResLogRor.class)

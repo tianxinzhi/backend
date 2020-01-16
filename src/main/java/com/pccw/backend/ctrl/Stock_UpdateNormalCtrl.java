@@ -21,10 +21,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -54,62 +51,71 @@ public class Stock_UpdateNormalCtrl extends BaseCtrl<DbResLogRor> {
         try {
             //输入验证
             long t = new Date().getTime();
-            b.setCreateAt(t);
-            b.setActive("Y");
-            DbResLogRor logRor=new DbResLogRor();
-            logRor.setLogSys(b.getOrder_system());
-            logRor.setLogOrderId(b.getOrder_id());
+            DbResLogRor logRor= new DbResLogRor(null,b.getOrder_system(),b.getOrder_id(),null,"N",b.getSales_id(),b.getTx_date(),b.getBiz_date(),null);
             logRor.setLogOrderNature(b.getRequest_nature());
-            logRor.setLogOrderType("N");
-            logRor.setSalesId(b.getSales_id());
+            logRor.setLogTxtBum("2020test");
+            logRor.setRemark(b.getRemarks());
+            logRor.setLogType("O");
+            logRor.setActive("Y");
+            logRor.setUpdateAt(t);
+            logRor.setCreateAt(t);
+            logRor.setCreateBy(getAccount());
+            logRor.setUpdateBy(getAccount());
             List<DbResLogRorDtl> logRorDtls=new ArrayList<>();
-            for(int i=0;i<b.getItem_details().size();i++) {
-                DbResLogRorDtl rorDtl=new DbResLogRorDtl();
-                rorDtl.setDtlSkuId(b.getItem_details().get(i).getSku_id() );
-                rorDtl.setDtlQty(Long.parseLong(b.getItem_details().get(i).getQuantity()) );
-                rorDtl.setDtlItemId(b.getItem_details().get(i).getItem_id() );
-                rorDtl.setDtlRepoId(b.getItem_details().get(i).getRepo_id() );
-                rorDtl.setCcc(b.getItem_details().get(i).getCcc());
-                rorDtl.setWo(b.getItem_details().get(i).getWo());
-                if(b.getRequest_nature().equals("ASG")){
-                    rorDtl.setDtlAction("D");
-                    rorDtl.setStatus("AVL");
-                    rorDtl.setDtlSubin("Good");
-                }else if(b.getRequest_nature().equals("RET")){
-                    rorDtl.setDtlAction("A");
-                    rorDtl.setStatus("FAU");
-                    rorDtl.setDtlSubin("Faulty");
-                }else if(b.getRequest_nature().equals("EXC")){
-                    rorDtl.setDtlAction("A");
-                    rorDtl.setStatus("FAU");
-                    rorDtl.setDtlSubin("Faulty");
-                    DbResLogRorDtl secRorDtl=new DbResLogRorDtl();
-                    BeanUtils.copyProperties(rorDtl,secRorDtl);
-                    secRorDtl.setDtlAction("D");
-                    secRorDtl.setStatus("AVL");
-                    secRorDtl.setDtlSubin("Good");
-                    logRorDtls.add(secRorDtl);
-                }
-                logRorDtls.add(rorDtl);
+            if(Objects.nonNull(b.getItem_details()) && b.getItem_details().size() > 0){
+                b.getItem_details().forEach(item -> {
+                    DbResLogRorDtl rorDtl=new DbResLogRorDtl(null,item.getSku_id(),item.getItem_id(),item.getRepo_id(),Long.parseLong(item.getQuantity()),item.getCcc(),item.getWo(),item.getDetail_id(),logRor);
+                    rorDtl.setActive("Y");
+                    rorDtl.setUpdateAt(t);
+                    rorDtl.setCreateAt(t);
+                    rorDtl.setCreateBy(getAccount());
+                    rorDtl.setUpdateBy(getAccount());
+                    if(b.getRequest_nature().equals("ASG")){
+                        rorDtl.setDtlAction("D");
+                        rorDtl.setStatus("AVL");
+                        rorDtl.setDtlSubin("Good");
+                    }else if(b.getRequest_nature().equals("RET")){
+                        rorDtl.setDtlAction("A");
+                        rorDtl.setStatus("FAU");
+                        rorDtl.setDtlSubin("Faulty");
+                    }else if(b.getRequest_nature().equals("EXC")){
+                        rorDtl.setDtlAction("A");
+                        rorDtl.setStatus("FAU");
+                        rorDtl.setDtlSubin("Faulty");
+                        DbResLogRorDtl secRorDtl=new DbResLogRorDtl();
+                        BeanUtils.copyProperties(rorDtl,secRorDtl);
+                        secRorDtl.setDtlAction("D");
+                        secRorDtl.setStatus("AVL");
+                        secRorDtl.setDtlSubin("Good");
+                        logRorDtls.add(secRorDtl);
+                    }
+                    logRorDtls.add(rorDtl);
+                });
             }
             logRor.setLine(logRorDtls);
-            logRor.setTxDate(b.getTx_date());
-            logRor.setBizDate(b.getBiz_date());
             repo.saveAndFlush(logRor);
-            //通过输入参数的order_id查询log表的logOrderId
+            //通过输入参数的order_id查询log表数据，构造输出
             DbResLogRor resLogRor =repo.findDbResLogRorByLogOrderId(b.getOrder_id());
-            OutputDataBean date =new OutputDataBean();
-            if(resLogRor!=null){
+            OutputDataBean outputData =new OutputDataBean();
+            if(Objects.nonNull(resLogRor)){
              output.setState("success");
              output.setCode("200");
              output.setMsg("stock update successfully");
-             List<OutputItemBean> itemLine=resLogRor.getLine().stream().map(item->{
-                 return new OutputItemBean(item.getId().toString() ,String.valueOf(item.getDtlSkuId()),String.valueOf(item.getDtlQty()),
-                         String.valueOf(item.getDtlItemId()), String.valueOf(item.getDtlRepoId()),item.getCcc(),item.getWo());
+             //EXC只取一行
+             List<DbResLogRorDtl>  resRorDtl= new ArrayList<>();
+             if(resLogRor.getLogOrderNature().equals("EXC")){
+                resRorDtl= resLogRor.getLine().stream().filter( ror ->"FAU".equals(ror.getStatus()) ).collect(Collectors.toList());
+             }else {
+                resRorDtl=resLogRor.getLine();
+             }
+             List<OutputItemBean> itemLine=resRorDtl.stream().map(item->{
+                 OutputItemBean outputItem= new OutputItemBean(item.getDetailId(),item.getDtlSkuId(),String.valueOf(item.getDtlQty()),
+                         item.getDtlItemId(), item.getDtlRepoId(),item.getCcc(),item.getWo());
+                 return outputItem;
              }).collect(Collectors.toList());
-             date.setItem_details(itemLine);
-             date.setTx_id(resLogRor.getLogTxtBum());
-             output.setData(date);
+             outputData.setItem_details(itemLine);
+             outputData.setTx_id(resLogRor.getLogTxtBum());
+             output.setData(outputData);
             }
             return output;
         } catch (Exception e) {
@@ -126,45 +132,73 @@ public class Stock_UpdateNormalCtrl extends BaseCtrl<DbResLogRor> {
     public OutputBean createAO(@RequestBody InputBean b){
         OutputBean output = new OutputBean();
         try {
+            //输入验证
             long t = new Date().getTime();
-            b.setCreateAt(t);
-            b.setActive("Y");
-            DbResLogRor logRor=new DbResLogRor();
-            logRor.setLogSys(b.getOrder_system());
-            logRor.setLogOrderId(b.getOrder_id());
+            DbResLogRor logRor= new DbResLogRor(null,b.getOrder_system(),b.getOrder_id(),null,"N",b.getSales_id(),b.getTx_date(),b.getBiz_date(),null);
             logRor.setLogOrderNature(b.getRequest_nature());
-            logRor.setSalesId(b.getSales_id());
+            logRor.setLogTxtBum("2020testAO");
+            logRor.setRemark(b.getRemarks());
+            logRor.setLogType("O");
+            logRor.setActive("Y");
+            logRor.setUpdateAt(t);
+            logRor.setCreateAt(t);
+            logRor.setCreateBy(getAccount());
+            logRor.setUpdateBy(getAccount());
             List<DbResLogRorDtl> logRorDtls=new ArrayList<>();
-            for(int i=0;i<b.getItem_details().size();i++) {
-                DbResLogRorDtl rorDtl=new DbResLogRorDtl();
-                rorDtl.setDtlAction(b.getItem_details().get(i).getItem_action());
-                rorDtl.setStatus(b.getItem_details().get(i).getAction_status());
-                rorDtl.setDtlSkuId(b.getItem_details().get(i).getSku_id() );
-                rorDtl.setDtlQty(Long.parseLong(b.getItem_details().get(i).getQuantity()) );
-                rorDtl.setDtlItemId(b.getItem_details().get(i).getItem_id() );
-                rorDtl.setDtlRepoId(b.getItem_details().get(i).getRepo_id() );
-                rorDtl.setCcc(b.getItem_details().get(i).getCcc());
-                rorDtl.setWo(b.getItem_details().get(i).getWo());
-                logRorDtls.add(rorDtl);
+            if(Objects.nonNull(b.getItem_details()) && b.getItem_details().size() > 0){
+                b.getItem_details().forEach(item -> {
+                    DbResLogRorDtl rorDtl=new DbResLogRorDtl(null,item.getSku_id(),item.getItem_id(),item.getRepo_id(),Long.parseLong(item.getQuantity()),item.getCcc(),item.getWo(),item.getDetail_id(),logRor);
+                    rorDtl.setActive("Y");
+                    rorDtl.setUpdateAt(t);
+                    rorDtl.setCreateAt(t);
+                    rorDtl.setCreateBy(getAccount());
+                    rorDtl.setUpdateBy(getAccount());
+                    if(b.getRequest_nature().equals("ARS")){
+                        rorDtl.setDtlAction("");
+                        rorDtl.setStatus("");
+                        rorDtl.setDtlSubin("");
+                    }else if(b.getRequest_nature().equals("CARS")){
+                        rorDtl.setDtlAction("A");
+                        rorDtl.setStatus("FAU");
+                        rorDtl.setDtlSubin("Faulty");
+                    }else if(b.getRequest_nature().equals("APU")){
+                       /* rorDtl.setDtlAction("A");
+                        rorDtl.setStatus("FAU");
+                        rorDtl.setDtlSubin("Faulty");
+                        DbResLogRorDtl secRorDtl=new DbResLogRorDtl();
+                        BeanUtils.copyProperties(rorDtl,secRorDtl);
+                        secRorDtl.setDtlAction("D");
+                        secRorDtl.setStatus("AVL");
+                        secRorDtl.setDtlSubin("Good");
+                        logRorDtls.add(secRorDtl);*/
+                    }
+                    logRorDtls.add(rorDtl);
+                });
             }
             logRor.setLine(logRorDtls);
-            logRor.setTxDate(b.getTx_date());
-            logRor.setBizDate(b.getBiz_date());
             repo.saveAndFlush(logRor);
-            //通过输入参数的order_id查询log表的logOrderId
+            //通过输入参数的order_id查询log表数据，构造输出
             DbResLogRor resLogRor =repo.findDbResLogRorByLogOrderId(b.getOrder_id());
-            OutputDataBean date =new OutputDataBean();
-            if(resLogRor!=null){
+            OutputDataBean outputData =new OutputDataBean();
+            if(Objects.nonNull(resLogRor)){
                 output.setState("success");
                 output.setCode("200");
                 output.setMsg("stock update successfully");
-                List<OutputItemBean> itemLine=resLogRor.getLine().stream().map(item->{
-                    return new OutputItemBean(item.getId().toString() ,String.valueOf(item.getDtlSkuId()),String.valueOf(item.getDtlQty()),
-                            String.valueOf(item.getDtlItemId()), String.valueOf(item.getDtlRepoId()),item.getCcc(),item.getWo());
+                //只取一行
+                List<DbResLogRorDtl>  resRorDtl= new ArrayList<>();
+                if(resLogRor.getLogOrderNature().equals("CARS")){
+                    resRorDtl= resLogRor.getLine().stream().filter( ror ->"FAU".equals(ror.getStatus()) ).collect(Collectors.toList());
+                }else {
+                    resRorDtl=resLogRor.getLine();
+                }
+                List<OutputItemBean> itemLine=resRorDtl.stream().map(item->{
+                    OutputItemBean outputItem= new OutputItemBean(item.getDetailId(),item.getDtlSkuId(),String.valueOf(item.getDtlQty()),
+                            item.getDtlItemId(), item.getDtlRepoId(),item.getCcc(),item.getWo());
+                    return outputItem;
                 }).collect(Collectors.toList());
-                date.setItem_details(itemLine);
-                date.setTx_id(resLogRor.getLogTxtBum());
-                output.setData(date);
+                outputData.setItem_details(itemLine);
+                outputData.setTx_id(resLogRor.getLogTxtBum());
+                output.setData(outputData);
             }
             return output;
         } catch (Exception e) {

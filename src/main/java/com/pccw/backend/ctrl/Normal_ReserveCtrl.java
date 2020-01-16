@@ -47,7 +47,7 @@ public class Normal_ReserveCtrl extends BaseCtrl<DbResLogRor> {
             List<CreateDtlBean> item_details = b.getItem_details();
             if(Objects.nonNull(item_details) && item_details.size() > 0){
                 item_details.forEach(d->{
-                    DbResLogRorDtl dbResLogRorDtl = new DbResLogRorDtl(null,d.getSku_id(),d.getItem_id(),d.getRepo_id(),d.getQuantity(),d.getCcc(),d.getWo(),dbResLogRor);
+                    DbResLogRorDtl dbResLogRorDtl = new DbResLogRorDtl(null,d.getSku_id(),d.getItem_id(),d.getRepo_id(),d.getQuantity(),d.getCcc(),d.getWo(),d.getWo(),dbResLogRor);
                     dbResLogRorDtl.setActive("Y");
                     dbResLogRorDtl.setCreateAt(time);
                     dbResLogRorDtl.setCreateBy(getAccount());

@@ -93,29 +93,33 @@ public class Stock_InCtrl extends BaseCtrl<DbResLogMgt>{
      */
     public void UpdateSkuRepoQty(String logTxtBum) {
 
-        DbResLogMgt bean = rsipo.findDbResLogMgtByLogTxtBum(logTxtBum);
+        try {
+            DbResLogMgt bean = rsipo.findDbResLogMgtByLogTxtBum(logTxtBum);
 
-        for (DbResLogMgtDtl line:bean.getLine()){
-            DbResSku dbResSku = new DbResSku();
-            dbResSku.setId(line.getDtlSkuId());
-            DbResRepo dbResRepo = new DbResRepo();
-            dbResRepo.setId(bean.getLogRepoIn());
-            DbResStockType dbResStockType = new DbResStockType();
-            dbResStockType.setId(3L);
-            DbResSkuRepo skuRepo = skuRepoRepository.findDbResSkuRepoByRepoAndSkuAndStockType(dbResRepo, dbResSku, dbResStockType);
+            for (DbResLogMgtDtl line:bean.getLine()){
+                DbResSku dbResSku = new DbResSku();
+                dbResSku.setId(line.getDtlSkuId());
+                DbResRepo dbResRepo = new DbResRepo();
+                dbResRepo.setId(bean.getLogRepoIn());
+                DbResStockType dbResStockType = new DbResStockType();
+                dbResStockType.setId(3L);
+                DbResSkuRepo skuRepo = skuRepoRepository.findDbResSkuRepoByRepoAndSkuAndStockType(dbResRepo, dbResSku, dbResStockType);
 
-            if (Objects.isNull(skuRepo)){
+                if (Objects.isNull(skuRepo)){
 
-                DbResSkuRepo dbResSkuRepo = new DbResSkuRepo(null,dbResSku,dbResRepo,null,dbResStockType, (long) Integer.parseInt(String.valueOf(line.getDtlQty())),null);
-                dbResSkuRepo.setCreateBy(bean.getCreateBy());
-                dbResSkuRepo.setCreateAt(bean.getCreateAt());
-                dbResSkuRepo.setUpdateAt(bean.getCreateAt());
-                dbResSkuRepo.setUpdateBy(bean.getCreateBy());
-                rsrr.saveAndFlush(dbResSkuRepo);
-            }else {
-                skuRepoRepository.updateQtyByRepoAndShopAndTypeAndQty(bean.getLogRepoIn(),line.getDtlSkuId(),3L,line.getDtlQty());
+                    DbResSkuRepo dbResSkuRepo = new DbResSkuRepo(null,dbResSku,dbResRepo,null,dbResStockType, (long) Integer.parseInt(String.valueOf(line.getDtlQty())),null);
+                    dbResSkuRepo.setCreateBy(bean.getCreateBy());
+                    dbResSkuRepo.setCreateAt(bean.getCreateAt());
+                    dbResSkuRepo.setUpdateAt(bean.getCreateAt());
+                    dbResSkuRepo.setUpdateBy(bean.getCreateBy());
+                    rsrr.saveAndFlush(dbResSkuRepo);
+                }else {
+                    skuRepoRepository.updateQtyByRepoAndShopAndTypeAndQty(bean.getLogRepoIn(),line.getDtlSkuId(),3L,line.getDtlQty());
+                }
+
             }
-
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
         }
     }
 

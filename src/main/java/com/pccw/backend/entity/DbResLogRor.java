@@ -1,7 +1,8 @@
 package com.pccw.backend.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import lombok.Data;
+import lombok.*;
+
 import javax.persistence.*;
 import java.util.List;
 

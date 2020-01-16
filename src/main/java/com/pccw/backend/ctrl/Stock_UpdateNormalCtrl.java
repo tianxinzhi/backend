@@ -65,10 +65,10 @@ public class Stock_UpdateNormalCtrl extends BaseCtrl<DbResLogRor> {
             List<DbResLogRorDtl> logRorDtls=new ArrayList<>();
             for(int i=0;i<b.getItem_details().size();i++) {
                 DbResLogRorDtl rorDtl=new DbResLogRorDtl();
-                rorDtl.setDtlSkuId(Long.parseLong(b.getItem_details().get(i).getSku_id()) );
+                rorDtl.setDtlSkuId(b.getItem_details().get(i).getSku_id() );
                 rorDtl.setDtlQty(Long.parseLong(b.getItem_details().get(i).getQuantity()) );
-                rorDtl.setDtlItemId(Long.parseLong(b.getItem_details().get(i).getItem_id()) );
-                rorDtl.setDtlRepoId(Long.parseLong(b.getItem_details().get(i).getRepo_id()) );
+                rorDtl.setDtlItemId(b.getItem_details().get(i).getItem_id() );
+                rorDtl.setDtlRepoId(b.getItem_details().get(i).getRepo_id() );
                 rorDtl.setCcc(b.getItem_details().get(i).getCcc());
                 rorDtl.setWo(b.getItem_details().get(i).getWo());
                 if(b.getRequest_nature().equals("ASG")){
@@ -139,10 +139,10 @@ public class Stock_UpdateNormalCtrl extends BaseCtrl<DbResLogRor> {
                 DbResLogRorDtl rorDtl=new DbResLogRorDtl();
                 rorDtl.setDtlAction(b.getItem_details().get(i).getItem_action());
                 rorDtl.setStatus(b.getItem_details().get(i).getAction_status());
-                rorDtl.setDtlSkuId(Long.parseLong(b.getItem_details().get(i).getSku_id()) );
+                rorDtl.setDtlSkuId(b.getItem_details().get(i).getSku_id() );
                 rorDtl.setDtlQty(Long.parseLong(b.getItem_details().get(i).getQuantity()) );
-                rorDtl.setDtlItemId(Long.parseLong(b.getItem_details().get(i).getItem_id()) );
-                rorDtl.setDtlRepoId(Long.parseLong(b.getItem_details().get(i).getRepo_id()) );
+                rorDtl.setDtlItemId(b.getItem_details().get(i).getItem_id() );
+                rorDtl.setDtlRepoId(b.getItem_details().get(i).getRepo_id() );
                 rorDtl.setCcc(b.getItem_details().get(i).getCcc());
                 rorDtl.setWo(b.getItem_details().get(i).getWo());
                 logRorDtls.add(rorDtl);

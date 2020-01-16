@@ -79,7 +79,7 @@ public class Normal_ReserveCtrl extends BaseCtrl<DbResLogRor> {
                     }
                 });
            }
-            dbResLogRor.setItem_details(logRorDtlList);
+            dbResLogRor.setLine(logRorDtlList);
             rorRepository.saveAndFlush(dbResLogRor);
             /*//创建工作流对象
             DbResProcess process = new DbResProcess();

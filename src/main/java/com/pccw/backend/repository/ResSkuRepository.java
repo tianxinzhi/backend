@@ -39,4 +39,6 @@ public interface ResSkuRepository extends BaseRepository<DbResSku> {
      */
     List<Map> getTypeDtlsBySku(@Param("skuId") long skuId);
 
+    DbResSku findFirst1BySkuCode(String sku_id);
+
 }

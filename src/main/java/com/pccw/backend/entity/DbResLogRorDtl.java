@@ -1,7 +1,6 @@
 package com.pccw.backend.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 
 import javax.persistence.*;
@@ -25,31 +24,31 @@ public class DbResLogRorDtl extends BaseLogDtl {
 	private Long id;
 
 	@Column(name="dtl_skuId")
-//	private long dtlSkuId;
-	private String dtlSkuId;
+	private Long dtlSkuId;
+//	private String dtlSkuId;
 
 	@Column(name="dtl_itemId")
-//	private long dtlItemId;
-	private String dtlItemId;
+	private Long dtlItemId;
+//	private String dtlItemId;
 
 	@Column(name="dtl_repoId")
-//	private long dtlRepoId;
-	private String dtlRepoId;
+	private Long dtlRepoId;
+//	private String dtlRepoId;
 
 	@Column(name="dtl_qty")
-	private long dtlQty;
+	private Long dtlQty;
 
-	// Shop code mapping 根据订单请求参数补加字段
-	@Column(name = "ccc", length = 512)
+	@Column(name="ccc")
 	private String ccc;
 
-	//  Work order 根据订单请求参数补加字段
-	@Column(name = "wo", length = 512)
+	@Column(name="wo")
 	private String wo;
 
+	@Column(name="detail_id")
+	private String detailId;
+
+	@JsonBackReference
 	@JoinColumn(name = "log_ror_id")
 	@ManyToOne(targetEntity = DbResLogRor.class)
-	@JsonIgnoreProperties(value = { "item_details" })
 	private DbResLogRor resLogRor;
-
 }

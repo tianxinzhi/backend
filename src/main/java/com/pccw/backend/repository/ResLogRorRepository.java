@@ -13,4 +13,6 @@ import java.util.Map;
 
 public interface ResLogRorRepository extends BaseRepository<DbResLogRor> {
 
+    DbResLogRor findDbResLogRorByLogOrderId(String logTxtBum);
+
 }

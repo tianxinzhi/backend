@@ -39,21 +39,19 @@ public class DbResLogRor extends BaseLog {
     @Column(name="log_orderType",length = 1)
     private String logOrderType;
 
-    //Sales ID   根据订单请求参数补加字段
-    @Column(name="sales_id",length = 64)
-    private String sales_id;
+    @Column(name="sales_id",length = 10)
+    private String salesId;
 
-    //Transaction date 根据订单请求参数补加字段
-    @Column(name="tx_date",length = 32)
+    @Column(name="tx_date",length = 20)
     private String txDate;
 
-    //Business date  根据订单请求参数补加字段
-    @Column(name="biz_date",length = 32)
+    @Column(name="biz_date",length = 20)
     private String bizDate;
 
     @JsonManagedReference
-    @OneToMany(cascade = CascadeType.ALL)  //ALL  PERSIST
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "log_ror_id")
-    private List<DbResLogRorDtl> item_details;
+    private List<DbResLogRorDtl> line;
+
 
 }

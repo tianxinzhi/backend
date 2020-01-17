@@ -22,4 +22,5 @@ public interface ResTypeRepository extends BaseRepository<DbResType> {
    @Query(value = "from DbResSpec where id =?1")
    DbResSpec findBySpecId(@Param("id") long id);
 
+   List<DbResType> getDbResTypesByTypeCode(String typeCode);
 }

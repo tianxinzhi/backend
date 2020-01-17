@@ -46,6 +46,8 @@ public class MasterFile_TypeCtrl extends BaseCtrl<DbResType> implements ICheck {
     ResClassTypeRepository resClassTypeRepository;
     @Autowired
     ResSpecRepository resSpecRepository;
+    @Autowired
+    ResSkuTypeRepository skuTypeRepository;
 
     @ApiOperation(value="搜索type",tags={"masterfile_type"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST, path = "/search")
@@ -58,9 +60,9 @@ public class MasterFile_TypeCtrl extends BaseCtrl<DbResType> implements ICheck {
             if(!Objects.isNull(res) && res.size() > 0){
                 for (DbResType type:res){
                     SearchBean searchBean = new SearchBean();
-                    List typeSkuList = repo.searchTypeInSku(type.getId());
+//                    List typeSkuList = repo.searchTypeInSku(type.getId());
                     BeanUtils.copyProperties(type, searchBean);
-                    searchBean.setTypeSkuList(typeSkuList);
+//                    searchBean.setTypeSkuList(typeSkuList);
                     if(type.getDbResTypeSkuSpec() != null){
                         searchBean.setSpecId(type.getDbResTypeSkuSpec().getSpecId());
                         DbResSpec sp = repo.findBySpecId(type.getDbResTypeSkuSpec().getSpecId());
@@ -237,7 +239,7 @@ public class MasterFile_TypeCtrl extends BaseCtrl<DbResType> implements ICheck {
     @ApiOperation(value="禁用type",tags={"masterfile_type"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST,value = "/disable")
     public JsonResult disable(@RequestBody BaseDeleteBean ids) {
-        return this.disable(repo,ids,MasterFile_TypeCtrl.class,repo);
+        return this.disable(repo,ids,MasterFile_TypeCtrl.class,skuTypeRepository);
     }
 
     @ApiOperation(value="启用type",tags={"masterfile_type"},notes="注意问题点")
@@ -248,10 +250,10 @@ public class MasterFile_TypeCtrl extends BaseCtrl<DbResType> implements ICheck {
 
     @Override
     public long checkCanDisable(Object obj, BaseRepository... check) {
-        ResTypeRepository repo = (ResTypeRepository)check[0];
+        ResSkuTypeRepository repo = (ResSkuTypeRepository)check[0];
         BaseDeleteBean bean = (BaseDeleteBean)obj;
         for(Long id:bean.getIds()) {
-            List typeSkuList = repo.searchTypeInSku(id);
+            List<DbResSkuType> typeSkuList = repo.getDbResSkuTypesByTypeId(id);
             if (typeSkuList != null && typeSkuList.size() > 0) {
                 return id;
             }

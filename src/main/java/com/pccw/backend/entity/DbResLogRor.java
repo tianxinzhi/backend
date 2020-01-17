@@ -1,15 +1,21 @@
 package com.pccw.backend.entity;
 
-import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import lombok.*;
+
 import javax.persistence.*;
+import java.util.List;
 
 
 /**
  * ROR = RESOURCE ORDER REQUEST
  */
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "res_log_ror")
+@AllArgsConstructor
+@NoArgsConstructor
 @SequenceGenerator(name="id_logRor",sequenceName = "logRor_seq",allocationSize = 1)
 public class DbResLogRor extends BaseLog {
     @Id
@@ -33,7 +39,19 @@ public class DbResLogRor extends BaseLog {
     @Column(name="log_orderType",length = 1)
     private String logOrderType;
 
+    @Column(name="sales_id",length = 10)
+    private String salesId;
 
+    @Column(name="tx_date",length = 20)
+    private String txDate;
+
+    @Column(name="biz_date",length = 20)
+    private String bizDate;
+
+    @JsonManagedReference
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "log_ror_id")
+    private List<DbResLogRorDtl> line;
 
 
 }

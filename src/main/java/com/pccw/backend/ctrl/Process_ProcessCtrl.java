@@ -119,8 +119,8 @@ public class Process_ProcessCtrl extends BaseCtrl{
             Map user = session.getUser();
             String roles = user.get("role").toString();
             List<DbResProcess> res  =new ArrayList<DbResProcess>();
+            timeRangeHandle(bean);
             if(bean.getFilter()!=null&&bean.getFilter().equals("Pending For Me")){
-                timeRangeHandle(bean);
                 String nature = bean.getLogOrderNature() == null ? "" : bean.getLogOrderNature();
                 String repoId = bean.getRepoId() == null ? "" : String.valueOf(bean.getRepoId());
                 String txtNum = bean.getLogTxtBum() == null ? "" : bean.getLogTxtBum();
@@ -132,9 +132,9 @@ public class Process_ProcessCtrl extends BaseCtrl{
                 ReqOrPedSearchBean  reqOrPed=new ReqOrPedSearchBean();
                 BeanUtils.copyProperties(bean,reqOrPed);
                 reqOrPed.setCreateBy(Long.parseLong(user.get("account").toString()));
-                res = getDbResProcesses(reqOrPed);
+                res =processRepository.findAll(Convertor.convertSpecification(reqOrPed));
             }else {
-                res = getDbResProcesses(bean);
+                res = processRepository.findAll(Convertor.convertSpecification(bean));
             }
             List<RecodeBean> list = getRecodes(res,roles).stream().sorted(Comparator.comparing(RecodeBean::getCreateAt)).collect(Collectors.toList());
             return JsonResult.success(list);
@@ -185,18 +185,18 @@ public class Process_ProcessCtrl extends BaseCtrl{
 //        }
 //    }
 
-    /**
-     * 通过查询条件查询Process和Process明细数据
-     * @param bean
-     * @return
-     * @throws IllegalAccessException
-     */
-    private List<DbResProcess> getDbResProcesses(@RequestBody SearchBean bean) throws IllegalAccessException {
-        timeRangeHandle(bean);
-        log.info(bean.toString());
-
-        return processRepository.findAll(Convertor.convertSpecification(bean));
-    }
+//    /**
+//     * 通过查询条件查询Process和Process明细数据
+//     * @param bean
+//     * @return
+//     * @throws IllegalAccessException
+//     */
+//    private List<DbResProcess> getDbResProcesses(@RequestBody SearchBean bean) throws IllegalAccessException {
+//        timeRangeHandle(bean);
+//        log.info(bean.toString());
+//
+//        return processRepository.findAll(Convertor.convertSpecification(bean));
+//    }
 
     /**
      * 处理获取的时间范围字段
@@ -254,7 +254,6 @@ public class Process_ProcessCtrl extends BaseCtrl{
             //log表信息 根据nature从相应的entity取process详情页展示log信息
             LogProDtlBean logDtls =new LogProDtlBean();
             if(r.getLogOrderNature().equals("RREQ")){
-                //DbResLogRepl查询有问题
                 DbResLogRepl resLog = logReplRepository.findDbResLogReplByLogTxtBum(r.getLogTxtBum());
                 logDtls.setCreateAt(resLog.getCreateAt());
                 logDtls.setLogRepoIn(resLog.getRepoIdTo());

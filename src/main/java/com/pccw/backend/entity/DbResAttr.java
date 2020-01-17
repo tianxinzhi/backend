@@ -3,6 +3,8 @@ package com.pccw.backend.entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.pccw.backend.annotation.JsonResultParamHandle;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.List;
@@ -15,7 +17,8 @@ import java.util.List;
 @Entity
 @Table(name = "res_attr")
 //@org.hibernate.annotations.Table(appliesTo = "res_attr",comment = "")
-@Data
+@Getter
+@Setter
 @SequenceGenerator(name="id_attr",sequenceName = "attr_seq",allocationSize = 1)
 @JsonResultParamHandle(param1 = "id",param2 = "attrName")
 public class DbResAttr extends Base{

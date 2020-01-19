@@ -40,7 +40,7 @@ public class SearchBean {
     @NotNull
     private Integer pageIndex=0;
     @NotNull
-    private Integer pageSize=10;
+    private Integer pageSize=100;
 //    private long createAt;
     private long createBy;
     private long updateAt;

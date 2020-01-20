@@ -233,6 +233,7 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> implements ICheck {
                         attrDataMap.add(map);
 
                         DbResAttr attr = resultBean.getAttrs()[i] == 0? null:attrRepo.findById(resultBean.getAttrs()[i]).get();
+                        //获取attr的attrvalue，加入sku组件可选attr列表
                         List<LabelAndValue> lbs = new LinkedList<>();
                         if(attr!=null) {
                             for(int k=0;k<attr.getAttrAttrValueList().size();k++) {
@@ -241,7 +242,7 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> implements ICheck {
                                 lbs.add(lb);
                             }
                         }
-
+                        //构造sku组件数据结构
                         Map tableData = new HashMap();
                         tableData.put("value",resultBean.getAttrValues().get(i));
                         tableData.put("title",resultBean.getAttrNames()[i]);
@@ -302,7 +303,7 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> implements ICheck {
                             lbs.add(lb);
                         }
                     }
-
+                    //构造sku组件数据结构
                     Map tableData = new HashMap();
                     tableData.put("value",attrValue);
                     tableData.put("title",attrNames[i]);

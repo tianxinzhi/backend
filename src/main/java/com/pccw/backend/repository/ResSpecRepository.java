@@ -21,4 +21,5 @@ public interface ResSpecRepository extends BaseRepository<DbResSpec> {
 
     List<DbResSpec> findById(long id);
 
+    List<DbResSpec> getDbResSpecsBySpecName(String specName);
 }

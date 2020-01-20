@@ -2,6 +2,7 @@ package com.pccw.backend.repository;
 
 
 import com.pccw.backend.entity.DbResSku;
+import com.pccw.backend.entity.DbResType;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -38,5 +39,9 @@ public interface ResSkuRepository extends BaseRepository<DbResSku> {
      * 根据sku查询type，spec，attr，attrValue信息
      */
     List<Map> getTypeDtlsBySku(@Param("skuId") long skuId);
+
+    List<DbResSku> getDbResSkusBySkuCode(String skuCode);
+
+    DbResSku findFirst1BySkuCode(String sku_id);
 
 }

@@ -1,7 +1,9 @@
 package com.pccw.backend.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -9,7 +11,8 @@ import java.util.List;
 /**
  * ROR = RESOURCE ORDER REQUEST
  */
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "res_log_mgt")
 @SequenceGenerator(name="id_logMgt",sequenceName = "logMgt_seq",allocationSize = 1)

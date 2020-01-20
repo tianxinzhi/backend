@@ -121,7 +121,7 @@ public class DataConvertionCtrl {
      * element保存res_sku_attr_value,res_sku_attr_value_lis
      */
     void backData() {
-
+        //getNewOrUpdateJSONData
     }
 
 
@@ -167,6 +167,7 @@ public class DataConvertionCtrl {
 
     }
 
+
     /**
      *
      * [3]解析txt,获取数据并构造成smp对应逻辑结构map，并将其存入redis备用
@@ -198,7 +199,7 @@ public class DataConvertionCtrl {
             log.info("数据读取失败");
             return;
         }
-
+        Map<String,Map<String,Set>> skuAttrMap = new HashMap<>();//sku_attr_value 的map
         for (String[] attrs : attrList) {
             if(attrList.indexOf(attrs)==0) continue;
             long attr_skuId = Long.parseLong(attrs[0].trim());
@@ -235,12 +236,12 @@ public class DataConvertionCtrl {
                     //查找spec对应的attr和attrValue
                     for (Map.Entry<String, Map<String, Set>> specMap : specDataMap.entrySet()) {
                         //找到spec的key时
-                        if(specMap.getKey()==specDesc){
+                        if(specMap.getKey().equals(specDesc)){
                             findMapSpec = true;
                             boolean findSpecAttr = false;
                             for (Map.Entry<String, Set> attrMap : specMap.getValue().entrySet()) {
                                 //找到spec下的attr key时
-                                if(attrMap.getKey()==attrName){
+                                if(attrMap.getKey().equals(attrName)){
                                     findSpecAttr = true;
                                     attrMap.getValue().add(attrValue);
                                     break;
@@ -271,16 +272,16 @@ public class DataConvertionCtrl {
                         if(attr_skuId == Long.parseLong(skus[2].trim())) {
                             Map skuMap = new HashMap();//单个sku的map
                             findSku = true;
-                            Map<String,Map<String,Set>> skuAttrMap = new HashMap<>();//sku_attr_value 的map
+
                             boolean findSku_Attr = false;
                             for (Map.Entry<String, Map<String,Set>> sku_AttrMap : skuAttrMap.entrySet()) {
                                 //为同一个sku下的attr时
-                                if(sku_AttrMap.getKey()==skuName){
+                                if(sku_AttrMap.getKey().equals(skuName)){
                                     findSku_Attr = true;
                                     boolean findSku_Attr_Value = false;
                                     for (Map.Entry<String, Set> attrMap : sku_AttrMap.getValue().entrySet()) {
                                         //sku已经加入的attr
-                                        if(attrMap.getKey()==attrName){
+                                        if(attrMap.getKey().equals(attrName)){
                                             findSku_Attr_Value = true;
                                             attrMap.getValue().add(attrValue);
                                             break;
@@ -312,13 +313,14 @@ public class DataConvertionCtrl {
                             skuMap.put("skuAttrValue",skuAttrMap.get(skuName));//skuAttrValue
                             skuMap.put("repoId",Long.parseLong(skus[0].trim()));
                             skuDataSet.add(skuMap);
-
+                            break;
                         }
                     }
 
                     if(findSku == false){
                         log.info("------------ The INVENTORY_ITEM_ID " + attr_skuId +" 在lis_item文件中未找到！！！");
                     }
+                    break;
                 }
 
             }
@@ -575,9 +577,9 @@ public class DataConvertionCtrl {
                         skuAttrValue.setCreateAt(time);
                         skuAttrValue.setUpdateAt(time);
                         skuAttrValue.setActive("Y");
-                        skuAttrValue.setCreateAt(time);
-                        skuAttrValue.setUpdateAt(time);
-                        skuAttrValue.setActive("Y");
+//                        skuAttrValue.setCreateAt(time);
+//                        skuAttrValue.setUpdateAt(time);
+//                        skuAttrValue.setActive("Y");
                         skuAttrValueList.add(skuAttrValue);
 
                         //
@@ -595,9 +597,9 @@ public class DataConvertionCtrl {
                 skuLis.setSkuAttrValueLisList(skuAttrValueLisList);
                 skuLisSet.add(skuLis);
             }
-            for (DbResSku sku : skuSet) {
-                System.out.println("skuName:"+sku.getSkuName());
-            }
+//            for (DbResSku sku : skuSet) {
+//                System.out.println("skuName:"+sku.getSkuName());
+//            }
             log.info("插入sku数量为："+skuSet.size());
             skuRepository.saveAll(skuSet);
             skuLisRepository.saveAll(skuLisSet);

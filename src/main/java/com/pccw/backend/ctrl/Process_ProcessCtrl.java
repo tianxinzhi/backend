@@ -271,7 +271,14 @@ public class Process_ProcessCtrl extends BaseCtrl{
                 logDtls.setLogRepoOut(resLog.getLogRepoOut());
                 logDtls.setLogTxtBum(resLog.getLogTxtBum());
                 logDtls.setRemark(resLog.getRemark());
-                List<LogProDtlLineBean> logLine =resLog.getLine().stream().map(item ->{
+                //stock out 只取一行
+                List<DbResLogMgtDtl>  line= new ArrayList<>();
+                if(resLog.getLogOrderNature().indexOf("Stock Out")!=-1){
+                    line= resLog.getLine().stream().filter( resLine ->"Good".equals(resLine.getDtlSubin()) ).collect(Collectors.toList());
+                }else {
+                    line=resLog.getLine();
+                }
+                List<LogProDtlLineBean> logLine =line.stream().map(item ->{
                         return new LogProDtlLineBean(item.getDtlSkuId(),item.getDtlQty());
                         }).collect(Collectors.toList());
                 logDtls.setLine(logLine);

@@ -12,6 +12,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -66,9 +67,9 @@ public class Stock_UpdateNormalCtrl extends BaseCtrl<DbResLogRor> {
                             item.getItem_id(), item.getRepo_id(),item.getCcc(),item.getWo());
                     list.add(outputItem);
 
-                    DbResSku s = skuRepository.findFirst1BySkuCode(item.getSku_id());
+                    DbResSku s = skuRepository.findFirst1BySkuCode(item.getSku_code());
                     DbResRepo r = repoRepository.findFirst1ByRepoCode(item.getRepo_id());
-                    DbResItem i = itemRepository.findFirst1ByItemCode(item.getItem_id());
+                    DbResItem i = itemRepository.findFirst1ByItemCode(item.getItem_code());
                     Long skuId = Objects.isNull(s) ? null : s.getId();
                     Long repoId = Objects.isNull(r) ? null : r.getId();
                     Long itemId = Objects.isNull(i) ? null : r.getId();
@@ -79,25 +80,34 @@ public class Stock_UpdateNormalCtrl extends BaseCtrl<DbResLogRor> {
                     rorDtl.setCreateAt(t);
                     rorDtl.setCreateBy(getAccount());
                     rorDtl.setUpdateBy(getAccount());
+                    String dnNum = "";
                     if(b.getRequest_nature().equals("ASG")){
                         rorDtl.setDtlAction("D");
                         rorDtl.setStatus("AVL");
                         rorDtl.setDtlSubin("Good");
+                        dnNum = "S";
                     }else if(b.getRequest_nature().equals("RET")){
                         rorDtl.setDtlAction("A");
                         rorDtl.setStatus("FAU");
                         rorDtl.setDtlSubin("Faulty");
+                        dnNum = "E";
                     }else if(b.getRequest_nature().equals("EXC")){
                         rorDtl.setDtlAction("A");
                         rorDtl.setStatus("FAU");
                         rorDtl.setDtlSubin("Faulty");
+                        dnNum = "X";
                         DbResLogRorDtl secRorDtl=new DbResLogRorDtl();
                         BeanUtils.copyProperties(rorDtl,secRorDtl);
                         secRorDtl.setDtlAction("D");
                         secRorDtl.setStatus("AVL");
                         secRorDtl.setDtlSubin("Good");
+                        String txtNum = new SimpleDateFormat("yyMMdd hhmmss").format(new Date()).replace(" ", dnNum+rorDtl.getDtlRepoId());
+                        secRorDtl.setLogTxtBum(txtNum);
                         logRorDtls.add(secRorDtl);
                     }
+                    String txtNum = new SimpleDateFormat("yyMMdd hhmmss").format(new Date()).replace(" ", dnNum+rorDtl.getDtlRepoId());
+                    rorDtl.setLogTxtBum(txtNum);
+                    logRor.setLogTxtBum(txtNum);
                     logRorDtls.add(rorDtl);
                 });
             }
@@ -139,9 +149,9 @@ public class Stock_UpdateNormalCtrl extends BaseCtrl<DbResLogRor> {
                             item.getItem_id(), item.getRepo_id(),item.getCcc(),item.getWo());
                     list.add(outputItem);
 
-                    DbResSku s = skuRepository.findFirst1BySkuCode(item.getSku_id());
+                    DbResSku s = skuRepository.findFirst1BySkuCode(item.getSku_code());
                     DbResRepo r = repoRepository.findFirst1ByRepoCode(item.getRepo_id());
-                    DbResItem i = itemRepository.findFirst1ByItemCode(item.getItem_id());
+                    DbResItem i = itemRepository.findFirst1ByItemCode(item.getItem_code());
                     Long skuId = Objects.isNull(s) ? null : s.getId();
                     Long repoId = Objects.isNull(r) ? null : r.getId();
                     Long itemId = Objects.isNull(i) ? null : r.getId();
@@ -151,26 +161,40 @@ public class Stock_UpdateNormalCtrl extends BaseCtrl<DbResLogRor> {
                     rorDtl.setCreateAt(t);
                     rorDtl.setCreateBy(getAccount());
                     rorDtl.setUpdateBy(getAccount());
+                    String dnNum = "";
                     if(b.getRequest_nature().equals("ARS")){
                         rorDtl.setDtlAction("A");
                         rorDtl.setStatus("OST");
                         rorDtl.setDtlSubin("");
+                        dnNum = "T";
                     }else if(b.getRequest_nature().equals("CARS")){
                         //todo?
                         rorDtl.setDtlAction("D");
                         rorDtl.setStatus("OST");
                         rorDtl.setDtlSubin("");
+                        dnNum = "W";
+                    }else if(b.getRequest_nature().equals("CARSW")){
+                        rorDtl.setDtlAction("A");
+                        rorDtl.setStatus("AVL");
+                        rorDtl.setDtlSubin("");
+                        dnNum = "Y";
+                        DbResLogRorDtl secRorDtl=new DbResLogRorDtl();
+                        BeanUtils.copyProperties(rorDtl,secRorDtl);
+                        secRorDtl.setDtlAction("D");
+                        secRorDtl.setStatus("ARE");
+                        String txtNum = new SimpleDateFormat("yyMMdd hhmmss").format(new Date()).replace(" ", dnNum+rorDtl.getDtlRepoId());
+                        secRorDtl.setLogTxtBum(txtNum);
+                        logRorDtls.add(secRorDtl);
+
                     }else if(b.getRequest_nature().equals("APU")){
                         rorDtl.setDtlAction("D");
                         rorDtl.setStatus("ARE");
                         rorDtl.setDtlSubin("Good");
-//                        DbResLogRorDtl secRorDtl=new DbResLogRorDtl();
-//                        BeanUtils.copyProperties(rorDtl,secRorDtl);
-//                        secRorDtl.setDtlAction("D");
-//                        secRorDtl.setStatus("AVL");
-//                        secRorDtl.setDtlSubin("Good");
-//                        logRorDtls.add(secRorDtl);
+                        dnNum = "U";
                     }
+                    String txtNum = new SimpleDateFormat("yyMMdd hhmmss").format(new Date()).replace(" ", dnNum+rorDtl.getDtlRepoId());
+                    rorDtl.setLogTxtBum(txtNum);
+                    logRor.setLogTxtBum(txtNum);
                     logRorDtls.add(rorDtl);
                 });
             }
@@ -212,13 +236,13 @@ public class Stock_UpdateNormalCtrl extends BaseCtrl<DbResLogRor> {
             if(Objects.nonNull(item_details) && item_details.size() > 0){
                 item_details.forEach(d->{
                     //Output数据
-                    OutputItemBean outputItem= new OutputItemBean(d.getDetail_id(),d.getSku_id(),String.valueOf(d.getQuantity()),
-                    d.getItem_id(), d.getRepo_id(),d.getCcc(),d.getWo());
+                    OutputItemBean outputItem= new OutputItemBean(d.getDetail_id(),d.getSku_code(),String.valueOf(d.getQuantity()),
+                    d.getItem_code(), d.getRepo_id(),d.getCcc(),d.getWo());
                     list.add(outputItem);
 
-                    DbResSku s = skuRepository.findFirst1BySkuCode(d.getSku_id());
+                    DbResSku s = skuRepository.findFirst1BySkuCode(d.getSku_code());
                     DbResRepo r = repoRepository.findFirst1ByRepoCode(d.getRepo_id());
-                    DbResItem i = itemRepository.findFirst1ByItemCode(d.getItem_id());
+                    DbResItem i = itemRepository.findFirst1ByItemCode(d.getItem_code());
                     Long skuId = Objects.isNull(s) ? null : s.getId();
                     Long repoId = Objects.isNull(r) ? null : r.getId();
                     Long itemId = Objects.isNull(i) ? null : r.getId();
@@ -229,17 +253,24 @@ public class Stock_UpdateNormalCtrl extends BaseCtrl<DbResLogRor> {
                     dbResLogRorDtl.setCreateBy(getAccount());
                     dbResLogRorDtl.setUpdateAt(time);
                     dbResLogRorDtl.setUpdateBy(getAccount());
+                    String dnNum = "";
                     if("NRS".equals(b.getRequest_nature())){
                         dbResLogRorDtl.setDtlAction("A");
                         dbResLogRorDtl.setStatus("NRE");
+                        dnNum = "N";
                     }else if("CNRS".equals(b.getRequest_nature())){
                         dbResLogRorDtl.setDtlAction("A");
                         dbResLogRorDtl.setStatus("AVL");
+                        dnNum = "F";
                     }else {
                         dbResLogRorDtl.setDtlAction("D");
                         dbResLogRorDtl.setStatus("NRE");
                         dbResLogRorDtl.setLisStatus("Good");
+                        dnNum = "K";
                     }
+                    String txtNum = new SimpleDateFormat("yyMMdd hhmmss").format(new Date()).replace(" ", dnNum+dbResLogRorDtl.getDtlRepoId());
+                    dbResLogRorDtl.setLogTxtBum(txtNum);
+                    dbResLogRor.setLogTxtBum(txtNum);
                     logRorDtlList.add(dbResLogRorDtl);
                     if(!"NPU".equals(b.getRequest_nature())){
                         DbResLogRorDtl dbResLogRorDtl1 = new DbResLogRorDtl();
@@ -247,9 +278,11 @@ public class Stock_UpdateNormalCtrl extends BaseCtrl<DbResLogRor> {
                         if("NRS".equals(b.getRequest_nature())) {
                             dbResLogRorDtl1.setDtlAction("D");
                             dbResLogRorDtl1.setStatus("AVL");
+                            dbResLogRorDtl1.setLogTxtBum(txtNum);
                         }else if("CNRS".equals(b.getRequest_nature())){
                             dbResLogRorDtl1.setDtlAction("D");
                             dbResLogRorDtl1.setStatus("NRE");
+                            dbResLogRorDtl1.setLogTxtBum(txtNum);
                         }
                         logRorDtlList.add(dbResLogRorDtl1);
                     }
@@ -265,6 +298,4 @@ public class Stock_UpdateNormalCtrl extends BaseCtrl<DbResLogRor> {
             return CollectionBuilder.builder(new HashMap<>()).put("state", "failed").put("code", "200").put("msg", "stock update failed").put("data", null).build();
         }
     }
-
-
 }

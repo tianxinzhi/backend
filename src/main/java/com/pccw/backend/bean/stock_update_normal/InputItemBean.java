@@ -29,13 +29,13 @@ public class InputItemBean extends BaseBean {
     private String action_status;
 
     @ApiModelProperty(value="logTxtBum",name="logTxtBum",example="")
-    private String sku_id;
+    private String sku_code;
 
     @ApiModelProperty(value="logTxtBum",name="logTxtBum",example="")
     private String quantity;
 
     @ApiModelProperty(value="logTxtBum",name="logTxtBum",example="")
-    private String item_id;
+    private String item_code;
 
     @ApiModelProperty(value="logTxtBum",name="logTxtBum",example="")
     private String repo_id;

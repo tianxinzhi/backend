@@ -1,34 +1,28 @@
-package com.pccw.backend.ctrl.datasync;
+package com.pccw.backend.ctrl.dataconvertion;
 
-import com.pccw.backend.bean.BaseDeleteBean;
 import com.pccw.backend.bean.JsonResult;
 import com.pccw.backend.bean.StaticVariable;
-import com.pccw.backend.bean.masterfile_sku.CreateBean;
-import com.pccw.backend.ctrl.MasterFile_AttrCtrl;
 import com.pccw.backend.entity.*;
 import com.pccw.backend.repository.*;
 import com.pccw.backend.util.RestTemplateUtils;
 import com.pccw.backend.util.Session;
-import com.sun.deploy.net.HttpResponse;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
+import org.springframework.dao.DataAccessException;
+import org.springframework.data.redis.connection.RedisConnection;
+import org.springframework.data.redis.core.RedisCallback;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-import springfox.documentation.spring.web.json.Json;
 
-import javax.servlet.http.HttpServletResponse;
-import javax.smartcardio.Card;
 import java.io.*;
-import java.sql.Timestamp;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
@@ -38,18 +32,14 @@ import java.util.stream.Collectors;
 /**
  * @Author: xiaozhi
  * @Date: 2020/1/9 17:26
- * @Desc:
- * 【1】备份数据
- * 【2】获取数据并保存 （内存问题）
- * 【3】读取并转换（内存问题）
- * 【4】写入数据（关系处理）
+ * @Desc:Lis存量数据同步
  */
 @Slf4j
 @RestController
 @CrossOrigin(methods = RequestMethod.POST,origins = "*", allowCredentials = "false")
 @RequestMapping("data_convertion")
 @Api(value="DataConvertion",tags={"DataConvertion"})
-public class DataConvertionCtrl {
+public class LisStockDataCtrl {
 
     @Autowired
     private ResSkuRepository skuRepository;
@@ -72,27 +62,18 @@ public class DataConvertionCtrl {
     Session session;
     @Autowired
     JdbcTemplate jdbcTemplate;
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
 
     private BufferedReader br = null;
     private FileReader fr = null;
     private FileWriter fw = null;
     private BufferedWriter bw = null;
 
-    //存放attrValue，attr,spec,class,sku的数据结构
-    Set<String> attrValueDataSet =  new HashSet<>();
-    Map<String,Set> attrDataMap =  new HashMap<>();
-    Map<String,Map<String,Set>> specDataMap =  new HashMap<>();
-    Set<String> classDataSet =  new HashSet<>();
-    //Set<String> classLisDataSet =  new HashSet<>();
-    //Map<String,Map<String,Set>> typeDataMap =  new HashMap<>();
-    Set<Map> skuDataSet =  new HashSet<>();
-    //Set<Map> skuLisDataSet =  new HashSet<>();
-
     //文件存放路径
     private static final String dataPath = System.getProperty("user.dir")+"/data";
     //batchjob ip端口
     private static final String host = "http://localhost:8081/";
-
 
     @ApiOperation(value="获取lis存量数据",tags={"DataConvertion"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST,value = "/getStockDataFromLis")
@@ -112,7 +93,6 @@ public class DataConvertionCtrl {
         return JsonResult.success(Arrays.asList());
     }
 
-
     /**
      * [1]备份hkt数据库
      *
@@ -120,7 +100,7 @@ public class DataConvertionCtrl {
      * catalog保存res_class,res_class_lis
      * element保存res_sku_attr_value,res_sku_attr_value_lis
      */
-    void backData() {
+    private void backData() {
         //getNewOrUpdateJSONData
     }
 
@@ -128,7 +108,7 @@ public class DataConvertionCtrl {
     /**
      * [2]调用batchjob api 获取存量（存放到data目录下）
      */
-     void getBacthJobData() {
+     private void getBacthJobData() {
         try {
             //清空文件夹
             if(new File(dataPath).isDirectory()){
@@ -172,12 +152,12 @@ public class DataConvertionCtrl {
      *
      * [3]解析txt,获取数据并构造成smp对应逻辑结构map，并将其存入redis备用
      */
-     void transferData() {
+     private void transferData() {
         try {
             File f = new File(dataPath);
             if(!f.isDirectory()) return;
-            Map<String, List<String[]>> stringListMap = readFileData(f.listFiles());
-            geneSkuMapData(stringListMap);
+            readFileData(f.listFiles());
+            geneSkuMapData();
         } catch (Exception e) {
             log.info(e.getMessage());
             e.printStackTrace();
@@ -187,70 +167,75 @@ public class DataConvertionCtrl {
 
     /**
      * 读取文件每行内容并放入data Map
-     * @param dataList 分别放入item文件，category文件，element文件，分别对应sku，class，attrValue的数据
      * @throws Exception
      */
-    void geneSkuMapData(Map<String, List<String[]>> dataList) throws Exception{
-        List<String[]> skuList = dataList.get("sku");
-        List<String[]> classList = dataList.get("class");
-        List<String[]> attrList = dataList.get("attrValue");
+    private void geneSkuMapData() throws Exception{
+        //存放attrValue，attr,spec,class,sku的数据结构
+        Map<String,Object> attrValueDataSet =  new HashMap<>();
+        Map<String,Map> attrDataMap =  new HashMap<>();
+        Map<String,Map<String,Map>> specDataMap =  new HashMap<>();
+        Map<String,Object> classDataSet =  new HashMap<>();
+        Map<String,Map> skuDataSet =  new HashMap<>();
+        Map<String,Map<String,Map>> skuAttrMap = new HashMap<>();//sku_attr_value 的map
+        Map<String,Object> attrList = (Map)session.get("attrValue");
+        Map<String,Object> classList = (Map)session.get("class");
+        Map<String,Object> skuList = (Map)session.get("sku");
+        session.delete("sku");
+        session.delete("class");
+        session.delete("attrValue");
+        for (String attrs : attrList.keySet()) {
+            if(attrs.contains("INVENTORY_ITEM_ID")) continue;//去标题
+            long attr_skuId = Long.parseLong(attrs.split("\\|")[0].trim());
+            long attr_classId = Long.parseLong(attrs.split("\\|")[1].trim());
+            String attrName = attrs.split("\\|")[2].trim();
+            String attrValue = attrs.split("\\|")[3].trim();
 
-        if(skuList == null || attrList == null || classList == null) {
-            log.info("数据读取失败");
-            return;
-        }
-        Map<String,Map<String,Set>> skuAttrMap = new HashMap<>();//sku_attr_value 的map
-        for (String[] attrs : attrList) {
-            if(attrList.indexOf(attrs)==0) continue;
-            long attr_skuId = Long.parseLong(attrs[0].trim());
-            long attr_classId = Long.parseLong(attrs[1].trim());
-            String attrName = attrs[2].trim();
-            String attrValue = attrs[3].trim();
+            attrValueDataSet.put(attrValue,"");
 
-            attrValueDataSet.add(attrValue);
             //判断是否为同一attr的attrValue
             boolean findAttr = false;
-            for (Map.Entry<String, Set> attrEntry : attrDataMap.entrySet()) {
+            for (Map.Entry<String, Map> attrEntry : attrDataMap.entrySet()) {
                 //找到attr下新的attrvalue
                 if(attrEntry.getKey().equals(attrName)){
                     findAttr = true;
-                    attrEntry.getValue().add(attrValue);
+                    attrEntry.getValue().put(attrValue,"");
                     break;
                 }
             }
             //找到新的attr
             if(findAttr == false){
-                Set vaSet = new HashSet();
-                vaSet.add(attrValue);
+
+                Map vaSet = new HashMap();
+                vaSet.put(attrValue,"");
                 attrDataMap.put(attrName,vaSet);
             }
 
             boolean findSpec = false;
-            for (String[] specs : classList) {
-                if(classList.indexOf(specs)==0) continue;
-                String specDesc = specs[1].trim();
+            for (String specs : classList.keySet()) {
+                if(specs.contains("ITEM_CATALOG_GROUP_ID")) continue;
+                String specDesc = specs.split("\\|")[1].trim();
 
-                if(attr_classId == Long.parseLong(specs[0].trim())){
+                if(attr_classId == Long.parseLong(specs.split("\\|")[0].trim())){
                     findSpec = true;
                     boolean findMapSpec = false;
                     //查找spec对应的attr和attrValue
-                    for (Map.Entry<String, Map<String, Set>> specMap : specDataMap.entrySet()) {
+                    for (Map.Entry<String, Map<String, Map>> specMap : specDataMap.entrySet()) {
                         //找到spec的key时
                         if(specMap.getKey().equals(specDesc)){
                             findMapSpec = true;
                             boolean findSpecAttr = false;
-                            for (Map.Entry<String, Set> attrMap : specMap.getValue().entrySet()) {
+                            for (Map.Entry<String, Map> attrMap : specMap.getValue().entrySet()) {
                                 //找到spec下的attr key时
                                 if(attrMap.getKey().equals(attrName)){
                                     findSpecAttr = true;
-                                    attrMap.getValue().add(attrValue);
+                                    attrMap.getValue().put(attrValue,"");
                                     break;
                                 }
                             }
                             //未找到，说明是spec下新的attr
                             if(findSpecAttr == false){
-                                Set attrValueSet = new HashSet();
-                                attrValueSet.add(attrValue);
+                                Map attrValueSet = new HashMap();
+                                attrValueSet.put(attrValue,"");
                                 specMap.getValue().put(attrName,attrValueSet);
                             }
                             break;
@@ -258,39 +243,40 @@ public class DataConvertionCtrl {
                     }
                     //未找到，说明是新的spec
                     if(findMapSpec == false){
-                        Map<String, Set> attrMap = new HashMap<>();
-                        Set vaSet = new HashSet();
-                        vaSet.add(attrValue);
+                        Map<String, Map> attrMap = new HashMap<>();
+                        Map vaSet = new HashMap();
+                        vaSet.put(attrValue,"");
                         attrMap.put(attrName,vaSet);
                         specDataMap.put(specDesc,attrMap);
                     }
-                    classDataSet.add(specDesc);
+                    classDataSet.put(specDesc,"");
                     boolean findSku = false;
-                    for (String[] skus : skuList) {
-                        if(skuList.indexOf(skus)==0) continue;
-                        String skuName = skus[1].trim();
-                        if(attr_skuId == Long.parseLong(skus[2].trim())) {
+                    for (String skus : skuList.keySet()) {
+                        if(skus.contains("ORGANIZATION_ID")) continue;
+                        String skuName = skus.split("\\|")[1].trim();
+                        if(attr_skuId == Long.parseLong(skus.split("\\|")[2].trim())) {
                             Map skuMap = new HashMap();//单个sku的map
                             findSku = true;
 
                             boolean findSku_Attr = false;
-                            for (Map.Entry<String, Map<String,Set>> sku_AttrMap : skuAttrMap.entrySet()) {
+                            for (Map.Entry<String, Map<String,Map>> sku_AttrMap : skuAttrMap.entrySet()) {
                                 //为同一个sku下的attr时
                                 if(sku_AttrMap.getKey().equals(skuName)){
+
                                     findSku_Attr = true;
                                     boolean findSku_Attr_Value = false;
-                                    for (Map.Entry<String, Set> attrMap : sku_AttrMap.getValue().entrySet()) {
+                                    for (Map.Entry<String, Map> attrMap : sku_AttrMap.getValue().entrySet()) {
                                         //sku已经加入的attr
                                         if(attrMap.getKey().equals(attrName)){
                                             findSku_Attr_Value = true;
-                                            attrMap.getValue().add(attrValue);
+                                            attrMap.getValue().put(attrValue,"");
                                             break;
                                         }
                                     }
                                     //sku下新的attr
                                     if(findSku_Attr_Value == false){
-                                        Set attrValueSet = new HashSet();
-                                        attrValueSet.add(attrValue);
+                                        Map attrValueSet = new HashMap();
+                                        attrValueSet.put(attrValue,"");
                                         sku_AttrMap.getValue().put(attrName,attrValueSet);
                                     }
                                     break;
@@ -300,19 +286,19 @@ public class DataConvertionCtrl {
                             if(findSku_Attr == false){
                                 skuMap = new HashMap();
 
-                                Map<String, Set> map = new HashMap<>();
-                                Set vaSet = new HashSet();
-                                vaSet.add(attrValue);
+                                Map<String, Map> map = new HashMap<>();
+                                Map vaSet = new HashMap();
+                                vaSet.put(attrValue,"");
                                 map.put(attrName,vaSet);
                                 skuAttrMap.put(skuName,map);
                             }
                             //sku
                             skuMap.put("skuName",skuName);
-                            skuMap.put("skuDesc",skus[3].trim());
+                            skuMap.put("skuDesc",skus.split("\\|")[3].trim());
                             skuMap.put("skuType",specDesc);
                             skuMap.put("skuAttrValue",skuAttrMap.get(skuName));//skuAttrValue
-                            skuMap.put("repoId",Long.parseLong(skus[0].trim()));
-                            skuDataSet.add(skuMap);
+                            skuMap.put("repoId",Long.parseLong(skus.split("\\|")[0].trim()));
+                            skuDataSet.put(skuName,skuMap);
                             break;
                         }
                     }
@@ -330,29 +316,24 @@ public class DataConvertionCtrl {
 
         }
 
-        //去重
-        skuDataSet = skuDataSet.stream().filter(distinctByKey(sku -> sku.get("skuName"))).collect(Collectors.toSet());
+        //对应关系存入redis
+//        redisTemplate.executePipelined((RedisCallback<Object>) connection  -> {
+//            connection.openPipeline();
+//            session.set("attrValue",attrValueDataSet);
+//            session.set("attr",attrDataMap);
+//            session.set("spec",specDataMap);
+//            session.set("class",classDataSet);
+//            session.set("sku",skuDataSet);
+//            connection.closePipeline();
+//            return null;
+//        });
+        long time = System.currentTimeMillis();
         session.set("attrValue",attrValueDataSet);
         session.set("attr",attrDataMap);
         session.set("spec",specDataMap);
         session.set("class",classDataSet);
-        //session.set("classLis",classLisDataSet);
-        //session.set("type",typeDataMap);
         session.set("sku",skuDataSet);
-        //session.set("skuLis",skuLisDataSet);
-    }
-
-
-
-    /**
-     * 根据key去重
-     * @param keyExtractor
-     * @param <T>
-     * @return
-     */
-    private static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
-        Map<Object,Boolean> seen = new ConcurrentHashMap<>();
-        return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
+        System.out.println("用时" + (System.currentTimeMillis() - time));
     }
 
     /**
@@ -361,18 +342,17 @@ public class DataConvertionCtrl {
      * @return
      * @throws Exception
      */
-    Map<String,List<String[]>> readFileData(File[] files) throws Exception{
-        Map<String,List<String[]>> dataList = new HashMap();
+    private void readFileData(File[] files) throws Exception{
         for (File file : files) {
             if ( file.getName().contains("lis_item") ) {
-                dataList.put("sku",readWord(file));
+                session.set("sku",readWord(file));
             } else if ( file.getName().contains("lis_category") ) {
-                dataList.put("class",readWord(file));
+                session.set("class",readWord(file));
             } else if ( file.getName().contains("lis_element") ) {
-                dataList.put("attrValue",readWord(file));
+                session.set("attrValue",readWord(file));
             }
+
         }
-        return dataList;
     }
 
     /**
@@ -381,14 +361,14 @@ public class DataConvertionCtrl {
      * @return
      * @throws Exception
      */
-    List<String[]> readWord(File file) throws Exception{
+    Map readWord(File file) throws Exception{
         fr = new FileReader(file);
         br = new BufferedReader(fr);
         //读取文件每个字段
         String str = null;
-        List<String[]> objectList= new LinkedList<>();
+        Map<String,Object> objectList= new HashMap();
         while ((str=(br.readLine()))!=null){
-            objectList.add(str.split("\\|"));
+            objectList.put(str,"");
         }
         return objectList;
     }
@@ -399,39 +379,37 @@ public class DataConvertionCtrl {
      */
     void syncData() {
         try {
-            List<String> attrValueData = (List) session.get("attrValue");
-            Map<String, Set> attrData = (Map) session.get("attr");
-            Map<String, Map<String, Set>> specData = (Map) session.get("spec");
-            List<String> classData = (List)session.get("class");
-            //classLisDataSet = (Set<String>)session.get("classLis");
-            //typeDataMap = (Map<String, Map>) session.get("type");
-            List<Map> skuData = (List) session.get("sku");
-            //skuLisDataSet = (Set<Map>) session.get("skuLis");
+            Map<String,Object> attrValueData = (Map) session.get("attrValue");
+            Map<String, Map> attrData = (Map) session.get("attr");
+            Map<String, Map<String, Map>> specData = (Map) session.get("spec");
+            Map<String,Object> classData = (Map)session.get("class");
+            Map<String,Map> skuData = (Map) session.get("sku");
 
-            List<DbResAttrValue> attrValueSet = new LinkedList<>();
-            List<DbResAttr> attrSet = new LinkedList<>();
-            List<DbResSpec> specSet = new LinkedList<>();
-            List<DbResClass> classSet = new LinkedList<>();
-            List<DbResType> typeSet = new LinkedList<>();
-            List<DbResSku> skuSet = new LinkedList<>();
-
-            List<DbResSkuLis> skuLisSet = new LinkedList<>();
-            List<DbResClassLis> classLisSet = new LinkedList<>();
+//            List<DbResAttrValue> attrValueSet = new LinkedList<>();
+//            List<DbResAttr> attrSet = new LinkedList<>();
+//            List<DbResSpec> specSet = new LinkedList<>();
+//            List<DbResClass> classSet = new LinkedList<>();
+//            List<DbResType> typeSet = new LinkedList<>();
+//            List<DbResSku> skuSet = new LinkedList<>();
+//
+//            List<DbResSkuLis> skuLisSet = new LinkedList<>();
+//            List<DbResClassLis> classLisSet = new LinkedList<>();
             //Set<DbResSkuAttrValueLis> skuAttrValueLisSet = new LinkedHashSet<>();
             long time = System.currentTimeMillis();
-
-            for (String s : attrValueData) {
+            System.out.println("start insert......");
+            for (String s : attrValueData.keySet()) {
                 DbResAttrValue value = new DbResAttrValue();
                 value.setAttrValue(s);
                 value.setCreateAt(time);
                 value.setUpdateAt(time);
                 value.setActive("Y");
-                attrValueSet.add(value);
+                //attrValueSet.add(value);
+                attrValueRepository.saveAndFlush(value);
             }
-            attrValueRepository.saveAll(attrValueSet);
+            //attrValueRepository.saveAll(attrValueSet);
 
             //attr
-            for (Map.Entry<String, Set> attrName : attrDataMap.entrySet()) {
+            for (Map.Entry<String, Map> attrName : attrData.entrySet()) {
                 DbResAttr value = new DbResAttr();
                 value.setAttrName(attrName.getKey());
                 value.setAttrDesc(attrName.getKey());
@@ -441,7 +419,7 @@ public class DataConvertionCtrl {
 
                 List<DbResAttrAttrValue> attrAttrValueList = new LinkedList<>();
                 //中间表
-                for (Object o : attrName.getValue()) {
+                for (Object o : attrName.getValue().keySet()) {
                     DbResAttrValue attrValue = attrValueRepository.getDbResAttrValuesByAttrValue(o.toString()).get(0);
 
                     DbResAttrAttrValue attrAttrValue = new DbResAttrAttrValue();
@@ -453,23 +431,24 @@ public class DataConvertionCtrl {
                     attrAttrValueList.add(attrAttrValue);
                 }
                 value.setAttrAttrValueList(attrAttrValueList);
-                attrSet.add(value);
+                //attrSet.add(value);
+                attrRepository.saveAndFlush(value);
             }
-            attrRepository.saveAll(attrSet);
+            //attrRepository.saveAll(attrSet);
             //spec
-            for (Map.Entry<String, Map<String,Set>> specEntry : specDataMap.entrySet()) {
+            for (Map.Entry<String, Map<String,Map>> specEntry : specData.entrySet()) {
                 DbResSpec value = new DbResSpec();
                 value.setSpecName(specEntry.getKey());
                 value.setSpecDesc(specEntry.getKey());
                 value.setCreateAt(time);
                 value.setUpdateAt(time);
                 value.setActive("Y");
-                Map<String,Set> attrMap = specEntry.getValue();
+                Map<String,Map> attrMap = specEntry.getValue();
 
                 List<DbResSpecAttr> specAttrList = new LinkedList<>();
-                for (Map.Entry<String, Set> attrEntry : attrMap.entrySet()) {
+                for (Map.Entry<String, Map> attrEntry : attrMap.entrySet()) {
                     DbResAttr attr = attrRepository.getDbResAttrsByAttrName(attrEntry.getKey()).get(0);
-                    for (Object o : attrEntry.getValue()) {
+                    for (Object o : attrEntry.getValue().keySet()) {
                         DbResAttrValue value1 = attrValueRepository.getDbResAttrValuesByAttrValue(o.toString()).get(0);
                         DbResSpecAttr specAttr = new DbResSpecAttr();
                         specAttr.setAttrId(attr.getId()+"");
@@ -481,26 +460,27 @@ public class DataConvertionCtrl {
                     }
                 }
                 value.setResSpecAttrList(specAttrList);
-                specSet.add(value);
+                //specSet.add(value);
+                specRepository.saveAndFlush(value);
             }
-            specRepository.saveAll(specSet);
+            //specRepository.saveAll(specSet);
             //class,classLis,type
-            for (String classDatum : classData) {
+            for (String classDatum : classData.keySet()) {
                 DbResClass value = new DbResClass();
                 value.setClassName(classDatum);
                 value.setClassDesc(classDatum);
                 value.setCreateAt(time);
                 value.setUpdateAt(time);
                 value.setActive("Y");
-                classSet.add(value);
+                //classSet.add(value);
                 //classLis
                 DbResClassLis classLis = new DbResClassLis();
-                classLis.setClassId(value.getId());
+                classLis.setClassId(value);
                 classLis.setClassDesc(classDatum);
                 classLis.setCreateAt(time);
                 classLis.setUpdateAt(time);
                 classLis.setActive("Y");
-                classLisSet.add(classLis);
+                //classLisSet.add(classLis);
 
                 //type
                 DbResType type = new DbResType();
@@ -530,14 +510,18 @@ public class DataConvertionCtrl {
                 type.setDbResTypeSkuSpec(value2);
                 type.setRelationOfTypeClass(classTypeList);
 
-                typeSet.add(type);
+                //typeSet.add(type);
+                classRepository.saveAndFlush(value);
+                classLisRepository.saveAndFlush(classLis);
+                typeRepository.saveAndFlush(type);
             }
-            classRepository.saveAll(classSet);
-            classLisRepository.saveAll(classLisSet);
-            typeRepository.saveAll(typeSet);
+            //classRepository.saveAll(classSet);
+            //classLisRepository.saveAll(classLisSet);
+            //typeRepository.saveAll(typeSet);
 
             //sku,skuLis
-            for (Map skuDatum : skuData) {
+            int count = 0;
+            for (Map skuDatum : skuData.values()) {
                 DbResSku sku = new DbResSku();
                 String skuName = skuDatum.get("skuName").toString();
                 sku.setSkuName(skuName);
@@ -550,9 +534,9 @@ public class DataConvertionCtrl {
                 //skuLis
                 DbResSkuLis skuLis = new DbResSkuLis();
                 BeanUtils.copyProperties(sku,skuLis);
-                skuLis.setSkuId(sku.getId());
+                skuLis.setSkuId(sku);
                 List<DbResClassLis> skuType1 = classLisRepository.getDbResClassLissByClassDesc(skuDatum.get("skuType").toString());
-                skuLis.setClassLisId(skuType1 == null ? null:skuType1.get(0).getId());
+                skuLis.setClassLisId(skuType1 == null ? null:skuType1.get(0));
                 skuLis.setRepoId(Long.parseLong(skuDatum.get("repoId").toString()));
                 //skuType
                 List<DbResSkuType> skuTypes = new LinkedList<>();
@@ -565,10 +549,10 @@ public class DataConvertionCtrl {
                 skuTypes.add(skuType);
                 List<DbResSkuAttrValue> skuAttrValueList = new LinkedList<>();
                 List<DbResSkuAttrValueLis> skuAttrValueLisList = new LinkedList<>();
-                Map<String,List> attrMap =  (Map)skuDatum.get("skuAttrValue");
-                for (Map.Entry<String, List> attrEntry : attrMap.entrySet()) {
+                Map<String,Map> attrMap =  (Map)skuDatum.get("skuAttrValue");
+                for (Map.Entry<String, Map> attrEntry : attrMap.entrySet()) {
                     DbResAttr attr = attrRepository.getDbResAttrsByAttrName(attrEntry.getKey()).get(0);
-                    for (Object o : attrEntry.getValue()) {
+                    for (Object o : attrEntry.getValue().keySet()) {
                         DbResAttrValue attrValue = attrValueRepository.getDbResAttrValuesByAttrValue(o.toString()).get(0);
                         DbResSkuAttrValue skuAttrValue = new DbResSkuAttrValue();
                         skuAttrValue.setSku(sku);
@@ -577,15 +561,13 @@ public class DataConvertionCtrl {
                         skuAttrValue.setCreateAt(time);
                         skuAttrValue.setUpdateAt(time);
                         skuAttrValue.setActive("Y");
-//                        skuAttrValue.setCreateAt(time);
-//                        skuAttrValue.setUpdateAt(time);
-//                        skuAttrValue.setActive("Y");
                         skuAttrValueList.add(skuAttrValue);
 
                         //
                         DbResSkuAttrValueLis skuAttrValueLis = new DbResSkuAttrValueLis();
                         BeanUtils.copyProperties(skuAttrValue,skuAttrValueLis);
-                        skuAttrValueLis.setSkuAttrValueId(skuAttrValue.getId());
+                        skuAttrValueLis.setSkuLis(skuLis);
+                        skuAttrValueLis.setSkuAttrValueId(skuAttrValue);
                         skuAttrValueLis.setAttrName(attrEntry.getKey());
                         skuAttrValueLis.setAttrValue(o.toString());
                         skuAttrValueLisList.add(skuAttrValueLis);
@@ -593,24 +575,22 @@ public class DataConvertionCtrl {
                 }
                 sku.setSkuTypeList(skuTypes);
                 sku.setSkuAttrValueList(skuAttrValueList);
-                skuSet.add(sku);
+                //skuSet.add(sku);
                 skuLis.setSkuAttrValueLisList(skuAttrValueLisList);
-                skuLisSet.add(skuLis);
+                //skuLisSet.add(skuLis);
+                count++;
+                skuRepository.saveAndFlush(sku);
+                skuLisRepository.saveAndFlush(skuLis);
             }
-//            for (DbResSku sku : skuSet) {
-//                System.out.println("skuName:"+sku.getSkuName());
-//            }
-            log.info("插入sku数量为："+skuSet.size());
-            skuRepository.saveAll(skuSet);
-            skuLisRepository.saveAll(skuLisSet);
-            //attrValueRepository.saveAll(attrValueSet);
-            //attrRepository.saveAll(attrSet);
-//            specRepository.saveAll(specSet);
-//            classRepository.saveAll(classSet);
-//            classLisRepository.saveAll(classLisSet);
-//            typeRepository.saveAll(typeSet);
+            System.out.println("over insert......");
+            log.info("插入sku数量为："+count);
 //            skuRepository.saveAll(skuSet);
-//            skuLisRepository.saveAll(skuLisSet);
+ //           skuLisRepository.saveAll(skuLisSet);
+            session.delete("attrValue");
+            session.delete("attr");
+            session.delete("spec");
+            session.delete("class");
+            session.delete("sku");
         } catch (Exception e) {
             log.info(e.getMessage());
             e.printStackTrace();

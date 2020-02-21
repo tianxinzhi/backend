@@ -43,8 +43,7 @@ public class Stock_UpdateNormalCtrl extends BaseCtrl<DbResLogRor> {
 
     @ApiOperation(value="创建stock_update",tags={"stock_update"},notes="说明")
     @RequestMapping(method = RequestMethod.POST,path="/stock_update")
-    public OutputBean create(@RequestBody InputBean b){
-        OutputBean output = new OutputBean();
+    public Map create(@RequestBody InputBean b){
         try {
             //输入验证
             long t = new Date().getTime();
@@ -59,8 +58,13 @@ public class Stock_UpdateNormalCtrl extends BaseCtrl<DbResLogRor> {
             logRor.setCreateBy(getAccount());
             logRor.setUpdateBy(getAccount());
             List<DbResLogRorDtl> logRorDtls=new ArrayList<>();
+            ArrayList<Object> list = new ArrayList<>();
             if(Objects.nonNull(b.getItem_details()) && b.getItem_details().size() > 0){
                 b.getItem_details().forEach(item -> {
+                    //Output数据
+                    OutputItemBean outputItem= new OutputItemBean(item.getDetail_id(),item.getSku_id(),String.valueOf(item.getQuantity()),
+                            item.getItem_id(), item.getRepo_id(),item.getCcc(),item.getWo());
+                    list.add(outputItem);
 
                     DbResSku s = skuRepository.findFirst1BySkuCode(item.getSku_id());
                     DbResRepo r = repoRepository.findFirst1ByRepoCode(item.getRepo_id());
@@ -99,42 +103,19 @@ public class Stock_UpdateNormalCtrl extends BaseCtrl<DbResLogRor> {
             }
             logRor.setLine(logRorDtls);
             repo.saveAndFlush(logRor);
-            //通过输入参数的order_id查询log表数据，构造输出
-            DbResLogRor resLogRor =repo.findDbResLogRorByLogOrderId(b.getOrder_id());
-            OutputDataBean outputData =new OutputDataBean();
-            if(Objects.nonNull(resLogRor)){
-             output.setState("success");
-             output.setCode("200");
-             output.setMsg("stock update successfully");
-             //EXC只取一行
-             List<DbResLogRorDtl>  resRorDtl= new ArrayList<>();
-             if(resLogRor.getLogOrderNature().equals("EXC")){
-                resRorDtl= resLogRor.getLine().stream().filter( ror ->"FAU".equals(ror.getStatus()) ).collect(Collectors.toList());
-             }else {
-                resRorDtl=resLogRor.getLine();
-             }
-             List<OutputItemBean> itemLine=resRorDtl.stream().map(item->{
-                 OutputItemBean outputItem= new OutputItemBean(item.getDetailId(),String.valueOf(item.getDtlSkuId()),String.valueOf(item.getDtlQty()),
-                         String.valueOf(item.getDtlItemId()), String.valueOf(item.getDtlRepoId()),item.getCcc(),item.getWo());
-                 return outputItem;
-             }).collect(Collectors.toList());
-             outputData.setItem_details(itemLine);
-             outputData.setTx_id(resLogRor.getLogTxtBum());
-             output.setData(outputData);
-            }
-            return output;
+
+            Map outputdata = CollectionBuilder.builder(new HashMap<>()).put("tx_id",logRor.getLogTxtBum()).put("item_details",list).build();
+            Map jsonResult = CollectionBuilder.builder(new HashMap<>()).put("state", "success").put("code", "200").put("msg", "stock update successfully").put("data", outputdata).build();
+            return jsonResult;
         } catch (Exception e) {
-            output.setCode("fail");
-            output.setCode("888");
-            output.setMsg(e.toString());
-            return output;
+            return CollectionBuilder.builder(new HashMap<>()).put("state", "failed").put("code", "200").put("msg", "stock update failed").put("data", null).build();
         }
     }
 
 
     @ApiOperation(value="创建stock_update",tags={"stock_update"},notes="说明")
     @RequestMapping(method = RequestMethod.POST,path="/stock_update_ao")
-    public OutputBean createAO(@RequestBody InputBean b){
+    public Map createAO(@RequestBody InputBean b){
         OutputBean output = new OutputBean();
         try {
             //输入验证
@@ -150,8 +131,13 @@ public class Stock_UpdateNormalCtrl extends BaseCtrl<DbResLogRor> {
             logRor.setCreateBy(getAccount());
             logRor.setUpdateBy(getAccount());
             List<DbResLogRorDtl> logRorDtls=new ArrayList<>();
+            ArrayList<Object> list = new ArrayList<>();
             if(Objects.nonNull(b.getItem_details()) && b.getItem_details().size() > 0){
                 b.getItem_details().forEach(item -> {
+                    //Output数据
+                    OutputItemBean outputItem= new OutputItemBean(item.getDetail_id(),item.getSku_id(),String.valueOf(item.getQuantity()),
+                            item.getItem_id(), item.getRepo_id(),item.getCcc(),item.getWo());
+                    list.add(outputItem);
 
                     DbResSku s = skuRepository.findFirst1BySkuCode(item.getSku_id());
                     DbResRepo r = repoRepository.findFirst1ByRepoCode(item.getRepo_id());
@@ -166,13 +152,13 @@ public class Stock_UpdateNormalCtrl extends BaseCtrl<DbResLogRor> {
                     rorDtl.setCreateBy(getAccount());
                     rorDtl.setUpdateBy(getAccount());
                     if(b.getRequest_nature().equals("ARS")){
-                        rorDtl.setDtlAction("");
-                        rorDtl.setStatus("");
+                        rorDtl.setDtlAction("A");
+                        rorDtl.setStatus("OST");
                         rorDtl.setDtlSubin("");
                     }else if(b.getRequest_nature().equals("CARS")){
                         //todo?
-                        rorDtl.setDtlAction("");
-                        rorDtl.setStatus("");
+                        rorDtl.setDtlAction("D");
+                        rorDtl.setStatus("OST");
                         rorDtl.setDtlSubin("");
                     }else if(b.getRequest_nature().equals("APU")){
                         rorDtl.setDtlAction("D");
@@ -190,35 +176,12 @@ public class Stock_UpdateNormalCtrl extends BaseCtrl<DbResLogRor> {
             }
             logRor.setLine(logRorDtls);
             repo.saveAndFlush(logRor);
-            //通过输入参数的order_id查询log表数据，构造输出
-            DbResLogRor resLogRor =repo.findDbResLogRorByLogOrderId(b.getOrder_id());
-            OutputDataBean outputData =new OutputDataBean();
-            if(Objects.nonNull(resLogRor)){
-                output.setState("success");
-                output.setCode("200");
-                output.setMsg("stock update successfully");
-                //只取一行
-                List<DbResLogRorDtl>  resRorDtl= new ArrayList<>();
-                if(resLogRor.getLogOrderNature().equals("CARS") && Objects.nonNull(resLogRor.getLine()) && resLogRor.getLine().size()>1){
-                    resRorDtl= resLogRor.getLine().stream().filter( ror ->"FAU".equals(ror.getStatus()) ).collect(Collectors.toList());
-                }else {
-                    resRorDtl=resLogRor.getLine();
-                }
-                List<OutputItemBean> itemLine=resRorDtl.stream().map(item->{
-                    OutputItemBean outputItem= new OutputItemBean(item.getDetailId(),String.valueOf(item.getDtlSkuId()),String.valueOf(item.getDtlQty()),
-                            String.valueOf(item.getDtlItemId()), String.valueOf(item.getDtlRepoId()),item.getCcc(),item.getWo());
-                    return outputItem;
-                }).collect(Collectors.toList());
-                outputData.setItem_details(itemLine);
-                outputData.setTx_id(resLogRor.getLogTxtBum());
-                output.setData(outputData);
-            }
-            return output;
+
+            Map outputdata = CollectionBuilder.builder(new HashMap<>()).put("tx_id",logRor.getLogTxtBum()).put("item_details",list).build();
+            Map jsonResult = CollectionBuilder.builder(new HashMap<>()).put("state", "success").put("code", "200").put("msg", "stock update successfully").put("data", outputdata).build();
+            return jsonResult;
         } catch (Exception e) {
-            output.setCode("fail");
-            output.setCode("888");
-            output.setMsg(e.toString());
-            return output;
+            return CollectionBuilder.builder(new HashMap<>()).put("state", "failed").put("code", "200").put("msg", "stock update failed").put("data", null).build();
         }
     }
 

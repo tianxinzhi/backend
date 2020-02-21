@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.stream.Collectors;
 
 
 @Slf4j
@@ -50,7 +49,6 @@ public class Stock_UpdateNormalCtrl extends BaseCtrl<DbResLogRor> {
             long t = new Date().getTime();
             DbResLogRor logRor= new DbResLogRor(null,b.getOrder_system(),b.getOrder_id(),null,"N",b.getSales_id(),b.getTx_date(),b.getBiz_date(),null);
             logRor.setLogOrderNature(b.getRequest_nature());
-            logRor.setLogTxtBum("2020test");
             logRor.setRemark(b.getRemarks());
             logRor.setLogType("O");
             logRor.setActive("Y");
@@ -63,8 +61,8 @@ public class Stock_UpdateNormalCtrl extends BaseCtrl<DbResLogRor> {
             if(Objects.nonNull(b.getItem_details()) && b.getItem_details().size() > 0){
                 b.getItem_details().forEach(item -> {
                     //Output数据
-                    OutputItemBean outputItem= new OutputItemBean(item.getDetail_id(),item.getSku_id(),String.valueOf(item.getQuantity()),
-                            item.getItem_id(), item.getRepo_id(),item.getCcc(),item.getWo());
+                    OutputItemBean outputItem= new OutputItemBean(item.getDetail_id(),item.getSku_code(),String.valueOf(item.getQuantity()),
+                            item.getItem_code(), item.getRepo_id(),item.getCcc(),item.getWo());
                     list.add(outputItem);
 
                     DbResSku s = skuRepository.findFirst1BySkuCode(item.getSku_code());
@@ -114,11 +112,11 @@ public class Stock_UpdateNormalCtrl extends BaseCtrl<DbResLogRor> {
             logRor.setLine(logRorDtls);
             repo.saveAndFlush(logRor);
 
-            Map outputdata = CollectionBuilder.builder(new HashMap<>()).put("tx_id",logRor.getLogTxtBum()).put("item_details",list).build();
+            Map outputdata = CollectionBuilder.builder(new HashMap<>()).put("item_details",list).put("tx_id",logRor.getLogTxtBum()).build();
             Map jsonResult = CollectionBuilder.builder(new HashMap<>()).put("state", "success").put("code", "200").put("msg", "stock update successfully").put("data", outputdata).build();
             return jsonResult;
         } catch (Exception e) {
-            return CollectionBuilder.builder(new HashMap<>()).put("state", "failed").put("code", "200").put("msg", "stock update failed").put("data", null).build();
+            return CollectionBuilder.builder(new HashMap<>()).put("state", "failed").put("code", "200").put("msg", e.toString()).put("data", null).build();
         }
     }
 
@@ -126,13 +124,11 @@ public class Stock_UpdateNormalCtrl extends BaseCtrl<DbResLogRor> {
     @ApiOperation(value="创建stock_update",tags={"stock_update"},notes="说明")
     @RequestMapping(method = RequestMethod.POST,path="/stock_update_ao")
     public Map createAO(@RequestBody InputBean b){
-        OutputBean output = new OutputBean();
         try {
             //输入验证
             long t = new Date().getTime();
             DbResLogRor logRor= new DbResLogRor(null,b.getOrder_system(),b.getOrder_id(),null,"N",b.getSales_id(),b.getTx_date(),b.getBiz_date(),null);
             logRor.setLogOrderNature(b.getRequest_nature());
-            logRor.setLogTxtBum("2020testAO");
             logRor.setRemark(b.getRemarks());
             logRor.setLogType("O");
             logRor.setActive("Y");
@@ -145,8 +141,8 @@ public class Stock_UpdateNormalCtrl extends BaseCtrl<DbResLogRor> {
             if(Objects.nonNull(b.getItem_details()) && b.getItem_details().size() > 0){
                 b.getItem_details().forEach(item -> {
                     //Output数据
-                    OutputItemBean outputItem= new OutputItemBean(item.getDetail_id(),item.getSku_id(),String.valueOf(item.getQuantity()),
-                            item.getItem_id(), item.getRepo_id(),item.getCcc(),item.getWo());
+                    OutputItemBean outputItem= new OutputItemBean(item.getDetail_id(),item.getSku_code(),String.valueOf(item.getQuantity()),
+                            item.getItem_code(), item.getRepo_id(),item.getCcc(),item.getWo());
                     list.add(outputItem);
 
                     DbResSku s = skuRepository.findFirst1BySkuCode(item.getSku_code());
@@ -168,7 +164,6 @@ public class Stock_UpdateNormalCtrl extends BaseCtrl<DbResLogRor> {
                         rorDtl.setDtlSubin("");
                         dnNum = "T";
                     }else if(b.getRequest_nature().equals("CARS")){
-                        //todo?
                         rorDtl.setDtlAction("D");
                         rorDtl.setStatus("OST");
                         rorDtl.setDtlSubin("");

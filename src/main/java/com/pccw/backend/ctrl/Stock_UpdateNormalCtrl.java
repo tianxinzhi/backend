@@ -116,7 +116,7 @@ public class Stock_UpdateNormalCtrl extends BaseCtrl<DbResLogRor> {
             Map jsonResult = CollectionBuilder.builder(new HashMap<>()).put("state", "success").put("code", "200").put("msg", "stock update successfully").put("data", outputdata).build();
             return jsonResult;
         } catch (Exception e) {
-            return CollectionBuilder.builder(new HashMap<>()).put("state", "failed").put("code", "200").put("msg", e.toString()).put("data", null).build();
+            return CollectionBuilder.builder(new HashMap<>()).put("state", "failed").put("code", "200").put("msg", e.getMessage()).put("data", null).build();
         }
     }
 

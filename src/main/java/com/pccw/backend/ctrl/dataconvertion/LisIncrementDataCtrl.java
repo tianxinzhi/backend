@@ -404,8 +404,8 @@ public class LisIncrementDataCtrl {
 
                 BeanUtils.copyProperties(sku,skuLis);
                 skuLis.setSkuId(sku);
-                List<DbResClassLis> skuType1 = classLisRepository.getDbResClassLissByClassDesc(skuDatum.get("skuType").toString());
-                skuLis.setClassLisId(skuType1 == null ? null:skuType1.get(0));
+                //List<DbResClassLis> skuType1 = classLisRepository.getDbResClassLissByClassDesc(skuDatum.get("skuType").toString());
+                //skuLis.setClassLisId(skuType1 == null ? null:skuType1.get(0));
                 skuLis.setRepoId(Long.parseLong(skuDatum.get("repoId").toString()));
                 //skuType
 
@@ -447,8 +447,8 @@ public class LisIncrementDataCtrl {
                 skuLis.setSkuAttrValueLisList(skuAttrValueLisList);
                 //skuLisSet.add(skuLis);
                 count++;
-                skuRepository.save(sku);
-                skuLisRepository.save(skuLis);
+                skuRepository.saveAndFlush(sku);
+                skuLisRepository.saveAndFlush(skuLis);
             }
             log.info("插入sku数量为："+count);
             log.info("------- 插入数据总共用时:"+(System.currentTimeMillis()-time)/1000+"秒 -------");

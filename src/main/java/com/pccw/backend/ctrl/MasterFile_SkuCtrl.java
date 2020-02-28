@@ -50,6 +50,9 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> implements ICheck {
     @Autowired
     ResSkuRepoRepository skuRepoRepository;
 
+    @Autowired
+    ResSkuLisRepository skuLisRepository;
+
     @ApiOperation(value="创建sku",tags={"masterfile_sku"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST,value = "/create")
     public JsonResult create(@RequestBody CreateBean bean) {
@@ -128,6 +131,12 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> implements ICheck {
     @ApiOperation(value="删除sku",tags={"masterfile_sku"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST,value = "/delete")
     public JsonResult delete(@RequestBody BaseDeleteBean ids) {
+        for (Long id : ids.getIds()) {
+            DbResSku sku = new DbResSku();
+            sku.setId(id);
+            DbResSkuLis skuLisBySkuId = skuLisRepository.getDbResSkuLisBySkuId(sku);
+            if(skuLisBySkuId != null) skuLisRepository.delete(skuLisBySkuId);
+        }
         return this.delete(skuRepo,ids);
     }
 

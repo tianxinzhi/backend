@@ -14,4 +14,7 @@ import java.util.Map;
 public interface ResSkuLisRepository extends BaseRepository<DbResSkuLis>{
 
     List<DbResSkuLis> getDbResSkuLissBySkuCode(String skuCode);
+
+    DbResSkuLis getDbResSkuLisBySkuId(DbResSku skuId);
+
 }

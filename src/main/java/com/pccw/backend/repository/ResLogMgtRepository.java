@@ -18,7 +18,7 @@ public interface ResLogMgtRepository extends BaseRepository<DbResLogMgt> {
     List<DbResLogMgt> getDbResLogMgtsByAdjustReasonId(long adjustReasonId);
 
     @Query(value = "SELECT \n" +
-            " rlmd.id \"id\",\n" +
+            " rlm.id \"id\",\n" +
             " rlmd.DTL_REPO_ID \"repoId\",\n" +
             " rr.REPO_CODE \"repoCode\",\n" +
             " rlmd.DTL_SKU_ID \"skuId\" ,\n" +
@@ -38,7 +38,7 @@ public interface ResLogMgtRepository extends BaseRepository<DbResLogMgt> {
             " LEFT JOIN RES_REPO rr ON rr.id = rlmd.DTL_REPO_ID\n" +
             " LEFT JOIN RES_SKU rs ON rs.id = rlmd.DTL_SKU_ID \n" +
             " WHERE\n" +
-            " rlm.LOG_ORDER_NATURE = 'STHR' \n" +
+            " rlm.LOG_ORDER_NATURE = 'Stock Threshold(STHR)' \n" +
             " and rlmd.DTL_REPO_ID = nvl(?1,rlmd.DTL_REPO_ID)\n" +
             " and rlmd.DTL_SKU_ID = nvl(?2,rlmd.DTL_SKU_ID)\n" +
             " ORDER BY\n" +

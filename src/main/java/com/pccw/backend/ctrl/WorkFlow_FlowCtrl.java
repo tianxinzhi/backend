@@ -71,7 +71,7 @@ public class WorkFlow_FlowCtrl extends BaseCtrl<DbResFlow> implements ICheck {
 //                        hm.put("roleName",resRole.getRoleName());
 //                        hm.put("stepNum",sortedList.get(i).getStepNum());
                         hm.put("value",resRole.getRoleName());
-                        hm.put("label",sortedList.get(i).getStepNum());
+                        hm.put("label","Step"+sortedList.get(i).getStepNum());
                         stepList.add(hm);
                     }
                     searchBean.setStepData(stepList);

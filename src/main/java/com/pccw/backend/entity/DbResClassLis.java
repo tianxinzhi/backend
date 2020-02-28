@@ -28,8 +28,9 @@ public class DbResClassLis extends Base {
 	@Column(name = "class_desc", length = 128)
 	private String classDesc;
 
-	@Column(name = "class_id")
-	private Long classId;//外键
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "class_id",referencedColumnName = "id")
+	private DbResClass classId;//外键
 
 //	@JsonBackReference
 //	@OneToMany(cascade={CascadeType.ALL},mappedBy = "classLisId",orphanRemoval = true)

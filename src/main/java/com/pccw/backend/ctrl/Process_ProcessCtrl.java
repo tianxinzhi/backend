@@ -117,7 +117,8 @@ public class Process_ProcessCtrl extends BaseCtrl{
     public JsonResult search(@RequestBody SearchBean bean){
         try {
             Map user = session.getUser();
-            String roles = user.get("role").toString();
+            //String roles = user.get("role").toString();
+            List<String> roles = (List<String>)user.get("role");
             List<DbResProcess> res  =new ArrayList<DbResProcess>();
             timeRangeHandle(bean);
             if(bean.getFilter()!=null&&bean.getFilter().equals("Pending For Me")){
@@ -243,7 +244,7 @@ public class Process_ProcessCtrl extends BaseCtrl{
      * @param res
      * @return
      */
-    private List<RecodeBean> getRecodes(List<DbResProcess> res,String roles) {
+    private List<RecodeBean> getRecodes(List<DbResProcess> res,List<String> roles) {
         return res.stream().map(r -> {
             //判断操作人是否具有当前审批权限
             List<DbResProcessDtl> collect = r.getProcessDtls().stream().filter(item ->

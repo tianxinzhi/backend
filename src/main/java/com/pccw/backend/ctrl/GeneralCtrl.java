@@ -1,28 +1,18 @@
 package com.pccw.backend.ctrl;
 
-import com.pccw.backend.annotation.JsonResultParamHandle;
-import com.pccw.backend.bean.BaseBean;
 import com.pccw.backend.bean.GeneralBean;
 import com.pccw.backend.bean.JsonResult;
-import com.pccw.backend.entity.DbResAdjustReason;
 import com.pccw.backend.repository.BaseRepository;
 import com.pccw.backend.util.Convertor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 
-import javax.persistence.JoinColumn;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Slf4j
 public class GeneralCtrl {

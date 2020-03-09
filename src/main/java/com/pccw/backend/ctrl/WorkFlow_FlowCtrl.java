@@ -1,30 +1,25 @@
 package com.pccw.backend.ctrl;
 
+import com.pccw.backend.bean.BaseDeleteBean;
 import com.pccw.backend.bean.JsonResult;
-import com.pccw.backend.bean.workflow_flow.*;
+import com.pccw.backend.bean.workflow_flow.CreateBean;
+import com.pccw.backend.bean.workflow_flow.EditBean;
+import com.pccw.backend.bean.workflow_flow.SearchBean;
 import com.pccw.backend.cusinterface.ICheck;
 import com.pccw.backend.entity.DbResFlow;
 import com.pccw.backend.entity.DbResFlowStep;
 import com.pccw.backend.entity.DbResRole;
 import com.pccw.backend.repository.BaseRepository;
 import com.pccw.backend.repository.ResFlowRepository;
-import com.pccw.backend.bean.BaseDeleteBean;
-
-
 import com.pccw.backend.repository.ResRoleRepository;
 import com.pccw.backend.util.Convertor;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
-
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -152,7 +147,7 @@ public class WorkFlow_FlowCtrl extends BaseCtrl<DbResFlow> implements ICheck {
     @ApiOperation(value="禁用workflow_flow",tags={"workflow_flow"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST,value = "/disable")
     public JsonResult disable(@RequestBody BaseDeleteBean ids) {
-        return this.disable(repo,ids,WorkFlow_FlowCtrl.class);
+        return this.disable(repo,ids, WorkFlow_FlowCtrl.class);
     }
 
     @ApiOperation(value="启用workflow_flow",tags={"workflow_flow"},notes="注意问题点")

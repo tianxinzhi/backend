@@ -20,8 +20,8 @@ public class DbResSpecAttr extends Base{
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "id_specAttr")
 	private Long id;
 
-	@Column(name = "ver_id", columnDefinition = "varchar(16)")
-	private String verId;
+//	@Column(name = "ver_id", columnDefinition = "varchar(16)")
+//	private String verId;
 
 	@Column(name = "attr_id", columnDefinition = "number(11)")
 	private String attrId;

@@ -11,7 +11,7 @@ import javax.persistence.MappedSuperclass;
 
 @Data
 @MappedSuperclass
-public class BaseLog extends Base{
+public class BaseLog extends Base {
        	// Transation Number made from SMP self
 	@Column(name="log_txtNum",length = 512)
 	private String logTxtBum;

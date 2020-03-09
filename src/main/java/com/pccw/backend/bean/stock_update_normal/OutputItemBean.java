@@ -1,13 +1,10 @@
 package com.pccw.backend.bean.stock_update_normal;
 
 
-import com.pccw.backend.bean.BaseBean;
 import io.swagger.annotations.ApiModel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 /**
  * SearchCondition

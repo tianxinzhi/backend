@@ -1,14 +1,12 @@
 package com.pccw.backend.repository;
 
 
+import com.pccw.backend.entity.DbResRight;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Map;
-
-import com.pccw.backend.entity.DbResRight;
-
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.stereotype.Repository;
 
 
 /**

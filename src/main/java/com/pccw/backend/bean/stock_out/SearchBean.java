@@ -1,8 +1,6 @@
 package com.pccw.backend.bean.stock_out;
 
 
-import com.pccw.backend.annotation.PredicateAnnotation;
-import com.pccw.backend.annotation.PredicateType;
 import com.pccw.backend.bean.BaseSearchBean;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

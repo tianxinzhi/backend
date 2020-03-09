@@ -117,7 +117,7 @@ public class Stock_MovementCtrl extends BaseCtrl<DbResProcess> {
                             String skuName = skuRepo.findById(dtl.getDtlSkuId()).get().getSkuName();
                             String skuQtyString = "";
                             if(StaticVariable.LOGORDERNATURE_STOCK_OUT_STS.equals(p.getLogOrderNature())
-                                    ||StaticVariable.LOGORDERNATURE_STOCK_OUT_STW.equals(p.getLogOrderNature())){
+                                    || StaticVariable.LOGORDERNATURE_STOCK_OUT_STW.equals(p.getLogOrderNature())){
                                 if(StaticVariable.DTLSUBIN_GOOD.equals(dtl.getDtlSubin())){
                                     skuQtyString = "SkuName: "+skuName+" , Qty: "+dtl.getDtlQty();
                                 }

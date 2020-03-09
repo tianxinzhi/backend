@@ -25,7 +25,7 @@ public interface ResStockInRepository extends BaseRepository<DbResLogMgt>{
             "and rlm.LOG_TXT_NUM = ?1",nativeQuery = true)
     List<Map> getStockOutInfo(String logTxtNum);
 
-    List<DbResLogMgt> findAllByLogOrderNatureInAndLogRepoInIn(List<String> nature,List repoIds);
+    List<DbResLogMgt> findAllByLogOrderNatureInAndLogRepoInIn(List<String> nature, List repoIds);
 
     DbResLogMgt findDbResLogMgtByLogTxtBum(String logTxtBum);
 }

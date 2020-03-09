@@ -11,8 +11,10 @@ import com.pccw.backend.entity.DbResAttr;
 import com.pccw.backend.entity.DbResAttrAttrValue;
 import com.pccw.backend.entity.DbResAttrValue;
 import com.pccw.backend.entity.DbResSpecAttr;
-import com.pccw.backend.exception.BaseException;
-import com.pccw.backend.repository.*;
+import com.pccw.backend.repository.BaseRepository;
+import com.pccw.backend.repository.ResAttrRepository;
+import com.pccw.backend.repository.ResAttrValueRepository;
+import com.pccw.backend.repository.ResSpecAttrRepository;
 import com.pccw.backend.util.Convertor;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -191,7 +193,7 @@ public class MasterFile_AttrCtrl extends BaseCtrl<DbResAttr> implements ICheck {
     @ApiOperation(value="禁用attr",tags={"masterfile_attr"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST,value = "/disable")
     public JsonResult disable(@RequestBody BaseDeleteBean ids) {
-        return this.disable(repo,ids,MasterFile_AttrCtrl.class,specAttrRepository);
+        return this.disable(repo,ids, MasterFile_AttrCtrl.class,specAttrRepository);
     }
 
     @ApiOperation(value="启用attr",tags={"masterfile_attr"},notes="注意问题点")

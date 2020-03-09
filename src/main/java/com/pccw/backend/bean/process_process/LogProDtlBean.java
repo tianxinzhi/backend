@@ -1,7 +1,5 @@
 package com.pccw.backend.bean.process_process;
 
-import com.pccw.backend.entity.DbResLogMgt;
-import com.pccw.backend.entity.DbResProcess;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

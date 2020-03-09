@@ -2,7 +2,6 @@ package com.pccw.backend.repository;
 
 
 import com.pccw.backend.entity.DbResSku;
-import com.pccw.backend.entity.DbResType;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 

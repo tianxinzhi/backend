@@ -12,22 +12,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
-import org.springframework.dao.DataAccessException;
-import org.springframework.data.redis.connection.RedisConnection;
-import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.io.*;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 /**
  * @Author: xiaozhi
@@ -108,7 +104,7 @@ public class LisStockDataCtrl {
     /**
      * [2]调用batchjob api 获取存量（存放到data目录下）
      */
-     private void getBacthJobData() {
+    private void getBacthJobData() {
         try {
             //清空文件夹
             if(new File(dataPath).isDirectory()){
@@ -152,7 +148,7 @@ public class LisStockDataCtrl {
      *
      * [3]解析txt,获取数据并构造成smp对应逻辑结构map，并将其存入redis备用
      */
-     private void transferData() {
+    private void transferData() {
         try {
             File f = new File(dataPath);
             if(!f.isDirectory()) return;
@@ -322,16 +318,16 @@ public class LisStockDataCtrl {
             }
 
             //对应关系存入redis
-    //        redisTemplate.executePipelined((RedisCallback<Object>) connection  -> {
-    //            connection.openPipeline();
-    //            session.set("attrValue",attrValueDataSet);
-    //            session.set("attr",attrDataMap);
-    //            session.set("spec",specDataMap);
-    //            session.set("class",classDataSet);
-    //            session.set("sku",skuDataSet);
-    //            connection.closePipeline();
-    //            return null;
-    //        });
+            //        redisTemplate.executePipelined((RedisCallback<Object>) connection  -> {
+            //            connection.openPipeline();
+            //            session.set("attrValue",attrValueDataSet);
+            //            session.set("attr",attrDataMap);
+            //            session.set("spec",specDataMap);
+            //            session.set("class",classDataSet);
+            //            session.set("sku",skuDataSet);
+            //            connection.closePipeline();
+            //            return null;
+            //        });
             session.set("attrValue",attrValueDataSet);
             session.set("attr",attrDataMap);
             session.set("spec",specDataMap);
@@ -445,6 +441,7 @@ public class LisStockDataCtrl {
                 DbResSpec value = new DbResSpec();
                 value.setSpecName(specEntry.getKey());
                 value.setSpecDesc(specEntry.getKey());
+                value.setVerId("1.0");
                 value.setCreateAt(time);
                 value.setUpdateAt(time);
                 value.setActive("Y");
@@ -496,12 +493,15 @@ public class LisStockDataCtrl {
                 type.setUpdateAt(time);
                 type.setActive("Y");
 
+                List<DbResTypeSkuSpec> typeSkuSpecs = new LinkedList<>();
                 DbResTypeSkuSpec value2 = new DbResTypeSkuSpec();
                 value2.setType(type);
                 value2.setSpecId(specRepository.getDbResSpecsBySpecName(classDatum).get(0).getId());
+                value2.setIsType("Y");
                 value2.setCreateAt(time);
                 value2.setUpdateAt(time);
                 value2.setActive("Y");
+                typeSkuSpecs.add(value2);
 
                 List<DbResClassType> classTypeList = new LinkedList<>();
                 DbResClassType value3 = new DbResClassType();
@@ -512,7 +512,7 @@ public class LisStockDataCtrl {
                 value3.setActive("Y");
                 classTypeList.add(value3);
 
-                type.setDbResTypeSkuSpec(value2);
+                type.setDbResTypeSkuSpecList(typeSkuSpecs);
                 type.setRelationOfTypeClass(classTypeList);
 
                 //typeSet.add(type);
@@ -544,42 +544,55 @@ public class LisStockDataCtrl {
                 //skuLis.setClassLisId(skuType1 == null ? null:skuType1.get(0));
                 skuLis.setRepoId(Long.parseLong(skuDatum.get("repoId").toString()));
                 //skuType
-                List<DbResSkuType> skuTypes = new LinkedList<>();
-                DbResSkuType skuType = new DbResSkuType();
-                skuType.setSku(sku);
-                skuType.setTypeId(typeRepository.getDbResTypesByTypeCode(skuDatum.get("skuType").toString()).get(0).getId());
-                skuType.setCreateAt(time);
-                skuType.setUpdateAt(time);
-                skuType.setActive("Y");
-                skuTypes.add(skuType);
-                List<DbResSkuAttrValue> skuAttrValueList = new LinkedList<>();
+                //sku新建一个spec
+                DbResSpec spec = specRepository.getDbResSpecsBySpecName(skuDatum.get("skuType").toString()).get(0);
+                DbResSpec newSpec = new DbResSpec();
+                newSpec.setSpecName(spec.getSpecName());
+                newSpec.setSpecDesc(spec.getSpecDesc());
+                newSpec.setVerId(spec.getVerId());
+                newSpec.setCreateAt(time);
+                newSpec.setUpdateAt(time);
+                newSpec.setActive("Y");
+
+
                 List<DbResSkuAttrValueLis> skuAttrValueLisList = new LinkedList<>();
+                List<DbResSpecAttr> specAttrList = new LinkedList<>();
                 Map<String,Map> attrMap =  (Map)skuDatum.get("skuAttrValue");
                 for (Map.Entry<String, Map> attrEntry : attrMap.entrySet()) {
                     DbResAttr attr = attrRepository.getDbResAttrsByAttrName(attrEntry.getKey()).get(0);
                     for (Object o : attrEntry.getValue().keySet()) {
+                        //newSpec下的attr
                         DbResAttrValue attrValue = attrValueRepository.getDbResAttrValuesByAttrValue(o.toString()).get(0);
-                        DbResSkuAttrValue skuAttrValue = new DbResSkuAttrValue();
-                        skuAttrValue.setSku(sku);
-                        skuAttrValue.setAttrId(attr.getId());
-                        skuAttrValue.setAttrValueId(attrValue.getId());
-                        skuAttrValue.setCreateAt(time);
-                        skuAttrValue.setUpdateAt(time);
-                        skuAttrValue.setActive("Y");
-                        skuAttrValueList.add(skuAttrValue);
-
+                        DbResSpecAttr specAttr = new DbResSpecAttr();
+                        specAttr.setAttrId(String.valueOf(attr.getId()));
+                        specAttr.setAttrValueId(String.valueOf(attrValue.getId()));
+                        specAttr.setActive("Y");
+                        specAttr.setCreateAt(time);
+                        specAttr.setUpdateAt(time);
+                        specAttrList.add(specAttr);
                         //
                         DbResSkuAttrValueLis skuAttrValueLis = new DbResSkuAttrValueLis();
-                        BeanUtils.copyProperties(skuAttrValue,skuAttrValueLis);
                         skuAttrValueLis.setSkuLis(skuLis);
-                        skuAttrValueLis.setSkuAttrValueId(skuAttrValue);
+                        //skuAttrValueLis.setSkuAttrValueId(skuAttrValue);
                         skuAttrValueLis.setAttrName(attrEntry.getKey());
                         skuAttrValueLis.setAttrValue(o.toString());
                         skuAttrValueLisList.add(skuAttrValueLis);
                     }
                 }
-                sku.setSkuTypeList(skuTypes);
-                sku.setSkuAttrValueList(skuAttrValueList);
+                newSpec.setResSpecAttrList(specAttrList);
+                specRepository.saveAndFlush(newSpec);
+
+                DbResTypeSkuSpec skuType = new DbResTypeSkuSpec();
+                skuType.setSku(sku);
+                List<DbResSpec> dbResSpecsBySpecName = specRepository.getDbResSpecsBySpecName(spec.getSpecName());
+                DbResSpec maxSpec = dbResSpecsBySpecName.stream().max(Comparator.comparing(DbResSpec::getId)).get();
+                skuType.setType(typeRepository.getDbResTypesByTypeCode(skuDatum.get("skuType").toString()).get(0));
+                skuType.setSpecId(maxSpec.getId());
+                skuType.setIsType("N");
+                skuType.setCreateAt(time);
+                skuType.setUpdateAt(time);
+                skuType.setActive("Y");
+                sku.setDbResTypeSkuSpec(skuType);
                 //skuSet.add(sku);
                 skuLis.setSkuAttrValueLisList(skuAttrValueLisList);
                 //skuLisSet.add(skuLis);
@@ -589,7 +602,7 @@ public class LisStockDataCtrl {
             }
             log.info("插入sku数量为："+count);
 //            skuRepository.saveAll(skuSet);
- //           skuLisRepository.saveAll(skuLisSet);
+            //           skuLisRepository.saveAll(skuLisSet);
             session.delete("attrValue");
             session.delete("attr");
             session.delete("spec");
@@ -604,7 +617,7 @@ public class LisStockDataCtrl {
     /**
      * 关闭IO缓冲
      */
-     void closeReader() {
+    void closeReader() {
         try {
             if(br!=null){
                 br.close();

@@ -2,13 +2,8 @@ package com.pccw.backend.bean.auth_role;
 
 
 import com.pccw.backend.bean.BaseBean;
-
-
-import com.pccw.backend.entity.DbResRoleRight;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 /**
  * SearchCondition

@@ -1,6 +1,7 @@
 package com.pccw.backend.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -34,7 +35,7 @@ public class DbResTypeSkuSpec extends Base {
 	private String isType;
 
 	@ManyToOne
-	@JsonBackReference
+	@JsonIgnore
 	@JoinColumn(name = "type_id")
 	private DbResType type;
 

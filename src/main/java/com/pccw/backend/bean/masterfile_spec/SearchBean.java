@@ -34,6 +34,8 @@ public class SearchBean extends BaseSearchBean {
     @ApiModelProperty(value="是否有效",name="active",example="")
     private String active;
 
+    private String verId;
+
     private long id;
 
     private List<Map> attrData;

@@ -1,10 +1,9 @@
 package com.pccw.backend.entity;
 
-import com.pccw.backend.annotation.JsonResultParamHandle;
+import com.pccw.backend.annotation.JsonResultParamAnnotation;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.util.List;
 
 
 /**
@@ -15,7 +14,7 @@ import java.util.List;
 @Table(name = "res_adjust_reason")
 @Data
 @SequenceGenerator(name="id_adjustReason",sequenceName = "adjustReason_seq",allocationSize = 1)
-@JsonResultParamHandle(param1 = "id",param2 = "adjustReasonName",param3 = "remark")
+@JsonResultParamAnnotation(param1 = "id",param2 = "adjustReasonName",param3 = "remark")
 public class DbResAdjustReason extends Base{
 	@Id
 	@Column(name = "id")

@@ -5,7 +5,6 @@ import javax.persistence.*;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.pccw.backend.annotation.JsonResultParamHandle;
 import lombok.*;
 
 

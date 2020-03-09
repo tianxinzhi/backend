@@ -1,6 +1,6 @@
 package com.pccw.backend.util;
 
-import com.pccw.backend.annotation.JsonResultParamHandle;
+import com.pccw.backend.annotation.JsonResultParamAnnotation;
 import com.pccw.backend.bean.GeneralBean;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.data.jpa.domain.Specification;
@@ -22,8 +22,6 @@ import javax.persistence.criteria.*;
 
 import com.pccw.backend.annotation.PredicateAnnotation;
 import com.pccw.backend.annotation.PredicateType;
-import com.pccw.backend.bean.BaseSearchBean;
-
 
 
 /**
@@ -204,7 +202,7 @@ import com.pccw.backend.bean.BaseSearchBean;
 	 */
 	public static  <E> List<GeneralBean> getCollect(GeneralBean bean, List<E> list) {
 		return list.stream().map(item->{
-			JsonResultParamHandle annotation = item.getClass().getAnnotation(JsonResultParamHandle.class);
+			JsonResultParamAnnotation annotation = item.getClass().getAnnotation(JsonResultParamAnnotation.class);
 			GeneralBean generalBean = bean;
 			if (!Objects.isNull(annotation)) {
 				generalBean = setGeneralBean(item, annotation,bean);
@@ -222,7 +220,7 @@ import com.pccw.backend.bean.BaseSearchBean;
 	 * @param <E>
 	 * @return
 	 */
-	public static  <E> GeneralBean setGeneralBean(E item, JsonResultParamHandle annotation, GeneralBean generalBean) {
+	public static  <E> GeneralBean setGeneralBean(E item, JsonResultParamAnnotation annotation, GeneralBean generalBean) {
 		GeneralBean bean = generalBean;
 		try {
 			//将bean的属性类型存入数组

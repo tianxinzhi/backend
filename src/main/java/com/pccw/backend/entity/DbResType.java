@@ -1,15 +1,12 @@
 package com.pccw.backend.entity;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.pccw.backend.annotation.JsonResultParamHandle;
+import com.pccw.backend.annotation.JsonResultParamAnnotation;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.List;
-import java.util.Set;
 
 /**
  *
@@ -20,7 +17,7 @@ import java.util.Set;
 @Entity
 @Table(name = "res_type")
 @SequenceGenerator(name="id_type",sequenceName = "type_seq",allocationSize = 1)
-@JsonResultParamHandle(param1 = "id",param2 = "typeName")
+@JsonResultParamAnnotation(param1 = "id",param2 = "typeName")
 public class DbResType extends Base {
 	@Id
 	@Column(name = "id")

@@ -1,6 +1,8 @@
 package com.pccw.backend.repository;
 
 
+import com.pccw.backend.entity.DbResSku;
+import com.pccw.backend.entity.DbResType;
 import com.pccw.backend.entity.DbResTypeSkuSpec;
 import org.springframework.data.jpa.repository.Query;
 
@@ -14,4 +16,10 @@ public interface ResTypeSkuSpecRepository extends BaseRepository<DbResTypeSkuSpe
     List<DbResTypeSkuSpec> findTest();*/
 
    List<DbResTypeSkuSpec> getDbResTypeSkuSpecsBySpecId(long specId);
+
+   List<DbResTypeSkuSpec> getDbResTypeSkuSpecsByType(DbResType type);
+
+   DbResTypeSkuSpec getDbResTypeSkuSpecBySku(DbResSku sku);
+
+   DbResTypeSkuSpec getDbResTypeSkuSpecsBySkuAndType(DbResSku sku,DbResType type);
 }

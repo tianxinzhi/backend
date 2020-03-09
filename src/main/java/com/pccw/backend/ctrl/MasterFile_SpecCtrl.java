@@ -82,6 +82,9 @@ public class MasterFile_SpecCtrl extends BaseCtrl<DbResSpec> implements ICheck {
            long t = new Date().getTime();
            b.setUpdateAt(t);
            b.setCreateAt(t);
+           if(Objects.isNull(b.getVerId())){
+               b.setVerId("1.0");
+           }
            for(int i=0;i<b.getResSpecAttrList().size();i++) {
                b.getResSpecAttrList().get(i).setUpdateAt(t);
                b.getResSpecAttrList().get(i).setCreateAt(t);

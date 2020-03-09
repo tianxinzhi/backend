@@ -465,7 +465,7 @@ public class LisIncrementDataCtrl {
                         newSpec.setResSpecAttrList(specAttrList);
 
                         DbResTypeSkuSpec dbResTypeSkuSpecBySku = typeSkuSpecRepository.getDbResTypeSkuSpecBySku(sku);
-                        typeSkuSpecRepository.delete(dbResTypeSkuSpecBySku);
+                        if(dbResTypeSkuSpecBySku!=null) typeSkuSpecRepository.delete(dbResTypeSkuSpecBySku);
                         specRepository.delete(oldSpec);
                         specRepository.saveAndFlush(newSpec);
 

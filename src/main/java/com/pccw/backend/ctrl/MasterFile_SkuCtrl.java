@@ -10,6 +10,7 @@ import com.pccw.backend.bean.masterfile_sku.ResultBean;
 import com.pccw.backend.bean.masterfile_sku.SearchBean;
 import com.pccw.backend.cusinterface.ICheck;
 import com.pccw.backend.entity.*;
+import com.pccw.backend.entity.DbResSku;
 import com.pccw.backend.repository.*;
 import com.pccw.backend.util.Convertor;
 import io.swagger.annotations.Api;

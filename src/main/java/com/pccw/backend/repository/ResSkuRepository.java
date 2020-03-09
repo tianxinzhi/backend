@@ -28,13 +28,13 @@ public interface ResSkuRepository extends BaseRepository<DbResSku> {
 
     @Query(value = "select T3.type_name typeName,T3.id type,t5.spec_name specName,t5.id spec,t6.attr_name attrName,t6.id attr, " +
             "WM_CONCAT(DISTINCT t7.attr_value) attrValueName ,WM_CONCAT(DISTINCT t7.id) attrValue " +
-            "from RES_TYPE t3 inner join  res_sku_type t1  on T3.id = t1.type_id " +
-            "left join RES_TYPE_SKU_SPEC t4 on t1.type_id = t4.type_id " +
+            "from RES_TYPE t3  " +
+            "inner join RES_TYPE_SKU_SPEC t4 on t3.id = t4.type_id " +
             "left join res_spec t5 on t5.id = t4.spec_id " +
-            "left join RES_SKU_ATTR_VALUE t2 on T1.SKU_ID = T2.SKU_ID " +
+            "left join RES_SPEC_ATTR t2 on T5.ID = T2.Spec_ID " +
             "left join RES_ATTR t6 on t6.id = t2.attr_id " +
             "left join RES_ATTR_VALUE t7 on t7.id = t2.attr_value_id " +
-            "where T1.sku_id  = ?1 GROUP BY T3.type_name ,T3.id ,t5.spec_name,t5.id ,t6.attr_name ,t6.id ",nativeQuery = true)
+            "where t4.sku_id  = ?1 GROUP BY T3.type_name ,T3.id ,t5.spec_name,t5.id ,t6.attr_name ,t6.id ",nativeQuery = true)
     /**
      * 根据sku查询type，spec，attr，attrValue信息
      */

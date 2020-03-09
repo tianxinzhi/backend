@@ -15,7 +15,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "res_spec")
 @SequenceGenerator(name="id_spec",sequenceName = "spec_seq",allocationSize = 1)
-@JsonResultParamHandle(param1 = "id",param2 = "specName")
+@JsonResultParamHandle(param1 = "id",param2 = "specName",param3 = "verId")
 public class DbResSpec extends Base {
 	@Id
 	@Column(name = "id")

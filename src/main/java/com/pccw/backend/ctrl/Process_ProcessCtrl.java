@@ -118,7 +118,8 @@ public class Process_ProcessCtrl extends BaseCtrl{
         try {
             Map user = session.getUser();
             //String roles = user.get("role").toString();
-            List<String> roles = (List<String>)user.get("role");
+            List<Integer> useRoles = (List<Integer>)user.get("role");
+            List<String> roles = useRoles.stream().map(x ->String.valueOf(x)).collect(Collectors.toList());
             List<DbResProcess> res  =new ArrayList<DbResProcess>();
             timeRangeHandle(bean);
             if(bean.getFilter()!=null&&bean.getFilter().equals("Pending For Me")){

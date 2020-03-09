@@ -1,27 +1,28 @@
 package com.pccw.backend.ctrl;
 
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import com.pccw.backend.bean.*;
-import com.pccw.backend.bean.masterfile_attr_value.SearchBean;
-import com.pccw.backend.entity.*;
+import com.pccw.backend.bean.JsonResult;
+import com.pccw.backend.bean.LabelAndValue;
+import com.pccw.backend.bean.TreeNode;
+import com.pccw.backend.entity.DbResAdjustReason;
+import com.pccw.backend.entity.DbResAttrValue;
 import com.pccw.backend.repository.*;
-
-import com.pccw.backend.util.Convertor;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.web.bind.annotation.*;
-
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * AuthRightCtrl

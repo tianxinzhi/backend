@@ -1,7 +1,6 @@
 package com.pccw.backend.bean.auth_right;
 
 import com.pccw.backend.bean.BaseBean;
-
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;

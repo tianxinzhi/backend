@@ -2,7 +2,6 @@ package com.pccw.backend.repository;
 
 
 import com.pccw.backend.entity.DbResLogMgt;
-import com.pccw.backend.entity.DbResLogMgtDtl;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -46,6 +45,6 @@ public interface ResLogMgtRepository extends BaseRepository<DbResLogMgt> {
     List<Map> getStockThreshold(@Param("repoId") String repoId, @Param("skuId") String skuId);
 
     @Modifying
-    @Query(value = "update RES_LOG_MGT_DTL set DTL_QTY =?1 where ID = ?2",nativeQuery = true)
-    int updateDbResLogMgtDtlById(@Param("qtyy")Long qtyy, @Param("id")Long id);
+    @Query(value = "update RES_LOG_MGT_DTL set DTL_QTY =?1 where LOG_MGT_ID = ?2",nativeQuery = true)
+    int updateDbResLogMgtDtlById(@Param("qtyy") Long qtyy, @Param("id") Long id);
 }

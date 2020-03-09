@@ -1,6 +1,5 @@
 package com.pccw.backend.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.pccw.backend.annotation.JsonResultParamHandle;
 import lombok.Data;
 

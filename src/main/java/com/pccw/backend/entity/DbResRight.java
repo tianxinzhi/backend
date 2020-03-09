@@ -1,11 +1,10 @@
 package com.pccw.backend.entity;
 
 
-import javax.persistence.*;
-import javax.persistence.Entity;
-
 import com.pccw.backend.annotation.JsonResultParamHandle;
 import lombok.Data;
+
+import javax.persistence.*;
 
 /**
  * DbResRight

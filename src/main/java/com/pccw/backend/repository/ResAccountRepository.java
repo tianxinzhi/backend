@@ -1,17 +1,15 @@
 package com.pccw.backend.repository;
 
 import com.pccw.backend.entity.DbResAccount;
-import com.pccw.backend.entity.DbResAttr;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Map;
 
 @Repository
 public interface ResAccountRepository extends BaseRepository<DbResAccount> {
 
-    DbResAccount getDbResAccountsByAccountNameAndAccountPassword(String accountName,String accountPassword);
+    DbResAccount getDbResAccountsByAccountNameAndAccountPassword(String accountName, String accountPassword);
 
     DbResAccount findDbResAccountByAccountName(String name);
 

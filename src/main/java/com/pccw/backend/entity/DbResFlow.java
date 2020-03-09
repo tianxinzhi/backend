@@ -1,13 +1,11 @@
 package com.pccw.backend.entity;
 
-import java.io.Serializable;
-import java.util.List;
-
-import javax.persistence.*;
-
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.pccw.backend.annotation.JsonResultParamHandle;
 import lombok.Data;
+
+import javax.persistence.*;
+import java.util.List;
 
 /**
  * DbResFlow

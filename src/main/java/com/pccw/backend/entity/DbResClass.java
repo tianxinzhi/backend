@@ -1,17 +1,11 @@
 package com.pccw.backend.entity;
 
-import java.util.List;
-import java.util.Set;
-
-
-import javax.persistence.*;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.pccw.backend.annotation.JsonResultParamHandle;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+
+import javax.persistence.*;
+import java.util.List;
 
 
 /**

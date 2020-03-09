@@ -254,7 +254,7 @@ public class Process_ProcessCtrl extends BaseCtrl{
             boolean checkable = collect.size() > 0 ;
             //log表信息 根据nature从相应的entity取process详情页展示log信息
             LogProDtlBean logDtls =new LogProDtlBean();
-            if(r.getLogOrderNature().equals("RREQ")){
+            if(r.getLogOrderNature().equals(StaticVariable.LOGORDERNATURE_REPLENISHMENT_REQUEST )){
                 DbResLogRepl resLog = logReplRepository.findDbResLogReplByLogTxtBum(r.getLogTxtBum());
                 logDtls.setCreateAt(resLog.getCreateAt());
                 logDtls.setLogRepoIn(resLog.getRepoIdTo());

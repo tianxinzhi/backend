@@ -8,6 +8,9 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.pccw.backend.annotation.JsonResultParamAnnotation;
 import lombok.Data;
 
+import javax.persistence.*;
+import java.util.List;
+
 /**
  * DbResFlow
  */

@@ -7,6 +7,8 @@ import javax.persistence.Entity;
 import com.pccw.backend.annotation.JsonResultParamAnnotation;
 import lombok.Data;
 
+import javax.persistence.*;
+
 /**
  * DbResRight
  */

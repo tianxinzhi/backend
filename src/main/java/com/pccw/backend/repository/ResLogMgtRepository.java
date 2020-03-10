@@ -2,7 +2,6 @@ package com.pccw.backend.repository;
 
 
 import com.pccw.backend.entity.DbResLogMgt;
-import com.pccw.backend.entity.DbResLogMgtDtl;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,7 +17,7 @@ public interface ResLogMgtRepository extends BaseRepository<DbResLogMgt> {
     List<DbResLogMgt> getDbResLogMgtsByAdjustReasonId(long adjustReasonId);
 
     @Query(value = "SELECT \n" +
-            " rlmd.id \"id\",\n" +
+            " rlm.id \"id\",\n" +
             " rlmd.DTL_REPO_ID \"repoId\",\n" +
             " rr.REPO_CODE \"repoCode\",\n" +
             " rlmd.DTL_SKU_ID \"skuId\" ,\n" +
@@ -38,7 +37,7 @@ public interface ResLogMgtRepository extends BaseRepository<DbResLogMgt> {
             " LEFT JOIN RES_REPO rr ON rr.id = rlmd.DTL_REPO_ID\n" +
             " LEFT JOIN RES_SKU rs ON rs.id = rlmd.DTL_SKU_ID \n" +
             " WHERE\n" +
-            " rlm.LOG_ORDER_NATURE = 'STHR' \n" +
+            " rlm.LOG_ORDER_NATURE = 'Stock Threshold(STHR)' \n" +
             " and rlmd.DTL_REPO_ID = nvl(?1,rlmd.DTL_REPO_ID)\n" +
             " and rlmd.DTL_SKU_ID = nvl(?2,rlmd.DTL_SKU_ID)\n" +
             " ORDER BY\n" +
@@ -46,6 +45,6 @@ public interface ResLogMgtRepository extends BaseRepository<DbResLogMgt> {
     List<Map> getStockThreshold(@Param("repoId") String repoId, @Param("skuId") String skuId);
 
     @Modifying
-    @Query(value = "update RES_LOG_MGT_DTL set DTL_QTY =?1 where ID = ?2",nativeQuery = true)
-    int updateDbResLogMgtDtlById(@Param("qtyy")Long qtyy, @Param("id")Long id);
+    @Query(value = "update RES_LOG_MGT_DTL set DTL_QTY =?1 where LOG_MGT_ID = ?2",nativeQuery = true)
+    int updateDbResLogMgtDtlById(@Param("qtyy") Long qtyy, @Param("id") Long id);
 }

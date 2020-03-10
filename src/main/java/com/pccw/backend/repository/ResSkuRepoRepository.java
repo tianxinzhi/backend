@@ -3,12 +3,8 @@ package com.pccw.backend.repository;
 
 import com.pccw.backend.entity.DbResRepo;
 import com.pccw.backend.entity.DbResSku;
-import com.pccw.backend.entity.DbResSku;
-import com.pccw.backend.entity.DbResStockType;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-
 import com.pccw.backend.entity.DbResSkuRepo;
+import com.pccw.backend.entity.DbResStockType;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -39,14 +35,14 @@ public interface  ResSkuRepoRepository extends BaseRepository<DbResSkuRepo>{
             "\t AND RS.sku_code LIKE CONCAT(CONCAT('%',:skuNum),'%')\n" +
             "AND RSR.REPO_ID=nvl(:repoNum,RSR.REPO_ID)\n"+
             "GROUP BY RS.SKU_CODE,RR.REPO_CODE,RS.SKU_DESC) a",nativeQuery = true)
-    List<Map> getStockBalanceInfo(@Param("skuNum") String skuNum,@Param("repoNum") String repoNum);
+    List<Map> getStockBalanceInfo(@Param("skuNum") String skuNum, @Param("repoNum") String repoNum);
 
     @Query(value = "select * from res_sku_repo t where t.repo_id = ?1 and t.sku_id = ?2 and t.stock_type_id = ?3",nativeQuery = true)
-    DbResSkuRepo findQtyByRepoAndShopAndType(@Param("shop") long shop,@Param("sku") long sku,@Param("stockType") long stockType);
+    DbResSkuRepo findQtyByRepoAndShopAndType(@Param("shop") long shop, @Param("sku") long sku, @Param("stockType") long stockType);
 
     @Modifying
     @Query(value = "update res_sku_repo set qty = qty + ?4 where repo_id = ?1 and sku_id = ?2 and stock_type_id = ?3",nativeQuery = true)
-    int updateQtyByRepoAndShopAndTypeAndQty(@Param("shop") long shop,@Param("sku") long sku,@Param("stockType")long stockType,@Param("qty")long qty);
+    int updateQtyByRepoAndShopAndTypeAndQty(@Param("shop") long shop, @Param("sku") long sku, @Param("stockType") long stockType, @Param("qty") long qty);
 
 
     /**

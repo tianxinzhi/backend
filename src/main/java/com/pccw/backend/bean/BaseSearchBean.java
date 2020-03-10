@@ -1,14 +1,10 @@
 package com.pccw.backend.bean;
 
 
-import javax.validation.constraints.NotNull;
-
-
-
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
+import javax.validation.constraints.NotNull;
 
 
 /**
@@ -17,7 +13,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class BaseSearchBean extends BaseBean{
+public class BaseSearchBean extends BaseBean {
 
 
     @NotNull

@@ -26,16 +26,16 @@ public class DbResSkuLis extends Base {
 	@Column(name = "repo_id", length = 32)
 	private Long repoId;
 
-	@OneToOne
+	@OneToOne(cascade = CascadeType.ALL,orphanRemoval = true)
 	@JoinColumn(name = "sku_id", referencedColumnName = "id")
 	private DbResSku skuId;//外键关联res_sku
 
 //	@JsonBackReference
 //	@OneToMany(cascade = CascadeType.ALL,orphanRemoval = true)
 //	@JoinColumn(name = "id")
-	@OneToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "class_lis_id",referencedColumnName = "id")
-	private DbResClassLis classLisId;
+//	@OneToOne(cascade = CascadeType.ALL,orphanRemoval = true,mappedBy = "skuId")
+//	@JoinColumn(name = "class_lis_id",referencedColumnName = "id")
+//	private DbResClassLis classLisId;
 
 	@Column(name = "sku_code")
 	private String skuCode;

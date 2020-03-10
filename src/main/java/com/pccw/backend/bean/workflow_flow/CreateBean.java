@@ -2,7 +2,6 @@ package com.pccw.backend.bean.workflow_flow;
 
 
 import com.pccw.backend.bean.BaseBean;
-
 import com.pccw.backend.entity.DbResFlowStep;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;

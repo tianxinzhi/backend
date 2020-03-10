@@ -2,7 +2,9 @@ package com.pccw.backend.ctrl;
 
 import com.pccw.backend.bean.BaseDeleteBean;
 import com.pccw.backend.bean.JsonResult;
-import com.pccw.backend.bean.masterfile_item.*;
+import com.pccw.backend.bean.masterfile_item.CreateBean;
+import com.pccw.backend.bean.masterfile_item.EditBean;
+import com.pccw.backend.bean.masterfile_item.SearchBean;
 import com.pccw.backend.cusinterface.ICheck;
 import com.pccw.backend.entity.DbResItem;
 import com.pccw.backend.repository.BaseRepository;
@@ -49,7 +51,7 @@ public class MasterFile_ItemCtrl extends BaseCtrl<DbResItem> implements ICheck {
   @ApiOperation(value="禁用item",tags={"masterfile_item"},notes="注意问题点")
   @RequestMapping(method = RequestMethod.POST,value = "/disable")
   public JsonResult disable(@RequestBody BaseDeleteBean ids) {
-    return this.disable(resItemRepository,ids,MasterFile_ItemCtrl.class);
+    return this.disable(resItemRepository,ids, MasterFile_ItemCtrl.class);
   }
 
   @ApiOperation(value="启用item",tags={"masterfile_item"},notes="注意问题点")

@@ -1,9 +1,10 @@
 package com.pccw.backend.ctrl;
 
 
-import java.util.*;
-
-import com.pccw.backend.bean.*;
+import com.pccw.backend.bean.BaseBean;
+import com.pccw.backend.bean.BaseDeleteBean;
+import com.pccw.backend.bean.BaseSearchBean;
+import com.pccw.backend.bean.JsonResult;
 import com.pccw.backend.cusinterface.ICheck;
 import com.pccw.backend.entity.Base;
 import com.pccw.backend.entity.DbResAccount;
@@ -11,13 +12,17 @@ import com.pccw.backend.exception.BaseException;
 import com.pccw.backend.repository.BaseRepository;
 import com.pccw.backend.repository.ResAccountRepository;
 import com.pccw.backend.util.Convertor;
-
 import com.pccw.backend.util.Session;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
-import lombok.extern.slf4j.Slf4j;
+
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -64,7 +69,7 @@ public class BaseCtrl<T>{
     }
 
 
-    public JsonResult create(BaseRepository repo, Class<T> cls,BaseBean b) {
+    public JsonResult create(BaseRepository repo, Class<T> cls, BaseBean b) {
         try {
             long t = new Date().getTime();
             b.setCreateAt(t);
@@ -80,7 +85,7 @@ public class BaseCtrl<T>{
         }
     }
 
-    public JsonResult edit(BaseRepository repo, Class<T> cls,BaseBean b){
+    public JsonResult edit(BaseRepository repo, Class<T> cls, BaseBean b){
         try {
             b.setUpdateAt(new Date().getTime());
             b.setActive("Y");
@@ -103,7 +108,7 @@ public class BaseCtrl<T>{
         }
     }
 
-    public JsonResult disable(BaseRepository repo, BaseDeleteBean ids,Class<?> cl,BaseRepository... checks) {
+    public JsonResult disable(BaseRepository repo, BaseDeleteBean ids, Class<?> cl, BaseRepository... checks) {
         try {
 
             ICheck check = (ICheck) cl.newInstance();

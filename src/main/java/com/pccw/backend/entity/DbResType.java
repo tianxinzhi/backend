@@ -48,8 +48,8 @@ public class DbResType extends Base {
 	@OneToMany(cascade={CascadeType.ALL},mappedBy = "type",orphanRemoval = true)
 	private List<DbResClassType> relationOfTypeClass;
 
-	@OneToOne(cascade = {CascadeType.ALL},mappedBy = "type")
-	private DbResTypeSkuSpec dbResTypeSkuSpec;
+	@OneToMany(cascade={CascadeType.ALL},mappedBy = "type",orphanRemoval = true)
+	private List<DbResTypeSkuSpec> dbResTypeSkuSpecList;
 
 
 }

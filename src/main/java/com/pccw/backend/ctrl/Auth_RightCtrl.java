@@ -1,33 +1,25 @@
 package com.pccw.backend.ctrl;
 
+import com.pccw.backend.bean.BaseDeleteBean;
 import com.pccw.backend.bean.JsonResult;
-import com.pccw.backend.bean.auth_right.*;
+import com.pccw.backend.bean.auth_right.CreateBean;
+import com.pccw.backend.bean.auth_right.EditBean;
+import com.pccw.backend.bean.auth_right.SearchBean;
 import com.pccw.backend.cusinterface.ICheck;
-import com.pccw.backend.entity.DbResLogMgt;
 import com.pccw.backend.entity.DbResRight;
 import com.pccw.backend.entity.DbResRoleRight;
 import com.pccw.backend.repository.BaseRepository;
-import com.pccw.backend.repository.ResLogMgtRepository;
 import com.pccw.backend.repository.ResRightRepository;
-
-import javax.validation.Valid;
-
-import com.pccw.backend.bean.BaseDeleteBean;
-
 import com.pccw.backend.repository.ResRoleRightRepository;
 import com.pccw.backend.util.Convertor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
-
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -81,7 +73,7 @@ public class Auth_RightCtrl extends BaseCtrl<DbResRight> implements ICheck {
     @ApiOperation(value="禁用auth_right",tags={"auth_right"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST,value = "/disable")
     public JsonResult disable(@RequestBody BaseDeleteBean ids) {
-        return this.disable(repo,ids,Auth_RightCtrl.class,roleRightRepository);
+        return this.disable(repo,ids, Auth_RightCtrl.class,roleRightRepository);
     }
 
     @ApiOperation(value="启用auth_right",tags={"auth_right"},notes="注意问题点")

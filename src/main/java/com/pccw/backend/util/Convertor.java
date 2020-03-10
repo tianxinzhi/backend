@@ -2,14 +2,16 @@ package com.pccw.backend.util;
 
 import com.pccw.backend.annotation.JsonResultParamAnnotation;
 import com.pccw.backend.bean.GeneralBean;
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
-
-import lombok.extern.slf4j.Slf4j;
-
-
+import javax.persistence.JoinColumn;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -17,8 +19,6 @@ import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import javax.persistence.JoinColumn;
-import javax.persistence.criteria.*;
 
 import com.pccw.backend.annotation.PredicateAnnotation;
 import com.pccw.backend.annotation.PredicateType;

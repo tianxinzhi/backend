@@ -32,7 +32,7 @@ public interface ResProcessRepository extends BaseRepository<DbResProcess> {
             "       AND RP.repo_id=nvl(?3,RP.repo_id) \n" +
             "       AND RP.log_txt_num LIKE CONCAT(CONCAT('%',?4),'%') \n" +
             "       AND RP.create_at BETWEEN ?5 AND ?6",nativeQuery = true)
-    List<Long> findIdsByPending(long accountId,String nature,String repoId,String txtNum,long timeBegin,long timeEnd);
+    List<Long> findIdsByPending(long accountId, String nature, String repoId, String txtNum, long timeBegin, long timeEnd);
 
     List<DbResProcess> findDbResProcessesByIdIn(List ids);
 }

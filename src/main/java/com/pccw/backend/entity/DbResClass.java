@@ -9,6 +9,9 @@ import com.pccw.backend.annotation.JsonResultParamAnnotation;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.persistence.*;
+import java.util.List;
+
 
 /**
  * class => category of sku

@@ -9,7 +9,6 @@ import com.pccw.backend.bean.masterfile_repo.SearchBean;
 import com.pccw.backend.cusinterface.ICheck;
 import com.pccw.backend.entity.DbResRepo;
 import com.pccw.backend.entity.DbResSkuRepo;
-import com.pccw.backend.entity.DbResStockType;
 import com.pccw.backend.repository.BaseRepository;
 import com.pccw.backend.repository.ResRepoRepository;
 import com.pccw.backend.repository.ResSkuRepoRepository;
@@ -67,7 +66,7 @@ public class MasterFile_RepoCtrl extends BaseCtrl<DbResRepo> implements ICheck {
     @ApiOperation(value="禁用repo",tags={"masterfile_repo"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST,value = "/disable")
     public JsonResult disable(@RequestBody BaseDeleteBean ids) {
-        return this.disable(repo,ids,MasterFile_RepoCtrl.class,skuRepoRepository);
+        return this.disable(repo,ids, MasterFile_RepoCtrl.class,skuRepoRepository);
     }
 
     @ApiOperation(value="启用repo",tags={"masterfile_repo"},notes="注意问题点")

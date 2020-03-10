@@ -8,7 +8,6 @@ import com.pccw.backend.bean.masterfile_attr_value.SearchBean;
 import com.pccw.backend.cusinterface.ICheck;
 import com.pccw.backend.entity.DbResAttrAttrValue;
 import com.pccw.backend.entity.DbResAttrValue;
-import com.pccw.backend.exception.BaseException;
 import com.pccw.backend.repository.BaseRepository;
 import com.pccw.backend.repository.ResAttrAttrValueRepository;
 import com.pccw.backend.repository.ResAttrValueRepository;
@@ -60,7 +59,7 @@ public class MasterFile_AttrValueCtrl extends BaseCtrl<DbResAttrValue> implement
     @ApiOperation(value="禁用attr_value",tags={"masterfile_attr_value"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST,value = "/disable")
     public JsonResult disable(@RequestBody BaseDeleteBean ids) {
-        return this.disable(repo,ids,MasterFile_AttrValueCtrl.class,attrAttrValueRepository);
+        return this.disable(repo,ids, MasterFile_AttrValueCtrl.class,attrAttrValueRepository);
     }
 
     @ApiOperation(value="启用attr_value",tags={"masterfile_attr_value"},notes="注意问题点")

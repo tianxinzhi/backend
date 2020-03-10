@@ -1,18 +1,17 @@
 package com.pccw.backend.ctrl;
 
 
+import com.pccw.backend.bean.BaseDeleteBean;
 import com.pccw.backend.bean.JsonResult;
 import com.pccw.backend.bean.StaticVariable;
-import com.pccw.backend.bean.stock_category.CategoryLogMgtBean;
 import com.pccw.backend.bean.stock_threshold.EditBean;
 import com.pccw.backend.bean.stock_threshold.SearchBean;
 import com.pccw.backend.bean.stock_threshold.ThresholdLogMgtBean;
-import com.pccw.backend.entity.*;
-import com.pccw.backend.repository.*;
-import com.pccw.backend.util.Session;
+import com.pccw.backend.entity.DbResLogMgt;
+import com.pccw.backend.entity.DbResProcess;
+import com.pccw.backend.repository.ResLogMgtRepository;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -99,4 +98,29 @@ public class Stock_ThresholdCtrl extends BaseCtrl<DbResLogMgt> {
             return JsonResult.fail(e);
         }
     }
+
+    @ApiOperation(value = "禁用threshold", tags = {"stock_threshold"}, notes = "注意问题点")
+    @RequestMapping(method = RequestMethod.POST, value = "/disable")
+    public JsonResult disable(@RequestBody BaseDeleteBean ids) {
+        for (Long id: ids.getIds()){
+            DbResLogMgt dbResLogMgt = resLogMgtRepository.findById(id).get();
+            dbResLogMgt.setActive("N");
+            dbResLogMgt.getLine().get(0).setActive("N");
+            resLogMgtRepository.saveAndFlush(dbResLogMgt);
+        }
+        return JsonResult.success(Arrays.asList());
+    }
+
+    @ApiOperation(value="启用threshold",tags={"stock_threshold"},notes="注意问题点")
+    @RequestMapping(method = RequestMethod.POST,value = "/enable")
+    public JsonResult enable(@RequestBody BaseDeleteBean ids) {
+        for (Long id: ids.getIds()){
+            DbResLogMgt dbResLogMgt = resLogMgtRepository.findById(id).get();
+            dbResLogMgt.setActive("Y");
+            dbResLogMgt.getLine().get(0).setActive("Y");
+            resLogMgtRepository.saveAndFlush(dbResLogMgt);
+        }
+        return JsonResult.success(Arrays.asList());
+    }
+
 }

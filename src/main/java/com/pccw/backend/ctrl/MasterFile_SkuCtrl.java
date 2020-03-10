@@ -6,10 +6,11 @@ import com.pccw.backend.bean.LabelAndValue;
 import com.pccw.backend.bean.StaticVariable;
 import com.pccw.backend.bean.masterfile_sku.CreateBean;
 import com.pccw.backend.bean.masterfile_sku.EditBean;
-import com.pccw.backend.bean.masterfile_sku.SearchBean;
 import com.pccw.backend.bean.masterfile_sku.ResultBean;
+import com.pccw.backend.bean.masterfile_sku.SearchBean;
 import com.pccw.backend.cusinterface.ICheck;
 import com.pccw.backend.entity.*;
+import com.pccw.backend.entity.DbResSku;
 import com.pccw.backend.repository.*;
 import com.pccw.backend.util.Convertor;
 import io.swagger.annotations.Api;
@@ -50,74 +51,81 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> implements ICheck {
     @Autowired
     ResSkuRepoRepository skuRepoRepository;
 
+    @Autowired
+    ResSkuLisRepository skuLisRepository;
+
+    @Autowired
+    ResTypeSkuSpecRepository typeSkuSpecRepository;
+
+    @Autowired
+    ResSpecRepository specRepository;
+
     @ApiOperation(value="创建sku",tags={"masterfile_sku"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST,value = "/create")
     public JsonResult create(@RequestBody CreateBean bean) {
         try {
             System.out.println("bean:" + bean);
+            long time = System.currentTimeMillis();
             DbResSku sku = new DbResSku();
             sku.setSkuCode(bean.getSkuCode());
             sku.setSkuDesc(bean.getSkuDesc());
             sku.setSkuName(bean.getSkuName());
             sku.setActive("Y");
-            sku.setCreateAt(System.currentTimeMillis());
-            sku.setUpdateAt(System.currentTimeMillis());
+            sku.setCreateAt(time);
+            sku.setUpdateAt(time);
             sku.setCreateBy(getAccount());
             sku.setUpdateBy(getAccount());
             sku.setSkuOrigin(StaticVariable.SKU_ORIGIN_FROM_WITHPO);
 
-            List<DbResSkuType> skuTypeList = new LinkedList<>();
-            DbResSkuType skuType = new DbResSkuType();
-            skuType.setSku(sku);
-            skuType.setTypeId(bean.getType());
-            skuType.setActive("Y");
-            skuType.setCreateAt(System.currentTimeMillis());
-            skuType.setUpdateAt(System.currentTimeMillis());
-            skuType.setCreateBy(getAccount());
-            skuType.setUpdateBy(getAccount());
-            skuTypeList.add(skuType);
+            DbResType type = new DbResType();
+            type.setId(bean.getType());
+            List<DbResTypeSkuSpec> typeSkuSpec = typeSkuSpecRepository.getDbResTypeSkuSpecsByType(type);
+            if(typeSkuSpec!=null && typeSkuSpec.size()>0){
+                DbResSpec spec = specRepository.findById(typeSkuSpec.get(0).getSpecId()).get(0);
+                DbResSpec newSpec = new DbResSpec();
+                newSpec.setSpecName(spec.getSpecName());
+                newSpec.setSpecDesc(spec.getSpecDesc());
+                newSpec.setVerId(spec.getVerId());
+                newSpec.setCreateAt(time);
+                newSpec.setUpdateBy(getAccount());
+                newSpec.setUpdateAt(time);
+                newSpec.setUpdateBy(getAccount());
+                newSpec.setActive("Y");
 
-            List<DbResSkuAttrValue> skuAttrValueList = new LinkedList<>();
-            for(int i=0;i<bean.getAttrs().length;i++){
-                for(int value : bean.getAttrValueList().get(i)){
-                    DbResSkuAttrValue skuAttrValue = new DbResSkuAttrValue();
-                    skuAttrValue.setAttrId(bean.getAttrs()[i]);
-                    skuAttrValue.setAttrValueId(value);
-                    skuAttrValue.setSku(sku);
-                    skuAttrValue.setActive("Y");
-                    skuAttrValue.setCreateAt(System.currentTimeMillis());
-                    skuAttrValue.setUpdateAt(System.currentTimeMillis());
-                    skuAttrValue.setCreateBy(getAccount());
-                    skuAttrValue.setUpdateBy(getAccount());
-                    skuAttrValueList.add(skuAttrValue);
+                List<DbResSpecAttr> specAttrList = new LinkedList<>();
+                for(int i=0;i<bean.getAttrs().length;i++){
+                    for(int value : bean.getAttrValueList().get(i)){
+                        DbResSpecAttr specAttr = new DbResSpecAttr();
+                        specAttr.setAttrId(String.valueOf(bean.getAttrs()[i]));
+                        specAttr.setAttrValueId(String.valueOf(value));
+                        specAttr.setActive("Y");
+                        specAttr.setCreateAt(time);
+                        specAttr.setUpdateAt(time);
+                        specAttr.setCreateBy(getAccount());
+                        specAttr.setUpdateBy(getAccount());
+                        specAttrList.add(specAttr);
+                    }
                 }
+                newSpec.setResSpecAttrList(specAttrList);
+                specRepository.saveAndFlush(newSpec);
+
+                List<DbResSpec> dbResSpecsBySpecName = specRepository.getDbResSpecsBySpecName(spec.getSpecName());
+                DbResSpec maxSpec = dbResSpecsBySpecName.stream().max(Comparator.comparing(DbResSpec::getId)).get();
+                DbResTypeSkuSpec newTypeSpec = new DbResTypeSkuSpec();
+                //BeanUtils.copyProperties(typeSkuSpec,newTypeSpec);
+                newTypeSpec.setSpecId(maxSpec.getId());
+                newTypeSpec.setType(typeSkuSpec.get(0).getType());
+                newTypeSpec.setSku(sku);
+                newTypeSpec.setIsType("N");
+                newTypeSpec.setCreateAt(time);
+                newTypeSpec.setUpdateBy(getAccount());
+                newTypeSpec.setUpdateAt(time);
+                newTypeSpec.setUpdateBy(getAccount());
+                newTypeSpec.setActive("Y");
+                sku.setDbResTypeSkuSpec(newTypeSpec);
+
+                skuRepo.saveAndFlush(sku);
             }
-
-//            List<DbResSkuRepo> skuRepoList = new LinkedList<>();
-//            DbResSkuRepo resSkuRepo = new DbResSkuRepo();
-//            resSkuRepo.setSku(sku);
-//            DbResRepo repo = new DbResRepo();
-//            repo.setId(bean.getStores());
-//            resSkuRepo.setRepo(repo);
-//            DbResStockType stockType = null;
-//            for (DbResStockType dbResStockType : stockTypeRepository.findAll()) {
-//                if(dbResStockType.getStockTypeName().trim().equals(StaticVariable.DTLSUBIN_AVAILABLE))
-//                    stockType = dbResStockType;
-//            }
-//            resSkuRepo.setStockType(stockType);
-//            resSkuRepo.setQty((int)bean.getQty());
-//            resSkuRepo.setActive("Y");
-//            resSkuRepo.setCreateAt(System.currentTimeMillis());
-//            resSkuRepo.setUpdateAt(System.currentTimeMillis());
-//            resSkuRepo.setCreateBy(bean.getCreateBy());
-//            resSkuRepo.setUpdateBy(bean.getUpdateBy());
-//            skuRepoList.add(resSkuRepo);
-
-//            sku.setSkuRepoList(skuRepoList);
-            sku.setSkuAttrValueList(skuAttrValueList);
-            sku.setSkuTypeList(skuTypeList);
-            skuRepo.saveAndFlush(sku);
-
             return JsonResult.success(Arrays.asList());
         } catch (Exception e) {
             e.printStackTrace();
@@ -128,6 +136,16 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> implements ICheck {
     @ApiOperation(value="删除sku",tags={"masterfile_sku"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST,value = "/delete")
     public JsonResult delete(@RequestBody BaseDeleteBean ids) {
+        for (Long id : ids.getIds()) {
+            DbResSku sku = new DbResSku();
+            sku.setId(id);
+            DbResSkuLis skuLisBySkuId = skuLisRepository.getDbResSkuLisBySkuId(sku);
+            if(skuLisBySkuId != null) skuLisRepository.delete(skuLisBySkuId);
+            //删除此sku的spec
+            DbResTypeSkuSpec dbResTypeSkuSpecBySku = typeSkuSpecRepository.getDbResTypeSkuSpecBySku(sku);
+            DbResSpec spec = specRepository.getOne(dbResTypeSkuSpecBySku.getSpecId());
+            if(spec!=null) specRepository.delete(spec);
+        }
         return this.delete(skuRepo,ids);
     }
 
@@ -136,64 +154,88 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> implements ICheck {
     public JsonResult edit(@RequestBody EditBean bean) {
         try {
             System.out.println("bean:" + bean);
+            long time = System.currentTimeMillis();
             DbResSku sku = skuRepo.findById(bean.getId()).get();
             sku.setSkuCode(bean.getSkuCode());
             sku.setSkuName(bean.getSkuName());
             sku.setSkuDesc(bean.getSkuDesc());
-            sku.setUpdateAt(System.currentTimeMillis());
-            //sku.setCreateBy(getAccount());
+            sku.setUpdateAt(time);
             sku.setUpdateBy(getAccount());
             sku.setSkuOrigin(StaticVariable.SKU_ORIGIN_FROM_WITHPO);
-            List<DbResSkuAttrValue> skuAttrValueList = sku.getSkuAttrValueList();
-            List<DbResSkuType> skuTypeList = sku.getSkuTypeList();
-            //List<DbResSkuRepo> skuRepoList = sku.getSkuRepoList();
-            skuAttrValueList.clear();
-            skuTypeList.clear();
-            //skuRepoList.clear();
+            DbResType type = new DbResType();
+            type.setId(bean.getType());
+            DbResTypeSkuSpec typeSkuSpec = typeSkuSpecRepository.getDbResTypeSkuSpecsBySkuAndType(sku,type);
+            if(typeSkuSpec!=null){
+                //未修改type，只是修改了spec的attr
+                DbResSpec spec = specRepository.findById(typeSkuSpec.getSpecId()).get(0);
+                List<DbResSpecAttr> resSpecAttrList = spec.getResSpecAttrList();
+                resSpecAttrList.clear();
+                for(int i=0;i<bean.getAttrs().length;i++){
+                    for(int value : bean.getAttrValueList().get(i)){
+                        DbResSpecAttr specAttr = new DbResSpecAttr();
+                        specAttr.setAttrId(String.valueOf(bean.getAttrs()[i]));
+                        specAttr.setAttrValueId(String.valueOf(value));
+                        specAttr.setActive("Y");
+                        specAttr.setCreateAt(time);
+                        specAttr.setUpdateAt(time);
+                        specAttr.setCreateBy(getAccount());
+                        specAttr.setUpdateBy(getAccount());
+                        resSpecAttrList.add(specAttr);
+                    }
+                }
+                specRepository.saveAndFlush(spec);
+            } else {
+                //选了新的type，创建新的spec,删除之前的spec
+                List<DbResTypeSkuSpec> typeSkuSpecs = typeSkuSpecRepository.getDbResTypeSkuSpecsByType(type);
+                if(typeSkuSpecs!=null && typeSkuSpecs.size()>0){
+                    DbResSpec oldSpec = specRepository.getOne(typeSkuSpecs.get(0).getSpecId());
+                    DbResSpec newSpec = new DbResSpec();
+                    newSpec.setSpecName(oldSpec.getSpecName());
+                    newSpec.setSpecDesc(oldSpec.getSpecDesc());
+                    newSpec.setVerId(oldSpec.getVerId());
+                    newSpec.setCreateAt(time);
+                    newSpec.setUpdateBy(getAccount());
+                    newSpec.setUpdateAt(time);
+                    newSpec.setUpdateBy(getAccount());
+                    newSpec.setActive("Y");
 
-            DbResSkuType skuType = new DbResSkuType();
-            skuType.setSku(sku);
-            skuType.setTypeId(bean.getType());
-            skuType.setActive("Y");
-            skuType.setCreateAt(System.currentTimeMillis());
-            skuType.setUpdateAt(System.currentTimeMillis());
-            skuType.setCreateBy(getAccount());
-            skuType.setUpdateBy(getAccount());
-            skuTypeList.add(skuType);
+                    List<DbResSpecAttr> specAttrList = new LinkedList<>();
+                    for(int i=0;i<bean.getAttrs().length;i++){
+                        for(int value : bean.getAttrValueList().get(i)){
+                            DbResSpecAttr specAttr = new DbResSpecAttr();
+                            specAttr.setAttrId(String.valueOf(bean.getAttrs()[i]));
+                            specAttr.setAttrValueId(String.valueOf(value));
+                            specAttr.setActive("Y");
+                            specAttr.setCreateAt(time);
+                            specAttr.setUpdateAt(time);
+                            specAttr.setCreateBy(getAccount());
+                            specAttr.setUpdateBy(getAccount());
+                            specAttrList.add(specAttr);
+                        }
+                    }
+                    newSpec.setResSpecAttrList(specAttrList);
 
-            for(int i=0;i<bean.getAttrs().length;i++){
-                for(int value : bean.getAttrValueList().get(i)){
-                    DbResSkuAttrValue skuAttrValue = new DbResSkuAttrValue();
+                    DbResTypeSkuSpec dbResTypeSkuSpecBySku = typeSkuSpecRepository.getDbResTypeSkuSpecBySku(sku);
+                    typeSkuSpecRepository.delete(dbResTypeSkuSpecBySku);
+                    specRepository.delete(oldSpec);
+                    specRepository.saveAndFlush(newSpec);
 
-                    System.out.println("attr:" + bean.getAttrs()[i] + ",attrValue:" + value);
-                    skuAttrValue.setAttrId(bean.getAttrs()[i]);
-                    skuAttrValue.setAttrValueId(value);
-                    //skuAttrValue.setSpecId(bean.getSpec());
-                    skuAttrValue.setSku(sku);
-                    skuAttrValue.setActive("Y");
-                    skuAttrValue.setCreateAt(System.currentTimeMillis());
-                    skuAttrValue.setUpdateAt(System.currentTimeMillis());
-                    skuAttrValue.setCreateBy(getAccount());
-                    skuAttrValue.setUpdateBy(getAccount());
-                    skuAttrValueList.add(skuAttrValue);
+                    List<DbResSpec> dbResSpecsBySpecName = specRepository.getDbResSpecsBySpecName(oldSpec.getSpecName());
+                    DbResSpec maxSpec = dbResSpecsBySpecName.stream().max(Comparator.comparing(DbResSpec::getId)).get();
+                    DbResTypeSkuSpec newTypeSpec = new DbResTypeSkuSpec();
+                    //BeanUtils.copyProperties(typeSkuSpec,newTypeSpec);
+                    newTypeSpec.setSpecId(maxSpec.getId());
+                    newTypeSpec.setType(typeSkuSpecs.get(0).getType());
+                    newTypeSpec.setSku(sku);
+                    newTypeSpec.setIsType("N");
+                    newTypeSpec.setCreateAt(time);
+                    newTypeSpec.setUpdateBy(getAccount());
+                    newTypeSpec.setUpdateAt(time);
+                    newTypeSpec.setUpdateBy(getAccount());
+                    newTypeSpec.setActive("Y");
+                    sku.setDbResTypeSkuSpec(newTypeSpec);
                 }
             }
-
-//            DbResSkuRepo resSkuRepo = new DbResSkuRepo();
-//            resSkuRepo.setSku(sku);
-//            DbResRepo repo = new DbResRepo();
-//            repo.setId(bean.getStores());
-//            resSkuRepo.setRepo(repo);
-//            DbResStockType stockType = new DbResStockType();
-//            stockType.setId(3L);//默认为AvailaBle
-//            resSkuRepo.setStockType(stockType);
-//            resSkuRepo.setQty((int)bean.getQty());
-//            resSkuRepo.setActive("Y");
-//            resSkuRepo.setCreateAt(System.currentTimeMillis());
-//            resSkuRepo.setUpdateAt(System.currentTimeMillis());
-//            resSkuRepo.setCreateBy(bean.getCreateBy());
-//            resSkuRepo.setUpdateBy(bean.getUpdateBy());
-//            skuRepoList.add(resSkuRepo);
 
             skuRepo.saveAndFlush(sku);
 
@@ -389,7 +431,7 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> implements ICheck {
     @ApiOperation(value="禁用sku",tags={"masterfile_sku"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST,value = "/disable")
     public JsonResult disable(@RequestBody BaseDeleteBean ids) {
-        return this.disable(skuRepo,ids,MasterFile_SkuCtrl.class,skuRepoRepository);
+        return this.disable(skuRepo,ids, MasterFile_SkuCtrl.class,skuRepoRepository);
     }
 
     @ApiOperation(value="启用sku",tags={"masterfile_sku"},notes="注意问题点")

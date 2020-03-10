@@ -33,7 +33,7 @@ public class BaseException extends Exception {
     //     e.setException(exception);
     //     return e;
     // }
-    private static BaseException getException(String code,String msg){
+    private static BaseException getException(String code, String msg){
         BaseException e = new BaseException();
         e.setCode(code);
         e.setMsg(msg);

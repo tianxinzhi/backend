@@ -1,32 +1,32 @@
 package com.pccw.backend.ctrl;
 
-import java.util.*;
-
-import com.pccw.backend.bean.auth_role.*;
 import com.pccw.backend.bean.BaseDeleteBean;
 import com.pccw.backend.bean.JsonResult;
+import com.pccw.backend.bean.auth_role.CreateBean;
+import com.pccw.backend.bean.auth_role.EditBean;
+import com.pccw.backend.bean.auth_role.RoleRightEditBean;
+import com.pccw.backend.bean.auth_role.SearchBean;
 import com.pccw.backend.cusinterface.ICheck;
 import com.pccw.backend.entity.DbResAccountRole;
 import com.pccw.backend.entity.DbResRight;
 import com.pccw.backend.entity.DbResRole;
 import com.pccw.backend.entity.DbResRoleRight;
-import com.pccw.backend.repository.*;
+import com.pccw.backend.repository.BaseRepository;
+import com.pccw.backend.repository.ResAccountRoleRepository;
+import com.pccw.backend.repository.ResRightRepository;
+import com.pccw.backend.repository.ResRoleRepository;
 import com.pccw.backend.util.Convertor;
-
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
-
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.*;
 
 /**
  * AuthRightCtrl
@@ -164,7 +164,7 @@ public class Auth_RoleCtrl extends BaseCtrl<DbResRole> implements ICheck {
     @ApiOperation(value="禁用auth_role",tags={"auth_role"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST,value = "/disable")
     public JsonResult disable(@RequestBody BaseDeleteBean ids) {
-        return this.disable(repo,ids,Auth_RoleCtrl.class,accountRoleRepository);
+        return this.disable(repo,ids, Auth_RoleCtrl.class,accountRoleRepository);
     }
 
     @ApiOperation(value="启用auth_role",tags={"auth_role"},notes="注意问题点")

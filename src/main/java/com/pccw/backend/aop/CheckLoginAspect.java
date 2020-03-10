@@ -1,24 +1,14 @@
 package com.pccw.backend.aop;
 
-import javax.servlet.http.HttpServletRequest;
-
-import com.alibaba.fastjson.JSONObject;
 import com.pccw.backend.exception.BaseException;
 import com.pccw.backend.util.Session;
-
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
-
-import lombok.extern.slf4j.Slf4j;
 
 
 /**

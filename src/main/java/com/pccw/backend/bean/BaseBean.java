@@ -1,12 +1,8 @@
 package com.pccw.backend.bean;
 
-import java.io.Serializable;
-import java.sql.Date;
-
-import org.springframework.lang.Nullable;
-
-import lombok.AllArgsConstructor;
 import lombok.Data;
+
+import java.io.Serializable;
 
 /**
  * SearchCondition

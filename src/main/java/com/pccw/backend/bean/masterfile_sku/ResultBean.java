@@ -1,12 +1,10 @@
 package com.pccw.backend.bean.masterfile_sku;
 
 import com.pccw.backend.bean.BaseBean;
-import com.pccw.backend.entity.DbResSku;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.context.annotation.Bean;
 
 import java.util.List;
 import java.util.Map;

@@ -1,7 +1,6 @@
 package com.pccw.backend.bean.masterfile_attr_value;
 
 import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

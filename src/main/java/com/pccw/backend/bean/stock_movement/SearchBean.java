@@ -3,14 +3,12 @@ package com.pccw.backend.bean.stock_movement;
 
 import com.pccw.backend.annotation.PredicateAnnotation;
 import com.pccw.backend.annotation.PredicateType;
-import com.pccw.backend.bean.BaseSearchBean;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotNull;
-import java.util.List;
 
 /**
  * SearchCondition

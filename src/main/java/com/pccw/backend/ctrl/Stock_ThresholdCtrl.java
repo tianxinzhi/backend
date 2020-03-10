@@ -7,9 +7,9 @@ import com.pccw.backend.bean.StaticVariable;
 import com.pccw.backend.bean.stock_threshold.EditBean;
 import com.pccw.backend.bean.stock_threshold.SearchBean;
 import com.pccw.backend.bean.stock_threshold.ThresholdLogMgtBean;
-import com.pccw.backend.cusinterface.ICheck;
-import com.pccw.backend.entity.*;
-import com.pccw.backend.repository.*;
+import com.pccw.backend.entity.DbResLogMgt;
+import com.pccw.backend.entity.DbResProcess;
+import com.pccw.backend.repository.ResLogMgtRepository;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,7 @@ import java.util.*;
 @RestController
 @RequestMapping("/stock_threshold")
 @CrossOrigin(methods = RequestMethod.POST,origins = "*", allowCredentials = "false")
-public class Stock_ThresholdCtrl extends BaseCtrl<DbResLogMgt>{
+public class Stock_ThresholdCtrl extends BaseCtrl<DbResLogMgt> {
 
     @Autowired
     private ResLogMgtRepository resLogMgtRepository;

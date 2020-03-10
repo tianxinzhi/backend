@@ -5,6 +5,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 
+@Deprecated
 @Entity
 @Table(name="res_sku_attr_value")
 @Data

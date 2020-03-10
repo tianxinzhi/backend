@@ -2,7 +2,6 @@ package com.pccw.backend.bean.stock_out;
 
 
 import com.pccw.backend.bean.BaseBean;
-import com.pccw.backend.entity.DbResLogMgtDtl;
 import com.pccw.backend.entity.DbResProcessDtl;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

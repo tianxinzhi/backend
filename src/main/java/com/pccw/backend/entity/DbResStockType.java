@@ -1,7 +1,6 @@
 package com.pccw.backend.entity;
 
 import com.pccw.backend.annotation.JsonResultParamHandle;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 

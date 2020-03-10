@@ -1,7 +1,6 @@
 package com.pccw.backend.bean.stock_threshold;
 
 import com.pccw.backend.bean.BaseBean;
-import com.pccw.backend.bean.stock_category.CategoryLogDtlBean;
 import com.pccw.backend.entity.DbResLogMgtDtl;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

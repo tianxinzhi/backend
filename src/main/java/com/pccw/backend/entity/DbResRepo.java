@@ -1,14 +1,11 @@
 package com.pccw.backend.entity;
 
-import java.io.Serializable;
-import java.util.List;
-
-import javax.persistence.*;
-
 import com.pccw.backend.annotation.JsonResultParamHandle;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+
+import javax.persistence.*;
+import java.util.List;
 
 
 /**

@@ -7,13 +7,10 @@ import com.pccw.backend.bean.masterfile_adjust_reason.EditBean;
 import com.pccw.backend.bean.masterfile_adjust_reason.SearchBean;
 import com.pccw.backend.cusinterface.ICheck;
 import com.pccw.backend.entity.DbResAdjustReason;
-import com.pccw.backend.entity.DbResAttrValue;
 import com.pccw.backend.entity.DbResLogMgt;
-import com.pccw.backend.entity.DbResSpecAttr;
 import com.pccw.backend.repository.BaseRepository;
 import com.pccw.backend.repository.ResAdjustReasonRepository;
 import com.pccw.backend.repository.ResLogMgtRepository;
-import com.pccw.backend.repository.ResSpecAttrRepository;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -62,7 +59,7 @@ public class MasterFile_AdjustReasonCtrl extends BaseCtrl<DbResAdjustReason> imp
     @ApiOperation(value="禁用adjust_reason",tags={"masterfile_adjust_reason"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST,value = "/disable")
     public JsonResult disable(@RequestBody BaseDeleteBean ids) {
-        return this.disable(repo,ids,MasterFile_AdjustReasonCtrl.class,mgtRepository);
+        return this.disable(repo,ids, MasterFile_AdjustReasonCtrl.class,mgtRepository);
     }
 
     @ApiOperation(value="启用adjust_reason",tags={"masterfile_adjust_reason"},notes="注意问题点")

@@ -26,7 +26,7 @@ public class ExceptionLog{
 
     @Autowired
     private Session ss;
-    private static  Session<Map> session;
+    private static Session<Map> session;
 
     @Autowired
     private HttpServletRequest rq;

@@ -8,7 +8,7 @@ import com.pccw.backend.entity.DbResFlow;
  */
 public interface ResFlowRepository extends BaseRepository<DbResFlow>{
 
-    DbResFlow findByFlowNature( String logOrderNature);
+    DbResFlow findByFlowNature(String logOrderNature);
 
     // Page<DbResRole> findAll(Specification<DbResRole> spec,Pageable p);  
 }

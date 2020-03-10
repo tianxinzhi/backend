@@ -13,7 +13,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -21,7 +20,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/process")
 @CrossOrigin(methods = RequestMethod.POST,origins = "*", allowCredentials = "false")
-public class Process_ProcessCtrl extends BaseCtrl{
+public class Process_ProcessCtrl extends BaseCtrl {
 
     @Autowired
     ResProcessRepository processRepository;
@@ -45,7 +44,7 @@ public class Process_ProcessCtrl extends BaseCtrl{
     ResFlowRepository repoFlow;
 
     @Autowired
-    Stock_OutCtrl  outCtrl;
+    Stock_OutCtrl outCtrl;
 
     @Autowired
     Stock_InCtrl inCtrl;
@@ -131,7 +130,7 @@ public class Process_ProcessCtrl extends BaseCtrl{
                 List<Long> ids = processRepository.findIdsByPending(accountId,nature,repoId,txtNum,Long.parseLong(bean.getCreateAt()[0]),Long.parseLong(bean.getCreateAt()[1]));
                 res = processRepository.findDbResProcessesByIdIn(ids);
             }else if(bean.getFilter()!=null&&bean.getFilter().equals("My Request")){
-                ReqOrPedSearchBean  reqOrPed=new ReqOrPedSearchBean();
+                ReqOrPedSearchBean reqOrPed=new ReqOrPedSearchBean();
                 BeanUtils.copyProperties(bean,reqOrPed);
                 reqOrPed.setCreateBy(Long.parseLong(user.get("account").toString()));
                 res =processRepository.findAll(Convertor.convertSpecification(reqOrPed));
@@ -245,7 +244,7 @@ public class Process_ProcessCtrl extends BaseCtrl{
      * @param res
      * @return
      */
-    private List<RecodeBean> getRecodes(List<DbResProcess> res,List<String> roles) {
+    private List<RecodeBean> getRecodes(List<DbResProcess> res, List<String> roles) {
         return res.stream().map(r -> {
             //判断操作人是否具有当前审批权限
             List<DbResProcessDtl> collect = r.getProcessDtls().stream().filter(item ->
@@ -323,7 +322,7 @@ public class Process_ProcessCtrl extends BaseCtrl{
         process.setFlowId(resFlow.getId());
         ArrayList<DbResProcessDtl> processDtls= new ArrayList<>();
         for(int i=0;i<resFlow.getResFlowStepList().size();i++) {
-            DbResProcessDtl  resProcessDtl  =new DbResProcessDtl();
+            DbResProcessDtl resProcessDtl  =new DbResProcessDtl();
             resProcessDtl.setFlowId(resFlow.getId());
             resProcessDtl.setStepId(resFlow.getResFlowStepList().get(i).getId());
             resProcessDtl.setStepNum(resFlow.getResFlowStepList().get(i).getStepNum());

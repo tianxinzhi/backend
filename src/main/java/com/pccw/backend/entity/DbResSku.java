@@ -1,14 +1,10 @@
 package com.pccw.backend.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.pccw.backend.annotation.JsonResultParamHandle;
-
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.List;
 
 
 /**
@@ -40,15 +36,19 @@ public class DbResSku extends Base {
 	@Column(name = "sku_origin",length = 32)
 	private String skuOrigin;
 
-	@JsonBackReference
-	@OneToMany(cascade = CascadeType.ALL,mappedBy = "sku",orphanRemoval = true)
-	private List<DbResSkuType> skuTypeList;
+//	@JsonBackReference
+//	@OneToMany(cascade = CascadeType.ALL,mappedBy = "sku",orphanRemoval = true)
+//	private List<DbResSkuType> skuTypeList;
+//
+//	@JsonBackReference
+//	@OneToMany(cascade = CascadeType.ALL,mappedBy = "sku",orphanRemoval = true)
+//	private List<DbResSkuAttrValue> skuAttrValueList;
 
-	@JsonBackReference
-	@OneToMany(cascade = CascadeType.ALL,mappedBy = "sku",orphanRemoval = true)
-	private List<DbResSkuAttrValue> skuAttrValueList;
 
-	@OneToMany(cascade={CascadeType.ALL},mappedBy = "sku",orphanRemoval = true)
-	private List<DbResSkuRepo> skuRepoList;
+//	@OneToMany(cascade={CascadeType.ALL},mappedBy = "sku",orphanRemoval = true)
+//	private List<DbResSkuRepo> skuRepoList;
+
+    @OneToOne(cascade = {CascadeType.ALL},mappedBy = "sku",orphanRemoval = true)
+    private DbResTypeSkuSpec dbResTypeSkuSpec;
 
 }

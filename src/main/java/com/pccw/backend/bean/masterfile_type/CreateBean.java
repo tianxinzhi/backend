@@ -2,7 +2,6 @@ package com.pccw.backend.bean.masterfile_type;
 
 
 import com.pccw.backend.bean.BaseBean;
-import com.pccw.backend.entity.DbResClass;
 import com.pccw.backend.entity.DbResClassType;
 import com.pccw.backend.entity.DbResTypeSkuSpec;
 import io.swagger.annotations.ApiModel;
@@ -38,6 +37,8 @@ public class CreateBean extends BaseBean{
     private List<Long> classId;
 
     private long specId;
+    private String specName;
+    private String verId;
 
 //    private List<DbResClass> classList;
     private List<DbResClassType> ClassTypeList;

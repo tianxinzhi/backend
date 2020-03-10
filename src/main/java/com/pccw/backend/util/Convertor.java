@@ -1,6 +1,6 @@
 package com.pccw.backend.util;
 
-import com.pccw.backend.annotation.JsonResultParamAnnotation;
+import com.pccw.backend.annotation.JsonResultParamMapAnnotation;
 import com.pccw.backend.bean.GeneralBean;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.annotation.Aspect;
@@ -202,7 +202,7 @@ import com.pccw.backend.annotation.PredicateType;
 	 */
 	public static  <E> List<GeneralBean> getCollect(GeneralBean bean, List<E> list) {
 		return list.stream().map(item->{
-			JsonResultParamAnnotation annotation = item.getClass().getAnnotation(JsonResultParamAnnotation.class);
+			JsonResultParamMapAnnotation annotation = item.getClass().getAnnotation(JsonResultParamMapAnnotation.class);
 			GeneralBean generalBean = bean;
 			if (!Objects.isNull(annotation)) {
 				generalBean = setGeneralBean(item, annotation,bean);
@@ -220,7 +220,7 @@ import com.pccw.backend.annotation.PredicateType;
 	 * @param <E>
 	 * @return
 	 */
-	public static  <E> GeneralBean setGeneralBean(E item, JsonResultParamAnnotation annotation, GeneralBean generalBean) {
+	public static  <E> GeneralBean setGeneralBean(E item, JsonResultParamMapAnnotation annotation, GeneralBean generalBean) {
 		GeneralBean bean = generalBean;
 		try {
 			//将bean的属性类型存入数组

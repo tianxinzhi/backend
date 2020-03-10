@@ -1,7 +1,7 @@
 package com.pccw.backend.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.pccw.backend.annotation.JsonResultParamAnnotation;
+import com.pccw.backend.annotation.JsonResultParamMapAnnotation;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -15,7 +15,7 @@ import java.util.List;
 @Entity
 @Table(name = "res_spec")
 @SequenceGenerator(name="id_spec",sequenceName = "spec_seq",allocationSize = 1)
-@JsonResultParamAnnotation(param1 = "id",param2 = "specName")
+@JsonResultParamMapAnnotation(param1 = "id",param2 = "specName")
 public class DbResSpec extends Base {
 	@Id
 	@Column(name = "id")

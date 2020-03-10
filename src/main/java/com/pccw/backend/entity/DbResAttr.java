@@ -1,7 +1,7 @@
 package com.pccw.backend.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.pccw.backend.annotation.JsonResultParamAnnotation;
+import com.pccw.backend.annotation.JsonResultParamMapAnnotation;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,7 +19,7 @@ import java.util.List;
 @Getter
 @Setter
 @SequenceGenerator(name="id_attr",sequenceName = "attr_seq",allocationSize = 1)
-@JsonResultParamAnnotation(param1 = "id",param2 = "attrName")
+@JsonResultParamMapAnnotation(param1 = "id",param2 = "attrName")
 public class DbResAttr extends Base{
 	@Id
 	@Column(name = "id")

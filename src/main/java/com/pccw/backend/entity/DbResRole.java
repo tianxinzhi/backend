@@ -6,11 +6,8 @@ import javax.persistence.*;
 
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.pccw.backend.annotation.JsonResultParamAnnotation;
+import com.pccw.backend.annotation.JsonResultParamMapAnnotation;
 import lombok.Data;
-
-import javax.persistence.*;
-import java.util.List;
 
 /**
  * DbResRole
@@ -20,7 +17,7 @@ import java.util.List;
  @Data
  @Table(name="res_role")
  @SequenceGenerator(name="id_role",sequenceName = "role_seq",allocationSize = 1)
- @JsonResultParamAnnotation(param1 = "id",param2 = "roleName")
+ @JsonResultParamMapAnnotation(param1 = "id",param2 = "roleName")
 public class DbResRole extends Base {
     @Id
     @Column(name = "id")

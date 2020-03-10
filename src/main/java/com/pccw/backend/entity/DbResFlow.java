@@ -5,11 +5,8 @@ import java.util.List;
 import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.pccw.backend.annotation.JsonResultParamAnnotation;
+import com.pccw.backend.annotation.JsonResultParamMapAnnotation;
 import lombok.Data;
-
-import javax.persistence.*;
-import java.util.List;
 
 /**
  * DbResFlow
@@ -19,7 +16,7 @@ import java.util.List;
  @Data
  @Table(name = "res_flow")
  @SequenceGenerator(name="id_flow",sequenceName = "flow_seq",allocationSize = 1)
- @JsonResultParamAnnotation(param1 = "flowNature",param2 = "flowName")
+ @JsonResultParamMapAnnotation(param1 = "flowNature",param2 = "flowName")
 public class DbResFlow extends Base{
     @Id
     @Column(name = "id")

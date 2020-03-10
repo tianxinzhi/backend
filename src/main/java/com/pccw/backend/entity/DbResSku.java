@@ -1,7 +1,6 @@
 package com.pccw.backend.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.pccw.backend.annotation.JsonResultParamAnnotation;
+import com.pccw.backend.annotation.JsonResultParamMapAnnotation;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -18,7 +17,7 @@ import javax.persistence.*;
 @Getter
 @Setter
 @SequenceGenerator(name="id_sku",sequenceName = "sku_seq",allocationSize = 1)
-@JsonResultParamAnnotation(param1 = "id",param2 = "skuCode")
+@JsonResultParamMapAnnotation(param1 = "id",param2 = "skuCode")
 public class DbResSku extends Base {
 
 	@Id

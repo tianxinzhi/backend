@@ -5,12 +5,9 @@ import java.util.List;
 
 import javax.persistence.*;
 
-import com.pccw.backend.annotation.JsonResultParamAnnotation;
+import com.pccw.backend.annotation.JsonResultParamMapAnnotation;
 import lombok.Getter;
 import lombok.Setter;
-
-import javax.persistence.*;
-import java.util.List;
 
 
 /**
@@ -22,7 +19,7 @@ import java.util.List;
 @Entity
 @Table(name = "res_class")
 @SequenceGenerator(name="id_class",sequenceName = "class_seq",allocationSize = 1)
-@JsonResultParamAnnotation(param1 = "id",param2 = "parentClassId",param3 = "className")
+@JsonResultParamMapAnnotation(param1 = "id",param2 = "parentClassId",param3 = "className")
 public class  DbResClass extends Base {
 	@Id
 	@Column(name = "id")

@@ -1,10 +1,7 @@
 package com.pccw.backend.ctrl;
 
 
-import com.pccw.backend.bean.BaseBean;
-import com.pccw.backend.bean.BaseDeleteBean;
-import com.pccw.backend.bean.BaseSearchBean;
-import com.pccw.backend.bean.JsonResult;
+import com.pccw.backend.bean.*;
 import com.pccw.backend.cusinterface.ICheck;
 import com.pccw.backend.entity.Base;
 import com.pccw.backend.entity.DbResAccount;
@@ -17,8 +14,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -163,4 +165,74 @@ public class BaseCtrl<T>{
         return name;
     }
 
+
+    /**
+     * 将默认查询结果集按照指定bean格式,并装入JsonResult返回
+     * @param repo repository对象
+     * @param bean 指定的bean对象
+     * @param <E>
+     * @return
+     */
+    public <E> JsonResult JsonResultHandle(BaseRepository repo, GeneralBean bean){
+        try {
+            List<GeneralBean> res = getDefualtSearchBeans(repo, bean);
+            return JsonResult.success(res);
+        } catch (Exception e) {
+            return JsonResult.fail(e);
+        }
+    }
+
+    /**
+     * 将默认查询结果集按照指定bean格式,并装入JsonResult，并在末尾插入一个bean
+     * @param repo repository对象
+     * @param bean 插入的bean对象
+     * @param <E>
+     * @return
+     */
+    public <E> JsonResult addRowJsonResultHandle(BaseRepository repo, GeneralBean bean){
+        try {
+            List<GeneralBean> res = getDefualtSearchBeans(repo, bean);
+            res.add(bean);
+            return JsonResult.success(res);
+        } catch (Exception e) {
+            return JsonResult.fail(e);
+        }
+    }
+
+    /**
+     * 将自定义查询的结果集按照指定bean格式,并装入JsonResult
+     * @param bean
+     * @param list
+     * @param <E>
+     * @return
+     */
+    public <E> JsonResult customSearchJsonResultHandle(GeneralBean bean, List<E> list){
+        try {
+            List<GeneralBean> res = Convertor.getCollect(bean, list);
+            return JsonResult.success(res);
+        } catch (Exception e) {
+            return JsonResult.fail(e);
+        }
+    }
+
+    /**
+     * 默认查询全部的数据结果集
+     * @param repo repository对象
+     * @param bean 指定的bean对象
+     * @param <E>
+     * @return
+     */
+    private <E> List<GeneralBean> getDefualtSearchBeans(BaseRepository repo, GeneralBean bean) throws IllegalAccessException {
+        Sort sort = new Sort(Sort.Direction.DESC, "id");
+        Specification<E> spec = new Specification<E>() {
+            @Override
+            public Predicate toPredicate(Root<E> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
+                Predicate predicate = criteriaBuilder.equal(root.get("active").as(String.class), "Y");
+                return predicate;
+            }
+        };
+        List<E> list = repo.findAll(spec,sort);
+//        List<E> list = repo.findAll();
+        return Convertor.getCollect(bean, list);
+    }
 }

@@ -21,7 +21,7 @@ import java.util.*;
 @RestController
 @RequestMapping("/api/external/ppos/v1")
 @CrossOrigin(methods = RequestMethod.POST,origins = "*", allowCredentials = "false")
-public class Stock_UpdateNormalCtrl extends BaseCtrl<DbResLogRor> {
+public class InterfaceForOrderingCtrl extends BaseCtrl<DbResLogRor> {
 
     @Autowired
     private ResLogRorRepository repo;

@@ -1,15 +1,13 @@
 package com.pccw.backend.bean.auth_role;
 
-import java.io.Serializable;
-import java.util.List;
-import java.util.Map;
-
 import com.pccw.backend.annotation.PredicateAnnotation;
 import com.pccw.backend.annotation.PredicateType;
 import com.pccw.backend.bean.BaseSearchBean;
-
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * SearchCondition

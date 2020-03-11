@@ -1,12 +1,13 @@
 package com.pccw.backend.entity;
 
 
-import javax.persistence.*;
-
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.pccw.backend.annotation.JsonResultParamHandle;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import javax.persistence.*;
 
 
 

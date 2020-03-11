@@ -1,18 +1,13 @@
 package com.pccw.backend.bean.stock_balance;
 
-import java.io.Serializable;
-
-import javax.validation.constraints.NotEmpty;
-
 import com.pccw.backend.annotation.PredicateAnnotation;
 import com.pccw.backend.annotation.PredicateType;
 import com.pccw.backend.bean.BaseSearchBean;
-
-
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
+import javax.validation.constraints.NotEmpty;
+import java.io.Serializable;
 
 
 /**

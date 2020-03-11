@@ -4,15 +4,10 @@ package com.pccw.backend.ctrl;
 import com.pccw.backend.bean.JsonResult;
 import com.pccw.backend.bean.ResultRecode;
 import com.pccw.backend.bean.stock_balance.SearchBean;
-import com.pccw.backend.entity.DbResSkuRepo;
 import com.pccw.backend.repository.ResSkuRepoRepository;
-import com.pccw.backend.util.Convertor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.web.bind.annotation.*;
-
-
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;

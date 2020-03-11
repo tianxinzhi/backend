@@ -2,7 +2,6 @@ package com.pccw.backend.repository;
 
 import com.pccw.backend.entity.DbResSpec;
 import com.pccw.backend.entity.DbResType;
-import com.pccw.backend.entity.DbResTypeSkuSpec;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -23,4 +22,7 @@ public interface ResTypeRepository extends BaseRepository<DbResType> {
    DbResSpec findBySpecId(@Param("id") long id);
 
    List<DbResType> getDbResTypesByTypeCode(String typeCode);
+
+   @Query(value = "from DbResSpec where verId =?1 and specName = ?2")
+   DbResSpec findByVerAndSpecName(@Param("verId") String verId, @Param("specName") String specName);
 }

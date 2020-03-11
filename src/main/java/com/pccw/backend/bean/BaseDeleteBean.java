@@ -4,10 +4,10 @@ package com.pccw.backend.bean;
  * DeleteBean
  */
 
-import java.util.ArrayList;
-
 import io.swagger.annotations.ApiModel;
 import lombok.Data;
+
+import java.util.ArrayList;
 
 @Data
 @ApiModel(value="公共 - BaseDeleteBean",description="")

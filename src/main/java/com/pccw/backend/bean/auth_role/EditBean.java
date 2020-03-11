@@ -3,11 +3,8 @@ package com.pccw.backend.bean.auth_role;
 
 
 
-import com.pccw.backend.bean.BaseBean;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 /**
  * SearchCondition

@@ -22,7 +22,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.SQLOutput;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -40,7 +39,7 @@ public class MasterFile_SpecCtrl extends BaseCtrl<DbResSpec> implements ICheck {
     @Autowired
     ResSpecRepository repo;
     @Autowired
-    ResTypeSkuSpecRepository  typeSkuSpecRepository;
+    ResTypeSkuSpecRepository typeSkuSpecRepository;
 
     @ApiOperation(value="查询spec",tags={"masterfile_spec"},notes="说明")
     @RequestMapping(method = RequestMethod.POST,path="/search")
@@ -83,6 +82,9 @@ public class MasterFile_SpecCtrl extends BaseCtrl<DbResSpec> implements ICheck {
            long t = new Date().getTime();
            b.setUpdateAt(t);
            b.setCreateAt(t);
+           if(Objects.isNull(b.getVerId())){
+               b.setVerId("1.0");
+           }
            for(int i=0;i<b.getResSpecAttrList().size();i++) {
                b.getResSpecAttrList().get(i).setUpdateAt(t);
                b.getResSpecAttrList().get(i).setCreateAt(t);
@@ -178,7 +180,7 @@ public class MasterFile_SpecCtrl extends BaseCtrl<DbResSpec> implements ICheck {
     @ApiOperation(value="禁用spec",tags={"masterfile_spec"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST,value = "/disable")
     public JsonResult disable(@RequestBody BaseDeleteBean ids) {
-        return this.disable(repo,ids,MasterFile_SpecCtrl.class,typeSkuSpecRepository);
+        return this.disable(repo,ids, MasterFile_SpecCtrl.class,typeSkuSpecRepository);
     }
 
     @ApiOperation(value="启用spec",tags={"masterfile_spec"},notes="注意问题点")

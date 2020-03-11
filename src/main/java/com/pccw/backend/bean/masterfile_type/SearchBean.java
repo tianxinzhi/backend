@@ -46,6 +46,7 @@ public class SearchBean extends BaseSearchBean {
     private long id;
     private long specId;
     private String specName;
+    private String verId;
     private List<Long> classId;
     private String className;
     private List<DbResClassType> relationOfTypeClass;

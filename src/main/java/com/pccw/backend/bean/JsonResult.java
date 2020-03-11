@@ -1,16 +1,13 @@
 package com.pccw.backend.bean;
 
 
-import java.lang.Thread.State;
-import java.util.Arrays;
-import java.util.List;
-
 import com.pccw.backend.exception.BaseException;
-
 import com.pccw.backend.exception.ExceptionLog;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.util.Arrays;
+import java.util.List;
 
 
 /**

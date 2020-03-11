@@ -107,7 +107,7 @@ public class Stock_OutCtrl  extends BaseCtrl<DbResLogMgt> {
      */
     public void UpdateSkuRepoQty(String logTxtNum) {
         try {
-            DbResLogMgt  b =repo.findDbResLogMgtByLogTxtBum(logTxtNum);
+            DbResLogMgt b =repo.findDbResLogMgtByLogTxtBum(logTxtNum);
             for(int i=0;i<b.getLine().size();i++) {
                 if (b.getLine().get(i).getDtlAction().equals("D")) {
                     System.out.println(-b.getLine().get(i).getDtlQty());

@@ -15,7 +15,7 @@ import java.util.List;
 @Entity
 @Table(name = "res_spec")
 @SequenceGenerator(name="id_spec",sequenceName = "spec_seq",allocationSize = 1)
-@JsonResultParamMapAnnotation(param1 = "id",param2 = "specName")
+@JsonResultParamMapAnnotation(param1 = "id",param2 = "specName",param3 = "verId")
 public class DbResSpec extends Base {
 	@Id
 	@Column(name = "id")

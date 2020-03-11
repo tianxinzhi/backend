@@ -1,7 +1,6 @@
 package com.pccw.backend.util;
 
 import com.pccw.backend.annotation.PredicateType;
-
 import lombok.Data;
 
 /**

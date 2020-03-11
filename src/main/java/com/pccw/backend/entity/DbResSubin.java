@@ -1,10 +1,9 @@
 package com.pccw.backend.entity;
 
 
-import javax.persistence.*;
-
 import lombok.Data;
 
+import javax.persistence.*;
 
 
 /**

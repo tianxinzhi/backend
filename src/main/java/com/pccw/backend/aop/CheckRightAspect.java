@@ -1,24 +1,20 @@
 package com.pccw.backend.aop;
 
-import java.util.List;
-import java.util.Map;
-
 import com.alibaba.fastjson.JSONObject;
 import com.pccw.backend.exception.BaseException;
 import com.pccw.backend.util.Session;
-
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
-import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -35,7 +31,7 @@ public class CheckRightAspect {
     Session session;
     
     //execution表达式自行搜索引擎
-    @Pointcut("execution(* com.pccw.backend.ctrl.*.*(..)) && !execution(* com.pccw.backend.ctrl.SystemCtrl.*(..)) && !execution(* com.pccw.backend.ctrl.CommonCtrl.*(..))&& !execution(* com.pccw.backend.ctrl.Stock_UpdateNormalCtrl.*(..))")
+    @Pointcut("execution(* com.pccw.backend.ctrl.*.*(..)) && !execution(* com.pccw.backend.ctrl.SystemCtrl.*(..)) && !execution(* com.pccw.backend.ctrl.CommonCtrl.*(..))&& !execution(* com.pccw.backend.ctrl.InterfaceForOrderingCtrl.*(..))")
     public void pointcut() {}
 
     @Before("pointcut()&&@annotation(requestMapping)")

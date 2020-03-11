@@ -23,8 +23,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.Serializable;
-import java.util.*;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -140,7 +141,7 @@ public class Auth_AccountCtrl extends BaseCtrl<DbResAccount> implements ICheck {
     @ApiOperation(value="禁用auth_account",tags={"auth_account"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST,value = "/disable")
     public JsonResult disable(@RequestBody BaseDeleteBean ids) {
-        return this.disable(repo,ids,Auth_AccountCtrl.class);
+        return this.disable(repo,ids, Auth_AccountCtrl.class);
     }
 
     @ApiOperation(value="启用auth_account",tags={"auth_account"},notes="注意问题点")

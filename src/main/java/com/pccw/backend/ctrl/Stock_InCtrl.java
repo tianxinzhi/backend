@@ -2,7 +2,6 @@ package com.pccw.backend.ctrl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.pccw.backend.bean.JsonResult;
-import com.pccw.backend.bean.ResultRecode;
 import com.pccw.backend.bean.StaticVariable;
 import com.pccw.backend.bean.stock_in.CreateBean;
 import com.pccw.backend.bean.stock_in.SearchBean;
@@ -24,7 +23,7 @@ import java.util.stream.Collectors;
 @CrossOrigin(methods = RequestMethod.POST,origins = "*", allowCredentials = "false")
 @RequestMapping("/stock_in")
 @Api(value="Stock_InCtrl",tags={"stock_in"})
-public class Stock_InCtrl extends BaseCtrl<DbResLogMgt>{
+public class Stock_InCtrl extends BaseCtrl<DbResLogMgt> {
 
     @Autowired
     ResStockInRepository rsipo;

@@ -2,7 +2,6 @@ package com.pccw.backend.bean.process_process;
 
 import com.pccw.backend.annotation.PredicateAnnotation;
 import com.pccw.backend.annotation.PredicateType;
-import com.pccw.backend.bean.BaseSearchBean;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;

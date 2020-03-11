@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 // @Builder
  @NoArgsConstructor
 @AllArgsConstructor
-public class CommonBean extends BaseBean implements GeneralBean{
+public class CommonBean extends BaseBean implements GeneralBean {
 	private Long id;
     private Long pid;
     private String name;

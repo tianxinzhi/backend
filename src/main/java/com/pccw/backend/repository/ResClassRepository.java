@@ -1,7 +1,6 @@
 package com.pccw.backend.repository;
 
 
-import com.pccw.backend.entity.DbResAttrValue;
 import com.pccw.backend.entity.DbResClass;
 import org.springframework.stereotype.Repository;
 

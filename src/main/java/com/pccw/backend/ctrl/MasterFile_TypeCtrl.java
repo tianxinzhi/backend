@@ -36,6 +36,7 @@ import java.util.stream.Collectors;
 @Api(value="MasterFile_TypeCtrl",tags={"masterfile_type"})
 public class MasterFile_TypeCtrl extends BaseCtrl<DbResType> implements ICheck {
 
+
     @Autowired
     ResTypeRepository repo;
     @Autowired
@@ -63,11 +64,17 @@ public class MasterFile_TypeCtrl extends BaseCtrl<DbResType> implements ICheck {
 //                    List typeSkuList = repo.searchTypeInSku(type.getId());
                     BeanUtils.copyProperties(type, searchBean);
 //                    searchBean.setTypeSkuList(typeSkuList);
-                    if(type.getDbResTypeSkuSpec() != null){
-                        searchBean.setSpecId(type.getDbResTypeSkuSpec().getSpecId());
-                        DbResSpec sp = repo.findBySpecId(type.getDbResTypeSkuSpec().getSpecId());
-                        searchBean.setSpecName(sp.getSpecName());
-                        searchBean.setAttrData(specSearch(searchBean.getSpecId()).getData());
+                    List<DbResTypeSkuSpec> dbResTypeSkuSpecList = type.getDbResTypeSkuSpecList();
+                    if(Objects.nonNull(dbResTypeSkuSpecList) && dbResTypeSkuSpecList.size()>0){
+                        for (DbResTypeSkuSpec tss:dbResTypeSkuSpecList){
+                            if("Y".equals(tss.getIsType())){
+                                searchBean.setSpecId(tss.getSpecId());
+                                DbResSpec sp = repo.findBySpecId(tss.getSpecId());
+                                searchBean.setSpecName(sp.getSpecName());
+                                searchBean.setVerId(sp.getVerId());
+                                searchBean.setAttrData(specSearch(searchBean.getSpecId()).getData());
+                            }
+                        }
                     }
                     if(type.getRelationOfTypeClass() != null && type.getRelationOfTypeClass().size() > 0){
                         List<DbResClassType> relationOfTypeClass = type.getRelationOfTypeClass();
@@ -141,9 +148,13 @@ public class MasterFile_TypeCtrl extends BaseCtrl<DbResType> implements ICheck {
             dbResTypeSkuSpec.setUpdateAt(t);
             dbResTypeSkuSpec.setUpdateBy(getAccount());
             dbResTypeSkuSpec.setActive("Y");
+            dbResTypeSkuSpec.setIsType("Y");
             dbResTypeSkuSpec.setType(dbResType);
-            dbResTypeSkuSpec.setSpecId(b.getSpecId());
-            dbResType.setDbResTypeSkuSpec(dbResTypeSkuSpec);
+            DbResSpec dbResSpec = repo.findByVerAndSpecName(b.getVerId(),b.getSpecName());
+            dbResTypeSkuSpec.setSpecId(dbResSpec.getId());
+            ArrayList<DbResTypeSkuSpec> typeSkuSpecList = new ArrayList<>();
+            typeSkuSpecList.add(dbResTypeSkuSpec);
+            dbResType.setDbResTypeSkuSpecList(typeSkuSpecList);
             repo.saveAndFlush(dbResType);
             return JsonResult.success(Arrays.asList());
         } catch (Exception e) {
@@ -185,10 +196,15 @@ public class MasterFile_TypeCtrl extends BaseCtrl<DbResType> implements ICheck {
                 }
             }
             //更新数据到res_type_sku_spec表
-            DbResTypeSkuSpec dbResTypeSkuSpec = dbResType.getDbResTypeSkuSpec();
-            if (!Objects.isNull(dbResTypeSkuSpec)){
-                dbResTypeSkuSpec.setUpdateAt(t);
-                dbResTypeSkuSpec.setSpecId(b.getSpecId());
+            List<DbResTypeSkuSpec> dbResTypeSkuSpecList = dbResType.getDbResTypeSkuSpecList();
+            if(Objects.nonNull(dbResTypeSkuSpecList) && dbResTypeSkuSpecList.size()>0){
+                for (DbResTypeSkuSpec tss:dbResTypeSkuSpecList){
+                    if("Y".equals(tss.getIsType())){
+                        tss.setUpdateAt(t);
+                        DbResSpec dbResSpec = repo.findByVerAndSpecName(b.getVerId(),b.getSpecName());
+                        tss.setSpecId(dbResSpec.getId());
+                    }
+                }
             }else{
                 DbResTypeSkuSpec dts = new DbResTypeSkuSpec();
                 dts.setCreateAt(t);
@@ -196,9 +212,11 @@ public class MasterFile_TypeCtrl extends BaseCtrl<DbResType> implements ICheck {
                 dts.setUpdateAt(t);
                 dts.setUpdateBy(getAccount());
                 dts.setActive("Y");
-                dts.setSpecId(b.getSpecId());
+                dts.setIsType("Y");
+                DbResSpec dbResSpec = repo.findByVerAndSpecName(b.getVerId(),b.getSpecName());
+                dts.setSpecId(dbResSpec.getId());
                 dts.setType(dbResType);
-                dbResType.setDbResTypeSkuSpec(dts);
+                dbResType.getDbResTypeSkuSpecList().add(dts);
             }
             repo.saveAndFlush(dbResType);
             return JsonResult.success(Arrays.asList());
@@ -239,7 +257,7 @@ public class MasterFile_TypeCtrl extends BaseCtrl<DbResType> implements ICheck {
     @ApiOperation(value="禁用type",tags={"masterfile_type"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST,value = "/disable")
     public JsonResult disable(@RequestBody BaseDeleteBean ids) {
-        return this.disable(repo,ids,MasterFile_TypeCtrl.class,skuTypeRepository);
+        return this.disable(repo,ids, MasterFile_TypeCtrl.class,skuTypeRepository);
     }
 
     @ApiOperation(value="启用type",tags={"masterfile_type"},notes="注意问题点")

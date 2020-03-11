@@ -1,15 +1,11 @@
 package com.pccw.backend.entity;
 
-import java.io.Serializable;
-import java.sql.Date;
-
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-
-import org.springframework.lang.Nullable;
-
 import lombok.Data;
-import lombok.NonNull;
+
+import javax.persistence.Column;
+import javax.persistence.MappedSuperclass;
+import javax.persistence.Transient;
+import java.io.Serializable;
 
 /**
  * Base

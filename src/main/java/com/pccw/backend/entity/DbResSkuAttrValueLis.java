@@ -16,9 +16,9 @@ public class DbResSkuAttrValueLis extends Base {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "id_sku_attr_value_lis")
     private Long id;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "sku_attr_value_id",referencedColumnName = "id")
-    private DbResSkuAttrValue skuAttrValueId;//外键
+//    @OneToOne(cascade = CascadeType.ALL)
+//    @JoinColumn(name = "sku_attr_value_id",referencedColumnName = "id")
+//    private DbResSkuAttrValue skuAttrValueId;//外键
 
     @ManyToOne
     @JsonBackReference

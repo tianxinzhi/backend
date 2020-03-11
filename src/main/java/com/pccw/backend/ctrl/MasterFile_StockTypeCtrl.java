@@ -7,7 +7,6 @@ import com.pccw.backend.bean.masterfile_stocktype.CreateBean;
 import com.pccw.backend.bean.masterfile_stocktype.EditBean;
 import com.pccw.backend.bean.masterfile_stocktype.SearchBean;
 import com.pccw.backend.cusinterface.ICheck;
-import com.pccw.backend.entity.DbResSku;
 import com.pccw.backend.entity.DbResSkuRepo;
 import com.pccw.backend.entity.DbResStockType;
 import com.pccw.backend.repository.BaseRepository;
@@ -66,7 +65,7 @@ public class MasterFile_StockTypeCtrl extends BaseCtrl<DbResStockType> implement
     @ApiOperation(value="禁用stock_type",tags={"masterfile_stock_type"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST,value = "/disable")
     public JsonResult disable(@RequestBody BaseDeleteBean ids) {
-        return this.disable(repo,ids,MasterFile_StockTypeCtrl.class,skuRepoRepository);
+        return this.disable(repo,ids, MasterFile_StockTypeCtrl.class,skuRepoRepository);
     }
 
     @ApiOperation(value="启用stock_type",tags={"masterfile_stock_type"},notes="注意问题点")

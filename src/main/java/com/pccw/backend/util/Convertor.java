@@ -1,15 +1,17 @@
 package com.pccw.backend.util;
 
-import com.pccw.backend.annotation.JsonResultParamHandle;
+import com.pccw.backend.annotation.JsonResultParamMapAnnotation;
 import com.pccw.backend.bean.GeneralBean;
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
-
-import lombok.extern.slf4j.Slf4j;
-
-
+import javax.persistence.JoinColumn;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -17,13 +19,9 @@ import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import javax.persistence.JoinColumn;
-import javax.persistence.criteria.*;
 
 import com.pccw.backend.annotation.PredicateAnnotation;
 import com.pccw.backend.annotation.PredicateType;
-import com.pccw.backend.bean.BaseSearchBean;
-
 
 
 /**
@@ -204,7 +202,7 @@ import com.pccw.backend.bean.BaseSearchBean;
 	 */
 	public static  <E> List<GeneralBean> getCollect(GeneralBean bean, List<E> list) {
 		return list.stream().map(item->{
-			JsonResultParamHandle annotation = item.getClass().getAnnotation(JsonResultParamHandle.class);
+			JsonResultParamMapAnnotation annotation = item.getClass().getAnnotation(JsonResultParamMapAnnotation.class);
 			GeneralBean generalBean = bean;
 			if (!Objects.isNull(annotation)) {
 				generalBean = setGeneralBean(item, annotation,bean);
@@ -222,7 +220,7 @@ import com.pccw.backend.bean.BaseSearchBean;
 	 * @param <E>
 	 * @return
 	 */
-	public static  <E> GeneralBean setGeneralBean(E item, JsonResultParamHandle annotation, GeneralBean generalBean) {
+	public static  <E> GeneralBean setGeneralBean(E item, JsonResultParamMapAnnotation annotation, GeneralBean generalBean) {
 		GeneralBean bean = generalBean;
 		try {
 			//将bean的属性类型存入数组

@@ -1,6 +1,5 @@
 package com.pccw.backend.repository;
 
-import com.pccw.backend.entity.DbResAttr;
 import com.pccw.backend.entity.DbResRoleRight;
 import org.springframework.stereotype.Repository;
 

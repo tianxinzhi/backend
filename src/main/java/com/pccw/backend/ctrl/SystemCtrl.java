@@ -6,6 +6,7 @@ import com.pccw.backend.bean.JsonResult;
 import com.pccw.backend.bean.ResultRecode;
 import com.pccw.backend.bean.system.LoginBean;
 import com.pccw.backend.bean.system.TreeNode;
+import com.pccw.backend.bean.system.UrlBean;
 import com.pccw.backend.entity.DbResAccount;
 import com.pccw.backend.entity.DbResRight;
 import com.pccw.backend.entity.DbResRole;
@@ -118,6 +119,22 @@ public class SystemCtrl extends BaseCtrl<DbResAccount> {
         //按照用户权限，筛选出对应菜单
         List<TreeNode> userMenu = getUserMenu(nodeMap);
         return JsonResult.success(userMenu);
+    }
+
+    @ApiOperation(value = "点击按钮路由跳转前验证当前用户是否有权访问", tags = {"system"}, notes = "注意问题点")
+    @RequestMapping(method = RequestMethod.POST,value = "/urlVerification")
+    public JsonResult urlVerification(@RequestBody UrlBean bean){
+        Map<String,Map<String, List<String>>> map = (Map<String,Map<String, List<String>>>)session.getUser();
+        Map<String, List<String>> rightMap = map.get("right");
+        if (rightMap.containsKey(bean.getMenu())){
+            List<String> buttons = rightMap.get(bean.getMenu());
+            if(buttons.size()>0 && !buttons.contains(bean.getButton())){
+                return JsonResult.fail(BaseException.getNoRightException());
+            }
+        }else {
+            return JsonResult.fail(BaseException.getNoRightException());
+        }
+        return JsonResult.success(Arrays.asList());
     }
 
     /**

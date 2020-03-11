@@ -1,7 +1,7 @@
 package com.pccw.backend.entity;
 
 
-import com.pccw.backend.annotation.JsonResultParamHandle;
+import com.pccw.backend.annotation.JsonResultParamMapAnnotation;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,7 +17,7 @@ import java.util.List;
 @Entity
 @Table(name = "res_type")
 @SequenceGenerator(name="id_type",sequenceName = "type_seq",allocationSize = 1)
-@JsonResultParamHandle(param1 = "id",param2 = "typeName")
+@JsonResultParamMapAnnotation(param1 = "id",param2 = "typeName")
 public class DbResType extends Base {
 	@Id
 	@Column(name = "id")

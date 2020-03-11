@@ -10,6 +10,8 @@ import lombok.Setter;
 import javax.persistence.*;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.*;
 
 /*
  * which store, which sku , how many qty

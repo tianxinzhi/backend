@@ -1,6 +1,7 @@
 package com.pccw.backend.entity;
 
-import com.pccw.backend.annotation.JsonResultParamHandle;
+import com.pccw.backend.annotation.JsonResultParamMapAnnotation;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,7 +17,7 @@ import javax.persistence.*;
 @Getter
 @Setter
 @SequenceGenerator(name="id_sku",sequenceName = "sku_seq",allocationSize = 1)
-@JsonResultParamHandle(param1 = "id",param2 = "skuCode")
+@JsonResultParamMapAnnotation(param1 = "id",param2 = "skuCode")
 public class DbResSku extends Base {
 
 	@Id

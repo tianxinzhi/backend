@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/common")
 @CrossOrigin(origins = "*", allowCredentials = "false")
-public class CommonCtrl  extends GeneralCtrl{
+public class CommonCtrl  extends BaseCtrl{
 
     @Autowired
     ResRightRepository right_repo;

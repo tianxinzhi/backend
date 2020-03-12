@@ -3,8 +3,10 @@ package com.pccw.backend.ctrl;
 import com.pccw.backend.bean.JsonResult;
 import com.pccw.backend.bean.LabelAndValue;
 import com.pccw.backend.bean.TreeNode;
+import com.pccw.backend.bean.masterfile_repo.LoadTreeBean;
 import com.pccw.backend.entity.DbResAdjustReason;
 import com.pccw.backend.entity.DbResAttrValue;
+import com.pccw.backend.entity.DbResRepo;
 import com.pccw.backend.repository.*;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -120,8 +122,21 @@ public class CommonCtrl  extends BaseCtrl{
 
     @ApiOperation(value="获取res_repo表的RepoCode，RepoType，id信息",tags={"common"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.GET,path="/repoModule")
-    public JsonResult<LabelAndValue> searchRepo(){
-        return this.JsonResultHandle(repo_repo,new LabelAndValue());
+    public JsonResult<LoadTreeBean> searchRepo(){
+        Sort sort = new Sort(Sort.Direction.DESC, "id");
+        Specification<DbResRepo> spec = new Specification<DbResRepo>() {
+            @Override
+            public Predicate toPredicate(Root<DbResRepo> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
+                Predicate predicate = criteriaBuilder.equal(root.get("active").as(String.class), "Y");
+                return predicate;
+            }
+        };
+        List<DbResRepo> list =  repo_repo.findAll(spec,sort);
+        List<LoadTreeBean> res = list.stream().map(item -> {
+            return new LoadTreeBean(item.getId(),item.getParentRepoId(),item.getRepoCode(),item.getRepoType(),item.getIsClosed() );
+        }).collect(Collectors.toList());
+        res.add(new LoadTreeBean(0L,-1L,"RM","","") );
+        return JsonResult.success(res);
     }
 
     @ApiOperation(value="获取res_attr_attr_value表的AttrId和AttrValueId信息",tags={"common"},notes="注意问题点")

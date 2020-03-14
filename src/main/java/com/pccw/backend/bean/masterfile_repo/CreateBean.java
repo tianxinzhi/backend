@@ -30,5 +30,14 @@ public class CreateBean extends BaseBean {
 
     @ApiModelProperty(value="仓库类型",name="repoType",example="")
     private String repoType;
+
+    @ApiModelProperty(value="isClosed",name="isClosed",example="")
+    private String isClosed;
+
+    @ApiModelProperty(value="closedDay",name="closedDay",example="")
+    private String closedDay;
+
+    @ApiModelProperty(value="parentRepoId",name="parentRepoId",example="")
+    private Long parentRepoId;
     
 }

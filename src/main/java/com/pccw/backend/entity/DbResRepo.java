@@ -56,6 +56,15 @@ public class DbResRepo extends Base {
 	@Column(name = "repo_type", length = 11)
 	private String repoType;
 
+	@Column(name = "is_closed",length = 4)
+	private String isClosed;
+
+	@Column(name="closed_day")
+	private Long closedDay;
+
+	@Column(name = "parent_repo_id")
+	private Long parentRepoId;
+
 	@OneToMany(cascade={CascadeType.ALL},mappedBy = "repo")
 	private List<DbResSkuRepo> skuRepoList;
 

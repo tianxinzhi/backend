@@ -1,4 +1,4 @@
-package com.pccw.backend.bean.stock_update_normal;
+package com.pccw.backend.bean.interfaceForOrdering;
 
 
 import com.pccw.backend.bean.BaseBean;
@@ -6,8 +6,6 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 /**
  * SearchCondition

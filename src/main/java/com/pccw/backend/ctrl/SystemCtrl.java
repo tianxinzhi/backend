@@ -88,6 +88,7 @@ public class SystemCtrl extends BaseCtrl<DbResAccount> {
             List<Object> list = new ArrayList();
             list.add(sessionId);
             list.add(userMenu);
+            list.add(accountButtonMap);
             return JsonResult.success(list);
         } catch (Exception e) {
             return JsonResult.fail(e);
@@ -105,44 +106,13 @@ public class SystemCtrl extends BaseCtrl<DbResAccount> {
         }
     }
 
-    @ApiOperation(value = "提交right变更时，更新用户菜单", tags = {"system"}, notes = "注意问题点")
-    @RequestMapping(method = RequestMethod.GET,value = "/menuReload")
-    public JsonResult menuReload(){
-        Map user = (Map)session.getUser();
-        String accountId = user.get("account").toString();
-        long id = Long.parseLong(accountId);
-        DbResAccount account = repo.findDbResAccountById(id);
-        //获取用户权限
-        List<Long> rightIdList = getUserRightIds(account);
-        //根据权限id构建权限树
-        HashMap<Long, TreeNode> nodeMap = generateRightTree(rightIdList);
-        //按照用户权限，筛选出对应菜单
-        List<TreeNode> userMenu = getUserMenu(nodeMap);
-        return JsonResult.success(userMenu);
-    }
-
-    @ApiOperation(value = "点击按钮路由跳转前验证当前用户是否有权访问", tags = {"system"}, notes = "注意问题点")
-    @RequestMapping(method = RequestMethod.POST,value = "/urlVerification")
-    public JsonResult urlVerification(@RequestBody UrlBean bean){
-        Map<String,Map<String, List<String>>> map = (Map<String,Map<String, List<String>>>)session.getUser();
-        Map<String, List<String>> rightMap = map.get("right");
-        if (rightMap.containsKey(bean.getMenu())){
-            List<String> buttons = rightMap.get(bean.getMenu());
-            if(buttons.size()>0 && !buttons.contains(bean.getButton())){
-                return JsonResult.fail(BaseException.getNoRightException());
-            }
-        }else {
-            return JsonResult.fail(BaseException.getNoRightException());
-        }
-        return JsonResult.success(Arrays.asList());
-    }
 
     /**
      * 获取登录人权限
      * @param rwe
      * @return 登录人权限id集合
      */
-    private List<Long> getUserRightIds(DbResAccount rwe) {
+    public List<Long> getUserRightIds(DbResAccount rwe) {
         //获取登录人角色
         List<Long> roleIds = rwe.getAccountRoles().stream().map(role -> {
             return role.getRoleId();
@@ -170,7 +140,7 @@ public class SystemCtrl extends BaseCtrl<DbResAccount> {
      * @param nodeMap
      * @return
      */
-    private List<TreeNode> getUserMenu(HashMap<Long, TreeNode> nodeMap) {
+    public List<TreeNode> getUserMenu(HashMap<Long, TreeNode> nodeMap) {
         return nodeMap.get(0L).getChildren().stream().sorted((n1, n2) -> {
             if (n1.getSortNo().longValue() >= n2.getSortNo().longValue()) {
                 return n1.getSortNo().compareTo(n2.getSortNo());
@@ -185,7 +155,7 @@ public class SystemCtrl extends BaseCtrl<DbResAccount> {
      * @param rightIdList
      * @return
      */
-    private HashMap<Long, TreeNode> generateRightTree(List<Long> rightIdList) {
+    public HashMap<Long, TreeNode> generateRightTree(List<Long> rightIdList) {
         //根据rightId，递归查找父节点和子节点
         List<Map<String,Object>> rightTreeList = rightRepository.findRightTreeByIds(rightIdList);
 

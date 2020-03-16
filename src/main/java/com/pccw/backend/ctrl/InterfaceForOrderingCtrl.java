@@ -1,10 +1,9 @@
 package com.pccw.backend.ctrl;
 
 
-import com.pccw.backend.bean.stock_update_normal.InputBean;
-import com.pccw.backend.bean.stock_update_normal.InputItemBean;
-import com.pccw.backend.bean.stock_update_normal.OutputItemBean;
-import com.pccw.backend.bean.stock_update_normal.SearchBean;
+import com.pccw.backend.bean.interfaceForOrdering.InputBean;
+import com.pccw.backend.bean.interfaceForOrdering.InputItemBean;
+import com.pccw.backend.bean.interfaceForOrdering.OutputItemBean;
 import com.pccw.backend.entity.*;
 import com.pccw.backend.repository.*;
 import com.pccw.backend.util.CollectionBuilder;

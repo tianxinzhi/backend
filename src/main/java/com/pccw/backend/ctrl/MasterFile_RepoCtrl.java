@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -61,11 +62,19 @@ public class MasterFile_RepoCtrl extends BaseCtrl<DbResRepo> implements ICheck {
             if(Objects.isNull(b.getIsClosed())){
                b.setIsClosed("N");
             }
-            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-            long time = df.parse(b.getClosedDay()).getTime();
+            long t = new Date().getTime();
+            b.setCreateAt(t);
+            b.setCreateBy(getAccount());
+            b.setUpdateAt(t);
+            b.setUpdateBy(getAccount());
+            b.setActive("Y");
             DbResRepo resRepo=new DbResRepo();
             BeanUtils.copyProperties(b, resRepo);
-            resRepo.setClosedDay(time);
+            if(Objects.nonNull(b.getClosedDay())){
+                SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+                long time = df.parse(b.getClosedDay()).getTime();
+                resRepo.setClosedDay(time);
+            }
             repo.saveAndFlush(resRepo);
             return JsonResult.success(Arrays.asList());
         } catch (Exception e) {
@@ -76,8 +85,22 @@ public class MasterFile_RepoCtrl extends BaseCtrl<DbResRepo> implements ICheck {
     @ApiOperation(value="编辑shop",tags={"masterfile_repo"},notes="说明")
     @RequestMapping(method = RequestMethod.POST,path="/edit")
     public JsonResult edit(@RequestBody EditBean b){
-        log.info(b.toString());
-        return this.edit(repo, DbResRepo.class, b);
+        try {
+            long t = new Date().getTime();
+            b.setUpdateAt(t);
+            b.setUpdateBy(getAccount());
+            DbResRepo resRepo=new DbResRepo();
+            BeanUtils.copyProperties(b, resRepo);
+            if(Objects.nonNull(b.getClosedDay())){
+                SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+                long time = df.parse(b.getClosedDay()).getTime();
+                resRepo.setClosedDay(time);
+            }
+            repo.saveAndFlush(resRepo);
+            return JsonResult.success(Arrays.asList());
+        } catch (Exception e) {
+            return JsonResult.fail(e);
+        }
     }
 
     @ApiOperation(value="禁用repo",tags={"masterfile_repo"},notes="注意问题点")

@@ -4,6 +4,7 @@ import com.pccw.backend.bean.JsonResult;
 import com.pccw.backend.bean.LabelAndValue;
 import com.pccw.backend.bean.TreeNode;
 import com.pccw.backend.bean.masterfile_repo.LoadTreeBean;
+import com.pccw.backend.entity.DbResAccount;
 import com.pccw.backend.entity.DbResAdjustReason;
 import com.pccw.backend.entity.DbResAttrValue;
 import com.pccw.backend.entity.DbResRepo;
@@ -22,7 +23,9 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -177,6 +180,23 @@ public class CommonCtrl  extends BaseCtrl{
     @RequestMapping(method = RequestMethod.GET,path="/stockTypeModule")
     public JsonResult<LabelAndValue> searchStockType(){
         return this.JsonResultHandle(stockTypeRepository,new LabelAndValue());
+    }
+
+    @ApiOperation(value = "提交right变更时，更新用户菜单", tags = {"system"}, notes = "注意问题点")
+    @RequestMapping(method = RequestMethod.GET,value = "/menuReload")
+    public JsonResult menuReload(){
+        Map user = (Map)session.getUser();
+        String accountId = user.get("account").toString();
+        long id = Long.parseLong(accountId);
+        DbResAccount account = accountRepository.findDbResAccountById(id);
+        SystemCtrl systemCtrl = new SystemCtrl();
+        //获取用户权限
+        List<Long> rightIdList = systemCtrl.getUserRightIds(account);
+        //根据权限id构建权限树
+        HashMap<Long, com.pccw.backend.bean.system.TreeNode> nodeMap = systemCtrl.generateRightTree(rightIdList);
+        //按照用户权限，筛选出对应菜单
+        List<com.pccw.backend.bean.system.TreeNode> userMenu = systemCtrl.getUserMenu(nodeMap);
+        return JsonResult.success(userMenu);
     }
 
 }

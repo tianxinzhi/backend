@@ -4,6 +4,7 @@ package com.pccw.backend.ctrl;
 import com.pccw.backend.bean.stock_update_normal.InputBean;
 import com.pccw.backend.bean.stock_update_normal.InputItemBean;
 import com.pccw.backend.bean.stock_update_normal.OutputItemBean;
+import com.pccw.backend.bean.stock_update_normal.SearchBean;
 import com.pccw.backend.entity.*;
 import com.pccw.backend.repository.*;
 import com.pccw.backend.util.CollectionBuilder;
@@ -292,6 +293,30 @@ public class InterfaceForOrderingCtrl extends BaseCtrl<DbResLogRor> {
             return jsonResult;
         } catch (Exception e) {
             return CollectionBuilder.builder(new HashMap<>()).put("state", "failed").put("code", "200").put("msg", "stock update failed").put("data", null).build();
+        }
+    }
+
+    @ApiOperation(value="查询Level_Enquiry",tags={"Level_Enquiry"},notes="说明")
+    @RequestMapping(method = RequestMethod.POST,path="/stock_level")
+    public Map levelEnquiry(@RequestBody SearchBean b){
+        try {
+            DbResSku s = skuRepository.findFirst1BySkuCode(b.getSku_code());
+            DbResRepo r = repoRepository.findFirst1ByRepoCode(b.getRepo_id());
+            DbResItem i = itemRepository.findFirst1ByItemCode(b.getItem_code());
+            Long skuId = Objects.isNull(s) ? null : s.getId();
+            Long repoId = Objects.isNull(r) ? null : r.getId();
+            Long itemId = Objects.isNull(i) ? null : r.getId();
+            Long qty = 0l;
+            if(Objects.isNull(itemId)){
+                qty = skuRepoRepository.findQtyByRepoAndSkuAndType(repoId, skuId, 3l);
+            }else {
+                qty = skuRepoRepository.findQtyByRepoAndSkuAndItemAndType(repoId, skuId, itemId, 3l);
+            }
+            Map outputdata = CollectionBuilder.builder(new HashMap<>()).put("tx_id","").put("repo_id",b.getRepo_id()).put("quantity",qty).put("sku_code",b.getSku_code()).put("item_code",b.getItem_code()).build();
+            Map jsonResult = CollectionBuilder.builder(new HashMap<>()).put("state", "success").put("code", "200").put("msg", "stock level enquiry successfully").put("data", outputdata).build();
+            return jsonResult;
+        } catch (Exception e) {
+            return CollectionBuilder.builder(new HashMap<>()).put("state", "failed").put("code", "200").put("msg", "stock level enquiry failed").put("data", null).build();
         }
     }
 }

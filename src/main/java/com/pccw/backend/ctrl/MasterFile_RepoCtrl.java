@@ -15,10 +15,14 @@ import com.pccw.backend.repository.ResSkuRepoRepository;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * MF_RepoCtrl
@@ -53,7 +57,20 @@ public class MasterFile_RepoCtrl extends BaseCtrl<DbResRepo> implements ICheck {
     @ApiOperation(value="创建shop",tags={"masterfile_repo"},notes="说明")
     @RequestMapping(method = RequestMethod.POST,path="/create")
     public JsonResult create(@RequestBody CreateBean b){
-        return this.create(repo, DbResRepo.class, b);
+        try {
+            if(Objects.isNull(b.getIsClosed())){
+               b.setIsClosed("N");
+            }
+            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+            long time = df.parse(b.getClosedDay()).getTime();
+            DbResRepo resRepo=new DbResRepo();
+            BeanUtils.copyProperties(b, resRepo);
+            resRepo.setClosedDay(time);
+            repo.saveAndFlush(resRepo);
+            return JsonResult.success(Arrays.asList());
+        } catch (Exception e) {
+            return JsonResult.fail(e);
+        }
     }
 
     @ApiOperation(value="编辑shop",tags={"masterfile_repo"},notes="说明")

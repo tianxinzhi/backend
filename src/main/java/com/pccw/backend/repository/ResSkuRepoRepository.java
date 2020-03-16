@@ -40,6 +40,12 @@ public interface  ResSkuRepoRepository extends BaseRepository<DbResSkuRepo>{
     @Query(value = "select * from res_sku_repo t where t.repo_id = ?1 and t.sku_id = ?2 and t.stock_type_id = ?3",nativeQuery = true)
     DbResSkuRepo findQtyByRepoAndShopAndType(@Param("shop") long shop, @Param("sku") long sku, @Param("stockType") long stockType);
 
+    @Query(value = "select SUM(t.QTY) qty from res_sku_repo t where t.repo_id = nvl(?1,t.repo_id) and t.sku_id = ?2 and t.item_id = nvl(?3,t.item_id) and t.stock_type_id = ?4",nativeQuery = true)
+    Long findQtyByRepoAndSkuAndItemAndType(@Param("shop") long shop, @Param("sku") long sku,@Param("item") long item, @Param("stockType") long stockType);
+
+    @Query(value = "select SUM(t.QTY) qty from res_sku_repo t where t.repo_id = nvl(?1,t.repo_id) and t.sku_id = ?2 and t.stock_type_id = ?3",nativeQuery = true)
+    Long findQtyByRepoAndSkuAndType(@Param("shop") long shop, @Param("sku") long sku, @Param("stockType") long stockType);
+
     @Modifying
     @Query(value = "update res_sku_repo set qty = qty + ?4 where repo_id = ?1 and sku_id = ?2 and stock_type_id = ?3",nativeQuery = true)
     int updateQtyByRepoAndShopAndTypeAndQty(@Param("shop") long shop, @Param("sku") long sku, @Param("stockType") long stockType, @Param("qty") long qty);

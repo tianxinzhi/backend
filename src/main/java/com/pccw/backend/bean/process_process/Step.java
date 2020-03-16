@@ -20,4 +20,5 @@ public class Step {
     private Long processDtlsId;
     private String remark;
     private String status;
+    private Long approvedDate;
 }

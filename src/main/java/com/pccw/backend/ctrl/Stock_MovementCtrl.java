@@ -133,6 +133,7 @@ public class Stock_MovementCtrl extends BaseCtrl<DbResProcess> {
                             }
                         }
                     }else{
+                        List itemList = new ArrayList<>();
                         for (int i = 0; i <line.size(); i=i+2) {
                             StringBuilder sb = new StringBuilder();
                             String skuQtyString = "";
@@ -141,7 +142,18 @@ public class Stock_MovementCtrl extends BaseCtrl<DbResProcess> {
                                     .append(" , To StockCategory: ")
                                     .append(line.get(i+1).getDtlSubin()).toString();
                             skuQtyList.add(skuQtyString);
+                            String itemCodes = line.get(i).getItemCode();
+                            String itemCode = "";
+                            if(Objects.nonNull(itemCodes)){
+                                List<String> items = Arrays.asList(itemCodes.split(","));
+                                for (int j = 0;j< items.size();j=j+1){
+                                    itemList.add(skuQtyString+" , itemCode"+(j+1)+": "+items.get(j));
+                                }
+                            }
                         }
+//                        if(Objects.nonNull(itemList) && itemList.size()>0){
+                            map.put("itemCode",itemList);
+//                        }
                     }
                     map.put("sku",skuQtyList);
                 }

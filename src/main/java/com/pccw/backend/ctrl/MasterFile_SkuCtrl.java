@@ -280,7 +280,7 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> implements ICheck {
                         if(attr!=null) {
                             for(int k=0;k<attr.getAttrAttrValueList().size();k++) {
                                 DbResAttrValue value = attr.getAttrAttrValueList().get(k).getAttrValue();
-                                LabelAndValue lb = new LabelAndValue(value.getId(),value.getAttrValue(),null);
+                                LabelAndValue lb = new LabelAndValue(value.getId(),value.getAttrValue()!=null?value.getAttrValue():value.getValueFrom()+"~"+value.getValueTo(),null);
                                 lbs.add(lb);
                             }
                         }
@@ -341,7 +341,7 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> implements ICheck {
                     if(attr!=null) {
                         for(int k=0;k<attr.getAttrAttrValueList().size();k++) {
                             DbResAttrValue value = attr.getAttrAttrValueList().get(k).getAttrValue();
-                            LabelAndValue lb = new LabelAndValue(value.getId(),value.getAttrValue(),null);
+                            LabelAndValue lb = new LabelAndValue(value.getId(),value.getAttrValue()!=null?value.getAttrValue():value.getValueFrom()+"~"+value.getValueTo(),null);
                             lbs.add(lb);
                         }
                     }

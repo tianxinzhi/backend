@@ -3,8 +3,11 @@ package com.pccw.backend.ctrl;
 import com.pccw.backend.bean.JsonResult;
 import com.pccw.backend.bean.LabelAndValue;
 import com.pccw.backend.bean.TreeNode;
+import com.pccw.backend.bean.masterfile_repo.LoadTreeBean;
+import com.pccw.backend.entity.DbResAccount;
 import com.pccw.backend.entity.DbResAdjustReason;
 import com.pccw.backend.entity.DbResAttrValue;
+import com.pccw.backend.entity.DbResRepo;
 import com.pccw.backend.repository.*;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +23,9 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -120,8 +125,21 @@ public class CommonCtrl  extends BaseCtrl{
 
     @ApiOperation(value="获取res_repo表的RepoCode，RepoType，id信息",tags={"common"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.GET,path="/repoModule")
-    public JsonResult<LabelAndValue> searchRepo(){
-        return this.JsonResultHandle(repo_repo,new LabelAndValue());
+    public JsonResult<LoadTreeBean> searchRepo(){
+        Sort sort = new Sort(Sort.Direction.DESC, "id");
+        Specification<DbResRepo> spec = new Specification<DbResRepo>() {
+            @Override
+            public Predicate toPredicate(Root<DbResRepo> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
+                Predicate predicate = criteriaBuilder.equal(root.get("active").as(String.class), "Y");
+                return predicate;
+            }
+        };
+        List<DbResRepo> list =  repo_repo.findAll(spec,sort);
+        List<LoadTreeBean> res = list.stream().map(item -> {
+            return new LoadTreeBean(item.getId(),item.getParentRepoId(),item.getRepoCode(),item.getRepoType(),item.getIsClosed() );
+        }).collect(Collectors.toList());
+        res.add(new LoadTreeBean(0L,-1L,"RM","","") );
+        return JsonResult.success(res);
     }
 
     @ApiOperation(value="获取res_attr_attr_value表的AttrId和AttrValueId信息",tags={"common"},notes="注意问题点")
@@ -162,6 +180,23 @@ public class CommonCtrl  extends BaseCtrl{
     @RequestMapping(method = RequestMethod.GET,path="/stockTypeModule")
     public JsonResult<LabelAndValue> searchStockType(){
         return this.JsonResultHandle(stockTypeRepository,new LabelAndValue());
+    }
+
+    @ApiOperation(value = "提交right变更时，更新用户菜单", tags = {"system"}, notes = "注意问题点")
+    @RequestMapping(method = RequestMethod.GET,value = "/menuReload")
+    public JsonResult menuReload(){
+        Map user = (Map)session.getUser();
+        String accountId = user.get("account").toString();
+        long id = Long.parseLong(accountId);
+        DbResAccount account = accountRepository.findDbResAccountById(id);
+        SystemCtrl systemCtrl = new SystemCtrl();
+        //获取用户权限
+        List<Long> rightIdList = systemCtrl.getUserRightIds(account);
+        //根据权限id构建权限树
+        HashMap<Long, com.pccw.backend.bean.system.TreeNode> nodeMap = systemCtrl.generateRightTree(rightIdList);
+        //按照用户权限，筛选出对应菜单
+        List<com.pccw.backend.bean.system.TreeNode> userMenu = systemCtrl.getUserMenu(nodeMap);
+        return JsonResult.success(userMenu);
     }
 
 }

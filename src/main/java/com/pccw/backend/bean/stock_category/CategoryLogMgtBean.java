@@ -31,7 +31,6 @@ public class CategoryLogMgtBean extends BaseBean {
     @ApiModelProperty(value="logTxtBum",name="logTxtBum",example="")
     private String status;
 
-
     @ApiModelProperty(value="dtls",name="交易明细",example="")
     private List<CategoryLogDtlBean> line;
 

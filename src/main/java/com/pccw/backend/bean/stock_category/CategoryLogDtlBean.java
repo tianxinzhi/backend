@@ -7,6 +7,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 
 /**
  * SearchCondition
@@ -56,6 +58,9 @@ public class CategoryLogDtlBean extends BaseBean {
 
     @ApiModelProperty(value="fromStockTypeId",name="fromStockTypeId",example="")
     private long fromStockTypeId;
+
+    @ApiModelProperty(value="logTxtBum",name="logTxtBum",example="")
+    private String itemCode;
 
 
 

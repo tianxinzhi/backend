@@ -257,7 +257,7 @@ public class MasterFile_TypeCtrl extends BaseCtrl<DbResType> implements ICheck {
     @ApiOperation(value="禁用type",tags={"masterfile_type"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST,value = "/disable")
     public JsonResult disable(@RequestBody BaseDeleteBean ids) {
-        return this.disable(repo,ids, MasterFile_TypeCtrl.class,skuTypeRepository);
+        return this.disable(repo,ids, MasterFile_TypeCtrl.class,resTypeSkuSpecRepository);
     }
 
     @ApiOperation(value="启用type",tags={"masterfile_type"},notes="注意问题点")
@@ -268,11 +268,11 @@ public class MasterFile_TypeCtrl extends BaseCtrl<DbResType> implements ICheck {
 
     @Override
     public long checkCanDisable(Object obj, BaseRepository... check) {
-        ResSkuTypeRepository repo = (ResSkuTypeRepository)check[0];
+        ResTypeSkuSpecRepository resscr = (ResTypeSkuSpecRepository)check[0];
         BaseDeleteBean bean = (BaseDeleteBean)obj;
         for(Long id:bean.getIds()) {
-            List<DbResSkuType> typeSkuList = repo.getDbResSkuTypesByTypeId(id);
-            if (typeSkuList != null && typeSkuList.size() > 0) {
+            List<DbResTypeSkuSpec> list = resscr.getDbResTypeSkuSpecsByTypeId(id);
+            if (list != null && list.size() > 0) {
                 return id;
             }
         }

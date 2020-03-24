@@ -24,8 +24,6 @@ import java.util.*;
 public class Stock_CategoryCtrl extends BaseCtrl<DbResLogMgt> {
 
     @Autowired
-    private ResSkuRepoRepository repo;
-    @Autowired
     private ResStockTypeRepository stockTypeRepository;
     @Autowired
     private ResAccountRepository accountRepo;
@@ -49,7 +47,7 @@ public class Stock_CategoryCtrl extends BaseCtrl<DbResLogMgt> {
             ArrayList<Object> returnList = new ArrayList<>();
             DbResSku dbResSku = skuRepo.findById(sb.getSkuId()).get();
             DbResRepo dbResRepo = repoRepository.findById(sb.getRepoId()).get();
-            List<DbResSkuRepo> list = repo.findDbResSkuRepoByRepoAndSku(dbResRepo,dbResSku);
+            List<DbResSkuRepo> list = skuRepoRepository.findDbResSkuRepoByRepoAndSku(dbResRepo,dbResSku);
             list.forEach(data->{
                     HashMap<Object, Object> hashMap = new HashMap<>();
                     DbResStockType stockType = data.getStockType();
@@ -108,6 +106,7 @@ public class Stock_CategoryCtrl extends BaseCtrl<DbResLogMgt> {
             dbResLogMgt.setLine(list);
             resLogMgtRepository.saveAndFlush(dbResLogMgt);
 
+//            this.UpdateSkuRepoQty(b.getLogTxtBum());
             //创建工作流对象
             DbResProcess process = new DbResProcess();
 
@@ -144,33 +143,74 @@ public class Stock_CategoryCtrl extends BaseCtrl<DbResLogMgt> {
                 }else {
                     stockTyepId = 1l;
                 }
-            DbResSkuRepo sk = skuRepoRepository.findQtyByRepoAndShopAndType(l.getDtlRepoId(), l.getDtlSkuId(),stockTyepId);
-            DbResSkuRepo skuRepo = repo.findById(sk.getId()).get();
+            String[] itemCodeArr = l.getItemCode().split(",");
             //dtlAction为D时  skuRepo对应的sku的qty做减法
             if(StaticVariable.DTLACTION_DEDUCT.equals(l.getDtlAction())){
+                DbResSkuRepo sk = skuRepoRepository.findQtyByRepoAndShopAndType(l.getDtlRepoId(), l.getDtlSkuId(),stockTyepId);
+                DbResSkuRepo skuRepo = skuRepoRepository.findById(sk.getId()).get();
                 skuRepo.setUpdateAt(t);
                 skuRepo.setUpdateBy(getAccount());
                 Long qty =  (skuRepo.getQty() - l.getDtlQty());
                 skuRepo.setQty(qty);
+                //处理sku_repo表关联的itemcode表数据
+
+                List<DbResSkuRepoItem> skuRepoItemList = skuRepo.getSkuRepoItemList();
+                for (DbResSkuRepoItem item:skuRepoItemList){
+                    if(Arrays.asList(itemCodeArr).contains(item.getItemCode())){
+                        skuRepoItemList.remove(item);
+                    }
+                }
+                if(skuRepoItemList.size()>0){
+                skuRepo.setSkuRepoItemList(skuRepoItemList);
+                }
+                skuRepoRepository.saveAndFlush(skuRepo);
             }else {
                 //dtlAction为A时  skuRepo对应的sku的qty做加法
-                DbResSkuRepo dbsr = repo.findQtyByRepoAndShopAndType(skuRepo.getRepo().getId(),skuRepo.getSku().getId(),stockTyepId);
+                DbResSkuRepo dbsr = skuRepoRepository.findQtyByRepoAndShopAndType(l.getDtlRepoId(), l.getDtlSkuId(),stockTyepId);
                 DbResStockType dbResStockType = stockTypeRepository.findById(stockTyepId).get();
+                DbResSku dbResSku = skuRepo.findById(l.getDtlSkuId()).get();
+                DbResRepo dbResRepo = repoRepository.findById(l.getDtlRepoId()).get();
                 //如果要转成某个状态的数据不存在 则添加一条 如果存在 直接做QTY加减 To StockCategory
                 if(Objects.isNull(dbsr)){
                     DbResSkuRepo toSkuRepo = new DbResSkuRepo();
-                    BeanUtils.copyProperties(skuRepo,toSkuRepo);
+                    toSkuRepo.setSku(dbResSku);
+                    toSkuRepo.setRepo(dbResRepo);
                     toSkuRepo.setCreateAt(t);
                     toSkuRepo.setCreateBy(getAccount());
                     toSkuRepo.setStockType(dbResStockType);
                     toSkuRepo.setId(null);
                     toSkuRepo.setQty(l.getDtlQty());
-                    repo.saveAndFlush(toSkuRepo);
+                    //处理sku_repo表关联的itemcode表数据
+                    List skuRepoItemList = new ArrayList<>();
+                    for (String i:itemCodeArr){
+                        DbResSkuRepoItem skuRepoItem = new DbResSkuRepoItem();
+                        skuRepoItem.setActive("Y");
+                        skuRepoItem.setCreateAt(t);
+                        skuRepoItem.setCreateBy(getAccount());
+                        skuRepoItem.setItemCode(i);
+                        skuRepoItem.setSkuRepo(toSkuRepo);
+                        skuRepoItemList.add(skuRepoItem);
+                    }
+                    toSkuRepo.setSkuRepoItemList(skuRepoItemList);
+                    skuRepoRepository.saveAndFlush(toSkuRepo);
                 }else {
-                    DbResSkuRepo skuRepo1 = repo.findById(dbsr.getId()).get();
+                    DbResSkuRepo skuRepo1 = skuRepoRepository.findById(dbsr.getId()).get();
                     skuRepo1.setQty((dbsr.getQty()+l.getDtlQty()));
                     skuRepo1.setUpdateAt(t);
                     skuRepo1.setUpdateBy(getAccount());
+                    //处理sku_repo表关联的itemcode表数据
+                    List<DbResSkuRepoItem> skuRepoItemList = skuRepo1.getSkuRepoItemList();
+                    for (String i:itemCodeArr){
+                        DbResSkuRepoItem skuRepoItem = new DbResSkuRepoItem();
+                        skuRepoItem.setActive("Y");
+                        skuRepoItem.setCreateAt(t);
+                        skuRepoItem.setCreateBy(getAccount());
+                        skuRepoItem.setItemCode(i);
+                        skuRepoItem.setSkuRepo(skuRepo1);
+                        skuRepoItemList.add(skuRepoItem);
+                    }
+                    skuRepo1.setSkuRepoItemList(skuRepoItemList);
+                    skuRepoRepository.saveAndFlush(skuRepo1);
                 }
             }
         });

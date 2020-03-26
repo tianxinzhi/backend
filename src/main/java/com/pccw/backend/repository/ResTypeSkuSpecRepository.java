@@ -22,4 +22,8 @@ public interface ResTypeSkuSpecRepository extends BaseRepository<DbResTypeSkuSpe
    DbResTypeSkuSpec getDbResTypeSkuSpecBySku(DbResSku sku);
 
    DbResTypeSkuSpec getDbResTypeSkuSpecsBySkuAndType(DbResSku sku,DbResType type);
+
+    @Query(value = "select * from RES_TYPE_SKU_SPEC s where s.TYPE_ID = ?1 and s.SKU_ID is not null"
+            ,nativeQuery =true )
+    List<DbResTypeSkuSpec> getDbResTypeSkuSpecsByTypeId(Long id);
 }

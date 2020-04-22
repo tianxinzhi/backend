@@ -49,7 +49,6 @@ public class Stock_ReplenishmentCtrl extends BaseCtrl<DbResLogRepl> {
      * @param b
      * @return
      */
-    @Transactional(rollbackOn = Exception.class)
     @ApiOperation(value="创建replenishment",tags={"stock_replenishment"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST, path = "/create")
     public JsonResult create(@RequestBody CreateReplBean b) {

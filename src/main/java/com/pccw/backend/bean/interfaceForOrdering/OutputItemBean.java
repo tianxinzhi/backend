@@ -1,4 +1,4 @@
-package com.pccw.backend.bean.stock_update_normal;
+package com.pccw.backend.bean.interfaceForOrdering;
 
 
 import io.swagger.annotations.ApiModel;

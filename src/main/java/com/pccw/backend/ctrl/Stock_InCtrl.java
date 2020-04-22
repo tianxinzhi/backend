@@ -106,7 +106,7 @@ public class Stock_InCtrl extends BaseCtrl<DbResLogMgt> {
 
                 if (Objects.isNull(skuRepo)){
 
-                    DbResSkuRepo dbResSkuRepo = new DbResSkuRepo(null,dbResSku,dbResRepo,null,dbResStockType, (long) Integer.parseInt(String.valueOf(line.getDtlQty())),null);
+                    DbResSkuRepo dbResSkuRepo = new DbResSkuRepo(null,dbResSku,dbResRepo,null,dbResStockType, null,(long) Integer.parseInt(String.valueOf(line.getDtlQty())),null);
                     dbResSkuRepo.setCreateBy(bean.getCreateBy());
                     dbResSkuRepo.setCreateAt(bean.getCreateAt());
                     dbResSkuRepo.setUpdateAt(bean.getCreateAt());

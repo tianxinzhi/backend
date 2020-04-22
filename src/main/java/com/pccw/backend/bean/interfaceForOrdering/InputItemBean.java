@@ -1,4 +1,4 @@
-package com.pccw.backend.bean.stock_update_normal;
+package com.pccw.backend.bean.interfaceForOrdering;
 
 
 import com.pccw.backend.bean.BaseBean;
@@ -7,41 +7,41 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 /**
  * SearchCondition
  */
 
  @Data
 @NoArgsConstructor
- @ApiModel(value="Stock update模块 - InputBean",description="")
-public class InputBean extends BaseBean {
+ @ApiModel(value="Stock out模块 - CreateBean",description="")
+public class InputItemBean extends BaseBean {
 
     @ApiModelProperty(value="门店接收",name="logRepoIn",example="")
-    private String order_system;
+    private String detail_id;
 
     @ApiModelProperty(value="门店出货",name="logRepoOut",example="")
-    private String order_id ;
+    private String item_action;
 
     @ApiModelProperty(value="logTxtBum",name="logTxtBum",example="")
-    private String request_nature ;
+    private String action_status;
 
     @ApiModelProperty(value="logTxtBum",name="logTxtBum",example="")
-    private String sales_id ;
-
-    @ApiModelProperty(value="dtlList",name="dtlList",example="")
-    private List<InputItemBean> item_details;
+    private String sku_code;
 
     @ApiModelProperty(value="logTxtBum",name="logTxtBum",example="")
-    private String tx_date ;
+    private String quantity;
 
     @ApiModelProperty(value="logTxtBum",name="logTxtBum",example="")
-    private String biz_date ;
+    private String item_code;
 
     @ApiModelProperty(value="logTxtBum",name="logTxtBum",example="")
-    private String remarks;
+    private String repo_id;
 
+    @ApiModelProperty(value="logTxtBum",name="logTxtBum",example="")
+    private String ccc;
+
+    @ApiModelProperty(value="logTxtBum",name="logTxtBum",example="")
+    private String wo;
 
 
 

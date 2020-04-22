@@ -13,6 +13,8 @@ import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 
+import java.util.List;
+
 /*
  * which store, which sku , how many qty
  */
@@ -48,6 +50,9 @@ public class DbResSkuRepo extends Base{
 	@JsonIgnoreProperties(value = { "skuRepoList" })
 	@JoinColumn(name = "stock_type_id")
 	private DbResStockType stockType;
+
+	@OneToMany(cascade={CascadeType.ALL},mappedBy = "skuRepo",orphanRemoval = true)
+	private List<DbResSkuRepoItem> skuRepoItemList;
 
 //	@Column(name="subin_id")
 //	private String subinId;

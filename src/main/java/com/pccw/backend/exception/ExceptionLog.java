@@ -36,7 +36,7 @@ public class ExceptionLog{
     public void init(){
         resExceptionLogRepo = this.relr;
         session = this.ss;
-        request = rq;
+        request = this.rq;
     }
 
     /**

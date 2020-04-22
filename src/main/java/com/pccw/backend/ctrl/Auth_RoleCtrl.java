@@ -69,10 +69,11 @@ public class Auth_RoleCtrl extends BaseCtrl<DbResRole> implements ICheck {
                 rightNames[i] = resRight.getRightName();
                 rightIds[i] = resRight.getId();
                 //详情
-
                 HashMap<Object, Object> hm = new HashMap<>();
-                hm.put("rightName",resRight.getRightName());
-                hm.put("rightUrl",resRight.getRightUrl());
+//                hm.put("rightName",resRight.getRightName());
+//                hm.put("rightUrl",resRight.getRightUrl());
+                  hm.put("value",resRight.getRightUrl());
+                  hm.put("label",resRight.getRightName());
                 rightList.add(hm);
                }
             resultBean.setId(resRole.getId());

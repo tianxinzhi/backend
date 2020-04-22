@@ -62,7 +62,7 @@ public class BaseCtrl<T>{
     public JsonResult delete(BaseRepository repo, BaseDeleteBean ids){
         try {
             repo.deleteByIdIn(ids.getIds());
-            
+
             return JsonResult.success(Arrays.asList());
         } catch (Exception e) {
             e.printStackTrace();

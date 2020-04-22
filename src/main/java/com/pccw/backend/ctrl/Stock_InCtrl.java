@@ -136,9 +136,10 @@ public class Stock_InCtrl extends BaseCtrl<DbResLogMgt> {
             }).collect(Collectors.toList());
 
             List<String> natures = new ArrayList<>();
-            natures.add("SOTS");
-            natures.add("SOTW");
-
+//            natures.add("SOTS");
+//            natures.add("SOTW");
+            natures.add(StaticVariable.LOGORDERNATURE_STOCK_OUT_STS);
+            natures.add(StaticVariable.LOGORDERNATURE_STOCK_OUT_STW);
             List<DbResLogMgt> collect = rsipo.findAllByLogOrderNatureInAndLogRepoInIn(natures, ids);
             List<Object> res = collect.stream().map(r -> {
                 List<DbResLogMgtDtl> Line = r.getLine().stream().filter(line -> line.getStatus().equals("INT")).collect(Collectors.toList());

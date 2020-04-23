@@ -149,7 +149,29 @@ public class Stock_AdjustmentCtrl extends BaseCtrl<DbResLogMgt> {
                 case StaticVariable.DTLSUBIN_RESERVED_WITH_REMOTE:
                     stockType = 7;break;
             }
-           skuRepoRepository.updateQtyByRepoAndShopAndTypeAndQty(bean.getLogRepoOut(),dtl.getDtlSkuId(),stockType,dtl.getDtlQty());
+            DbResSkuRepo qtyByRepoAndShopAndType = skuRepoRepository.findQtyByRepoAndShopAndType(bean.getLogRepoOut(), dtl.getDtlSkuId(), stockType);
+            if(qtyByRepoAndShopAndType != null)
+                skuRepoRepository.updateQtyByRepoAndShopAndTypeAndQty(bean.getLogRepoOut(),dtl.getDtlSkuId(),stockType,dtl.getDtlQty());
+            else{
+                DbResSkuRepo skuRepo = new DbResSkuRepo();
+                DbResRepo resRepo = new DbResRepo();
+                resRepo.setId(bean.getLogRepoOut());
+                skuRepo.setRepo(resRepo);
+                DbResSku sku = new DbResSku();
+                sku.setId(dtl.getDtlSkuId());
+                skuRepo.setSku(sku);
+                DbResStockType type = new DbResStockType();
+                type.setId((long) stockType);
+                skuRepo.setStockType(type);
+                skuRepo.setQty(dtl.getDtlQty());
+                skuRepo.setActive("Y");
+                skuRepo.setCreateAt(System.currentTimeMillis());
+                skuRepo.setUpdateAt(System.currentTimeMillis());
+                skuRepo.setCreateBy(getAccount());
+                skuRepo.setUpdateBy(getAccount());
+                skuRepoRepository.saveAndFlush(skuRepo);
+            }
+
         }
     }
 

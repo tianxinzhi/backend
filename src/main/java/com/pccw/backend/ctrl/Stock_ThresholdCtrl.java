@@ -83,15 +83,15 @@ public class Stock_ThresholdCtrl extends BaseCtrl<DbResLogMgt> {
             long t = new Date().getTime();
             resLogMgtRepository.updateDbResLogMgtDtlById(b.getQtyy(),b.getId());
             //创建工作流对象
-            DbResProcess dbResProcess = new DbResProcess();
-            dbResProcess.setLogTxtBum(b.getLogTxtBum());
-            dbResProcess.setRepoId(b.getRepoId());
-            dbResProcess.setRemark(b.getRemark());
-            dbResProcess.setCreateAt(t);
-            dbResProcess.setUpdateAt(t);
-            dbResProcess.setLogOrderNature(StaticVariable.LOGORDERNATURE_STOCK_THRESHOLD);
-            //生成工作流数据
-            processProcessCtrl.joinToProcess(dbResProcess);
+//            DbResProcess dbResProcess = new DbResProcess();
+//            dbResProcess.setLogTxtBum(b.getLogTxtBum());
+//            dbResProcess.setRepoId(b.getRepoId());
+//            dbResProcess.setRemark(b.getRemark());
+//            dbResProcess.setCreateAt(t);
+//            dbResProcess.setUpdateAt(t);
+//            dbResProcess.setLogOrderNature(StaticVariable.LOGORDERNATURE_STOCK_THRESHOLD);
+//            //生成工作流数据
+//            processProcessCtrl.joinToProcess(dbResProcess);
 
             return JsonResult.success(Arrays.asList());
         } catch (Exception e) {

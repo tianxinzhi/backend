@@ -66,6 +66,15 @@ public class MasterFile_ClassCtrl extends BaseCtrl<DbResClass> implements ICheck
     @ApiOperation(value="删除class",tags={"masterfile_class"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST, path = "/delete")
     public JsonResult delete(@RequestBody BaseDeleteBean ids) {
+        for(Long id:ids.getIds()){
+            List<DbResClass> list = repo.getDbResClasssByParentClassId(String.valueOf(id));
+            if(Objects.nonNull(list) && list.size() > 0){
+                for(DbResClass cla: list){
+                    DbResClass c = repo.findById(cla.getId()).get();
+                    c.setParentClassId("0");
+                }
+            }
+        }
         return this.delete(repo, ids);
     }
     @Transactional(rollbackOn = Exception.class)

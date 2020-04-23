@@ -12,18 +12,18 @@ import com.pccw.backend.entity.DbResSkuRepo;
 import com.pccw.backend.repository.BaseRepository;
 import com.pccw.backend.repository.ResRepoRepository;
 import com.pccw.backend.repository.ResSkuRepoRepository;
+import com.pccw.backend.util.Convertor;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * MF_RepoCtrl
@@ -46,7 +46,30 @@ public class MasterFile_RepoCtrl extends BaseCtrl<DbResRepo> implements ICheck {
     @RequestMapping(method = RequestMethod.POST,path="/search")
     public JsonResult search(@RequestBody SearchBean b) {
         log.info(b.toString());
-        return this.search(repo,  b);
+        //return this.search(repo,  b);
+        try {
+            Specification specification = Convertor.convertSpecification(b);
+            List<DbResRepo> res =repo.findAll(specification, PageRequest.of(b.getPageIndex(),b.getPageSize())).getContent();
+            ArrayList<com.pccw.backend.bean.masterfile_repo.SearchBean> dbResRepo = new ArrayList<>();
+            if(res != null && res.size() > 0){
+                for (DbResRepo resRepo:res){
+                    SearchBean searchBean = new SearchBean();
+                    BeanUtils.copyProperties(resRepo, searchBean);
+                    searchBean.setCreateAccountName(getAccountName(resRepo.getCreateBy()));
+                    searchBean.setUpdateAccountName(getAccountName(resRepo.getUpdateBy()));
+                    if(Objects.nonNull(resRepo.getParentRepoId())&& resRepo.getParentRepoId() > 0 ){
+                        Optional<DbResRepo> optional = repo.findById(resRepo.getParentRepoId());
+                        DbResRepo parent = optional.get();
+                        searchBean.setParentRepo(parent.getRepoName());
+                    }
+                    dbResRepo.add(searchBean);
+                }
+            }
+            return JsonResult.success(dbResRepo);
+        } catch (Exception e) {
+            log.info(e.getMessage());
+            return JsonResult.fail(e);
+        }
     }
 
     @ApiOperation(value="删除shop",tags={"masterfile_repo"},notes="说明")
@@ -89,6 +112,12 @@ public class MasterFile_RepoCtrl extends BaseCtrl<DbResRepo> implements ICheck {
             long t = new Date().getTime();
             b.setUpdateAt(t);
             b.setUpdateBy(getAccount());
+            Optional<DbResRepo> optional = repo.findById(b.getId());
+            DbResRepo dbResRepo = optional.get();
+            b.setActive(dbResRepo.getActive());
+            b.setCreateAt(dbResRepo.getCreateAt());
+            b.setCreateBy(dbResRepo.getCreateBy());
+            b.setParentRepoId(dbResRepo.getParentRepoId());
             DbResRepo resRepo=new DbResRepo();
             BeanUtils.copyProperties(b, resRepo);
             if(Objects.nonNull(b.getClosedDay())){

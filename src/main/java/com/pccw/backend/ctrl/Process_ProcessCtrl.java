@@ -58,7 +58,6 @@ public class Process_ProcessCtrl extends BaseCtrl {
     @Autowired
     Stock_ReplenishmentCtrl replenishmentCtrl;
 
-
     @ApiOperation(value="process",tags={"process"},notes="说明")
     @RequestMapping(method = RequestMethod.POST,path="/edit")
     public JsonResult edit(@RequestBody EditBean b){
@@ -102,14 +101,11 @@ public class Process_ProcessCtrl extends BaseCtrl {
                     adjCtrl.UpdateSkuRepoQty(b.getLogTxtBum());
                 }else if(b.getLogOrderNature().equals(StaticVariable.LOGORDERNATURE_REPLENISHMENT_REQUEST)){
                     inCtrl.UpdateSkuRepoQty(b.getLogTxtBum());
-                }else if(b.getLogOrderNature().equals(StaticVariable.LOGORDERNATURE_REPLENISHMENT_REQUEST)){
-                    inCtrl.UpdateSkuRepoQty(b.getLogTxtBum());
                 }else if(b.getLogOrderNature().equals(StaticVariable.LOGORDERNATURE_STOCK_CATEGORY)){
                     categoryCtrl.UpdateSkuRepoQty(b.getLogTxtBum());
                 }else if(b.getLogOrderNature().equals(StaticVariable.LOGORDERNATURE_REPLENISHMENT_RECEIVEN)){
                     replenishmentCtrl.UpdateSkuRepoQty(b.getLogTxtBum());
                 }
-
             }
 //            String stockCtrl = new String();
 //            Class<?> stockClass = Class.forName(stockCtrl);

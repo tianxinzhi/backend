@@ -86,7 +86,7 @@ public class Stock_MovementCtrl extends BaseCtrl<DbResProcess> {
                 List arrayList = new ArrayList<>();
                 arrayList.add("SkuName:  iphone-x  , Qty: "+random.nextInt(10));
                 Map m = CollectionBuilder.builder(new HashMap<>())
-                        .put("repoName","shop00"+random.nextInt(3))
+                        .put("repoName","Shop00"+random.nextInt(3))
                         .put("sku",arrayList)
                         .put("active","Y").put("createAccountName","admin")
                         .put("createAt","1579072220833").put("id",200+random.nextInt(100))

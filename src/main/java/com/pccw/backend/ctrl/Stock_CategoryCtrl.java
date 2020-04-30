@@ -181,17 +181,17 @@ public class Stock_CategoryCtrl extends BaseCtrl<DbResLogMgt> {
                     toSkuRepo.setId(null);
                     toSkuRepo.setQty(l.getDtlQty());
                     //处理sku_repo表关联的itemcode表数据
-                    List skuRepoItemList = new ArrayList<>();
-                    for (String i:itemCodeArr){
-                        DbResSkuRepoItem skuRepoItem = new DbResSkuRepoItem();
-                        skuRepoItem.setActive("Y");
-                        skuRepoItem.setCreateAt(t);
-                        skuRepoItem.setCreateBy(getAccount());
-                        skuRepoItem.setItemCode(i);
-                        skuRepoItem.setSkuRepo(toSkuRepo);
-                        skuRepoItemList.add(skuRepoItem);
-                    }
-                    toSkuRepo.setSkuRepoItemList(skuRepoItemList);
+//                    List skuRepoItemList = new ArrayList<>();
+//                    for (String i:itemCodeArr){
+//                        DbResSkuRepoItem skuRepoItem = new DbResSkuRepoItem();
+//                        skuRepoItem.setActive("Y");
+//                        skuRepoItem.setCreateAt(t);
+//                        skuRepoItem.setCreateBy(getAccount());
+//                        skuRepoItem.setItemCode(i);
+//                        skuRepoItem.setSkuRepo(toSkuRepo);
+//                        skuRepoItemList.add(skuRepoItem);
+//                    }
+//                    toSkuRepo.setSkuRepoItemList(skuRepoItemList);
                     skuRepoRepository.saveAndFlush(toSkuRepo);
                 }else {
                     DbResSkuRepo skuRepo1 = skuRepoRepository.findById(dbsr.getId()).get();
@@ -200,16 +200,16 @@ public class Stock_CategoryCtrl extends BaseCtrl<DbResLogMgt> {
                     skuRepo1.setUpdateBy(getAccount());
                     //处理sku_repo表关联的itemcode表数据
                     List<DbResSkuRepoItem> skuRepoItemList = skuRepo1.getSkuRepoItemList();
-                    for (String i:itemCodeArr){
-                        DbResSkuRepoItem skuRepoItem = new DbResSkuRepoItem();
-                        skuRepoItem.setActive("Y");
-                        skuRepoItem.setCreateAt(t);
-                        skuRepoItem.setCreateBy(getAccount());
-                        skuRepoItem.setItemCode(i);
-                        skuRepoItem.setSkuRepo(skuRepo1);
-                        skuRepoItemList.add(skuRepoItem);
-                    }
-                    skuRepo1.setSkuRepoItemList(skuRepoItemList);
+//                    for (String i:itemCodeArr){
+//                        DbResSkuRepoItem skuRepoItem = new DbResSkuRepoItem();
+//                        skuRepoItem.setActive("Y");
+//                        skuRepoItem.setCreateAt(t);
+//                        skuRepoItem.setCreateBy(getAccount());
+//                        skuRepoItem.setItemCode(i);
+//                        skuRepoItem.setSkuRepo(skuRepo1);
+//                        skuRepoItemList.add(skuRepoItem);
+//                    }
+//                    skuRepo1.setSkuRepoItemList(skuRepoItemList);
                     skuRepoRepository.saveAndFlush(skuRepo1);
                 }
             }

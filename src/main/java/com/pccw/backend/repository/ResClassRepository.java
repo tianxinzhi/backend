@@ -11,4 +11,6 @@ public interface ResClassRepository extends BaseRepository<DbResClass> {
 	
 	//  DbResClass findByClassName(String className);
     List<DbResClass> getDbResClasssByClassName(String className);
+
+    List<DbResClass> getDbResClasssByParentClassId(String parentClassId);
 }

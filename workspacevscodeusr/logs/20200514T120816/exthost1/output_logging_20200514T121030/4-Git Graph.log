@@ -1,0 +1,8 @@
+[2020-05-14 12:10:30.752] Starting Git Graph ...
+[2020-05-14 12:10:31.004] Using C:\Program Files\Git\cmd\git.exe (version: 2.15.1.windows.2)
+[2020-05-14 12:10:31.050] > git rev-parse --show-toplevel
+[2020-05-14 12:10:31.081] > git rev-parse --show-toplevel
+[2020-05-14 12:10:31.081] Showing "Git Graph" Status Bar Item
+[2020-05-14 12:10:31.082] Started Git Graph - Ready to use!
+[2020-05-14 12:10:31.393] Searching workspace for new repos ...
+[2020-05-14 12:10:31.394] Completed searching workspace for new repos

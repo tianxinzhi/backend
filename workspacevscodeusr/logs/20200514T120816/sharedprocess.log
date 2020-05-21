@@ -1,2 +1,0 @@
-[2020-05-14 12:08:23.682] [sharedprocess] [info] main {"machineId":"8ad8a10b12eff338aa6100591d0c2b5df44ef865eed03b50870f18b464e4c403","windowId":2}
-[2020-05-14 12:08:23.882] [sharedprocess] [error] [File Watcher (node.js)] Error: ENOENT: no such file or directory, stat 'c:\workspace\java\backend\workspacevscodeusr\User\snippets'

@@ -1,42 +1,34 @@
 package com.pccw.backend.entity;
 
-import java.io.Serializable;
+import lombok.Data;
 
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-
-import javax.persistence.Id;
-import javax.persistence.Table;
-
-
+import javax.persistence.*;
 
 
 /**
  *  one sku can include many items
  */
 
+@Data
 @Entity
 @Table(name = "res_item")
-public class DbResItem implements Serializable {
+@SequenceGenerator(name="id_item",sequenceName = "item_seq",allocationSize = 1)
+public class DbResItem extends Base {
 	
-	private static final long serialVersionUID = 1L;
 	
 	@Id
-	@GeneratedValue		
-	public Long id;
+	@Column(name = "id")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "id_item")
+	private Long id;
 	
-	@Column(name = "sku_id")
-	public Long skuId;
 	
-	@Column(name = "item_num", length = 128)
-	public String itemNum;
+	@Column(name = "item_code", length = 128)
+	private String itemCode;
 	
-	@Column(name = "status", length = 3)
-	public String status;
-	
-	@Column(name = "lot_num", length = 16)
-	public String lotNum;
+	@Column(name = "item_name", length = 32)
+	private String itemName;
 
+	// A - avaliable, S - saled
+	@Column(name = "item_status", length = 4)
+	private String itemStatus;
 }

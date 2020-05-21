@@ -1,24 +1,64 @@
 package com.pccw.backend.bean;
 
 
-import java.util.List;
-
+import com.pccw.backend.exception.BaseException;
+import com.pccw.backend.exception.ExceptionLog;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.util.Arrays;
+import java.util.List;
+
+
 /**
- * JsonResult
+ * JsonResult is customer specifiaction of json of all api to return to client
  */
 @Data
+@AllArgsConstructor
 public class JsonResult<T> {
 
-    public String state;
-    public String msg;
-    public List<T> data;
-    public JsonResult(String state, String msg, List<T> data) {
-        super();
-        this.state=state;
-        this.msg=msg;
-        this.data=data;
+    private String state;
+
+    private String code;
+
+    private String msg;
+
+    private List<T> data;
+
+    /**
+     * quick method to return a JsonResult when SUCESSED
+     * @param <G> 
+     * @param data
+     * @return
+     */
+    public static <T> JsonResult<T> success(List<T> data) {
+        return new JsonResult<T>("success", "000","", data);
+    }
+    /**
+     * quick method to return a JsonResult when FAILED
+     * @return
+     */
+    public static <T> JsonResult<T> fail(Exception e){
+        BaseException baseException = BaseException.getRuntimeException();
+        baseException.setMsg(e.getMessage());
+        try{
+            ExceptionLog.exceptionLogHandle(baseException);
+            return new JsonResult<T>("failed", baseException.getCode(),baseException.getMsg(), Arrays.asList());
+        }catch (Exception e1){
+            return new JsonResult<T>("failed", "888",e1.getMessage(), Arrays.asList());
+        }
+    }
+    /**
+     * quick method to return a JsonResult when FAILED
+     * @return
+     */
+    public static <T> JsonResult<T> fail(BaseException e){
+        try {
+            ExceptionLog.exceptionLogHandle(e);
+            return new JsonResult<T>("failed", e.getCode(),e.getMsg(), Arrays.asList());
+        }catch (Exception e1){
+            return new JsonResult<T>("failed", "888",e1.getMessage(), Arrays.asList());
+        }
 
     }
 }

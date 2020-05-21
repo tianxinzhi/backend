@@ -1,20 +1,11 @@
 package com.pccw.backend.entity;
 
-import java.io.Serializable;
-import java.util.Date;
+import com.pccw.backend.annotation.JsonResultParamMapAnnotation;
 
+import lombok.Getter;
+import lombok.Setter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-
-
-
-import javax.persistence.Table;
-
-
+import javax.persistence.*;
 
 
 /**
@@ -23,31 +14,42 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "res_sku")
-public class DbResSku implements Serializable{
-
-
-	private static final long serialVersionUID = 1L;
+@Getter
+@Setter
+@SequenceGenerator(name="id_sku",sequenceName = "sku_seq",allocationSize = 1)
+@JsonResultParamMapAnnotation(param1 = "id",param2 = "skuCode")
+public class DbResSku extends Base {
 
 	@Id
-	@GeneratedValue	
-	public Long id;
-	
-	@Column(name = "class_id")
-	public Long classId;
+	@Column(name = "id")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "id_sku")
+	private Long id;
 
-	@Column(name = "class_num")
-	public String classNum;
-	
-	@Column(name = "sku_num", length = 12)
-	public String skuNum;
-	
-	@Column(name = "sku_name", length = 32)
-	public String skuName;
-	
+	@Column(name = "sku_code", length = 32)
+	private String skuCode;
+
 	@Column(name = "sku_desc", length = 512)
-	public String skuDesc;
-	
-	@Column(name = "status", length = 3)
-	public String status;
-	
+	private String skuDesc;
+
+	@Column(name = "sku_name")
+	private String skuName;
+
+	@Column(name = "sku_origin",length = 32)
+	private String skuOrigin;
+
+//	@JsonBackReference
+//	@OneToMany(cascade = CascadeType.ALL,mappedBy = "sku",orphanRemoval = true)
+//	private List<DbResSkuType> skuTypeList;
+//
+//	@JsonBackReference
+//	@OneToMany(cascade = CascadeType.ALL,mappedBy = "sku",orphanRemoval = true)
+//	private List<DbResSkuAttrValue> skuAttrValueList;
+
+
+//	@OneToMany(cascade={CascadeType.ALL},mappedBy = "sku",orphanRemoval = true)
+//	private List<DbResSkuRepo> skuRepoList;
+
+    @OneToOne(cascade = {CascadeType.ALL},mappedBy = "sku",orphanRemoval = true)
+    private DbResTypeSkuSpec dbResTypeSkuSpec;
+
 }

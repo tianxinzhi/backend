@@ -1,13 +1,16 @@
 package com.pccw.backend.repository;
 
-import org.springframework.context.annotation.Profile;
-import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.pccw.backend.entity.DbResClass;
+import org.springframework.stereotype.Repository;
 
-@Profile("dev1")
-public interface ResClassRepository extends JpaRepository<DbResClass, Long> {
+import java.util.List;
+
+@Repository
+public interface ResClassRepository extends BaseRepository<DbResClass> {
 	
-	DbResClass findByClassName(String className);
+	//  DbResClass findByClassName(String className);
+    List<DbResClass> getDbResClasssByClassName(String className);
 
+    List<DbResClass> getDbResClasssByParentClassId(String parentClassId);
 }

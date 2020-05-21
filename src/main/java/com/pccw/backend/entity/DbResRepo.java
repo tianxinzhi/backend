@@ -1,49 +1,71 @@
 package com.pccw.backend.entity;
 
-import java.io.Serializable;
+import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
+import javax.persistence.*;
 
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-
+import com.pccw.backend.annotation.JsonResultParamMapAnnotation;
+import lombok.Getter;
+import lombok.Setter;
 
 
 /**
  * repository => store/shop
  */
+@Getter
+@Setter
 @Entity
 @Table(name = "res_repo")
-public class DbResRepo implements Serializable {
+@SequenceGenerator(name="id_repo",sequenceName = "repo_seq",allocationSize = 1)
+@JsonResultParamMapAnnotation(param1 = "id",param2 = "repoCode",param3 = "repoType")
+public class DbResRepo extends Base {
 
-	private static final long serialVersionUID = 1L;
-	
 	@Id
-	@GeneratedValue
-	public Long id;
+	@Column(name = "id")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "id_repo")
+	private Long id;
 
-	@ManyToOne(cascade= {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH})
-	@JoinColumn(name="area_id", referencedColumnName="id")
-	public DbResArea area;
+	// @ManyToOne(cascade= {CascadeType.ALL})
+	// @JoinColumn(name="area_id", referencedColumnName="id")
+	// private DbResArea area;
 
-	@Column(name = "repo_type", length = 6)
-	public String repoType;
+	// @OneToMany
+//     @JoinTable(name="res_sku_repo",
+//       		joinColumns = { @JoinColumn(name = "sku_id", referencedColumnName = "id") },
+//       		inverseJoinColumns = { @JoinColumn(name = "repo_id", referencedColumnName = "id") }
+//    )
+//    @JoinTable(name="res_sku_repo")
+//    @JoinColumn(name = "id",referencedColumnName = "repo_id")
+// 	private List<DbResSku> skus;
 
-	@Column(name="repo_num",length = 64)
-	public String repoNum;
+	// @Column(name = "repo_type", length = 6)
+	// private String repoType;
+
+	@Column(name = "area_id")
+	private Long areaId;
+
+	@Column(name="repo_code",length = 64)
+	private String repoCode;
 	
 	@Column(name = "repo_name", length = 64)
-	public String repoName;
+	private String repoName;
 
 	@Column(name = "repo_addr", length = 512)
-	public String repoAddr;
+	private String repoAddr;
 
-	@Column(name = "status", length = 6)	
-	public String status;
+	@Column(name = "repo_type", length = 11)
+	private String repoType;
+
+	@Column(name = "is_closed",length = 4)
+	private String isClosed;
+
+	@Column(name="closed_day")
+	private Long closedDay;
+
+	@Column(name = "parent_repo_id")
+	private Long parentRepoId;
+
+	@OneToMany(cascade={CascadeType.ALL},mappedBy = "repo")
+	private List<DbResSkuRepo> skuRepoList;
 
 }

@@ -8,7 +8,6 @@ RUN mvn install:install-file -Dfile=./ojdbc6.jar -DgroupId=com.oracle -Dartifact
 
 RUN mvn package -Dmaven.test.skip=true
 
-
 ARG JAR_FILE=target/*.jar
 
 COPY ${JAR_FILE} app.jar

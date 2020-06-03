@@ -2,6 +2,8 @@ package com.pccw.backend.ctrl;
 
 import com.pccw.backend.bean.JsonResult;
 import com.pccw.backend.bean.StaticVariable;
+import com.pccw.backend.bean.lis_api.CreateBean;
+import com.pccw.backend.bean.lis_api.SubmitStockUpdateBean;
 import com.pccw.backend.bean.stock_adjustment.LogMgtBean;
 import com.pccw.backend.bean.stock_adjustment.LogMgtDtlBean;
 import com.pccw.backend.bean.stock_adjustment.SearchBean;
@@ -10,18 +12,20 @@ import com.pccw.backend.repository.ResAdjustReasonRepository;
 import com.pccw.backend.repository.ResLogMgtRepository;
 import com.pccw.backend.repository.ResSkuRepoRepository;
 import com.pccw.backend.repository.ResStockTypeRepository;
+import com.pccw.backend.util.RestTemplateUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -44,6 +48,8 @@ public class Stock_AdjustmentCtrl extends BaseCtrl<DbResLogMgt> {
     ResStockTypeRepository stockTypeRepository;
     @Autowired
     Process_ProcessCtrl processProcessCtrl;
+    @Value("${batchjob.ip}")
+    private String host;
 
     @ApiOperation(value="调货",tags={"stock_adjustment"},notes="说明")
     @RequestMapping("/confirm")
@@ -110,7 +116,7 @@ public class Stock_AdjustmentCtrl extends BaseCtrl<DbResLogMgt> {
 
             ent.setLine(lstMgtDtl);
             logMgtRepository.saveAndFlush(ent);
-            //生成工作流数据
+//            //生成工作流数据
             DbResProcess process = new DbResProcess();
             process.setLogTxtBum(bean.getTransactionNumber());
             process.setRepoId(bean.getLogRepoOut());
@@ -119,10 +125,47 @@ public class Stock_AdjustmentCtrl extends BaseCtrl<DbResLogMgt> {
             process.setUpdateAt(System.currentTimeMillis());
             process.setLogOrderNature(StaticVariable.LOGORDERNATURE_STOCK_TAKE_ADJUSTMENT);
             processProcessCtrl.joinToProcess(process);
+            //调用Lis api同步sku
+//            transApi(bean);
             return JsonResult.success(Arrays.asList());
         } catch (BeansException e) {
             return JsonResult.fail(e);
         }
+    }
+
+    @RequestMapping(value = "/test",method = RequestMethod.POST)
+    public ResponseEntity<String> transApi(){
+        List<CreateBean> params = new LinkedList<>();
+        DateFormat format = new SimpleDateFormat("YYYYMMDD");
+        for (int i=1;i<3 ; i++) {
+            CreateBean b = new CreateBean();
+            SubmitStockUpdateBean bean1 = new SubmitStockUpdateBean();
+            bean1.setP_API_VERSION("1.0");
+            bean1.setP_INIT_MSG_LIST("T");
+            bean1.setP_COMMIT("T");
+            bean1.setP_RECORD_TYPE("10");
+            bean1.setP_SOURCE_TYPE("POS");
+            bean1.setP_FROM_WAREHOUSE("RT-CABF-FAULT");
+            bean1.setP_TRANSACTION_DATE(format.format(new Date()));
+            bean1.setP_TRANSACTION_QTY(30-20*i);
+            bean1.setP_TRANSACTION_TYPE(bean1.getP_TRANSACTION_QTY() >0?"ADJ-IN":"ADJ-OUT");
+            bean1.setP_ITEM_CODE("4000001");
+            bean1.setP_COST_CODE("CSM3");
+            bean1.setP_WORK_ORDER("38881010");
+            bean1.setP_BUSINESS_DATE(format.format(new Date()));
+            bean1.setP_TO_WAREHOUSE("TRD-W003");
+            bean1.setP_SHIPMENT_NUM("1234");
+            bean1.setP_SOURCE_REF(null);
+            bean1.setP_WAYBILL("21533975");
+            bean1.setP_SO_TYPE_GROUPING(null);
+
+            b.setCreateAt(new Date());
+            b.setStatus("Pending");
+            b.setRequestBody(bean1.toString());
+            params.add(b);
+        }
+
+        return RestTemplateUtils.post(host + "createNew", params, String.class);
     }
 
     /**

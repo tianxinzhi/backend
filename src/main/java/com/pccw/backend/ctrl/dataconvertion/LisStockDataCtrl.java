@@ -11,6 +11,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
@@ -66,10 +67,14 @@ public class LisStockDataCtrl {
     private FileWriter fw = null;
     private BufferedWriter bw = null;
 
-    //文件存放路径
-    private static final String dataPath = System.getProperty("user.dir")+"/data";
+
     //batchjob ip端口
-    private static final String host = "http://localhost:8081/";
+    @Value("${batchjob.ip}")
+    private String host;
+    @Value("${dc_path}")
+    private String dcPath;
+    //文件存放路径
+    private final String dataPath = System.getProperty("user.dir")+dcPath;
 
     @ApiOperation(value="获取lis存量数据",tags={"DataConvertion"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST,value = "/getStockDataFromLis")
@@ -78,7 +83,7 @@ public class LisStockDataCtrl {
         try {
             long begTime = System.currentTimeMillis();
             backData();
-            //getBacthJobData();
+            getBacthJobData();
             transferData();
             syncData();
             log.info("------- 插入数据总共用时:"+(System.currentTimeMillis()-begTime)/1000+"秒 -------");

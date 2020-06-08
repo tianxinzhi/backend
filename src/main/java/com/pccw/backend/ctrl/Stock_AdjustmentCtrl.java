@@ -1,5 +1,7 @@
 package com.pccw.backend.ctrl;
 
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.JSONPObject;
 import com.pccw.backend.bean.JsonResult;
 import com.pccw.backend.bean.StaticVariable;
 import com.pccw.backend.bean.lis_api.CreateBean;
@@ -137,6 +139,8 @@ public class Stock_AdjustmentCtrl extends BaseCtrl<DbResLogMgt> {
     public ResponseEntity<String> transApi(){
         List<CreateBean> params = new LinkedList<>();
         DateFormat format = new SimpleDateFormat("YYYYMMDD");
+        JSONObject target = new JSONObject();
+        JSONObject jsonObject = new JSONObject();
         for (int i=1;i<3 ; i++) {
             CreateBean b = new CreateBean();
             SubmitStockUpdateBean bean1 = new SubmitStockUpdateBean();
@@ -144,11 +148,11 @@ public class Stock_AdjustmentCtrl extends BaseCtrl<DbResLogMgt> {
             bean1.setP_INIT_MSG_LIST("T");
             bean1.setP_COMMIT("T");
             bean1.setP_RECORD_TYPE("10");
-            bean1.setP_SOURCE_TYPE("POS");
+            bean1.setP_SOURCE_TYPE("SMP");
             bean1.setP_FROM_WAREHOUSE("RT-CABF-FAULT");
             bean1.setP_TRANSACTION_DATE(format.format(new Date()));
-            bean1.setP_TRANSACTION_QTY(30-20*i);
-            bean1.setP_TRANSACTION_TYPE(bean1.getP_TRANSACTION_QTY() >0?"ADJ-IN":"ADJ-OUT");
+            bean1.setP_TRANSACTION_QTY(String.valueOf(30-20*i));
+            bean1.setP_TRANSACTION_TYPE(Integer.valueOf(bean1.getP_TRANSACTION_QTY()) >0?"ADJ-IN":"ADJ-OUT");
             bean1.setP_ITEM_CODE("4000001");
             bean1.setP_COST_CODE("CSM3");
             bean1.setP_WORK_ORDER("38881010");
@@ -159,9 +163,16 @@ public class Stock_AdjustmentCtrl extends BaseCtrl<DbResLogMgt> {
             bean1.setP_WAYBILL("21533975");
             bean1.setP_SO_TYPE_GROUPING(null);
 
+            jsonObject.put("@xmlns","http://xmlns.oracle.com/apps/inv/rest/XXINVMT/submit_stock_update/");
+            JSONObject json1 = new JSONObject();
+            json1.put("@xmlns","http://xmlns.oracle.com/apps/fnd/rest/header");
+            jsonObject.put("RESTHeader",json1);
+            jsonObject.put("InputParameters",bean1);
+            target.put("XXINVMT",jsonObject);
             b.setCreateAt(new Date());
             b.setStatus("Pending");
-            b.setRequestBody(bean1.toString());
+            b.setRequestBody(target.toJSONString());
+            b.setRequestUrl("rest/XXINVMT/SUBMIT_STOCK_UPDATE/");
             params.add(b);
         }
 

@@ -17,7 +17,7 @@ public class SubmitStockUpdateBean {
     private String P_SOURCE_TYPE;
     private String P_FROM_WAREHOUSE;
     private String P_TRANSACTION_DATE;
-    private long P_TRANSACTION_QTY;
+    private String P_TRANSACTION_QTY;
     private String P_TRANSACTION_TYPE; //ADJ-IN,ADJ-OUT,INTRANSIT,ISSUE,RECEIPT,SUBINV
     private String P_ITEM_CODE;
     private String P_COST_CODE;

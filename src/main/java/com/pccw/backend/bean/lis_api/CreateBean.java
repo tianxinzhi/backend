@@ -19,6 +19,8 @@ public class CreateBean{
 
     private String status;
 
+    private String requestUrl;
+
     private String requestHeader;
 
     private String requestBody;

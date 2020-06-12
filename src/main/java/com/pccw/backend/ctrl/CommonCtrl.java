@@ -182,21 +182,21 @@ public class CommonCtrl  extends BaseCtrl{
         return this.JsonResultHandle(stockTypeRepository,new LabelAndValue());
     }
 
-    @ApiOperation(value = "提交right变更时，更新用户菜单", tags = {"system"}, notes = "注意问题点")
-    @RequestMapping(method = RequestMethod.GET,value = "/menuReload")
-    public JsonResult menuReload(){
-        Map user = (Map)session.getUser();
-        String accountId = user.get("account").toString();
-        long id = Long.parseLong(accountId);
-        DbResAccount account = accountRepository.findDbResAccountById(id);
-        SystemCtrl systemCtrl = new SystemCtrl();
-        //获取用户权限
-        List<Long> rightIdList = systemCtrl.getUserRightIds(account);
-        //根据权限id构建权限树
-        HashMap<Long, com.pccw.backend.bean.system.TreeNode> nodeMap = systemCtrl.generateRightTree(rightIdList);
-        //按照用户权限，筛选出对应菜单
-        List<com.pccw.backend.bean.system.TreeNode> userMenu = systemCtrl.getUserMenu(nodeMap);
-        return JsonResult.success(userMenu);
-    }
+//    @ApiOperation(value = "提交right变更时，更新用户菜单", tags = {"system"}, notes = "注意问题点")
+//    @RequestMapping(method = RequestMethod.GET,value = "/menuReload")
+//    public JsonResult menuReload(){
+//        Map user = (Map)session.getUser();
+//        String accountId = user.get("account").toString();
+//        long id = Long.parseLong(accountId);
+//        DbResAccount account = accountRepository.findDbResAccountById(id);
+//        SystemCtrl systemCtrl = new SystemCtrl();
+//        //获取用户权限
+//        List<Long> rightIdList = systemCtrl.getUserRightIds(account);
+//        //根据权限id构建权限树
+//        HashMap<Long, com.pccw.backend.bean.system.TreeNode> nodeMap = systemCtrl.generateRightTree(rightIdList);
+//        //按照用户权限，筛选出对应菜单
+//        List<com.pccw.backend.bean.system.TreeNode> userMenu = systemCtrl.getUserMenu(nodeMap);
+//        return JsonResult.success(userMenu);
+//    }
 
 }

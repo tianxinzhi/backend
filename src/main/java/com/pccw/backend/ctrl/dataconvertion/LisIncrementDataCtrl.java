@@ -283,8 +283,8 @@ public class LisIncrementDataCtrl {
                     for (Object o : attrEntry.getValue()) {
                         DbResAttrValue value1 = attrValueRepository.getDbResAttrValuesByAttrValue(o.toString()).get(0);
                         DbResSpecAttr specAttr = new DbResSpecAttr();
-                        specAttr.setAttrId(attr.getId()+"");
-                        specAttr.setAttrValueId(value1.getId()+"");
+//                        specAttr.setAttrId(attr.getId()+"");
+//                        specAttr.setAttrValueId(value1.getId()+"");
                         specAttr.setCreateAt(time);
                         specAttr.setUpdateAt(time);
                         specAttr.setActive("Y");
@@ -413,8 +413,8 @@ public class LisIncrementDataCtrl {
                         for (Object o : attrEntry.getValue()) {
                             DbResAttrValue attrValue = attrValueRepository.getDbResAttrValuesByAttrValue(o.toString()).get(0);
                             DbResSpecAttr specAttr = new DbResSpecAttr();
-                            specAttr.setAttrId(String.valueOf(attr.getId()));
-                            specAttr.setAttrValueId(String.valueOf(attrValue.getId()));
+//                            specAttr.setAttrId(String.valueOf(attr.getId()));
+//                            specAttr.setAttrValueId(String.valueOf(attrValue.getId()));
                             specAttr.setActive("Y");
                             specAttr.setCreateAt(time);
                             specAttr.setUpdateAt(time);
@@ -448,8 +448,8 @@ public class LisIncrementDataCtrl {
                                 DbResAttrValue attrValue = attrValueRepository.getDbResAttrValuesByAttrValue(o.toString()).get(0);
 
                                 DbResSpecAttr specAttr = new DbResSpecAttr();
-                                specAttr.setAttrId(String.valueOf(attr.getId()));
-                                specAttr.setAttrValueId(String.valueOf(attrValue.getId()));
+//                                specAttr.setAttrId(String.valueOf(attr.getId()));
+//                                specAttr.setAttrValueId(String.valueOf(attrValue.getId()));
                                 specAttr.setActive("Y");
                                 specAttr.setCreateAt(time);
                                 specAttr.setUpdateAt(time);

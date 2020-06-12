@@ -96,8 +96,8 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> implements ICheck {
                 for(int i=0;i<bean.getAttrs().length;i++){
                     for(int value : bean.getAttrValueList().get(i)){
                         DbResSpecAttr specAttr = new DbResSpecAttr();
-                        specAttr.setAttrId(String.valueOf(bean.getAttrs()[i]));
-                        specAttr.setAttrValueId(String.valueOf(value));
+//                        specAttr.setAttrId(String.valueOf(bean.getAttrs()[i]));
+//                        specAttr.setAttrValueId(String.valueOf(value));
                         specAttr.setActive("Y");
                         specAttr.setCreateAt(time);
                         specAttr.setUpdateAt(time);
@@ -173,8 +173,8 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> implements ICheck {
                 for(int i=0;i<bean.getAttrs().length;i++){
                     for(int value : bean.getAttrValueList().get(i)){
                         DbResSpecAttr specAttr = new DbResSpecAttr();
-                        specAttr.setAttrId(String.valueOf(bean.getAttrs()[i]));
-                        specAttr.setAttrValueId(String.valueOf(value));
+//                        specAttr.setAttrId(String.valueOf(bean.getAttrs()[i]));
+//                        specAttr.setAttrValueId(String.valueOf(value));
                         specAttr.setActive("Y");
                         specAttr.setCreateAt(time);
                         specAttr.setUpdateAt(time);
@@ -203,8 +203,8 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> implements ICheck {
                     for(int i=0;i<bean.getAttrs().length;i++){
                         for(int value : bean.getAttrValueList().get(i)){
                             DbResSpecAttr specAttr = new DbResSpecAttr();
-                            specAttr.setAttrId(String.valueOf(bean.getAttrs()[i]));
-                            specAttr.setAttrValueId(String.valueOf(value));
+//                            specAttr.setAttrId(String.valueOf(bean.getAttrs()[i]));
+//                            specAttr.setAttrValueId(String.valueOf(value));
                             specAttr.setActive("Y");
                             specAttr.setCreateAt(time);
                             specAttr.setUpdateAt(time);

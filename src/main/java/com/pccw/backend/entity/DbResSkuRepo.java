@@ -24,13 +24,23 @@ import java.util.List;
 @Table(name = "res_sku_repo")
 @Getter
 @Setter
-@SequenceGenerator(name="id_skuRepo",sequenceName = "skuRepo_seq",allocationSize = 1)
+//@SequenceGenerator(name="id_skuRepo",sequenceName = "skuRepo_seq",allocationSize = 1)
 @AllArgsConstructor
 @NoArgsConstructor
 public class DbResSkuRepo extends Base{
 	@Id
 	@Column(name = "id")
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "id_skuRepo")
+//	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "id_skuRepo")
+	@GeneratedValue(strategy=GenerationType.TABLE,generator="res_sku_repo_gen")
+    @TableGenerator(
+            name = "res_sku_repo_gen",
+            table="fendo_generator",
+            pkColumnName="seq_name",     //指定主键的名字
+            pkColumnValue="res_sku_repo_pk",      //指定下次插入主键时使用默认的值
+            valueColumnName="seq_id",    //该主键当前所生成的值，它的值将会随着每次创建累加
+            //initialValue = 1,            //初始化值
+            allocationSize=1             //累加值
+            )
 	private Long id;
 
 	@ManyToOne

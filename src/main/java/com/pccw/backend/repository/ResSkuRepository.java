@@ -12,9 +12,9 @@ import java.util.Map;
 public interface ResSkuRepository extends BaseRepository<DbResSku> {
 
     @Query(value = "SELECT  rsa.SPEC_ID spec,  rs.SPEC_NAME specName, " +
-            "ra.ID attr, string_agg(rav.ID,',') attrValue, " +
-            "ra.ATTR_NAME attrName, string_agg(case when rav.attr_value is not null then rav.attr_value " +
-            " else rav.value_from || '~'||rav.value_to end,',') attrValueName FROM RES_SPEC_ATTR rsa LEFT JOIN " +
+            "ra.ID attr, WM_CONCAT(rav.ID) attrValue, " +
+            "ra.ATTR_NAME attrName, WM_CONCAT(case when rav.attr_value is not null then rav.attr_value " +
+            " else rav.value_from || '~'||rav.value_to end) attrValueName FROM RES_SPEC_ATTR rsa LEFT JOIN " +
             "RES_ATTR ra ON ra.ID = rsa.ATTR_ID LEFT JOIN " +
             "RES_ATTR_VALUE rav ON rav.id = rsa.ATTR_VALUE_ID " +
             "LEFT JOIN    RES_SPEC rs ON rs.id = rsa.SPEC_ID WHERE rsa.SPEC_ID " +
@@ -26,8 +26,8 @@ public interface ResSkuRepository extends BaseRepository<DbResSku> {
     List<Map> getAllSpecsByType(@Param("typeId") long typeId);
 
     @Query(value = "select T3.type_name typeName,T3.id type,t5.spec_name specName,t5.id spec,t6.attr_name attrName,t6.id attr, " +
-            "string_agg(DISTINCT(case when t7.attr_value is not null then t7.attr_value else t7.value_from ||'~'||t7.value_to end),',') attrValueName , " +
-            "string_agg(DISTINCT t7.id,',') attrValue from RES_TYPE t3  " +
+            "WM_CONCAT(DISTINCT(case when t7.attr_value is not null then t7.attr_value else t7.value_from ||'~'||t7.value_to end)) attrValueName , " +
+            "WM_CONCAT(DISTINCT t7.id) attrValue from RES_TYPE t3  " +
             "inner join RES_TYPE_SKU_SPEC t4 on t3.id = t4.type_id " +
             "left join res_spec t5 on t5.id = t4.spec_id " +
             "left join RES_SPEC_ATTR t2 on T5.ID = T2.Spec_ID " +

@@ -48,5 +48,9 @@ public interface ResLogMgtRepository extends BaseRepository<DbResLogMgt> {
     @Query(value = "update RES_LOG_MGT_DTL set DTL_QTY =?1 where LOG_MGT_ID = ?2",nativeQuery = true)
     int updateDbResLogMgtDtlById(@Param("qtyy") Long qtyy, @Param("id") Long id);
 
-    List<DbResLogMgt> findByLogOrderNatureIn(String[] status);
+    List<DbResLogMgt> findByLogOrderNatureIn(List<String> status);
+
+    @Query(value = "SELECT DISTINCT MGT.* FROM RES_LOG_MGT mgt, RES_LOG_MGT_DTL mgtdtl WHERE MGTDTL.LOG_MGT_ID=MGT.id AND MGT.LOG_ORDER_NATURE IN ?1 AND MGTDTL.DTL_SKU_ID=?2",nativeQuery = true)
+    List<DbResLogMgt> findByLogOrderNatureInAndSkuId(List<String> Natures,Long skuId);
+
 }

@@ -3,6 +3,7 @@ package com.pccw.backend.ctrl;
 import com.pccw.backend.bean.JsonResult;
 import com.pccw.backend.bean.stock_category.CategoryLogMgtBean;
 import com.pccw.backend.bean.stock_transactions.CreateBean;
+import com.pccw.backend.bean.stock_transactions.SearchBean;
 import com.pccw.backend.bean.stock_transactions.SearchViewBean;
 import com.pccw.backend.entity.*;
 import com.pccw.backend.repository.ResLogMgtRepository;
@@ -16,10 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -49,21 +47,21 @@ public class Stock_TransactionsCtrl {
     @RequestMapping(method = RequestMethod.POST,path="/create")
     public JsonResult create(@RequestBody CreateBean b){
         long typeId = 0;
-        JsonResult result = null;
+//        JsonResult result = null;
         switch (b.getLogOrderNature()){
             case "IN":
                 typeId = Long.parseLong(b.getToStockTypeId());
                 break;
             case "OUT":
                 typeId = Long.parseLong(b.getFromStockTypeId());
-                result = qtyCheck(b, typeId);
+//                result = qtyCheck(b, typeId);
                 break;
             case "TRANSFER":
                 typeId = Long.parseLong(b.getFromStockTypeId());
-                result = qtyCheck(b, typeId);
+//                result = qtyCheck(b, typeId);
                 break;
         }
-         
+        JsonResult result = qtyCheck(b, typeId);
         if (result != null) return result;
 
         updataBalance(b, typeId);
@@ -110,7 +108,7 @@ public class Stock_TransactionsCtrl {
         long dtlQty = b.getDtlQty();
         switch (b.getLogOrderNature()){
             case "IN":
-                toBalance = skuRepoRepository.findEntityBySkuAndType(b.getDtlSkuId(), typeId);
+                toBalance = skuRepoRepository.findQtyByRepoAndShopAndType(b.getLogRepoOut(),b.getDtlSkuId(), typeId);
                 if (toBalance == null) {
                     toBalance = new DbResSkuRepo();
 
@@ -123,6 +121,11 @@ public class Stock_TransactionsCtrl {
                     DbResStockType stockType = new DbResStockType();
                     stockType.setId(Long.parseLong(b.getToStockTypeId()));
                     toBalance.setStockType(stockType);
+
+                    DbResRepo dbResRepo = new DbResRepo();
+                    dbResRepo.setId(b.getLogRepoOut());
+                    toBalance.setRepo(dbResRepo);
+
                 }else {
                     long qtyOnhand = toBalance.getQty();
                     toBalance.setQty(qtyOnhand+dtlQty);
@@ -130,14 +133,14 @@ public class Stock_TransactionsCtrl {
                 skuRepoRepository.saveAndFlush(toBalance);
                 break;
             case "OUT":
-                fromBalance = skuRepoRepository.findEntityBySkuAndType(b.getDtlSkuId(), typeId);
+                fromBalance = skuRepoRepository.findQtyByRepoAndShopAndType(b.getLogRepoOut(),b.getDtlSkuId(), typeId);
                 long qtyOnhand = fromBalance.getQty();
                 fromBalance.setQty(qtyOnhand-dtlQty);
                 skuRepoRepository.saveAndFlush(fromBalance);
                 break;
             case "TRANSFER":
-                fromBalance = skuRepoRepository.findEntityBySkuAndType(b.getDtlSkuId(), typeId);
-                toBalance = skuRepoRepository.findEntityBySkuAndType(b.getDtlSkuId(), Long.parseLong(b.getToStockTypeId()));
+                fromBalance = skuRepoRepository.findQtyByRepoAndShopAndType(b.getLogRepoOut(),b.getDtlSkuId(), typeId);
+                toBalance = skuRepoRepository.findQtyByRepoAndShopAndType(b.getLogRepoOut(),b.getDtlSkuId(), Long.parseLong(b.getToStockTypeId()));
                 if (toBalance == null) {
                     toBalance = new DbResSkuRepo();
 
@@ -150,6 +153,10 @@ public class Stock_TransactionsCtrl {
                     DbResStockType stockType = new DbResStockType();
                     stockType.setId(Long.parseLong(b.getToStockTypeId()));
                     toBalance.setStockType(stockType);
+
+                    DbResRepo dbResRepo = new DbResRepo();
+                    dbResRepo.setId(b.getLogRepoOut());
+                    toBalance.setRepo(dbResRepo);
 
                 }else {
                     long qtyToOnHand = toBalance.getQty();
@@ -167,7 +174,7 @@ public class Stock_TransactionsCtrl {
 
     private JsonResult qtyCheck(@RequestBody CreateBean b, long typeId) {
         //查询所选的repo、sku、type在sku_repo表中的qty是否大于传入的数量
-        Long dbResSkuRepo = skuRepoRepository.findQtyBySkuAndType(b.getDtlSkuId(), typeId);
+        Long dbResSkuRepo = skuRepoRepository.findQtyByRepoAndSkuAndType(b.getLogRepoOut(),b.getDtlSkuId(), typeId);
         if (dbResSkuRepo != null) {
             if (dbResSkuRepo.longValue() <= b.getDtlQty()) {
                 return new JsonResult("success", "888","Insufficient quantity ", null);
@@ -186,9 +193,17 @@ public class Stock_TransactionsCtrl {
 
     @ApiOperation(value="查询stock_category",tags={"stock_category"},notes="说明")
     @RequestMapping(method = RequestMethod.POST,path="/search")
-    public JsonResult<SearchViewBean> search(){
-        String[] status = {"OUT","IN","TRANSFER"};
-        List<DbResLogMgt> logMgtList = logMgtRepository.findByLogOrderNatureIn(status);
+    public JsonResult<SearchViewBean> search(@RequestBody SearchBean bean){
+        List<String> natures = new ArrayList<>();
+        if (bean.getNature() == null) {
+            String[] status = {"OUT","IN","TRANSFER"};
+             natures = Arrays.asList(status);
+        }else {
+            natures = Arrays.asList(bean.getNature());
+        }
+//        Long skuId = bean.getSkuId() == 0 ? null : bean.getSkuId();
+
+        List<DbResLogMgt> logMgtList = bean.getSkuId() == 0 ? logMgtRepository.findByLogOrderNatureIn(natures):logMgtRepository.findByLogOrderNatureInAndSkuId(natures,bean.getSkuId());
 
 
         List<SearchViewBean> viewBeans = logMgtList.stream().map(logMgt -> {
@@ -219,7 +234,7 @@ public class Stock_TransactionsCtrl {
             }
 
             return searchViewBean;
-        }).collect(Collectors.toList());
+        }).sorted(Comparator.comparing(SearchViewBean::getId).reversed()).collect(Collectors.toList());
 
         return JsonResult.success(viewBeans);
     }

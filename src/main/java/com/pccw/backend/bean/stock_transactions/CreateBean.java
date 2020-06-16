@@ -27,7 +27,7 @@ public class CreateBean extends BaseBean {
 
     private String toStockTypeId;
 
-//    private long logRepoOut;
+    private long logRepoOut;
 
     private String logOrderNature;
 }

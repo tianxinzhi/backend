@@ -3,7 +3,9 @@ package com.pccw.backend.ctrl;
 
 import com.pccw.backend.bean.BaseDeleteBean;
 import com.pccw.backend.bean.JsonResult;
-import com.pccw.backend.bean.masterfile_repo.*;
+import com.pccw.backend.bean.stock_balance.SearchBean;
+import com.pccw.backend.bean.stock_balance.StockCreateBean;
+import com.pccw.backend.bean.stock_balance.StockEditBean;
 import com.pccw.backend.cusinterface.ICheck;
 import com.pccw.backend.entity.DbResRepo;
 import com.pccw.backend.entity.DbResSku;
@@ -13,15 +15,17 @@ import com.pccw.backend.repository.*;
 import com.pccw.backend.util.Convertor;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.bind.annotation.*;
 
-import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * MF_RepoCtrl
@@ -38,6 +42,9 @@ public class Stock_CURDCtrl extends BaseCtrl<DbResSkuRepo> implements ICheck {
     ResSkuRepository skuRepository;
 
     @Autowired
+    ResRepoRepository shopRepository;
+
+    @Autowired
     ResStockTypeRepository typeRepository;
 
     @Autowired
@@ -45,22 +52,44 @@ public class Stock_CURDCtrl extends BaseCtrl<DbResSkuRepo> implements ICheck {
 
     @ApiOperation(value="查询shop",tags={"stock_curd"},notes="说明")
     @RequestMapping(method = RequestMethod.POST,path="/search")
-    public JsonResult search() {
+    public JsonResult search(@RequestBody SearchBean bean) {
         try {
-            List<Map> valueMap = new LinkedList<>();
-            for (DbResSkuRepo skuRepo : skuRepoRepository.findAll()) {
-                if(skuRepo.getSku().getId()==null || skuRepo.getStockType().getId() == null) continue;
-                Map value = new HashMap();
-                Optional<DbResSku> skubyId = skuRepository.findById(skuRepo.getSku().getId());
-                value.put("sku",skubyId == null ? "" : skubyId.get().getSkuCode());
-                Optional<DbResStockType> typebyId = typeRepository.findById(skuRepo.getStockType().getId());
-                value.put("stockType",typebyId == null ? "" : typebyId.get().getStockTypeName());
-                value.put("qty",skuRepo.getQty());
-                value.put("resQty",skuRepo.getRemark());
+            //List<Map> valueMap = new LinkedList<>();
 
-                valueMap.add(value);
+           // Specification<DbResSkuRepo> spec = Convertor.convertSpecification(bean);
+//            List<DbResSkuRepo> skuList = skuRepoRepository.findAll(spec, PageRequest.of(bean.getPageIndex(),bean.getPageSize())).getContent();
+            List<Map> skuList = skuRepoRepository.getBalanceQty(bean.getSkuNum(),bean.getStockTypeId(),bean.getShopId());
+//           skuList =  skuList.stream().sorted(Comparator.comparing((HashMap)map -> ).reversed()).collect(Collectors.toList());
+ //           for (Map skuRepo : skuList) {
+               // if(skuRepo.getSku()==null || skuRepo.getStockType() == null || skuRepo.getRepo() == null) continue;
+//                Map value = new LinkedHashMap();
+//
+//                Optional<DbResSku> skubyId = skuRepository.findById(skuRepo.getSku().getId());
+//                value.put("sku",skubyId == null ? "" : skubyId.get().getSkuCode());
+//
+//                Optional<DbResStockType> typebyId = typeRepository.findById(skuRepo.getStockType().getId());
+//                value.put("stockType",typebyId == null ? "" : typebyId.get().getStockTypeName());
+//
+//                Optional<DbResRepo> shopbyId = shopRepository.findById(skuRepo.getRepo().getId());
+//                value.put("store",shopbyId == null ? "" : shopbyId.get().getRepoCode());
+//
+//                value.put("qty",skuRepo.getQty());
+//                value.put("resQty",skuRepo.getRemark());
+//                value.put("id",skuRepo.getId());
+ //               valueMap.add(value);
+
+ //           }
+            if(bean.getSkuNum()!=null && !bean.getSkuNum().equals("")){
+                skuList = skuList.stream().filter(map -> map.get("sku").toString().contains(bean.getSkuNum())).collect(Collectors.toList());
             }
-            return JsonResult.success(valueMap);
+            if(bean.getShopId()!=0){
+                skuList = skuList.stream().filter(map -> Long.valueOf(map.get("shopId").toString())==bean.getShopId()).collect(Collectors.toList());
+            }
+            if(bean.getStockTypeId()!=0){
+                skuList = skuList.stream().filter(map -> Long.valueOf(map.get("stockTypeId").toString())==bean.getStockTypeId()).collect(Collectors.toList());
+            }
+            Collections.sort(skuList,(o1,o2) -> Integer.valueOf(o2.get("id").toString())-Integer.valueOf(o1.get("id").toString()));
+            return JsonResult.success(skuList);
         } catch (Exception e) {
             e.printStackTrace();
             log.info(e.getMessage());
@@ -91,6 +120,9 @@ public class Stock_CURDCtrl extends BaseCtrl<DbResSkuRepo> implements ICheck {
             skue.setId(b.getSku());
             DbResStockType stockType = new DbResStockType();
             stockType.setId(b.getStockType());
+            DbResRepo shop = new DbResRepo();
+            shop.setId(b.getStore());
+            resRepo.setRepo(shop);
             resRepo.setSku(skue);
             resRepo.setStockType(stockType);
             resRepo.setRemark(b.getResQty().toString());
@@ -120,6 +152,9 @@ public class Stock_CURDCtrl extends BaseCtrl<DbResSkuRepo> implements ICheck {
             skue.setId(b.getSku());
             DbResStockType stockType = new DbResStockType();
             stockType.setId(b.getStockType());
+            DbResRepo shop = new DbResRepo();
+            shop.setId(b.getStore());
+            resRepo.setRepo(shop);
             resRepo.setSku(skue);
             resRepo.setStockType(stockType);
             resRepo.setRemark(b.getResQty().toString());

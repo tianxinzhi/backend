@@ -1,4 +1,4 @@
-package com.pccw.backend.bean.masterfile_repo;
+package com.pccw.backend.bean.stock_balance;
 
 
 

@@ -92,4 +92,14 @@ public interface  ResSkuRepoRepository extends BaseRepository<DbResSkuRepo>{
     List<DbResSkuRepo> getDbResSkuReposByStockType(DbResStockType stockType);
 
     List<DbResSkuRepo> getDbResSkuReposByRepo(DbResRepo repo);
+
+    @Query(value = "select REPO.id, s.sku_code sku, t.stocktype_name stockType,r.repo_code shop,REPO.qty ,REPO.remark resQty\n" +
+            ",r.id shopId,t.id stockTypeId from RES_SKU_REPO repo inner join\n" +
+            "res_sku s on REPO.SKU_ID = s.id\n" +
+            "INNER JOIN RES_STOCK_TYPE t\n" +
+            "on repo.stock_type_id = t.id\n" +
+            "inner join RES_REPO r on  repo.repo_id = r.id order by repo.id desc" +
+            "",nativeQuery = true)
+        //where if(:sku,1=1,s.SKU_CODE like CONCAT('%',:sku,'%'))  and if(:stockType,2=2,t.id = :stockType) and if(:shop,3=3,r.id = :shop)
+    List<Map> getBalanceQty(@Param("sku")String sku, @Param("stockType")long stockType, @Param("shop")long shop);
 }

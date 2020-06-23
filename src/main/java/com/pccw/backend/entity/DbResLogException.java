@@ -24,9 +24,9 @@ public class DbResLogException {
 	@Column(name = "log_exception_code",length = 32)
 	private String code;
 
-	@Column(name = "log_exception_msg",length = 512)
+	@Column(name = "log_exception_msg",length = 4000)
 	private String msg;
-	
+
 //	@Column(name = "log_exception_fileName", length = 64)
 //	private String fileName;
 

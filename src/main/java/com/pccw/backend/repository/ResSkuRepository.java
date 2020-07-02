@@ -43,4 +43,7 @@ public interface ResSkuRepository extends BaseRepository<DbResSku> {
 
     DbResSku findFirst1BySkuCode(String sku_id);
 
+
+    DbResSku findDbResSkuBySkuCode(String skuCode);
+
 }

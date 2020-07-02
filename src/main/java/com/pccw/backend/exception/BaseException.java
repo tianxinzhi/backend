@@ -53,7 +53,7 @@ public class BaseException extends Exception {
         return BaseException.getException(BaseException.EXCEPTION_CODE_NOLOGINEXCEPTION);
     }
     public static BaseException getNoRightException() {
-        return BaseException.getException(BaseException.EXCEPTION_CODE_NORIGHTEXCEPTION);
+        return BaseException.getException(BaseException.EXCEPTION_CODE_NORIGHTEXCEPTION," Authentication failed ");
     }
     public static BaseException getDataUsedException(long id) {
         return BaseException.getException(BaseException.EXCEPTION_CODE_DATAUSEDEXCEPTION,id+" is used,can not disable!");

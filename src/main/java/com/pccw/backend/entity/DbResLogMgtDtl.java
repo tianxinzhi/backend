@@ -42,4 +42,6 @@ public class DbResLogMgtDtl extends BaseLogDtl {
 	@ManyToOne(targetEntity = DbResLogMgt.class)
 	private DbResLogMgt resLogMgt;
 
+	@Transient
+	private String skuCode;
 }

@@ -77,8 +77,8 @@ public class BaseCtrl<T>{
             b.setCreateAt(t);
             b.setUpdateAt(t);
             b.setActive("Y");
-            b.setCreateBy(getAccount());
-            b.setUpdateBy(getAccount());
+            b.setCreateBy(b.getCreateBy()==0 ? b.getCreateBy():getAccount());
+            b.setUpdateBy(b.getCreateBy()==0 ? b.getCreateBy():getAccount());
             saveAndFlush(repo, cls, b);       
             return JsonResult.success(Arrays.asList());
         } catch (Exception e) {

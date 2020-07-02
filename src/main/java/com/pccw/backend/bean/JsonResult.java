@@ -61,4 +61,18 @@ public class JsonResult<T> {
         }
 
     }
+
+    /**
+     * quick method to return a JsonResult when FAILED
+     * @return
+     */
+    public static <T> JsonResult<T> fail(String error){
+        try {
+            return new JsonResult<T>("failed","888", error, Arrays.asList());
+        }catch (Exception e1){
+            return new JsonResult<T>("failed", "888",e1.getMessage(), Arrays.asList());
+        }
+
+    }
+
 }

@@ -25,10 +25,22 @@ public class DbResLogMgt extends BaseLog {
 	@Column(name = "adjust_reason_id")
 	private long adjustReasonId;
 
+	@Column(name = "delivery_date")
+	private long deliveryDate;
+
+	@Column(name = "delivery_status")
+	private String deliveryStatus;
+
+    @Column(name = "delivery_number")
+    private String deliveryNumber;
+
+	@Column(name = "staff_number")
+	private String staffNumber;
+
 	// Repo In
 	@Column(name="log_repo_in")
 	private long logRepoIn;
-	
+
 	// Repo Out
 	@Column(name="log_repo_out")
 	private long logRepoOut;

@@ -17,10 +17,10 @@ public interface ResLogMgtRepository extends BaseRepository<DbResLogMgt> {
     List<DbResLogMgt> getDbResLogMgtsByAdjustReasonId(long adjustReasonId);
 
     @Query(value = "SELECT \n" +
-            " rlm.id \"id\",\n" +
+            " rlmd.id \"id\",\n" +
             " rlmd.DTL_REPO_ID \"repoId\",\n" +
             " rr.REPO_CODE \"repoCode\",\n" +
-            " rlmd.DTL_SKU_ID \"skuId\" ,\n" +
+            " rlmd.DTL_SKU_ID \"skuId\" ,rlmd.DTL_SUBIN \"status\",\n" +
             " rs.SKU_NAME \"skuName\",\n" +
             " CONCAT('<=',  rlmd.DTL_QTY ) \"qty\",\n" +
             " rlmd.DTL_QTY \"qtyy\",\n" +
@@ -45,7 +45,7 @@ public interface ResLogMgtRepository extends BaseRepository<DbResLogMgt> {
     List<Map> getStockThreshold(@Param("repoId") String repoId, @Param("skuId") String skuId);
 
     @Modifying
-    @Query(value = "update RES_LOG_MGT_DTL set DTL_QTY =?1 where LOG_MGT_ID = ?2",nativeQuery = true)
+    @Query(value = "update RES_LOG_MGT_DTL set DTL_QTY =?1 where id = ?2",nativeQuery = true)
     int updateDbResLogMgtDtlById(@Param("qtyy") Long qtyy, @Param("id") Long id);
 
     List<DbResLogMgt> findByLogOrderNatureIn(List<String> status);

@@ -97,96 +97,81 @@ public class Stock_MovementCtrl extends BaseCtrl<DbResProcess> {
                 list.add(m);
             }else{
                 List<DbResProcess> res = processRepo.findAll(spec, PageRequest.of(b.getPageIndex(),b.getPageSize(),sort)).getContent();
-                if(!Objects.isNull(res) && res.size() > 0){
-                    for(DbResProcess p:res){
-                        Map map = JSON.parseObject(JSON.toJSONString(p), Map.class);
+                for(DbResProcess p:res){
+                        Map map = new HashMap();
+                        //map = JSON.parseObject(JSON.toJSONString(p), Map.class);
                         map.put("createAccountName",getAccountName(p.getCreateBy()));
+                        map.put("createAt",p.getCreateAt());
+                        map.put("id",p.getId());
+                        map.put("logTxtBum",p.getLogTxtBum());
+                        map.put("logOrderNature",p.getLogOrderNature());
+                        map.put("remark",p.getRemark());
                         //movemenet根据不同的nature显示不同的详情
                         if(StaticVariable.LOGORDERNATURE_REPLENISHMENT_REQUEST.equals(p.getLogOrderNature())){
                             DbResLogRepl dbResLogRepl = logReplRepo.findDbResLogReplByLogTxtBum(p.getLogTxtBum());
                             String fromName = repoRepo.findById(dbResLogRepl.getRepoIdFrom()).get().getRepoName();
                             String toName = repoRepo.findById(dbResLogRepl.getRepoIdTo()).get().getRepoName();
-                            map.put("repoName","From: "+fromName+" , To: "+toName);
+                            //map.put("repoName","From: "+fromName+" , To: "+toName);
+
                             List<DbResLogReplDtl> line = dbResLogRepl.getLine();
-                            ArrayList<Object> skuQtyList = new ArrayList<>();
                             for(DbResLogReplDtl dtl:line){
-                                StringBuilder sb = new StringBuilder();
+                                map.put("fromChannel",fromName);
+                                map.put("toChannel",toName);
                                 String skuName = skuRepo.findById(dtl.getDtlSkuId()).get().getSkuName();
-                                String skuQtyString = sb.append("SkuName: ").append(skuName).append(" , Qty: ").append(dtl.getDtlQty()).toString();
-                                skuQtyList.add(skuQtyString);
+                                map.put("sku",skuName);
+                                map.put("qty",dtl.getDtlQty());
+                                map.put("fromStatus",dtl.getDtlSubin());
+
                             }
-                            map.put("sku",skuQtyList);
+                            //map.put("sku",skuQtyList);
                         }else {
                             DbResLogMgt dbResLogMgt = logMgtRepo.findDbResLogMgtByLogTxtBum(p.getLogTxtBum());
                             String fromName = "";
                             if(Objects.nonNull(dbResLogMgt.getLogRepoOut()) && dbResLogMgt.getLogRepoOut() != 0){
                                 fromName = repoRepo.findById(dbResLogMgt.getLogRepoOut()).get().getRepoName();
+                                map.put("fromChannel",fromName);
                             }
                             String toName = "";
                             if(Objects.nonNull(dbResLogMgt.getLogRepoIn()) && dbResLogMgt.getLogRepoIn() != 0){
                                 toName = repoRepo.findById(dbResLogMgt.getLogRepoIn()).get().getRepoName();
-                            }
-                            if(StaticVariable.LOGORDERNATURE_STOCK_THRESHOLD.equals(p.getLogOrderNature())
-                                    || StaticVariable.LOGORDERNATURE_STOCK_CATEGORY.equals(p.getLogOrderNature())
-                                    || StaticVariable.LOGORDERNATURE_STOCK_TAKE_ADJUSTMENT.equals(p.getLogOrderNature())){
-                                map.put("repoName",fromName);
-                            }else if(StaticVariable.LOGORDERNATURE_STOCK_IN_WITHOUT_PO_STW.equals(p.getLogOrderNature())){
-                                map.put("repoName",toName);
-                            }else {
-                                StringBuilder sb = new StringBuilder();
-                                map.put("repoName",sb.append("From: ").append(fromName).append(" , To: ").append(toName).toString());
+                                map.put("toChannel",toName);
                             }
                             List<DbResLogMgtDtl> line = dbResLogMgt.getLine();
-                            ArrayList<Object> skuQtyList = new ArrayList<>();
-                            if(!StaticVariable.LOGORDERNATURE_STOCK_CATEGORY.equals(p.getLogOrderNature())){
-                                for(DbResLogMgtDtl dtl:line){
-                                    String skuName = skuRepo.findById(dtl.getDtlSkuId()).get().getSkuName();
-                                    String skuQtyString = "";
-                                    if(StaticVariable.LOGORDERNATURE_STOCK_OUT_STS.equals(p.getLogOrderNature())
-                                            || StaticVariable.LOGORDERNATURE_STOCK_OUT_STW.equals(p.getLogOrderNature())){
-                                        if(StaticVariable.DTLSUBIN_GOOD.equals(dtl.getDtlSubin())){
-                                            skuQtyString = "SkuName: "+skuName+" , Qty: "+dtl.getDtlQty();
-                                        }
-                                    }else {
-                                        if(StaticVariable.LOGORDERNATURE_STOCK_TAKE_ADJUSTMENT.equals(p.getLogOrderNature())){
-                                            skuQtyString = "SkuName: "+skuName+" , Qty: "+dtl.getDtlQty()+" , StockType: "+dtl.getDtlSubin()+" , Action: "+dtl.getDtlAction();
-                                        }else {
-                                            skuQtyString = "SkuName: " + skuName + " , Qty: " + dtl.getDtlQty();
-                                        }
-                                    }
-                                    if(!"".equals(skuQtyString)){
-                                        skuQtyList.add(skuQtyString);
-                                    }
-                                }
-                            }else{
-                                List itemList = new ArrayList<>();
-                                for (int i = 0; i <line.size(); i=i+2) {
-                                    StringBuilder sb = new StringBuilder();
-                                    String skuQtyString = "";
-                                    String skuName = skuRepo.findById(line.get(i).getDtlSkuId()).get().getSkuName();
-                                    skuQtyString = sb.append("SkuName: ").append(skuName).append(" , Qty: ").append(line.get(i).getDtlQty()).append(" , From StockCategory: ").append(line.get(i).getDtlSubin())
-                                            .append(" , To StockCategory: ")
-                                            .append(line.get(i+1).getDtlSubin()).toString();
-                                    skuQtyList.add(skuQtyString);
-                                    String itemCodes = line.get(i).getItemCode();
-                                    String itemCode = "";
-                                    if(Objects.nonNull(itemCodes)){
-                                        List<String> items = Arrays.asList(itemCodes.split(","));
-                                        for (int j = 0;j< items.size();j=j+1){
-                                            itemList.add(skuQtyString+" , itemCode"+(j+1)+": "+items.get(j));
-                                        }
-                                    }
-                                }
-//                        if(Objects.nonNull(itemList) && itemList.size()>0){
-                                map.put("itemCode",itemList);
-//                        }
-                            }
-                            map.put("sku",skuQtyList);
-                        }
 
+                            List itemList = new ArrayList<>();
+                            for (int i = 0; i <line.size(); i++) {
+                                StringBuilder sb = new StringBuilder();
+                                String skuQtyString = "";
+                                String skuName = skuRepo.findById(line.get(i).getDtlSkuId()).get().getSkuName();
+//                                    skuQtyString = sb.append("SkuName: ").append(skuName).append(" , Qty: ").append(line.get(i).getDtlQty()).append(" , From Status: ").append(line.get(i).getDtlSubin())
+//                                            .append(" , To Status: ")
+//                                            .append(line.get(i+1).getDtlSubin()).toString();
+//                                    skuQtyList.add(skuQtyString);
+                                map.put("sku",skuName);
+                                map.put("qty",line.get(i).getDtlQty());
+                                map.put("fromStatus",line.get(i).getDtlSubin());
+
+                                String itemCodes = line.get(i).getItemCode();
+                                String itemCode = "";
+                                if(Objects.nonNull(itemCodes)){
+                                    List<String> items = Arrays.asList(itemCodes.split(","));
+                                    for (int j = 0;j< items.size();j=j+1){
+                                        itemList.add(skuQtyString+" , itemCode"+(j+1)+": "+items.get(j));
+                                    }
+                                }
+                                if(StaticVariable.LOGORDERNATURE_STOCK_CATEGORY.equals(p.getLogOrderNature())) {
+                                    map.put("toStatus",line.get(i+1).getDtlSubin());
+                                    i++;
+                                }
+                            }
+                            if(Objects.nonNull(itemList) && itemList.size()>0){
+                                map.put("itemCode",itemList);
+                            }
+                        }
                         list.add(map);
-                    }};
-            }
+                    System.out.println("res:"+map.toString());
+                };
+                }
 
 
             return JsonResult.success(list);

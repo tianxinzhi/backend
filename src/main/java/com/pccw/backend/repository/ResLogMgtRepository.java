@@ -53,4 +53,7 @@ public interface ResLogMgtRepository extends BaseRepository<DbResLogMgt> {
     @Query(value = "SELECT DISTINCT MGT.* FROM RES_LOG_MGT mgt, RES_LOG_MGT_DTL mgtdtl WHERE MGTDTL.LOG_MGT_ID=MGT.id AND MGT.LOG_ORDER_NATURE IN ?1 AND MGTDTL.DTL_SKU_ID=?2",nativeQuery = true)
     List<DbResLogMgt> findByLogOrderNatureInAndSkuId(List<String> Natures,Long skuId);
 
+
+    List<DbResLogMgt> findByDeliveryNumber(String deliveryNumber);
+
 }

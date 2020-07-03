@@ -5,9 +5,9 @@ import com.pccw.backend.bean.ResultRecode;
 import com.pccw.backend.bean.StaticVariable;
 import com.pccw.backend.bean.api_external.CreateSIWPOBean;
 import com.pccw.backend.bean.api_external.SearchStockBalanceBean;
+import com.pccw.backend.bean.api_external.api_stock_in.CreateSIFSBean;
 import com.pccw.backend.bean.api_external.api_stock_out.ApiStockBean;
 import com.pccw.backend.bean.api_external.api_stock_out.ApiStockDtlBean;
-import com.pccw.backend.bean.stock_in.CreateBean;
 import com.pccw.backend.ctrl.BaseCtrl;
 import com.pccw.backend.entity.DbResLogMgt;
 import com.pccw.backend.entity.DbResLogMgtDtl;
@@ -17,6 +17,7 @@ import com.pccw.backend.repository.*;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.SimpleDateFormat;
@@ -47,11 +48,12 @@ public class InterfaceForExternalCtrl extends BaseCtrl<DbResLogMgt> {
     ResSkuRepoRepository resSkuRepoRepository;
 
     @Autowired
-    private ResLogMgtRepository repo;
+    ResLogMgtRepository repo;
+
 
     @ApiOperation(value="stock_in_without_PO",tags={"stock_in_without_PO"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST,value = "/createSIWPO")
-    public JsonResult createSIWPO(@RequestBody CreateSIWPOBean bean){
+    public JsonResult createSIWPO(@RequestBody @Validated CreateSIWPOBean bean){
 
         try {
             bean.setCreateBy(0);
@@ -59,16 +61,14 @@ public class InterfaceForExternalCtrl extends BaseCtrl<DbResLogMgt> {
             Date date = new Date();
             long t = date.getTime();
 
-//            if (Objects.isNull(bean.getLogTxtBum())){
-                String transationNumber = genTranNum(date,"I",bean.getStoreNameTo());
-                bean.setLogTxtBum(transationNumber);
-//            }
+            String transationNumber = genTranNum(date,"I",bean.getChannelCodeTo());
+            bean.setLogTxtBum(transationNumber);
 
-            DbResRepo repo = resRepoRepository.findDbResRepoByRepoCode(bean.getStoreNameTo());
+
+            DbResRepo repo = resRepoRepository.findDbResRepoByRepoCode(bean.getChannelCodeTo());
             if (Objects.isNull(repo)) {
                 return JsonResult.fail("Can't find the channel");
             }else {
-
                 bean.setLogRepoIn(repo.getId());
             }
 
@@ -81,6 +81,7 @@ public class InterfaceForExternalCtrl extends BaseCtrl<DbResLogMgt> {
                 }else {
                     lineList.get(i).setDtlSkuId(sku.getId());
                 }
+
 
                 lineList.get(i).setDtlSubin(StaticVariable.DTLSUBIN_AVAILABLE);
                 lineList.get(i).setDtlAction(StaticVariable.DTLACTION_ADD);
@@ -98,14 +99,101 @@ public class InterfaceForExternalCtrl extends BaseCtrl<DbResLogMgt> {
             bean.setLine(lineList);
 
             JsonResult result = this.create(resStockInRepository, DbResLogMgt.class, bean);
-            List outputData = new ArrayList();
-//            HashMap<String, Object> map = new HashMap<>();
-//            map.put("txtnum",transationNumber);
-//            outputData.add(map);
-            outputData.add(transationNumber);
-            result.setData(outputData);
+            if(result.getCode().equals("000")){
+                List outputData = new ArrayList();
+                HashMap<String, Object> map = new HashMap<>();
+                map.put("txtnum",transationNumber);
+                outputData.add(map);
+                result.setData(outputData);
+            }
             return result;
         } catch (Exception e) {
+            return JsonResult.fail(e);
+        }
+    }
+
+
+    @ApiOperation(value="stock_in_PO",tags={"stock_in_PO"},notes="注意问题点")
+    @RequestMapping(method = RequestMethod.POST,value = "/createSIFS")
+    public JsonResult createPO(@RequestBody @Validated CreateSIFSBean sisfBean) {
+        try {
+            if (sisfBean.getDnNumber() == null) {
+                return JsonResult.fail(" DeliveryNumber cannot be null ");
+            }
+
+
+            List<DbResLogMgt> logMgts = repo.findByDeliveryNumber(sisfBean.getDnNumber());
+
+            if (logMgts.size() > 0) {
+                return JsonResult.fail("DeliveryNumber cannot be repeated ");
+            }
+
+
+            List list = new ArrayList();
+
+            for(CreateSIWPOBean bean:sisfBean.getBatch()){
+                DbResRepo repoTo = resRepoRepository.findDbResRepoByRepoCode(bean.getChannelCodeTo());
+                if (Objects.isNull(repoTo)) {
+                    return JsonResult.fail("Can't find the channel" + bean.getChannelCodeTo());
+                } else {
+                    bean.setLogRepoIn(repoTo.getId());
+                }
+
+                DbResRepo repoFrom = resRepoRepository.findDbResRepoByRepoCode(bean.getChannelCodeFrom());
+                if (Objects.isNull(repoFrom)) {
+                    return JsonResult.fail("Can't find the channel" + bean.getChannelCodeFrom());
+                } else {
+                    bean.setLogRepoIn(repoFrom.getId());
+                }
+
+                bean.setCreateBy(0);
+                bean.setDeliveryNumber(sisfBean.getDnNumber());
+                Date date = new Date();
+                long t = date.getTime();
+
+                String transationNumber = genTranNum(date, "I", bean.getChannelCodeTo());
+                bean.setLogTxtBum(transationNumber);
+
+                bean.setLogOrderNature(StaticVariable.LOGORDERNATURE_STOCK_IN_STS);
+                List<DbResLogMgtDtl> lineList = bean.getLine();
+                for (int i = 0; i < lineList.size(); i++) {
+
+                    DbResSku sku = resSkuRepository.findDbResSkuBySkuCode(lineList.get(i).getSkuCode());
+                    if (Objects.isNull(sku)) {
+                        return JsonResult.fail("Can't find the skuCode" + lineList.get(i).getSkuCode());
+                    } else {
+                        lineList.get(i).setDtlSkuId(sku.getId());
+                    }
+
+                    lineList.get(i).setDtlSubin(StaticVariable.DTLSUBIN_AVAILABLE);
+                    lineList.get(i).setDtlAction(StaticVariable.DTLACTION_ADD);
+                    lineList.get(i).setStatus(StaticVariable.STATUS_AVAILABLE);
+                    lineList.get(i).setLisStatus(StaticVariable.LISSTATUS_WAITING);
+                    lineList.get(i).setCreateAt(t);
+                    lineList.get(i).setUpdateAt(t);
+                    lineList.get(i).setId(null);
+                }
+                bean.setLine(lineList);
+
+                JsonResult result = this.create(repo, DbResLogMgt.class, bean);
+                HashMap<String, Object> map = new HashMap<>();
+                if (result.getCode().equals("000")) {
+                    map.put("txtnum", transationNumber);
+                    list.add(map);
+                } else {
+                    return result;
+                }
+            }
+
+
+
+
+
+
+            return JsonResult.success(list);
+
+
+        }catch (Exception e){
             return JsonResult.fail(e);
         }
     }
@@ -116,6 +204,7 @@ public class InterfaceForExternalCtrl extends BaseCtrl<DbResLogMgt> {
     {
         try {
             String repoNum = "";
+            String skuNum = Objects.isNull(sc.getSkuNum()) ? "" : sc.getSkuNum();
             if (Objects.nonNull(sc.getChannelCode())) {
 
                 DbResRepo repo = resRepoRepository.findDbResRepoByRepoCode(sc.getChannelCode());
@@ -127,7 +216,15 @@ public class InterfaceForExternalCtrl extends BaseCtrl<DbResLogMgt> {
                 }
             }
 
-            String skuNum = Objects.isNull(sc.getSkuNum()) ? "" : sc.getSkuNum();
+            if (Objects.nonNull(sc.getSkuNum())){
+
+                DbResSku sku = resSkuRepository.findDbResSkuBySkuCode(skuNum);
+                if (Objects.isNull(sku)){
+                    return JsonResult.fail("Can't find the skuCode "+skuNum);
+                }
+            }
+
+
             List<Map> res = resSkuRepoRepository.getStockBalanceInfo(skuNum,repoNum);
             List<Map> result = ResultRecode.returnResult(res);
             return JsonResult.success(result);
@@ -140,7 +237,7 @@ public class InterfaceForExternalCtrl extends BaseCtrl<DbResLogMgt> {
 
 
     @ApiOperation(value="创建stock_out",tags={"stock_out"},notes="说明")
-    @RequestMapping(method = RequestMethod.POST,path="/create")
+    @RequestMapping(method = RequestMethod.POST,path="/createStockOut")
     public JsonResult create(@RequestBody ApiStockBean b){
          String errorMsg="";
         try {
@@ -220,7 +317,9 @@ public class InterfaceForExternalCtrl extends BaseCtrl<DbResLogMgt> {
             mgt.setLine(dtls);
             repo.saveAndFlush(mgt);
             List outputData = new ArrayList();
-            outputData.add(transNum);
+            HashMap<String, Object> map = new HashMap<>();
+            map.put("txtnum",transNum);
+            outputData.add(map);
             return JsonResult.success(outputData);
         } catch (Exception e) {
             e.printStackTrace();
@@ -229,7 +328,7 @@ public class InterfaceForExternalCtrl extends BaseCtrl<DbResLogMgt> {
     }
 
     /**
-     *
+     * 生成transaction number
      * @param date
      * @param tpye
      * @param storeNameFrom

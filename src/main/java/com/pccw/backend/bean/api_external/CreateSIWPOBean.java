@@ -17,16 +17,19 @@ import java.util.List;
 @NoArgsConstructor
 public class CreateSIWPOBean extends BaseBean {
     @ApiModelProperty(value="门店接收",name="storeNameTo",example="")
-    private String storeNameTo;
+    private String channelCodeTo;
 
     @ApiModelProperty(value="门店出货",name="storeNameFrom",example="")
-    private String storeNameFrom;
+    private String channelCodeFrom;
 
 //    @ApiModelProperty(value="门店接收",name="logRepoIn",example="")
     private long logRepoIn;
 
 //    @ApiModelProperty(value="门店出货",name="logRepoOut",example="")
     private long logRepoOut;
+
+    @ApiModelProperty(value="deliveryNumber",name="deliveryNumber",example="")
+    private String deliveryNumber;
 
     @ApiModelProperty(value="logTxtBum",name="logTxtBum",example="")
     private String logTxtBum;

@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
 
 import javax.persistence.*;
+import javax.validation.Valid;
+import javax.validation.constraints.Min;
 
 
 /**
@@ -30,7 +32,9 @@ public class DbResLogMgtDtl extends BaseLogDtl {
 	
 	@Column(name="dtl_repoId")
 	private long dtlRepoId;
-	
+
+	@Valid
+	@Min(1)
 	@Column(name="dtl_qty")
 	private long dtlQty;
 

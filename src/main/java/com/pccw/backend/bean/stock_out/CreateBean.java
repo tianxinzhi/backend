@@ -8,6 +8,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.Column;
 import java.util.List;
 
 /**
@@ -24,6 +25,7 @@ public class CreateBean extends BaseBean {
 
     @ApiModelProperty(value="门店出货",name="logRepoOut",example="")
     private long logRepoOut;
+
 
     @ApiModelProperty(value="logTxtBum",name="logTxtBum",example="")
     private String logTxtBum;
@@ -42,6 +44,18 @@ public class CreateBean extends BaseBean {
 
     @ApiModelProperty(value="logTxtBum",name="logTxtBum",example="")
     private String repoType;
+
+    @ApiModelProperty(value="deliveryDate",name="deliveryDate",example="")
+    private long deliveryDate;
+
+    @ApiModelProperty(value="deliveryStatus",name="deliveryStatus",example="")
+    private String deliveryStatus;
+
+    @ApiModelProperty(value="deliveryNumber",name="deliveryNumber",example="")
+    private String deliveryNumber;
+
+    @ApiModelProperty(value="staffNumber",name="staffNumber",example="")
+    private String staffNumber;
 
     @ApiModelProperty(value="dtlList",name="dtlList",example="")
     private List<DbResLogMgtDtl> line;

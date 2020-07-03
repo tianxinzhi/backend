@@ -219,7 +219,9 @@ public class InterfaceForExternalCtrl extends BaseCtrl<DbResLogMgt> {
 
             mgt.setLine(dtls);
             repo.saveAndFlush(mgt);
-            return JsonResult.success(Arrays.asList());
+            List outputData = new ArrayList();
+            outputData.add(transNum);
+            return JsonResult.success(outputData);
         } catch (Exception e) {
             e.printStackTrace();
             return JsonResult.fail(e);

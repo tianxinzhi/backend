@@ -65,12 +65,22 @@ public class InterfaceForExternalCtrl extends BaseCtrl<DbResLogMgt> {
 //            }
 
             DbResRepo repo = resRepoRepository.findDbResRepoByRepoCode(bean.getStoreNameTo());
-            bean.setLogRepoIn(repo.getId());
+            if (Objects.isNull(repo)) {
+                return JsonResult.fail("Can't find the channel");
+            }else {
+
+                bean.setLogRepoIn(repo.getId());
+            }
+
             bean.setLogOrderNature(StaticVariable.LOGORDERNATURE_STOCK_IN_WITHOUT_PO_STW);
             List<DbResLogMgtDtl> lineList = bean.getLine();
             for (int i = 0; i <lineList.size() ; i++) {
                 DbResSku sku = resSkuRepository.findDbResSkuBySkuCode(lineList.get(i).getSkuCode());
-                lineList.get(i).setDtlSkuId(sku.getId());
+                if (Objects.isNull(sku)) {
+                    return JsonResult.fail("Can't find the skuCode"+lineList.get(i).getSkuCode());
+                }else {
+                    lineList.get(i).setDtlSkuId(sku.getId());
+                }
 
                 lineList.get(i).setDtlSubin(StaticVariable.DTLSUBIN_AVAILABLE);
                 lineList.get(i).setDtlAction(StaticVariable.DTLACTION_ADD);
@@ -105,8 +115,18 @@ public class InterfaceForExternalCtrl extends BaseCtrl<DbResLogMgt> {
     public JsonResult<Map> searchStockBalance(@RequestBody SearchStockBalanceBean sc)
     {
         try {
-            log.info(sc.toString());
-            String repoNum = Objects.isNull(sc.getRepoNum()) ? "" : sc.getRepoNum();
+            String repoNum = "";
+            if (Objects.nonNull(sc.getChannelCode())) {
+
+                DbResRepo repo = resRepoRepository.findDbResRepoByRepoCode(sc.getChannelCode());
+                if (Objects.nonNull(repo)) {
+                    repoNum = String.valueOf(repo.getId());
+
+                }else {
+                    return JsonResult.fail("Can't find the channel");
+                }
+            }
+
             String skuNum = Objects.isNull(sc.getSkuNum()) ? "" : sc.getSkuNum();
             List<Map> res = resSkuRepoRepository.getStockBalanceInfo(skuNum,repoNum);
             List<Map> result = ResultRecode.returnResult(res);

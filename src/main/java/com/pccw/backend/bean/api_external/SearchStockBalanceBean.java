@@ -15,5 +15,5 @@ public class SearchStockBalanceBean {
 
     private String skuNum;
 
-    private String repoNum;
+    private String channelCode;
 }

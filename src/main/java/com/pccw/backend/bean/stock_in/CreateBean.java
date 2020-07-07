@@ -34,6 +34,12 @@ public class CreateBean extends BaseBean {
     @ApiModelProperty(value="logTxtBum",name="logTxtBum",example="")
     private String remark;
 
+    @ApiModelProperty(value="deliveryDate",name="deliveryDate",example="")
+    private long deliveryDate;
+
+    @ApiModelProperty(value="deliveryStatus",name="deliveryStatus",example="")
+    private String deliveryStatus;
+
     @ApiModelProperty(value="dtlList",name="dtlList",example="")
     private List<DbResLogMgtDtl> line;
 }

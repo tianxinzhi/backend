@@ -41,4 +41,6 @@ public class CreateBean extends BaseBean {
     private List<int[]> attrValueList;
 //    private Attr attr
 
+
+    private Long[] specChecked;
 }

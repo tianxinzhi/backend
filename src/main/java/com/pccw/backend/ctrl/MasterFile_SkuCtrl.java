@@ -111,18 +111,28 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> implements ICheck {
 
                 List<DbResSpec> dbResSpecsBySpecName = specRepository.getDbResSpecsBySpecName(spec.getSpecName());
                 DbResSpec maxSpec = dbResSpecsBySpecName.stream().max(Comparator.comparing(DbResSpec::getId)).get();
-                DbResTypeSkuSpec newTypeSpec = new DbResTypeSkuSpec();
-                //BeanUtils.copyProperties(typeSkuSpec,newTypeSpec);
-                newTypeSpec.setSpecId(maxSpec.getId());
-                newTypeSpec.setType(typeSkuSpec.get(0).getType());
-                newTypeSpec.setSku(sku);
-                newTypeSpec.setIsType("N");
-                newTypeSpec.setCreateAt(time);
-                newTypeSpec.setUpdateBy(getAccount());
-                newTypeSpec.setUpdateAt(time);
-                newTypeSpec.setUpdateBy(getAccount());
-                newTypeSpec.setActive("Y");
-                sku.setDbResTypeSkuSpec(newTypeSpec);
+                List<Long> specIds = Arrays.asList(bean.getSpecChecked());
+                List<Long> specIdList = new ArrayList(specIds);
+                specIdList.add(maxSpec.getId());
+                List<DbResTypeSkuSpec> typeSkuSpecs = new ArrayList<>();
+                for (Long id : specIdList) {
+
+                    DbResTypeSkuSpec newTypeSpec = new DbResTypeSkuSpec();
+                    //BeanUtils.copyProperties(typeSkuSpec,newTypeSpec);
+//                    newTypeSpec.setSpecId(maxSpec.getId());
+                    newTypeSpec.setSpecId(id);
+                    newTypeSpec.setType(typeSkuSpec.get(0).getType());
+                    newTypeSpec.setSku(sku);
+                    newTypeSpec.setIsType("N");
+                    newTypeSpec.setCreateAt(time);
+                    newTypeSpec.setUpdateBy(getAccount());
+                    newTypeSpec.setUpdateAt(time);
+                    newTypeSpec.setUpdateBy(getAccount());
+                    newTypeSpec.setActive("Y");
+                    typeSkuSpecs.add(newTypeSpec);
+                }
+//                sku.setDbResTypeSkuSpec(newTypeSpec);
+                sku.setDbResTypeSkuSpec(typeSkuSpecs);
 
                 skuRepo.saveAndFlush(sku);
             }
@@ -233,7 +243,7 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> implements ICheck {
                     newTypeSpec.setUpdateAt(time);
                     newTypeSpec.setUpdateBy(getAccount());
                     newTypeSpec.setActive("Y");
-                    sku.setDbResTypeSkuSpec(newTypeSpec);
+//                    sku.setDbResTypeSkuSpec(newTypeSpec);
                 }
             }
 
@@ -354,7 +364,7 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> implements ICheck {
                     tableData.put("selectMode","tags");
                     tableData.put("type",10);
                     tableData.put("options",lbs);
-
+                    tableData.put("disable",true);
                     tableDatas.add(tableData);
                 }
 

@@ -480,7 +480,7 @@ public class LisIncrementDataCtrl {
                         newTypeSpec.setCreateAt(time);
                         newTypeSpec.setUpdateAt(time);
                         newTypeSpec.setActive("Y");
-                        sku.setDbResTypeSkuSpec(newTypeSpec);
+//                        sku.setDbResTypeSkuSpec(newTypeSpec);
                     }
                 }
                 BeanUtils.copyProperties(sku,skuLis);

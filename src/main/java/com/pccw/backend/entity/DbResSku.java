@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.List;
 
 
 /**
@@ -49,7 +50,9 @@ public class DbResSku extends Base {
 //	@OneToMany(cascade={CascadeType.ALL},mappedBy = "sku",orphanRemoval = true)
 //	private List<DbResSkuRepo> skuRepoList;
 
-    @OneToOne(cascade = {CascadeType.ALL},mappedBy = "sku",orphanRemoval = true)
-    private DbResTypeSkuSpec dbResTypeSkuSpec;
+//    @OneToOne(cascade = {CascadeType.ALL},mappedBy = "sku",orphanRemoval = true)
+//    private DbResTypeSkuSpec dbResTypeSkuSpec;
 
+	@OneToMany(cascade = {CascadeType.ALL},mappedBy = "sku",orphanRemoval = true)
+	private List<DbResTypeSkuSpec> dbResTypeSkuSpec;
 }

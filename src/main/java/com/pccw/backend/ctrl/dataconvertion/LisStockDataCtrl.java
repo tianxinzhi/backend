@@ -597,7 +597,7 @@ public class LisStockDataCtrl {
                 skuType.setCreateAt(time);
                 skuType.setUpdateAt(time);
                 skuType.setActive("Y");
-                sku.setDbResTypeSkuSpec(skuType);
+//                sku.setDbResTypeSkuSpec(skuType);
                 //skuSet.add(sku);
                 skuLis.setSkuAttrValueLisList(skuAttrValueLisList);
                 //skuLisSet.add(skuLis);

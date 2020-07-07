@@ -24,7 +24,8 @@ public class DbResTypeSkuSpec extends Base {
 //	private long typeId;
 
 	@JoinColumn(name="sku_id")
-	@OneToOne
+//	@OneToOne
+	@ManyToOne
 	@JsonBackReference
 	private DbResSku sku;
 

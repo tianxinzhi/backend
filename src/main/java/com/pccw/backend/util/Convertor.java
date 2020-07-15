@@ -234,7 +234,10 @@ import com.pccw.backend.annotation.PredicateType;
 			Object param2 = null;
 			Object param3 = null;
 			Method[] methods = annotation.getClass().getDeclaredMethods();
-			for (int i = 4; i <methods.length; i++) {
+			for (int i = 0; i <methods.length; i++) {
+				if(!methods[i].getName().contains("param")){
+					continue;
+				}
 				//得到注解中传入的值（注解中存放的是entity的某个属性）
 				String annotationMethodValue = (String) methods[i].invoke(annotation);
 				//初始化entity属性的值

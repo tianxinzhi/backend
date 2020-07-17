@@ -48,19 +48,19 @@ public class Stock_BalanceCtrl {
 	// 	}
 	// }
 
-    @RequestMapping(method=RequestMethod.POST,path="/search")
-     public JsonResult<Map> test(@RequestBody SearchBean sc)
-      {
-         try {
-             log.info(sc.toString());
-             String repoNum = Objects.isNull(sc.getRepoNum()) ? "" : sc.getRepoNum();
-             String skuNum = Objects.isNull(sc.getSkuNum()) ? "" : sc.getSkuNum();
-             List<Map> res = repo.getStockBalanceInfo(skuNum,repoNum);
-             List<Map> result = ResultRecode.returnResult(res);
-             return JsonResult.success(result);
-     	} catch (Exception e) {
-     		// log.error(e, t);
-     		return JsonResult.fail(e);
-     	}
-     }
+//    @RequestMapping(method=RequestMethod.POST,path="/search")
+//     public JsonResult<Map> test(@RequestBody SearchBean sc)
+//      {
+//         try {
+//             log.info(sc.toString());
+//             String repoNum = Objects.isNull(sc.getRepoNum()) ? "" : sc.getRepoNum();
+//             String skuNum = Objects.isNull(sc.getSkuNum()) ? "" : sc.getSkuNum();
+//             List<Map> res = repo.getStockBalanceInfo(skuNum,repoNum);
+//             List<Map> result = ResultRecode.returnResult(res);
+//             return JsonResult.success(result);
+//     	} catch (Exception e) {
+//     		// log.error(e, t);
+//     		return JsonResult.fail(e);
+//     	}
+//     }
 }

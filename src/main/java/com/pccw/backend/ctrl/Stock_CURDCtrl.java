@@ -58,7 +58,7 @@ public class Stock_CURDCtrl extends BaseCtrl<DbResSkuRepo> implements ICheck {
 
            // Specification<DbResSkuRepo> spec = Convertor.convertSpecification(bean);
 //            List<DbResSkuRepo> skuList = skuRepoRepository.findAll(spec, PageRequest.of(bean.getPageIndex(),bean.getPageSize())).getContent();
-            List<Map> skuList = skuRepoRepository.getBalanceQty(bean.getSkuNum(),bean.getStockTypeId(),bean.getShopId());
+            List<Map> skuList = skuRepoRepository.getBalanceQty();
 //           skuList =  skuList.stream().sorted(Comparator.comparing((HashMap)map -> ).reversed()).collect(Collectors.toList());
  //           for (Map skuRepo : skuList) {
                // if(skuRepo.getSku()==null || skuRepo.getStockType() == null || skuRepo.getRepo() == null) continue;
@@ -80,7 +80,8 @@ public class Stock_CURDCtrl extends BaseCtrl<DbResSkuRepo> implements ICheck {
 
  //           }
             if(bean.getSkuNum()!=null && !bean.getSkuNum().equals("")){
-                skuList = skuList.stream().filter(map -> map.get("sku").toString().contains(bean.getSkuNum())).collect(Collectors.toList());
+                skuList = skuList.stream().filter(map -> bean.getSkuNum().contains(map.get("skuId").toString())).collect(Collectors.toList());
+//                skuList = skuList.stream().filter(map -> map.get("sku").toString().contains(bean.getSkuNum())).collect(Collectors.toList());
             }
             if(bean.getShopId()!=0){
                 skuList = skuList.stream().filter(map -> Long.valueOf(map.get("shopId").toString())==bean.getShopId()).collect(Collectors.toList());

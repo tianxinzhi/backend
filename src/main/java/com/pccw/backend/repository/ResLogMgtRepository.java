@@ -39,10 +39,11 @@ public interface ResLogMgtRepository extends BaseRepository<DbResLogMgt> {
             " WHERE\n" +
             " rlm.LOG_ORDER_NATURE = 'Stock Threshold(STHR)' \n" +
             " and rlmd.DTL_REPO_ID = nvl(?1,rlmd.DTL_REPO_ID)\n" +
-            " and rlmd.DTL_SKU_ID = nvl(?2,rlmd.DTL_SKU_ID)\n" +
+//            " and rlmd.DTL_SKU_ID = nvl(?2,rlmd.DTL_SKU_ID)\n" +
             " ORDER BY\n" +
             " rlmd.CREATE_AT DESC",nativeQuery = true)
-    List<Map> getStockThreshold(@Param("repoId") String repoId, @Param("skuId") String skuId);
+    List<Map> getStockThreshold(@Param("repoId") String repoId);
+//    List<Map> getStockThreshold(@Param("repoId") String repoId, @Param("skuId") String skuId);
 
     @Modifying
     @Query(value = "update RES_LOG_MGT_DTL set DTL_QTY =?1 where id = ?2",nativeQuery = true)

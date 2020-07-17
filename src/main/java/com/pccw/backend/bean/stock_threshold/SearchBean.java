@@ -3,6 +3,8 @@ package com.pccw.backend.bean.stock_threshold;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 
 /**
  * SearchCondition
@@ -11,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class SearchBean{
-    private String skuId;
+    private List<String> skuId;
     private String repoId;
 
 }

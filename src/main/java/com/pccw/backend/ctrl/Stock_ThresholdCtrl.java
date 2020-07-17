@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Slf4j
@@ -67,9 +68,13 @@ public class Stock_ThresholdCtrl extends BaseCtrl<DbResLogMgt> {
     public JsonResult search(@RequestBody SearchBean b) {
         try {
             String repoId = Objects.isNull(b.getRepoId()) ? "" : b.getRepoId();
-            String skuId = Objects.isNull(b.getSkuId()) ? "" : b.getSkuId();
+            List<String> skuId = b.getSkuId() == null || b.getSkuId().size() == 0  ? null : b.getSkuId();
             //查询所有预警数据
-            List<Map> list = resLogMgtRepository.getStockThreshold(repoId,skuId);
+//            List<Map> list = resLogMgtRepository.getStockThreshold(repoId,skuId);
+            List<Map> list = resLogMgtRepository.getStockThreshold(repoId);
+            if (skuId != null) {
+                list = list.stream().filter(map -> skuId.contains(map.get("skuId").toString())).collect(Collectors.toList());
+            }
             return JsonResult.success(list);
         } catch (Exception e) {
             return JsonResult.fail(e);

@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
+import java.util.List;
 
 
 /**
@@ -22,7 +23,7 @@ import java.io.Serializable;
 public class SearchBean extends BaseSearchBean implements Serializable{
 
     @PredicateAnnotation(type = PredicateType.LIKE)
-    private String skuNum; // same as entity property and relative to the data clomun
+    private List<String> skuNum; // same as entity property and relative to the data clomun
 
     @PredicateAnnotation(type = PredicateType.LIKE)
     private String itemNum;

@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 /**
  * SearchCondition
@@ -35,6 +36,13 @@ public class SearchBean {
     @ApiModelProperty(value="时间范围",name="creatAt",example="")
     private String[] createAt;
 
+    @PredicateAnnotation(type = PredicateType.LIKE)
+    private String skuNum; // same as entity property and relative to the data clomun
+
+    @PredicateAnnotation(type = PredicateType.LIKE)
+    @ApiModelProperty(value="商店Id",name="toRepoId",example="")
+    private long toRepoId;
+
     @NotNull
     private Integer pageIndex=0;
     @NotNull
@@ -45,5 +53,5 @@ public class SearchBean {
     private long updateBy;
     private String active;
 
-    
+
 }

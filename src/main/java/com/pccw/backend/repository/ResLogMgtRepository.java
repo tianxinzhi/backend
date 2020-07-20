@@ -14,6 +14,8 @@ public interface ResLogMgtRepository extends BaseRepository<DbResLogMgt> {
 
     DbResLogMgt findDbResLogMgtByLogTxtBum(String logTxtBum);
 
+    List<DbResLogMgt> findDbResLogMgtsByLogTxtBum(String logTxtBum);
+
     List<DbResLogMgt> getDbResLogMgtsByAdjustReasonId(long adjustReasonId);
 
     @Query(value = "SELECT \n" +

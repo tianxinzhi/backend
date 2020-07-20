@@ -18,8 +18,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * AuthRightCtrl
@@ -70,7 +73,7 @@ public class Stock_MovementCtrl extends BaseCtrl<DbResProcess> {
             }
             Specification spec = Convertor.convertSpecification(b);
             Sort sort = new Sort(Sort.Direction.DESC,"id");
-            ArrayList<Map> list = new ArrayList<>();
+            List<Map> list = new ArrayList<>();
 
             //orderAPI
             if(StaticVariable.LOGORDERNATURE_ASSIGN.equals(b.getLogOrderNature()) ||
@@ -96,7 +99,7 @@ public class Stock_MovementCtrl extends BaseCtrl<DbResProcess> {
                         .build();
                 list.add(m);
             }else{
-                List<DbResProcess> res = processRepo.findAll(spec, PageRequest.of(b.getPageIndex(),b.getPageSize(),sort)).getContent();
+                List<DbResProcess> res = processRepo.findAll(PageRequest.of(b.getPageIndex(),b.getPageSize(),sort)).getContent();
                 for(DbResProcess p:res){
                         Map map = new HashMap();
                         //map = JSON.parseObject(JSON.toJSONString(p), Map.class);
@@ -109,32 +112,37 @@ public class Stock_MovementCtrl extends BaseCtrl<DbResProcess> {
                         //movemenet根据不同的nature显示不同的详情
                         if(StaticVariable.LOGORDERNATURE_REPLENISHMENT_REQUEST.equals(p.getLogOrderNature())){
                             DbResLogRepl dbResLogRepl = logReplRepo.findDbResLogReplByLogTxtBum(p.getLogTxtBum());
-                            String fromName = repoRepo.findById(dbResLogRepl.getRepoIdFrom()).get().getRepoName();
-                            String toName = repoRepo.findById(dbResLogRepl.getRepoIdTo()).get().getRepoName();
+                            DbResRepo fromName = repoRepo.findById(dbResLogRepl.getRepoIdFrom()).get();
+                            DbResRepo toName = repoRepo.findById(dbResLogRepl.getRepoIdTo()).get();
                             //map.put("repoName","From: "+fromName+" , To: "+toName);
 
                             List<DbResLogReplDtl> line = dbResLogRepl.getLine();
                             for(DbResLogReplDtl dtl:line){
-                                map.put("fromChannel",fromName);
-                                map.put("toChannel",toName);
-                                String skuName = skuRepo.findById(dtl.getDtlSkuId()).get().getSkuName();
-                                map.put("sku",skuName);
+                                map.put("fromChannel",fromName.getRepoCode());
+                                map.put("toChannel",toName.getRepoCode());
+                                map.put("repoId",fromName.getId());
+                                map.put("toRepoId",toName.getId());
+                                DbResSku sku = skuRepo.findById(dtl.getDtlSkuId()).get();
+                                map.put("sku",sku.getSkuName());
+                                map.put("skuDesc",sku.getSkuDesc());
                                 map.put("qty",dtl.getDtlQty());
                                 map.put("fromStatus",dtl.getDtlSubin());
 
                             }
                             //map.put("sku",skuQtyList);
                         }else {
-                            DbResLogMgt dbResLogMgt = logMgtRepo.findDbResLogMgtByLogTxtBum(p.getLogTxtBum());
+                            DbResLogMgt dbResLogMgt = logMgtRepo.findDbResLogMgtsByLogTxtBum(p.getLogTxtBum()).get(0);
                             String fromName = "";
                             if(Objects.nonNull(dbResLogMgt.getLogRepoOut()) && dbResLogMgt.getLogRepoOut() != 0){
-                                fromName = repoRepo.findById(dbResLogMgt.getLogRepoOut()).get().getRepoName();
-                                map.put("fromChannel",fromName);
+                                DbResRepo fromName2 = repoRepo.findById(dbResLogMgt.getLogRepoOut()).get();
+                                map.put("fromChannel",fromName2.getRepoCode());
+                                map.put("repoId",fromName2.getId());
                             }
                             String toName = "";
                             if(Objects.nonNull(dbResLogMgt.getLogRepoIn()) && dbResLogMgt.getLogRepoIn() != 0){
-                                toName = repoRepo.findById(dbResLogMgt.getLogRepoIn()).get().getRepoName();
-                                map.put("toChannel",toName);
+                                DbResRepo toName2 = repoRepo.findById(dbResLogMgt.getLogRepoIn()).get();
+                                map.put("toChannel",toName2.getRepoCode());
+                                map.put("toRepoId",toName2.getId());
                             }
                             List<DbResLogMgtDtl> line = dbResLogMgt.getLine();
 
@@ -142,12 +150,13 @@ public class Stock_MovementCtrl extends BaseCtrl<DbResProcess> {
                             for (int i = 0; i <line.size(); i++) {
                                 StringBuilder sb = new StringBuilder();
                                 String skuQtyString = "";
-                                String skuName = skuRepo.findById(line.get(i).getDtlSkuId()).get().getSkuName();
+                                DbResSku sku = skuRepo.findById(line.get(i).getDtlSkuId()).get();
 //                                    skuQtyString = sb.append("SkuName: ").append(skuName).append(" , Qty: ").append(line.get(i).getDtlQty()).append(" , From Status: ").append(line.get(i).getDtlSubin())
 //                                            .append(" , To Status: ")
 //                                            .append(line.get(i+1).getDtlSubin()).toString();
 //                                    skuQtyList.add(skuQtyString);
-                                map.put("sku",skuName);
+                                map.put("sku",sku.getSkuName());
+                                map.put("skuDesc",sku.getSkuDesc());
                                 map.put("qty",line.get(i).getDtlQty());
                                 map.put("fromStatus",line.get(i).getDtlSubin());
 
@@ -172,10 +181,39 @@ public class Stock_MovementCtrl extends BaseCtrl<DbResProcess> {
                     System.out.println("res:"+map.toString());
                 };
                 }
+            DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            if(b.getCreateAt()!=null){
+                list = list.stream().filter(map -> {
+                    try {
+                        long dte = Long.parseLong(map.get("createAt").toString());
+                        if(b.getCreateAt()[0]!=null)
+                            return dte >= sdf.parse(b.getCreateAt()[0]).getTime();
+                        if(b.getCreateAt()[1]!=null)
+                            return dte <= sdf.parse(b.getCreateAt()[1]).getTime();
+                        else
+                            return dte >= sdf.parse(b.getCreateAt()[0]).getTime() &&  dte <=sdf.parse(b.getCreateAt()[1]).getTime();
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                    return false;
+                }).collect(Collectors.toList());
+            }
 
-
+            if(b.getLogOrderNature()!=null && !b.getLogOrderNature().equals("")){
+                list = list.stream().filter(map -> map.get("logOrderNature") != null && map.get("logOrderNature").toString().equals(b.getLogOrderNature())).collect(Collectors.toList());
+            }
+            if(b.getSkuNum()!=null && !b.getSkuNum().equals("")){
+                list = list.stream().filter(map -> map.get("sku") != null && map.get("sku").toString().contains(b.getSkuNum())).collect(Collectors.toList());
+            }
+            if(b.getRepoId()!= null && b.getRepoId()!=0){
+                list = list.stream().filter(map -> map.get("repoId") != null && Long.parseLong(map.get("repoId").toString())==b.getRepoId()).collect(Collectors.toList());
+            }
+            if(b.getToRepoId()!=0){
+                list = list.stream().filter(map -> map.get("toRepoId")!=null && Long.parseLong(map.get("toRepoId").toString())==b.getToRepoId()).collect(Collectors.toList());
+            }
             return JsonResult.success(list);
         } catch (Exception e) {
+            e.printStackTrace();
             log.info(e.getMessage());
             return JsonResult.fail(e);
         }

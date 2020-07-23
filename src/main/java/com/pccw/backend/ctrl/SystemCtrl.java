@@ -83,7 +83,10 @@ public class SystemCtrl extends BaseCtrl<DbResAccount> {
 
             //取sessionId为token，存session
             String sessionId = request.getSession().getId();
-            session.set(sessionId, object);
+            boolean set = session.set(sessionId, object);
+            if (!set) {
+                return JsonResult.fail(BaseException.getRedisException());
+            }
 
             List<Object> list = new ArrayList();
             list.add(sessionId);

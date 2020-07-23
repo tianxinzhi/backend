@@ -7,7 +7,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class SearchBean extends BaseSearchBean {
-    private String logTxtNum;
+
+    private String deliveryNumber;
+    //    private String logTxtNum;
 
 //    private long logRepoOut;
 

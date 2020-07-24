@@ -98,7 +98,7 @@ public interface  ResSkuRepoRepository extends BaseRepository<DbResSkuRepo>{
             "res_sku s on REPO.SKU_ID = s.id\n" +
             "INNER JOIN RES_STOCK_TYPE t\n" +
             "on repo.stock_type_id = t.id\n" +
-            "inner join RES_REPO r on  repo.repo_id = r.id order by repo.id desc" +
+            "inner join RES_REPO r on  repo.repo_id = r.id order by r.repo_code desc, s.sku_code desc ,repo.id desc" +
             "",nativeQuery = true)
     List<Map> getBalanceQty();
         //where if(:sku,1=1,s.SKU_CODE like CONCAT('%',:sku,'%'))  and if(:stockType,2=2,t.id = :stockType) and if(:shop,3=3,r.id = :shop)

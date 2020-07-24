@@ -184,18 +184,13 @@ public class Stock_MovementCtrl extends BaseCtrl<DbResProcess> {
             DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             if(b.getCreateAt()!=null){
                 list = list.stream().filter(map -> {
-                    try {
                         long dte = Long.parseLong(map.get("createAt").toString());
                         if(b.getCreateAt()[0]!=null)
-                            return dte >= sdf.parse(b.getCreateAt()[0]).getTime();
+                            return dte >= Long.parseLong(b.getCreateAt()[0]);
                         if(b.getCreateAt()[1]!=null)
-                            return dte <= sdf.parse(b.getCreateAt()[1]).getTime();
+                            return dte <= Long.parseLong(b.getCreateAt()[1]);
                         else
-                            return dte >= sdf.parse(b.getCreateAt()[0]).getTime() &&  dte <=sdf.parse(b.getCreateAt()[1]).getTime();
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
-                    return false;
+                            return dte >= Long.parseLong(b.getCreateAt()[0]) &&  dte <= Long.parseLong(b.getCreateAt()[1]);
                 }).collect(Collectors.toList());
             }
 

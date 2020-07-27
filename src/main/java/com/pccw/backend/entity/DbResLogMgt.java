@@ -37,6 +37,19 @@ public class DbResLogMgt extends BaseLog {
 	@Column(name = "staff_number")
 	private String staffNumber;
 
+	@Column(name = "source_system")
+	private String sourceSystem;
+
+	@Column(name = "source_txn_header")
+	private String sourceTxnHeader;
+
+	@Column(name = "source_line")
+	private String sourceTxnLine;
+
+
+	@Column(name = "mobile_number")
+	private String mobileNumber;
+
 	// Repo In
 	@Column(name="log_repo_in")
 	private long logRepoIn;

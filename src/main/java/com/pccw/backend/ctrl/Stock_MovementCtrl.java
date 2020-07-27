@@ -108,7 +108,9 @@ public class Stock_MovementCtrl extends BaseCtrl<DbResProcess> {
                         map.put("id",p.getId());
                         map.put("logTxtBum",p.getLogTxtBum());
                         map.put("logOrderNature",p.getLogOrderNature());
-                        map.put("remark",p.getRemark());
+                        map.put("reason",p.getRemark());
+                        map.put("approval",p.getProcessStatus());
+                        map.put("approvalBy",getAccountName(p.getCreateBy()));
                         //movemenet根据不同的nature显示不同的详情
                         if(StaticVariable.LOGORDERNATURE_REPLENISHMENT_REQUEST.equals(p.getLogOrderNature())){
                             DbResLogRepl dbResLogRepl = logReplRepo.findDbResLogReplByLogTxtBum(p.getLogTxtBum());
@@ -132,6 +134,14 @@ public class Stock_MovementCtrl extends BaseCtrl<DbResProcess> {
                             //map.put("sku",skuQtyList);
                         }else {
                             DbResLogMgt dbResLogMgt = logMgtRepo.findDbResLogMgtsByLogTxtBum(p.getLogTxtBum()).get(0);
+                            map.put("staff",dbResLogMgt.getStaffNumber());
+                            map.put("remark",dbResLogMgt.getRemark());
+                            map.put("courier",dbResLogMgt.getCourier());
+                            map.put("serial",dbResLogMgt.getSerial());
+                            map.put("iccID",dbResLogMgt.getIccID());
+                            map.put("imei",dbResLogMgt.getImei());
+                            map.put("mobileNumber",dbResLogMgt.getMobileNumber());
+
                             String fromName = "";
                             if(Objects.nonNull(dbResLogMgt.getLogRepoOut()) && dbResLogMgt.getLogRepoOut() != 0){
                                 DbResRepo fromName2 = repoRepo.findById(dbResLogMgt.getLogRepoOut()).get();

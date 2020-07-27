@@ -49,7 +49,7 @@ public class InterfaceForOrderingCtrl extends BaseCtrl<DbResLogRor> {
         try {
             //输入验证
             long t = new Date().getTime();
-            DbResLogRor logRor= new DbResLogRor(null,b.getOrder_system(),b.getOrder_id(),null,"N",b.getSales_id(),b.getTx_date(),b.getBiz_date(),null);
+            DbResLogRor logRor= new DbResLogRor(null,b.getOrder_system(),b.getOrder_id(),null,"N",b.getSales_id(),b.getTx_date(),b.getBiz_date(),null,null,0,0,null,null);
             logRor.setLogOrderNature(b.getRequest_nature());
             logRor.setRemark(b.getRemarks());
             logRor.setLogType("O");
@@ -129,7 +129,7 @@ public class InterfaceForOrderingCtrl extends BaseCtrl<DbResLogRor> {
         try {
             //输入验证
             long t = new Date().getTime();
-            DbResLogRor logRor= new DbResLogRor(null,b.getOrder_system(),b.getOrder_id(),null,"N",b.getSales_id(),b.getTx_date(),b.getBiz_date(),null);
+            DbResLogRor logRor= new DbResLogRor(null,b.getOrder_system(),b.getOrder_id(),null,"N",b.getSales_id(),b.getTx_date(),b.getBiz_date(),null,null,0,0,null,null);
             logRor.setLogOrderNature(b.getRequest_nature());
             logRor.setRemark(b.getRemarks());
             logRor.setLogType("O");
@@ -214,7 +214,7 @@ public class InterfaceForOrderingCtrl extends BaseCtrl<DbResLogRor> {
 
             //处理头表数据
             long time = new Date().getTime();
-            DbResLogRor dbResLogRor = new DbResLogRor(null,b.getOrder_system(),b.getOrder_id(),null,"N",b.getSales_id(),b.getTx_date(),b.getBiz_date(),null);
+            DbResLogRor dbResLogRor= new DbResLogRor(null,b.getOrder_system(),b.getOrder_id(),null,"N",b.getSales_id(),b.getTx_date(),b.getBiz_date(),null,null,0,0,null,null);
             dbResLogRor.setLogTxtBum("NR000");
             dbResLogRor.setActive("Y");
             dbResLogRor.setUpdateAt(time);

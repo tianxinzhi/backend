@@ -51,6 +51,21 @@ public class DbResLogRor extends BaseLog {
     @Column(name="biz_date",length = 20)
     private String bizDate;
 
+    @Column(name="reserved_by_employee")
+    private String reservedByEmployee;
+
+    @Column(name="unreserved_by_employee")
+    private String unReservedByEmployee;
+
+    @Column(name="reservation_days")
+    private long reservationDays;
+
+    @Column(name="reservation_date")
+    private long reservationDate;
+
+    @Column(name="serial_type")
+    private String serialType;
+
     @JsonManagedReference
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "log_ror_id")

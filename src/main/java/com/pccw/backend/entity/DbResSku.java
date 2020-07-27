@@ -38,6 +38,35 @@ public class DbResSku extends Base {
 	@Column(name = "sku_origin",length = 32)
 	private String skuOrigin;
 
+	@Column(name = "start_date_active")
+	private Long startDateActive;
+
+	@Column(name = "end_date_active")
+	private Long endDateActive;
+
+	@Column(name = "tangible_item",length = 4)
+	private String tangibleItem;
+
+	@Column(name = "intangible_item",length = 4)
+	private String intangibleItem;
+
+	@Column(name = "intangible_item_no_balance",length = 4)
+	private String intangibleItemNoBalance;
+
+	@Column(name = "inventory_asset_flag",length = 4)
+	private String inventoryAssetFlag;
+
+	@Column(name = "returnable_flag",length = 4)
+	private String returnableFlag;
+
+	@Column(name = "item_type")
+	private String itemType;
+
+	@Column(name = "serial_control",length = 4)
+	private String serialControl;
+
+	@Column(name = "uom")
+	private String uom;
 //	@JsonBackReference
 //	@OneToMany(cascade = CascadeType.ALL,mappedBy = "sku",orphanRemoval = true)
 //	private List<DbResSkuType> skuTypeList;

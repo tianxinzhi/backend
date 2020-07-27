@@ -65,6 +65,9 @@ public class DbResRepo extends Base {
 	@Column(name = "parent_repo_id")
 	private Long parentRepoId;
 
+	@Column(name = "disable_date")
+	private Long disableDate;
+
 	@OneToMany(cascade={CascadeType.ALL},mappedBy = "repo")
 	private List<DbResSkuRepo> skuRepoList;
 

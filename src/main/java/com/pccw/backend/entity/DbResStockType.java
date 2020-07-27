@@ -26,6 +26,9 @@ public class DbResStockType extends Base{
 	@Column(name = "stocktype_name",length = 64)
 	private String stockTypeName;
 
+	@Column(name = "disable_date")
+	private Long disableDate;
+
 	@OneToMany(cascade={CascadeType.ALL},mappedBy = "stockType")
 	private List<DbResSkuRepo> skuRepoList;
 

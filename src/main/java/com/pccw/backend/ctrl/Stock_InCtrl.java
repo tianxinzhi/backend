@@ -180,18 +180,21 @@ public class Stock_InCtrl extends BaseCtrl<DbResLogMgt> {
             JsonResult result = this.create(rsipo, DbResLogMgt.class, bean);
 
             if(result.getCode().equals("000")){
-                //创建工作流对象
-                DbResProcess process = new DbResProcess();
 
-                process.setLogTxtBum(bean.getLogTxtBum());
-                process.setRepoId(bean.getLogRepoOut());
-                process.setRemark(bean.getRemark());
-                process.setCreateAt(t);
-                process.setUpdateAt(t);
-                process.setLogOrderNature(bean.getLogOrderNature());
+                UpdateSkuRepoQty(bean.getLogTxtBum());
+
+                //创建工作流对象
+//                DbResProcess process = new DbResProcess();
+//
+//                process.setLogTxtBum(bean.getLogTxtBum());
+//                process.setRepoId(bean.getLogRepoOut());
+//                process.setRemark(bean.getRemark());
+//                process.setCreateAt(t);
+//                process.setUpdateAt(t);
+//                process.setLogOrderNature(bean.getLogOrderNature());
 
                 //生成工作流数据
-                processProcessCtrl.joinToProcess(process);
+//                processProcessCtrl.joinToProcess(process);
             }
 
             return result;

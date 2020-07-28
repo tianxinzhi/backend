@@ -32,6 +32,16 @@ public class ResultBean extends BaseBean {
     @ApiModelProperty(value="skuName",name="sku名称",example="")
     private String skuName;
 
+    private String tangibleItem;
+
+    private String inventoryAssetFlag;
+
+    private String returnableFlag;
+
+    private Long startDateActive;
+
+    private Long endDateActive;
+
     @ApiModelProperty(value="qty",name="qty",example="")
     private long qty;
 

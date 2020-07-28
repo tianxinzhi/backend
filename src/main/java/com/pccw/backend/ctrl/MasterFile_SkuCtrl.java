@@ -77,6 +77,21 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> implements ICheck {
             sku.setUpdateBy(getAccount());
             sku.setSkuOrigin(StaticVariable.SKU_ORIGIN_FROM_WITHPO);
 
+
+            sku.setStartDateActive(bean.getStartDate() == null ? 0L : bean.getStartDate());
+            sku.setEndDateActive(bean.getEndDate() == null ? 0L : bean.getEndDate());
+
+            sku.setReturnableFlag(bean.getReturnable()?"Y":"N");
+            sku.setInventoryAssetFlag(bean.getInventoryAssetFlag()?"I":"");
+
+            if (bean.getTangible()) {
+                sku.setTangibleItem("Y");
+                sku.setIntangibleItem("N");
+            }else {
+                sku.setTangibleItem("N");
+                sku.setIntangibleItem("Y");
+            }
+
             DbResType type = new DbResType();
             type.setId(bean.getType());
             List<DbResTypeSkuSpec> typeSkuSpec = typeSkuSpecRepository.getDbResTypeSkuSpecsByType(type);

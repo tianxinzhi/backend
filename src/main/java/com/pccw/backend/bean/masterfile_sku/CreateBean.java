@@ -19,6 +19,16 @@ public class CreateBean extends BaseBean {
     @ApiModelProperty(value="skuCode",name="sku编码",example="")
     private String skuCode;
 
+    private Boolean tangible;
+
+    private Boolean inventoryAssetFlag;
+
+    private Boolean returnable;
+
+    private Long startDate;
+
+    private Long endDate;
+
     @ApiModelProperty(value="skuDesc",name="sku详情",example="")
     private String skuDesc;
 

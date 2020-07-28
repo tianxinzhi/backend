@@ -210,7 +210,7 @@ public class Stock_MovementCtrl extends BaseCtrl<DbResProcess> {
             if(b.getLogOrderNature()!=null && !b.getLogOrderNature().equals("")){
                 list = list.stream().filter(map -> map.get("logOrderNature") != null && map.get("logOrderNature").toString().equals(b.getLogOrderNature())).collect(Collectors.toList());
             }
-            if(b.getSkuNum()!=null && !b.getSkuNum().equals("")){
+            if(b.getSkuNum()!=null && b.getSkuNum().size()>0){
                 list = list.stream().filter(map -> map.get("skuId") != null && b.getSkuNum().toString().contains(map.get("skuId").toString())).collect(Collectors.toList());
             }
             if(b.getRepoId()!= null && b.getRepoId()!=0){

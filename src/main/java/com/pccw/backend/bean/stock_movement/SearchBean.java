@@ -37,7 +37,7 @@ public class SearchBean {
     private String[] createAt;
 
     @PredicateAnnotation(type = PredicateType.LIKE)
-    private String skuNum; // same as entity property and relative to the data clomun
+    private List<String> skuNum; // same as entity property and relative to the data clomun
 
     @PredicateAnnotation(type = PredicateType.LIKE)
     @ApiModelProperty(value="商店Id",name="toRepoId",example="")

@@ -145,7 +145,7 @@ public class Stock_InCtrl extends BaseCtrl<DbResLogMgt> {
             if (bean.getDeliveryNumber() == null) {
                 collect = rsipo.findAllByLogOrderNatureInAndLogRepoInIn(natures, ids);
             }else {
-                collect = rsipo.findAllByLogOrderNatureInAndLogRepoInInAndDeliveryNumber(natures,ids,bean.getDeliveryNumber());
+                collect = rsipo.findAllByLogOrderNatureInAndLogRepoInInAndDeliveryNumberLike(natures,ids,"%"+bean.getDeliveryNumber()+"%");
             }
             List<Object> res = collect.stream().map(r -> {
                 List<DbResLogMgtDtl> Line = r.getLine().stream().filter(line -> line.getStatus().equals("INT")).collect(Collectors.toList());

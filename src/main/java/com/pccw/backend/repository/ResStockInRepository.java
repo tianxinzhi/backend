@@ -27,7 +27,7 @@ public interface ResStockInRepository extends BaseRepository<DbResLogMgt>{
 
     List<DbResLogMgt> findAllByLogOrderNatureInAndLogRepoInIn(List<String> nature, List repoIds);
 
-    List<DbResLogMgt> findAllByLogOrderNatureInAndLogRepoInInAndDeliveryNumber(List<String> nature, List repoIds,String deliveryNumber);
+    List<DbResLogMgt> findAllByLogOrderNatureInAndLogRepoInInAndDeliveryNumberLike(List<String> nature, List repoIds,String deliveryNumber);
 
     DbResLogMgt findDbResLogMgtByLogTxtBum(String logTxtBum);
 }

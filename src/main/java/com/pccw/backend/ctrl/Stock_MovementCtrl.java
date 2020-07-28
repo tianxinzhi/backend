@@ -109,7 +109,7 @@ public class Stock_MovementCtrl extends BaseCtrl<DbResProcess> {
                         map.put("logTxtBum",p.getLogTxtBum());
                         map.put("logOrderNature",p.getLogOrderNature());
                         map.put("reason",p.getRemark());
-                        map.put("approval",p.getProcessStatus());
+                        map.put("approval",p.getCreateAt());
                         map.put("approvalBy",getAccountName(p.getCreateBy()));
                         //movemenet根据不同的nature显示不同的详情
                         if(StaticVariable.LOGORDERNATURE_REPLENISHMENT_REQUEST.equals(p.getLogOrderNature())){
@@ -126,6 +126,7 @@ public class Stock_MovementCtrl extends BaseCtrl<DbResProcess> {
                                 map.put("toRepoId",toName.getId());
                                 DbResSku sku = skuRepo.findById(dtl.getDtlSkuId()).get();
                                 map.put("sku",sku.getSkuName());
+                                map.put("skuId",sku.getId());
                                 map.put("skuDesc",sku.getSkuDesc());
                                 map.put("qty",dtl.getDtlQty());
                                 map.put("fromStatus",dtl.getDtlSubin());
@@ -141,6 +142,9 @@ public class Stock_MovementCtrl extends BaseCtrl<DbResProcess> {
                             map.put("iccID",dbResLogMgt.getIccID());
                             map.put("imei",dbResLogMgt.getImei());
                             map.put("mobileNumber",dbResLogMgt.getMobileNumber());
+                            map.put("sourceSystem",dbResLogMgt.getSourceSystem());
+                            map.put("txnHeader",dbResLogMgt.getSourceTxnHeader());
+                            map.put("txnLine",dbResLogMgt.getSourceTxnLine());
 
                             String fromName = "";
                             if(Objects.nonNull(dbResLogMgt.getLogRepoOut()) && dbResLogMgt.getLogRepoOut() != 0){
@@ -166,6 +170,7 @@ public class Stock_MovementCtrl extends BaseCtrl<DbResProcess> {
 //                                            .append(line.get(i+1).getDtlSubin()).toString();
 //                                    skuQtyList.add(skuQtyString);
                                 map.put("sku",sku.getSkuName());
+                                map.put("skuId",sku.getId());
                                 map.put("skuDesc",sku.getSkuDesc());
                                 map.put("qty",line.get(i).getDtlQty());
                                 map.put("fromStatus",line.get(i).getDtlSubin());
@@ -188,10 +193,8 @@ public class Stock_MovementCtrl extends BaseCtrl<DbResProcess> {
                             }
                         }
                         list.add(map);
-                    System.out.println("res:"+map.toString());
                 };
                 }
-            DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             if(b.getCreateAt()!=null){
                 list = list.stream().filter(map -> {
                         long dte = Long.parseLong(map.get("createAt").toString());
@@ -208,7 +211,7 @@ public class Stock_MovementCtrl extends BaseCtrl<DbResProcess> {
                 list = list.stream().filter(map -> map.get("logOrderNature") != null && map.get("logOrderNature").toString().equals(b.getLogOrderNature())).collect(Collectors.toList());
             }
             if(b.getSkuNum()!=null && !b.getSkuNum().equals("")){
-                list = list.stream().filter(map -> map.get("sku") != null && map.get("sku").toString().contains(b.getSkuNum())).collect(Collectors.toList());
+                list = list.stream().filter(map -> map.get("skuId") != null && b.getSkuNum().toString().contains(map.get("skuId").toString())).collect(Collectors.toList());
             }
             if(b.getRepoId()!= null && b.getRepoId()!=0){
                 list = list.stream().filter(map -> map.get("repoId") != null && Long.parseLong(map.get("repoId").toString())==b.getRepoId()).collect(Collectors.toList());
@@ -216,6 +219,7 @@ public class Stock_MovementCtrl extends BaseCtrl<DbResProcess> {
             if(b.getToRepoId()!=0){
                 list = list.stream().filter(map -> map.get("toRepoId")!=null && Long.parseLong(map.get("toRepoId").toString())==b.getToRepoId()).collect(Collectors.toList());
             }
+            Collections.sort(list,(o1,o2) -> o2.get("sku").toString().toUpperCase().compareTo(o1.get("sku").toString().toUpperCase()));
             return JsonResult.success(list);
         } catch (Exception e) {
             e.printStackTrace();

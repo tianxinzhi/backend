@@ -101,6 +101,8 @@ public class Stock_MovementCtrl extends BaseCtrl<DbResProcess> {
             }else{
                 List<DbResProcess> res = processRepo.findAll(PageRequest.of(b.getPageIndex(),b.getPageSize(),sort)).getContent();
                 for(DbResProcess p:res){
+                    List<DbResLogMgt> mgts = logMgtRepo.findDbResLogMgtsByLogTxtBum(p.getLogTxtBum());
+                    if(mgts==null || mgts.size()<=0) continue;
                         Map map = new HashMap();
                         //map = JSON.parseObject(JSON.toJSONString(p), Map.class);
                         map.put("createAccountName",getAccountName(p.getCreateBy()));
@@ -134,7 +136,7 @@ public class Stock_MovementCtrl extends BaseCtrl<DbResProcess> {
                             }
                             //map.put("sku",skuQtyList);
                         }else {
-                            DbResLogMgt dbResLogMgt = logMgtRepo.findDbResLogMgtsByLogTxtBum(p.getLogTxtBum()).get(0);
+                            DbResLogMgt dbResLogMgt = mgts.get(0);
                             map.put("staff",dbResLogMgt.getStaffNumber());
                             map.put("remark",dbResLogMgt.getRemark());
                             map.put("courier",dbResLogMgt.getCourier());

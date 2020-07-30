@@ -59,6 +59,9 @@ public class DbResSku extends Base {
 	@Column(name = "returnable_flag",length = 4)
 	private String returnableFlag;
 
+	@Column(name = "max_reserve_days")
+	private String maxReserveDays;
+
 	@Column(name = "item_type")
 	private String itemType;
 

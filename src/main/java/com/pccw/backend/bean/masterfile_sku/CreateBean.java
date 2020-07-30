@@ -29,6 +29,8 @@ public class CreateBean extends BaseBean {
 
     private Long endDate;
 
+    private String maxReserveDays;
+
     @ApiModelProperty(value="skuDesc",name="sku详情",example="")
     private String skuDesc;
 

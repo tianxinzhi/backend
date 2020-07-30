@@ -83,7 +83,7 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> implements ICheck {
 
             sku.setReturnableFlag(bean.getReturnable()?"Y":"N");
             sku.setInventoryAssetFlag(bean.getInventoryAssetFlag()?"I":"");
-
+            sku.setMaxReserveDays(bean.getMaxReserveDays()==null?"0":bean.getMaxReserveDays());
             if (bean.getTangible()) {
                 sku.setTangibleItem("Y");
                 sku.setIntangibleItem("N");

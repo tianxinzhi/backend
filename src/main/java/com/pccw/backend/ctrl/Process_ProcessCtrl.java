@@ -276,7 +276,7 @@ public class Process_ProcessCtrl extends BaseCtrl {
                         }).collect(Collectors.toList());
                 logDtls.setLine(logLine);
             }else{
-                DbResLogMgt resLog = logMgtRepository.findDbResLogMgtByLogTxtBum(r.getLogTxtBum());
+                DbResLogMgt resLog = logMgtRepository.findDbResLogMgtsByLogTxtBum(r.getLogTxtBum()).get(0);
                 logDtls.setCreateAt(resLog.getCreateAt());
                 logDtls.setLogRepoIn(resLog.getLogRepoIn());
                 logDtls.setLogRepoOut(resLog.getLogRepoOut());

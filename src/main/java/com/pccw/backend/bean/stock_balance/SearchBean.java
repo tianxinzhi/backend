@@ -28,6 +28,9 @@ public class SearchBean extends BaseSearchBean implements Serializable{
     @PredicateAnnotation(type = PredicateType.LIKE)
     private String itemNum;
 
+    @PredicateAnnotation(type = PredicateType.LIKE)
+    private String skuDesc;
+
     @PredicateAnnotation(type = PredicateType.EQUEL)
     @NotEmpty
     private String repoNum;

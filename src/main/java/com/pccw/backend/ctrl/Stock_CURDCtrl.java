@@ -83,6 +83,9 @@ public class Stock_CURDCtrl extends BaseCtrl<DbResSkuRepo> implements ICheck {
                 skuList = skuList.stream().filter(map -> bean.getSkuNum().contains(map.get("skuId").toString())).collect(Collectors.toList());
 //                skuList = skuList.stream().filter(map -> map.get("sku").toString().contains(bean.getSkuNum())).collect(Collectors.toList());
             }
+            if(bean.getSkuDesc()!=null && !bean.getSkuDesc().equals("")){
+                skuList = skuList.stream().filter(map -> map.get("skuDesc").toString().contains(bean.getSkuDesc())).collect(Collectors.toList());
+            }
             if(bean.getShopId()!=0){
                 skuList = skuList.stream().filter(map -> Long.valueOf(map.get("shopId").toString())==bean.getShopId()).collect(Collectors.toList());
             }

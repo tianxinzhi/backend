@@ -30,7 +30,7 @@ public class Stock_ReservationRuleCtrl extends BaseCtrl<DbResReservationRule> {
 
     @ApiOperation(value="预留sku优先级",tags={"stock_reservation_rule"},notes="查询")
     @RequestMapping("/search")
-    public JsonResult search(SearchBean bean) {
+    public JsonResult search(@RequestBody SearchBean bean) {
         try {
             Specification<DbResReservationRule> spec = Convertor.<DbResReservationRule>convertSpecification(bean);
             List<DbResReservationRule> list = reservationRepository.findAll(spec, PageRequest.of(bean.getPageIndex(),bean.getPageSize())).getContent();

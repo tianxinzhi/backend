@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -32,8 +33,12 @@ public class Stock_ReservationRuleCtrl extends BaseCtrl<DbResReservationRule> {
     @RequestMapping("/search")
     public JsonResult search(@RequestBody SearchBean bean) {
         try {
+            System.out.println(bean.toString());
             Specification<DbResReservationRule> spec = Convertor.<DbResReservationRule>convertSpecification(bean);
             List<DbResReservationRule> list = reservationRepository.findAll(spec, PageRequest.of(bean.getPageIndex(),bean.getPageSize())).getContent();
+            if(bean.getSku()!=null){
+                list = list.stream().filter(b -> bean.getSku().toString().contains(b.getSkuId()+"")).collect(Collectors.toList());
+            }
             return JsonResult.success(list);
         } catch (IllegalAccessException e) {
             e.printStackTrace();

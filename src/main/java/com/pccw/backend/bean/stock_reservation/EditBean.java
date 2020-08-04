@@ -12,6 +12,6 @@ import lombok.NoArgsConstructor;
 public class EditBean extends CreateBean {
 
     @ApiModelProperty(value="id",name="id",example="")
-    private Long id;
+    private long id;
 
 }

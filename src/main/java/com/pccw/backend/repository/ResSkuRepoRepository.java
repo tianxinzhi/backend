@@ -103,4 +103,15 @@ public interface  ResSkuRepoRepository extends BaseRepository<DbResSkuRepo>{
     List<Map> getBalanceQty();
         //where if(:sku,1=1,s.SKU_CODE like CONCAT('%',:sku,'%'))  and if(:stockType,2=2,t.id = :stockType) and if(:shop,3=3,r.id = :shop)
 //    List<Map> getBalanceQty(@Param("sku")String sku, @Param("stockType")long stockType, @Param("shop")long shop);
+
+    @Query(value = "SELECT\n" +
+            "\tSKU_ID as sku_id,\n" +
+            "\tsum(QTY) as current_balance\n" +
+            "FROM\n" +
+            "\tRES_SKU_REPO\n" +
+            "WHERE\n" +
+            "\tREPO_ID = ?1\n" +
+            "AND SKU_ID IN ?2\n" +
+            "GROUP BY SKU_ID",nativeQuery = true)
+    List<Map<String,Object>> findCurrentQty(Long channelId,List<Long> skuIds);
 }

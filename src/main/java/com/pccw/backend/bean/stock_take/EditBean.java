@@ -9,4 +9,5 @@ import lombok.Data;
  **/
 @Data
 public class EditBean extends CreateBean{
+    private Long id;
 }

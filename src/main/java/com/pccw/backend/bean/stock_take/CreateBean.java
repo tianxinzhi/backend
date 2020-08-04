@@ -1,7 +1,10 @@
 package com.pccw.backend.bean.stock_take;
 
 import com.pccw.backend.bean.BaseBean;
+import com.pccw.backend.entity.DbResStockTakeDtl;
 import lombok.Data;
+
+import java.util.List;
 
 /**
  * @description:
@@ -10,4 +13,14 @@ import lombok.Data;
  **/
 @Data
 public class CreateBean extends BaseBean {
+
+    private Long completeTime;
+
+    private Long channelId;
+
+    private String stockTakeNumber;
+
+    private String fillStatus;
+
+    private List<DbResStockTakeDtl> line;
 }

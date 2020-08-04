@@ -9,6 +9,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @ApiModel(value="Stock_ReservationCtrl",description="")
@@ -27,5 +29,5 @@ public class SearchBean extends BaseSearchBean {
     private String paymentStatus;
 
     @ApiModelProperty(value="sku",name="sku",example="")
-    private String sku;
+    private List<Long> sku;
 }

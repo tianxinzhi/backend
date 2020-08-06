@@ -16,6 +16,9 @@ public class CreateBean extends BaseBean {
     @ApiModelProperty(value="customerName",name="",example="")
     private String customerName;
 
+    @ApiModelProperty(value="logTxtBum",name="",example="")
+    private String logTxtBum;
+
     @ApiModelProperty(value="orderNo",name="",example="")
     private String orderNo;
 

@@ -46,193 +46,139 @@ public class Stock_MovementCtrl extends BaseCtrl<DbResProcess> {
     @Autowired
     ResSkuRepository skuRepo;
 
-    @ApiOperation(value="搜索Stock_Movement",tags={"stock_movement"},notes="注意问题点")
+    @ApiOperation(value = "搜索Stock_Movement", tags = {"stock_movement"}, notes = "注意问题点")
     @RequestMapping(method = RequestMethod.POST, path = "/search")
     public JsonResult search(@RequestBody SearchBean b) {
         log.info(b.toString());
         try {
-            //默认查询nature为approved的
-            b.setStatus(StaticVariable.PROCESS_APPROVED_STATUS);
-            //准备between需要的日期范围条件
-            String[] createAt = b.getCreateAt();
-            if(Objects.nonNull(createAt)){
-                if(createAt.length == 2){
-                    List<Object> objects = new ArrayList<>();
-                    SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-                        long time = df.parse(createAt[0]).getTime();
-                        objects.add(String.valueOf(time));
-                        Calendar cal = Calendar.getInstance();
-                        cal.setTime(df.parse(createAt[1]));
-                        cal.add(Calendar.DATE,1);
-                        objects.add(String.valueOf(cal.getTime().getTime()));
-                        String[] a = new String[objects.size()];
-                        b.setCreateAt(objects.toArray(a));
-                }else {
-                    b.setCreateAt(null);
-                }
-            }
-            Specification spec = Convertor.convertSpecification(b);
-            Sort sort = new Sort(Sort.Direction.DESC,"id");
             List<Map> list = new ArrayList<>();
 
-            //orderAPI
-            if(StaticVariable.LOGORDERNATURE_ASSIGN.equals(b.getLogOrderNature()) ||
-                    StaticVariable.LOGORDERNATURE_RETURN.equals(b.getLogOrderNature()) ||
-                    StaticVariable.LOGORDERNATURE_EXCHANGE.equals(b.getLogOrderNature()) ||
-                    StaticVariable.LOGORDERNATURE_ADVANCED_RESERVE.equals(b.getLogOrderNature()) ||
-                    StaticVariable.LOGORDERNATURE_CANCEL_ADVANCE_RESERVE.equals(b.getLogOrderNature()) ||
-                    StaticVariable.LOGORDERNATURE_ADVANCE_PICK_UP.equals(b.getLogOrderNature()) ||
-                    StaticVariable.LOGORDERNATURE_STOCK_RESERVE.equals(b.getLogOrderNature()) ||
-                    StaticVariable.LOGORDERNATURE_STOCK_CANCEL_RESERVE.equals(b.getLogOrderNature()) ||
-                    StaticVariable.LOGORDERNATURE_TRANSFER_TO_WAREHOUSE.equals(b.getLogOrderNature())){
-                Random random = new Random();
-                List arrayList = new ArrayList<>();
-                arrayList.add("SkuName:  iphone-x  , Qty: "+random.nextInt(10));
-                Map m = CollectionBuilder.builder(new HashMap<>())
-                        .put("repoName","Shop00"+random.nextInt(3))
-                        .put("sku",arrayList)
-                        .put("active","Y").put("createAccountName","admin")
-                        .put("createAt","1579072220833").put("id",200+random.nextInt(100))
-                        .put("logOrderNature",b.getLogOrderNature())
-                        .put("logTxtBum","200112ISH00309471"+random.nextInt(10))
-                        .put("updateAt","1579072220833").put("updateBy","1")
-                        .build();
-                list.add(m);
-            }else{
-                //List<DbResProcess> res = processRepo.findAll(PageRequest.of(b.getPageIndex(),b.getPageSize(),sort)).getContent();
-                //movemenet根据不同的nature显示不同的详情
-                for (DbResLogRepl dbResLogRepl : logReplRepo.findAll()) {
+            //List<DbResProcess> res = processRepo.findAll(PageRequest.of(b.getPageIndex(),b.getPageSize(),sort)).getContent();
+            //movemenet根据不同的nature显示不同的详情
+//            for (DbResLogRepl dbResLogRepl : logReplRepo.findAll()) {
+//
+//                Map map = new HashMap();
+//                //map = JSON.parseObject(JSON.toJSONString(p), Map.class);
+//                map.put("createAccountName", getAccountName(dbResLogRepl.getCreateBy()));
+//                map.put("createAt", dbResLogRepl.getCreateAt());
+//                map.put("id", dbResLogRepl.getId());
+//                map.put("logTxtBum", dbResLogRepl.getLogTxtBum());
+//                map.put("logOrderNature", dbResLogRepl.getLogOrderNature());
+//                map.put("reason", dbResLogRepl.getRemark());
+//                map.put("approval", dbResLogRepl.getCreateAt());
+//                map.put("approvalBy", getAccountName(dbResLogRepl.getCreateBy()));
+//
+//                DbResRepo fromName = repoRepo.findById(dbResLogRepl.getRepoIdFrom()).get();
+//                DbResRepo toName = repoRepo.findById(dbResLogRepl.getRepoIdTo()).get();
+//                //map.put("repoName","From: "+fromName+" , To: "+toName);
+//
+//                List<DbResLogReplDtl> line = dbResLogRepl.getLine();
+//                for (DbResLogReplDtl dtl : line) {
+//                    map.put("fromChannel", fromName.getRepoCode());
+//                    map.put("toChannel", toName.getRepoCode());
+//                    map.put("repoId", fromName.getId());
+//                    map.put("toRepoId", toName.getId());
+//                    DbResSku sku = skuRepo.findById(dtl.getDtlSkuId()).get();
+//                    map.put("sku", sku.getSkuName());
+//                    map.put("skuId", sku.getId());
+//                    map.put("skuDesc", sku.getSkuDesc());
+//                    map.put("qty", dtl.getDtlQty());
+//                    map.put("fromStatus", dtl.getDtlSubin());
+//
+//                }
+//                list.add(map);
+//            }
 
-                    Map map = new HashMap();
-                    //map = JSON.parseObject(JSON.toJSONString(p), Map.class);
-                    map.put("createAccountName",getAccountName(dbResLogRepl.getCreateBy()));
-                    map.put("createAt",dbResLogRepl.getCreateAt());
-                    map.put("id",dbResLogRepl.getId());
-                    map.put("logTxtBum",dbResLogRepl.getLogTxtBum());
-                    map.put("logOrderNature",dbResLogRepl.getLogOrderNature());
-                    map.put("reason",dbResLogRepl.getRemark());
-                    map.put("approval",dbResLogRepl.getCreateAt());
-                    map.put("approvalBy",getAccountName(dbResLogRepl.getCreateBy()));
+            for (DbResLogMgt dbResLogMgt : logMgtRepo.findAll()) {
+                Map map = new HashMap();
 
-                    DbResRepo fromName = repoRepo.findById(dbResLogRepl.getRepoIdFrom()).get();
-                    DbResRepo toName = repoRepo.findById(dbResLogRepl.getRepoIdTo()).get();
-                    //map.put("repoName","From: "+fromName+" , To: "+toName);
+                map.put("createAccountName", getAccountName(dbResLogMgt.getCreateBy()));
+                map.put("createAt", dbResLogMgt.getCreateAt());
+                map.put("id", dbResLogMgt.getId());
+                map.put("logTxtBum", dbResLogMgt.getLogTxtBum());
+                map.put("logOrderNature", dbResLogMgt.getLogOrderNature());
+                map.put("reason", dbResLogMgt.getRemark());
+                map.put("approval", dbResLogMgt.getCreateAt());
+                map.put("approvalBy", getAccountName(dbResLogMgt.getCreateBy()));
 
-                    List<DbResLogReplDtl> line = dbResLogRepl.getLine();
-                    for(DbResLogReplDtl dtl:line){
-                        map.put("fromChannel",fromName.getRepoCode());
-                        map.put("toChannel",toName.getRepoCode());
-                        map.put("repoId",fromName.getId());
-                        map.put("toRepoId",toName.getId());
-                        DbResSku sku = skuRepo.findById(dtl.getDtlSkuId()).get();
-                        map.put("sku",sku.getSkuName());
-                        map.put("skuId",sku.getId());
-                        map.put("skuDesc",sku.getSkuDesc());
-                        map.put("qty",dtl.getDtlQty());
-                        map.put("fromStatus",dtl.getDtlSubin());
+                map.put("staff", dbResLogMgt.getStaffNumber());
+                map.put("remark", dbResLogMgt.getRemark());
+                map.put("courier", dbResLogMgt.getCourier());
+                map.put("serial", dbResLogMgt.getSerial());
+                map.put("iccID", dbResLogMgt.getIccID());
+                map.put("imei", dbResLogMgt.getImei());
+                map.put("mobileNumber", dbResLogMgt.getMobileNumber());
+                map.put("sourceSystem", dbResLogMgt.getSourceSystem());
+                map.put("txnHeader", dbResLogMgt.getSourceTxnHeader());
+                map.put("txnLine", dbResLogMgt.getSourceTxnLine());
 
-                    }
-                    list.add(map);
+                if ( Objects.nonNull(dbResLogMgt.getLogRepoOut()) && dbResLogMgt.getLogRepoOut() != 0 ) {
+                    DbResRepo fromName2 = repoRepo.findById(dbResLogMgt.getLogRepoOut()).get();
+                    map.put("fromChannel", fromName2.getRepoCode());
+                    map.put("repoId", fromName2.getId());
                 }
+                if ( Objects.nonNull(dbResLogMgt.getLogRepoIn()) && dbResLogMgt.getLogRepoIn() != 0 ) {
+                    DbResRepo toName2 = repoRepo.findById(dbResLogMgt.getLogRepoIn()).get();
+                    map.put("toChannel", toName2.getRepoCode());
+                    map.put("toRepoId", toName2.getId());
+                }
+                List<DbResLogMgtDtl> line = dbResLogMgt.getLine();
 
-                for (DbResLogMgt dbResLogMgt : logMgtRepo.findAll()){
-                    Map map = new HashMap();
+                List itemList = new ArrayList<>();
+                for (int i = 0; i < line.size(); i++) {
+                    String skuQtyString = "";
+                    DbResSku sku = skuRepo.findById(line.get(i).getDtlSkuId()).get();
+                    map.put("sku", sku.getSkuName());
+                    map.put("skuId", sku.getId());
+                    map.put("skuDesc", sku.getSkuDesc());
+                    map.put("qty", line.get(i).getDtlQty());
+                    map.put("fromStatus", line.get(i).getDtlSubin());
 
-                    map.put("createAccountName",getAccountName(dbResLogMgt.getCreateBy()));
-                    map.put("createAt",dbResLogMgt.getCreateAt());
-                    map.put("id",dbResLogMgt.getId());
-                    map.put("logTxtBum",dbResLogMgt.getLogTxtBum());
-                    map.put("logOrderNature",dbResLogMgt.getLogOrderNature());
-                    map.put("reason",dbResLogMgt.getRemark());
-                    map.put("approval",dbResLogMgt.getCreateAt());
-                    map.put("approvalBy",getAccountName(dbResLogMgt.getCreateBy()));
-
-                    map.put("staff",dbResLogMgt.getStaffNumber());
-                    map.put("remark",dbResLogMgt.getRemark());
-                    map.put("courier",dbResLogMgt.getCourier());
-                    map.put("serial",dbResLogMgt.getSerial());
-                    map.put("iccID",dbResLogMgt.getIccID());
-                    map.put("imei",dbResLogMgt.getImei());
-                    map.put("mobileNumber",dbResLogMgt.getMobileNumber());
-                    map.put("sourceSystem",dbResLogMgt.getSourceSystem());
-                    map.put("txnHeader",dbResLogMgt.getSourceTxnHeader());
-                    map.put("txnLine",dbResLogMgt.getSourceTxnLine());
-
-                    String fromName = "";
-                    if(Objects.nonNull(dbResLogMgt.getLogRepoOut()) && dbResLogMgt.getLogRepoOut() != 0){
-                        DbResRepo fromName2 = repoRepo.findById(dbResLogMgt.getLogRepoOut()).get();
-                        map.put("fromChannel",fromName2.getRepoCode());
-                        map.put("repoId",fromName2.getId());
-                    }
-                    String toName = "";
-                    if(Objects.nonNull(dbResLogMgt.getLogRepoIn()) && dbResLogMgt.getLogRepoIn() != 0){
-                        DbResRepo toName2 = repoRepo.findById(dbResLogMgt.getLogRepoIn()).get();
-                        map.put("toChannel",toName2.getRepoCode());
-                        map.put("toRepoId",toName2.getId());
-                    }
-                    List<DbResLogMgtDtl> line = dbResLogMgt.getLine();
-
-                    List itemList = new ArrayList<>();
-                    for (int i = 0; i <line.size(); i++) {
-                        String skuQtyString = "";
-                        DbResSku sku = skuRepo.findById(line.get(i).getDtlSkuId()).get();
-//                                    skuQtyString = sb.append("SkuName: ").append(skuName).append(" , Qty: ").append(line.get(i).getDtlQty()).append(" , From Status: ").append(line.get(i).getDtlSubin())
-//                                            .append(" , To Status: ")
-//                                            .append(line.get(i+1).getDtlSubin()).toString();
-//                                    skuQtyList.add(skuQtyString);
-                        map.put("sku",sku.getSkuName());
-                        map.put("skuId",sku.getId());
-                        map.put("skuDesc",sku.getSkuDesc());
-                        map.put("qty",line.get(i).getDtlQty());
-                        map.put("fromStatus",line.get(i).getDtlSubin());
-
-                        String itemCodes = line.get(i).getItemCode();
-                        if(Objects.nonNull(itemCodes)){
-                            List<String> items = Arrays.asList(itemCodes.split(","));
-                            for (int j = 0;j< items.size();j=j+1){
-                                itemList.add(skuQtyString+" , itemCode"+(j+1)+": "+items.get(j));
-                            }
-                        }
-                        if(StaticVariable.LOGORDERNATURE_STOCK_CATEGORY.equals(dbResLogMgt.getLogOrderNature())) {
-                            map.put("toStatus",line.get(i+1).getDtlSubin());
-                            i++;
+                    String itemCodes = line.get(i).getItemCode();
+                    if ( Objects.nonNull(itemCodes) ) {
+                        List<String> items = Arrays.asList(itemCodes.split(","));
+                        for (int j = 0; j < items.size(); j = j + 1) {
+                            itemList.add(skuQtyString + " , itemCode" + (j + 1) + ": " + items.get(j));
                         }
                     }
-                    if(Objects.nonNull(itemList) && itemList.size()>0){
-                        map.put("itemCode",itemList);
+                    if ( StaticVariable.LOGORDERNATURE_STOCK_CATEGORY.equals(dbResLogMgt.getLogOrderNature()) ) {
+                        map.put("toStatus", line.get(i + 1).getDtlSubin());
+                        i++;
                     }
-                    list.add(map);
                 }
-
+                if ( Objects.nonNull(itemList) && itemList.size() > 0 ) {
+                    map.put("itemCode", itemList);
+                }
+                list.add(map);
             }
 
             //搜索filter
-            if(b.getCreateAt()!=null){
+            if ( b.getCreateAt() != null ) {
                 list = list.stream().filter(map -> {
-                        long dte = Long.parseLong(map.get("createAt").toString());
-                        if(b.getCreateAt()[0]!=null)
-                            return dte >= Long.parseLong(b.getCreateAt()[0]);
-                        if(b.getCreateAt()[1]!=null)
-                            return dte <= Long.parseLong(b.getCreateAt()[1]);
-                        else
-                            return dte >= Long.parseLong(b.getCreateAt()[0]) &&  dte <= Long.parseLong(b.getCreateAt()[1]);
+                    long dte = Long.parseLong(map.get("createAt").toString());
+                    if ( b.getCreateAt()[0] != null )
+                        return dte >= Long.parseLong(b.getCreateAt()[0]);
+                    if ( b.getCreateAt()[1] != null )
+                        return dte <= Long.parseLong(b.getCreateAt()[1]);
+                    else
+                        return dte >= Long.parseLong(b.getCreateAt()[0]) && dte <= Long.parseLong(b.getCreateAt()[1]);
                 }).collect(Collectors.toList());
             }
 
-            if(b.getLogOrderNature()!=null && !b.getLogOrderNature().equals("")){
+            if ( b.getLogOrderNature() != null && !b.getLogOrderNature().equals("") ) {
                 list = list.stream().filter(map -> map.get("logOrderNature") != null && map.get("logOrderNature").toString().equals(b.getLogOrderNature())).collect(Collectors.toList());
             }
-            if(b.getSkuNum()!=null && b.getSkuNum().size()>0){
+            if ( b.getSkuNum() != null && b.getSkuNum().size() > 0 ) {
                 list = list.stream().filter(map -> map.get("skuId") != null && b.getSkuNum().toString().contains(map.get("skuId").toString())).collect(Collectors.toList());
             }
-            if(b.getRepoId()!= null && b.getRepoId()!=0){
-                list = list.stream().filter(map -> map.get("repoId") != null && Long.parseLong(map.get("repoId").toString())==b.getRepoId()).collect(Collectors.toList());
+            if ( b.getRepoId() != null && b.getRepoId() != 0 ) {
+                list = list.stream().filter(map -> map.get("repoId") != null && Long.parseLong(map.get("repoId").toString()) == b.getRepoId()).collect(Collectors.toList());
             }
-            if(b.getToRepoId()!=0){
-                list = list.stream().filter(map -> map.get("toRepoId")!=null && Long.parseLong(map.get("toRepoId").toString())==b.getToRepoId()).collect(Collectors.toList());
+            if ( b.getToRepoId() != 0 ) {
+                list = list.stream().filter(map -> map.get("toRepoId") != null && Long.parseLong(map.get("toRepoId").toString()) == b.getToRepoId()).collect(Collectors.toList());
             }
-            Collections.sort(list,(o1,o2) -> {
-                    if(o1.get("sku")!=null && o2.get("sku")!=null)
+            Collections.sort(list, (o1, o2) -> {
+                if ( o1.get("sku") != null && o2.get("sku") != null )
                     return o2.get("sku").toString().toUpperCase().compareTo(o1.get("sku").toString().toUpperCase());
                         return 0;
                     }

@@ -58,6 +58,9 @@ public class DbResLogMgt extends BaseLog {
 	@Column(name="log_repo_out")
 	private long logRepoOut;
 
+	@Column(name="reservation_id")
+	private Long reservationId;
+
 	@JsonManagedReference
 	@OneToMany(cascade = CascadeType.ALL)  //ALL  PERSIST
 	@JoinColumn(name = "log_mgt_id")

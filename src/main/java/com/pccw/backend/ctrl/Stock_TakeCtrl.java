@@ -62,7 +62,7 @@ public class Stock_TakeCtrl extends BaseCtrl<DbResStockTake>{
     public JsonResult searchSkuQty(@Validated @RequestBody SearchQtyBean b){
 
         try {
-            List<Map<String,Object>> currentQty = skuRepoRepository.findCurrentQty(b.getChannelId(), b.getSkuIds());
+            List<Map<String,Object>> currentQty = skuRepoRepository.findCurrentQty(b.getChannelId(), b.getSkuIds(),3L);
             List<Map<String, Object>> result = ResultRecode.returnHumpNameForList(currentQty);
             return JsonResult.success(result);
         } catch (Exception e) {
@@ -86,6 +86,18 @@ public class Stock_TakeCtrl extends BaseCtrl<DbResStockTake>{
 
         try {
             return this.edit(stockTakeRepository,DbResStockTake.class,b);
+        } catch (Exception e) {
+            return JsonResult.fail(e);
+        }
+    }
+
+    @RequestMapping(method = RequestMethod.POST,path = "/searchSkuByRepoId")
+    public JsonResult findSkuByRepoId(@RequestBody SearchQtyBean b){
+
+        try {
+            List<Map<String,Object>> currentQty = skuRepoRepository.findSkuByRepoId(b.getChannelId(),3L);
+            List<Map<String, Object>> result = ResultRecode.returnHumpNameForList(currentQty);
+            return JsonResult.success(result);
         } catch (Exception e) {
             return JsonResult.fail(e);
         }

@@ -106,12 +106,24 @@ public interface  ResSkuRepoRepository extends BaseRepository<DbResSkuRepo>{
 
     @Query(value = "SELECT\n" +
             "\tSKU_ID as sku_id,\n" +
-            "\tsum(QTY) as current_balance\n" +
+            "\tQTY as current_balance\n" +
             "FROM\n" +
             "\tRES_SKU_REPO\n" +
             "WHERE\n" +
             "\tREPO_ID = ?1\n" +
             "AND SKU_ID IN ?2\n" +
-            "GROUP BY SKU_ID",nativeQuery = true)
-    List<Map<String,Object>> findCurrentQty(Long channelId,List<Long> skuIds);
+            "AND STOCK_TYPE_ID = ?3",nativeQuery = true)
+    List<Map<String,Object>> findCurrentQty(Long channelId,List<Long> skuIds,Long stockTpyeId);
+
+    @Query(value = "SELECT\n" +
+            "\tRSR.SKU_ID,\n" +
+            "\tRS.SKU_CODE\n" +
+            "FROM\n" +
+            "\tRES_SKU_REPO rsr,\n" +
+            "\tRES_SKU rs\n" +
+            "WHERE\n" +
+            "\trsr.REPO_ID = ?1\n" +
+            "AND rsr.STOCK_TYPE_ID = ?2\n" +
+            "AND rs.id = RSR.SKU_ID",nativeQuery = true)
+    List<Map<String,Object>> findSkuByRepoId(Long channelId,Long stockTpyeId);
 }

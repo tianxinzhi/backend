@@ -2,6 +2,7 @@ package com.pccw.backend.ctrl;
 
 import com.pccw.backend.bean.BaseDeleteBean;
 import com.pccw.backend.bean.JsonResult;
+import com.pccw.backend.bean.StaticVariable;
 import com.pccw.backend.bean.stock_reservation.CreateBean;
 import com.pccw.backend.bean.stock_reservation.EditBean;
 import com.pccw.backend.bean.stock_reservation.SearchBean;
@@ -16,6 +17,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -35,7 +37,7 @@ public class Stock_ReservationCtrl extends BaseCtrl<DbResReservation> {
     @Autowired
     ResSkuRepository skuRepository;
     @Autowired
-    Process_ProcessCtrl processProcessCtrl;
+    ResRepoRepository repoRepository;
 
     @ApiOperation(value="预留",tags={"stock_reservation"},notes="查询")
     @RequestMapping("/search")
@@ -43,7 +45,7 @@ public class Stock_ReservationCtrl extends BaseCtrl<DbResReservation> {
         try {
             System.out.println(bean.toString());
             Specification<DbResReservation> spec = Convertor.<DbResReservation>convertSpecification(bean);
-            List<DbResReservation> list = reservationRepository.findAll(spec, PageRequest.of(bean.getPageIndex(),bean.getPageSize())).getContent();
+            List<DbResReservation> list = reservationRepository.findAll(spec);
             list = list.stream().filter(b -> b.getActive().equals("Y")).collect(Collectors.toList());
             if(bean.getSku()!=null){
                 list = list.stream().filter(b -> bean.getSku().toString().contains(b.getSkuId()+"")).collect(Collectors.toList());
@@ -60,6 +62,7 @@ public class Stock_ReservationCtrl extends BaseCtrl<DbResReservation> {
     public JsonResult create(@RequestBody CreateBean bean) {
         try {
             //保存 reservation
+            bean.setLogTxtBum(genTranNum(new Date(),"RV",repoRepository.findById(bean.getRepoId()).get().getRepoCode()));
             this.create(reservationRepository,DbResReservation.class,bean);
             DbResSku sku = new DbResSku();sku.setId(bean.getSkuId());
             DbResRepo repo = new DbResRepo();repo.setId(bean.getRepoId());
@@ -94,6 +97,56 @@ public class Stock_ReservationCtrl extends BaseCtrl<DbResReservation> {
                 skuRepoRepository.saveAndFlush(skuRepo);
             }
             //插入日志
+            DbResLogMgt logMgt = new DbResLogMgt();
+            logMgt.setLogRepoOut(bean.getRepoId());
+            logMgt.setLogTxtBum(bean.getLogTxtBum());
+            logMgt.setLogType(StaticVariable.LOGTYPE_MANAGEMENT);
+            logMgt.setLogOrderNature(StaticVariable.LOGORDERNATURE_STOCK_RESERVE);
+            logMgt.setStatus(StaticVariable.STATUS_WAITING);
+            logMgt.setStaffNumber(bean.getStaffId());
+            logMgt.setReservationId(reservationRepository.findAll().stream().max(Comparator.comparing(DbResReservation::getId)).get().getId());
+            logMgt.setRemark(bean.getRemark());
+            logMgt.setCreateAt(time);
+            logMgt.setUpdateAt(time);
+            logMgt.setCreateBy(getAccount());
+            logMgt.setUpdateBy(getAccount());
+            logMgt.setActive("Y");
+
+            List<DbResLogMgtDtl> line = new LinkedList<>();
+            DbResLogMgtDtl dtl = new DbResLogMgtDtl();
+            dtl.setDtlRepoId(bean.getRepoId());
+            dtl.setDtlSkuId(bean.getSkuId());
+            dtl.setDtlQty(bean.getQty());
+            dtl.setLogTxtBum(bean.getLogTxtBum());
+            dtl.setStatus(StaticVariable.STATUS_RESERVED);
+            dtl.setLisStatus(StaticVariable.LISSTATUS_WAITING);
+            dtl.setDtlAction(StaticVariable.DTLACTION_ADD);
+            dtl.setDtlSubin(StaticVariable.DTLSUBIN_RESERVED);
+            dtl.setCreateAt(time);
+            dtl.setUpdateAt(time);
+            dtl.setCreateBy(getAccount());
+            dtl.setUpdateBy(getAccount());
+            dtl.setActive("Y");
+
+            DbResLogMgtDtl dtl2 = new DbResLogMgtDtl();
+            dtl2.setDtlRepoId(bean.getRepoId());
+            dtl2.setDtlSkuId(bean.getSkuId());
+            dtl2.setDtlQty(bean.getQty());
+            dtl2.setLogTxtBum(bean.getLogTxtBum());
+            dtl2.setStatus(StaticVariable.STATUS_AVAILABLE);
+            dtl2.setLisStatus(StaticVariable.LISSTATUS_WAITING);
+            dtl2.setDtlAction(StaticVariable.DTLACTION_DEDUCT);
+            dtl2.setDtlSubin(StaticVariable.DTLSUBIN_AVAILABLE);
+            dtl2.setCreateAt(time);
+            dtl2.setUpdateAt(time);
+            dtl2.setCreateBy(getAccount());
+            dtl2.setUpdateBy(getAccount());
+            dtl2.setActive("Y");
+
+            line.add(dtl);
+            line.add(dtl2);
+            logMgt.setLine(line);
+            logMgtRepository.saveAndFlush(logMgt);
         } catch (Exception e) {
             e.printStackTrace();
             return JsonResult.fail(e);
@@ -214,6 +267,17 @@ public class Stock_ReservationCtrl extends BaseCtrl<DbResReservation> {
             return JsonResult.fail(e);
         }
         return JsonResult.success(Arrays.asList());
+    }
+
+    public String genTranNum(Date date, String tpye, String storeNameFrom) {
+
+        SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd HHmmss");
+        String strDate = format.format(date);
+        System.out.println(strDate);
+        String prefix = strDate.substring(2, 8);
+        String suffix = strDate.substring(9);
+        String transationNumber = prefix + tpye + storeNameFrom  + suffix;
+        return transationNumber;
     }
 
 }

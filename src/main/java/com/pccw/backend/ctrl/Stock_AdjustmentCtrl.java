@@ -1,7 +1,9 @@
 package com.pccw.backend.ctrl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONPObject;
+import com.fasterxml.jackson.core.JsonParser;
 import com.pccw.backend.bean.JsonResult;
 import com.pccw.backend.bean.StaticVariable;
 import com.pccw.backend.bean.lis_api.CreateBean;
@@ -10,10 +12,7 @@ import com.pccw.backend.bean.stock_adjustment.LogMgtBean;
 import com.pccw.backend.bean.stock_adjustment.LogMgtDtlBean;
 import com.pccw.backend.bean.stock_adjustment.SearchBean;
 import com.pccw.backend.entity.*;
-import com.pccw.backend.repository.ResAdjustReasonRepository;
-import com.pccw.backend.repository.ResLogMgtRepository;
-import com.pccw.backend.repository.ResSkuRepoRepository;
-import com.pccw.backend.repository.ResStockTypeRepository;
+import com.pccw.backend.repository.*;
 import com.pccw.backend.util.RestTemplateUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -22,6 +21,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cglib.beans.BeanMap;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,6 +44,8 @@ public class Stock_AdjustmentCtrl extends BaseCtrl<DbResLogMgt> {
     ResLogMgtRepository logMgtRepository;
     @Autowired
     ResSkuRepoRepository skuRepoRepository;
+    @Autowired
+    ResSkuRepository skuRepository;
     @Autowired
     ResAdjustReasonRepository reasonRepository;
     @Autowired
@@ -234,10 +236,13 @@ public class Stock_AdjustmentCtrl extends BaseCtrl<DbResLogMgt> {
     public JsonResult balanceSearch(@RequestBody SearchBean bean) {
         try {
             DbResSkuRepo skuRepo = skuRepoRepository.findQtyByRepoAndShopAndType(bean.getDtlRepoId(),bean.getDtlSkuId(),bean.getCatalog());
-            // if(skuRepo==null){
-            //     return JsonResult.fail(Arrays.asList());
-            // }
-            return JsonResult.success(Arrays.asList(skuRepo));
+            Map beanMap = new HashMap();
+            beanMap.put("qty",skuRepo.getQty());
+            if(skuRepo!=null){
+                DbResSku byId = skuRepository.findById(skuRepo.getSku().getId()).get();
+                beanMap.put("days",byId.getMaxReserveDays());
+             }
+            return JsonResult.success(Arrays.asList(beanMap));
         } catch (Exception e) {
             return JsonResult.fail(e);
         }

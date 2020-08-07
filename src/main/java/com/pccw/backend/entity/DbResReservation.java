@@ -30,6 +30,9 @@ public class DbResReservation extends Base{
 	@Column(name = "order_number")
 	private String orderNo;
 
+	@Column(name = "log_txtNum", length = 512)
+	private String logTxtBum;
+
 	@Column(name = "customer_type")
 	private String customerType;
 

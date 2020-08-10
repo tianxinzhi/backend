@@ -126,77 +126,9 @@ public class Stock_TakeCtrl extends BaseCtrl<DbResStockTake>{
         }
     }
 
-
-    @RequestMapping(method = RequestMethod.GET,path = "/printb")
-    public JsonResult print(){
-        try {
-            DbResStockTake stockTake = stockTakeRepository.findById(6L).get();
-            DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            Map map = new HashMap<>();
-            map.put("number",stockTake.getStockTakeNumber());
-            map.put("channel",repoRepository.findById(stockTake.getChannelId()).get().getRepoCode());
-            map.put("time",stockTake.getCompleteTime() == null ?"":sdf.format(stockTake.getCompleteTime()));
-            String skuCode = "";
-            List<Map> dtls = new LinkedList<>();
-            for (DbResStockTakeDtl dtl : stockTake.getLine()) {
-                Map kMap = new HashMap();
-                DbResSku sku = skuRepository.findById(dtl.getSkuId()).get();
-                skuCode += sku.getSkuCode()+",";
-                kMap.put("sku",sku.getSkuCode()==null?"":sku.getSkuCode());
-                kMap.put("one",dtl.getStockTakeOne()==null?"":dtl.getStockTakeOne());
-                kMap.put("two",dtl.getStockTakeTwo()==null?"":dtl.getStockTakeTwo());
-                kMap.put("three",dtl.getStockTakeThree()==null?"":dtl.getStockTakeThree());
-                kMap.put("balance",dtl.getStockTakeBalance()==null?"":dtl.getStockTakeBalance());
-                dtls.add(kMap);
-            }
-            map.put("sku",skuCode);
-            map.put("list",dtls);
-            System.out.println("printb:导出前查询list:=====================");
-            System.out.println(map.toString());
-            //得到文档的路径
-            Resource resource = new ClassPathResource(inPath);
-            InputStream in = resource.getInputStream();
-
-            //列表数据将存储到指定的excel文件路径，这个路径是在项目编译之后的target目录下
-            FileOutputStream out = new FileOutputStream(outPath);
-            //这里的context是jxls框架上的context内容
-            Context context = new Context();
-            //将列表参数放入context中
-            context.putVar("test", map);
-            //将List<Exam>列表数据按照模板文件中的格式生成到scoreOutput.xls文件中
-            JxlsHelper.getInstance().processTemplate(in, out, context);
-//            JxlsHelper jxlsHelper = JxlsHelper.getInstance();
-//            Transformer transformer = jxlsHelper.createTransformer(in, out);
-//
-//            jxlsHelper.processTemplate(context, transformer);
-            //指定数据生成后的文件输入流（将上述out的路径作为文件的输入流）
-            FileInputStream fileInputStream = new FileInputStream(outPath);
-            //导出excel文件，设置文件名
-            sdf = new SimpleDateFormat("yyyyMMddHHmmss");
-            String filename = URLEncoder.encode("stock_take"+sdf.format(new Date())+".xls", "UTF-8");
-            //设置下载头
-            response.setHeader("Content-Disposition", "attachment;filename=" + filename);
-//            response.setHeader("Content-Type","");
-            response.setContentType("application/ms-excel;charset=UTF-8");
-//            response.setContentType("application/vnd..ms-excel;charset=UTF-8");
-            ServletOutputStream outputStream = response.getOutputStream();
-            //将文件写入浏览器
-            byte[] bys = new byte[fileInputStream.available()];
-            fileInputStream.read(bys);
-            outputStream.write(bys);
-            outputStream.flush();
-            outputStream.close();
-            System.out.println("printb:导出完毕！");
-            return JsonResult.success(Arrays.asList());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return JsonResult.fail(e);
-        }
-    }
-
-    @RequestMapping(value = "/print",method = RequestMethod.POST)
-    public JsonResult testExport2(@RequestBody EditBean bean) throws Exception{
-        DbResStockTake stockTake = stockTakeRepository.findById(bean.getId()).get();
+    @RequestMapping(value = "/print",method = RequestMethod.GET)
+    public JsonResult print(Long id) throws Exception{
+        DbResStockTake stockTake = stockTakeRepository.findById(id).get();
         DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Map map = new HashMap<>();
         map.put("number",stockTake.getStockTakeNumber());
@@ -222,6 +154,7 @@ public class Stock_TakeCtrl extends BaseCtrl<DbResStockTake>{
         System.out.println(map.toString());
 
         InputStream in = new ClassPathResource(inPath).getInputStream();
+        sdf = new SimpleDateFormat("yyyyMMddHHmmss");
         String filename = URLEncoder.encode("stock_take"+sdf.format(new Date())+".xls", "UTF-8");
         response.setHeader("Content-Disposition", "attachment;filename="+filename);
         /*response.setContentType("application/ms-excel;charset=UTF-8");*/

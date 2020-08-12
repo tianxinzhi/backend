@@ -58,7 +58,7 @@ public class DbResReservation extends Base{
 	private String paymentStatus;
 
 	@Column(name = "days")
-	private double days;
+	private Long days;
 
 	@Column(name = "remark")
 	private String remark;

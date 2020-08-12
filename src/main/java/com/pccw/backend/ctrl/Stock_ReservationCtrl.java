@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -55,7 +56,7 @@ public class Stock_ReservationCtrl extends BaseCtrl<DbResReservation> {
     @Autowired
     HttpServletResponse response;
 
-    private String inPath =  "excel/stock_take.xls";
+    private String inPath =  "excel/stock_take.xlsx";
     private String outPath = System.getProperty("user.dir")+"/data/stock_take.xls";
 
     @ApiOperation(value="预留",tags={"stock_reservation"},notes="查询")
@@ -64,8 +65,17 @@ public class Stock_ReservationCtrl extends BaseCtrl<DbResReservation> {
         try {
             System.out.println(bean.toString());
             Specification<DbResReservation> spec = Convertor.<DbResReservation>convertSpecification(bean);
-            List<DbResReservation> list = reservationRepository.findAll(spec);
+            List<DbResReservation> list = reservationRepository.findAll();
             list = list.stream().filter(b -> b.getActive().equals("Y")).collect(Collectors.toList());
+            if(bean.getCustomerType()!=null&&!bean.getCustomerType().equals("")){
+                list = list.stream().filter(b -> bean.getCustomerType().contains(b.getCustomerType())).collect(Collectors.toList());
+            }
+            if(bean.getPaymentStatus()!=null&&!bean.getPaymentStatus().equals("")){
+                list = list.stream().filter(b -> b.getPaymentStatus().contains(bean.getPaymentStatus())).collect(Collectors.toList());
+            }
+            if(bean.getRepoId()!=null){
+                list = list.stream().filter(b -> b.getRepoId().toString().contains(bean.getRepoId()+"")).collect(Collectors.toList());
+            }
             if(bean.getSku()!=null){
                 list = list.stream().filter(b -> bean.getSku().toString().contains(b.getSkuId()+"")).collect(Collectors.toList());
             }
@@ -209,6 +219,7 @@ public class Stock_ReservationCtrl extends BaseCtrl<DbResReservation> {
     @RequestMapping(method = RequestMethod.POST,value = "/edit")
     public JsonResult edit(@RequestBody EditBean bean) {
         try {
+            System.out.println(bean.toString());
             DbResReservation dbResReservation = reservationRepository.findById(bean.getId()).get();
             //没有修改repo和sku，即扣减之前reserved的qty，添加新的reserved qty
             if(bean.getRepoId() == dbResReservation.getRepoId() &&
@@ -299,10 +310,10 @@ public class Stock_ReservationCtrl extends BaseCtrl<DbResReservation> {
         return transationNumber;
     }
 
-    @RequestMapping(method = RequestMethod.GET,path = "/printb")
-    public JsonResult print(){
+    @RequestMapping(method = RequestMethod.POST,path = "/print")
+    public JsonResult print(@RequestBody EditBean b){
         try {
-            DbResStockTake stockTake = stockTakeRepository.findById(6L).get();
+            DbResStockTake stockTake = stockTakeRepository.findById(b.getId()).get();
             DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Map map = new HashMap<>();
             map.put("number",stockTake.getStockTakeNumber());
@@ -323,42 +334,24 @@ public class Stock_ReservationCtrl extends BaseCtrl<DbResReservation> {
             }
             map.put("sku",skuCode);
             map.put("list",dtls);
-            System.out.println("printb:导出前查询list:=====================");
-            System.out.println(map.toString());
-            //得到文档的路径
-            Resource resource = new ClassPathResource(inPath);
-            InputStream in = resource.getInputStream();
 
-            //列表数据将存储到指定的excel文件路径，这个路径是在项目编译之后的target目录下
-            FileOutputStream out = new FileOutputStream(outPath);
-            //这里的context是jxls框架上的context内容
+            System.out.println("导出前查询list:=====================");
+            System.out.println(map.toString());
+
+            InputStream in = new ClassPathResource(inPath).getInputStream();
+            String filename = URLEncoder.encode("stock_take"+sdf.format(new Date())+".xlsx", "UTF-8");
+            response.setHeader("Content-Disposition", "attachment;filename="+filename);
+            /*response.setContentType("application/ms-excel;charset=UTF-8");*/
+            response.setContentType("application/x-xls;charset=UTF-8");
+            OutputStream out = response.getOutputStream();
             Context context = new Context();
-            //将列表参数放入context中
-            context.putVar("test", map);
-            //将List<Exam>列表数据按照模板文件中的格式生成到scoreOutput.xls文件中
+            context.putVar("test",map);
+
+//        JxlsHelper jxlsHelper = JxlsHelper.getInstance();
+//        Transformer transformer = jxlsHelper.createTransformer(in, out);
+//        jxlsHelper.processTemplate(context, transformer);
             JxlsHelper.getInstance().processTemplate(in, out, context);
-//            JxlsHelper jxlsHelper = JxlsHelper.getInstance();
-//            Transformer transformer = jxlsHelper.createTransformer(in, out);
-//
-//            jxlsHelper.processTemplate(context, transformer);
-            //指定数据生成后的文件输入流（将上述out的路径作为文件的输入流）
-            FileInputStream fileInputStream = new FileInputStream(outPath);
-            //导出excel文件，设置文件名
-            sdf = new SimpleDateFormat("yyyyMMddHHmmss");
-            String filename = URLEncoder.encode("stock_take"+sdf.format(new Date())+".xls", "UTF-8");
-            //设置下载头
-            response.setHeader("Content-Disposition", "attachment;filename=" + filename);
-//            response.setHeader("Content-Type","");
-            response.setContentType("application/ms-excel;charset=UTF-8");
-//            response.setContentType("application/vnd..ms-excel;charset=UTF-8");
-            ServletOutputStream outputStream = response.getOutputStream();
-            //将文件写入浏览器
-            byte[] bys = new byte[fileInputStream.available()];
-            fileInputStream.read(bys);
-            outputStream.write(bys);
-            outputStream.flush();
-            outputStream.close();
-            System.out.println("printb:导出完毕！");
+            System.out.println("导出完毕！");
             return JsonResult.success(Arrays.asList());
         } catch (Exception e) {
             e.printStackTrace();

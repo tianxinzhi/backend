@@ -36,6 +36,9 @@ public class DbResStockTakeDtl extends Base{
     @Column(name = "stockTakeBalance")
     private String stockTakeBalance;
 
+    @Column(name = "current_balance")
+    private Long currentBalance;
+
     @Column(name = "difference")
     private String difference;
 

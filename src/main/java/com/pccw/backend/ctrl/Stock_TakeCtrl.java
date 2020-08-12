@@ -59,8 +59,7 @@ public class Stock_TakeCtrl extends BaseCtrl<DbResStockTake>{
     @Autowired
     HttpServletResponse response;
 
-    private String inPath =  "excel/stock_take.xls";
-    private String outPath = System.getProperty("user.dir")+"/data/stock_take.xls";
+    private String excelPath =  "excel/stock_take.xls";
 
     @RequestMapping(method = RequestMethod.POST,path = "/search")
     public JsonResult search(@RequestBody SearchBean b){
@@ -75,6 +74,7 @@ public class Stock_TakeCtrl extends BaseCtrl<DbResStockTake>{
                 searchVO.setChannelCode(repo.getRepoCode());
                 return searchVO;
             }).collect(Collectors.toList());
+            result = result.stream().sorted(Comparator.comparing(SearchVO::getUpdateAt).reversed()).collect(Collectors.toList());
             return JsonResult.success(result);
         } catch (Exception e) {
             return JsonResult.fail(e);
@@ -133,7 +133,8 @@ public class Stock_TakeCtrl extends BaseCtrl<DbResStockTake>{
         Map map = new HashMap<>();
         map.put("number",stockTake.getStockTakeNumber());
         map.put("channel",repoRepository.findById(stockTake.getChannelId()).get().getRepoCode());
-        map.put("time",stockTake.getCompleteTime() == null ?"":sdf.format(stockTake.getCompleteTime()));
+        map.put("time",stockTake.getCompleteTime() == null ?sdf.format(stockTake.getUpdateAt()):sdf.format(stockTake.getCompleteTime()));
+        map.put("display",stockTake.getDisplayQuantity());
         String skuCode = "";
         List<Map> dtls = new LinkedList<>();
         for (DbResStockTakeDtl dtl : stockTake.getLine()) {
@@ -145,6 +146,8 @@ public class Stock_TakeCtrl extends BaseCtrl<DbResStockTake>{
             kMap.put("two",dtl.getStockTakeTwo()==null?"":dtl.getStockTakeTwo());
             kMap.put("three",dtl.getStockTakeThree()==null?"":dtl.getStockTakeThree());
             kMap.put("balance",dtl.getStockTakeBalance()==null?"":dtl.getStockTakeBalance());
+            kMap.put("currentBalance",dtl.getCurrentBalance()==null?"":dtl.getCurrentBalance());
+            kMap.put("difference",dtl.getDifference()==null?"":dtl.getDifference());
             dtls.add(kMap);
         }
         map.put("sku",skuCode);
@@ -153,7 +156,7 @@ public class Stock_TakeCtrl extends BaseCtrl<DbResStockTake>{
         System.out.println("导出前查询list:=====================");
         System.out.println(map.toString());
 
-        InputStream in = new ClassPathResource(inPath).getInputStream();
+        InputStream in = new ClassPathResource(excelPath).getInputStream();
         sdf = new SimpleDateFormat("yyyyMMddHHmmss");
         String filename = URLEncoder.encode("stock_take"+sdf.format(new Date())+".xls", "UTF-8");
         response.setHeader("Content-Disposition", "attachment;filename="+filename);
@@ -161,7 +164,7 @@ public class Stock_TakeCtrl extends BaseCtrl<DbResStockTake>{
         response.setContentType("application/vnd..ms-excel;charset=UTF-8");
         OutputStream out = response.getOutputStream();
         Context context = new Context();
-        context.putVar("test",map);
+        context.putVar("param",map);
 
 //        JxlsHelper jxlsHelper = JxlsHelper.getInstance();
 //        Transformer transformer = jxlsHelper.createTransformer(in, out);

@@ -22,5 +22,7 @@ public class CreateBean extends BaseBean {
 
     private String fillStatus;
 
+    private String displayQuantity;
+
     private List<DbResStockTakeDtl> line;
 }

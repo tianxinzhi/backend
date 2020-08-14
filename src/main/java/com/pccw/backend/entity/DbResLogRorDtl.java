@@ -19,6 +19,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Table(name = "res_log_ror_dtl")
 @SequenceGenerator(name="id_logRorDtl",sequenceName = "logRorDtl_seq",allocationSize = 1)
+@Deprecated
 public class DbResLogRorDtl extends BaseLogDtl {
 
 	@Id
@@ -41,11 +42,11 @@ public class DbResLogRorDtl extends BaseLogDtl {
 	@Column(name="dtl_qty")
 	private Long dtlQty;
 
-	@Column(name="ccc")
-	private String ccc;
-
-	@Column(name="wo")
-	private String wo;
+//	@Column(name="ccc")
+//	private String ccc;
+//
+//	@Column(name="wo")
+//	private String wo;
 
 	@Column(name="detail_id")
 	private String detailId;

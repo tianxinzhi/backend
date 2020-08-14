@@ -36,8 +36,16 @@ public class BaseLogDtl extends Base {
 	private String lisResult;
 
 	// AVL(available)/DEM(demo)/RES(reserve)/ARE(ao_reserve)
-	// FAU(faulty) 
-	// INT(ondelivery/intransit) 
+	// FAU(faulty)
+	// INT(ondelivery/intransit)
 	@Column(name = "status", length = 4)
 	private String Status;
+
+	// Shop code mapping
+	@Column(name = "ccc", length = 512)
+	private String ccc;
+
+	//  Work order
+	@Column(name = "wo", length = 512)
+	private String wo;
 }

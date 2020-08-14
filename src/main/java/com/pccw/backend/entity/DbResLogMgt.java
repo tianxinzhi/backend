@@ -46,6 +46,20 @@ public class DbResLogMgt extends BaseLog {
 	@Column(name = "source_line")
 	private String sourceTxnLine;
 
+	// OrderId
+	@Column(name="log_orderId",length = 512)
+	private String logOrderId;
+
+	// Related OrderId
+	@Column(name="log_relatedOrderId",length = 512)
+	private String logRelatedOrderId;
+
+	// N(normal) / A(Advance Order)
+	@Column(name="log_orderType",length = 1)
+	private String logOrderType;
+
+	@Column(name="tx_date",length = 20)
+	private String txDate;
 
 	@Column(name = "mobile_number")
 	private String mobileNumber;

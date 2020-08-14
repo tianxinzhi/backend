@@ -20,32 +20,24 @@ public class BaseLog extends Base {
 	@Column(name="log_type",length = 4)
         private String logType;
 
-        // ASG(Assign) / RET(return) / EXC(Exchange)
-        // ARS(Advanced Reserve) / CARS(Cancel advance reserve) / APU(Advance pick up)
-        // RREQ(Replenishment request)
-        // SOTS(stock out to shop)/ SIFS(stock in from shop)
-        // SOTW(stock out to warehouse)/ SIFW(stock in from warehouse)
-        // SIWPO(stock in without PO)
-        // ST(Stock Take) / STA(Stock Take Adjustment)
-        // SCC(stock change category)
-        @Column(name = "log_orderNature", length = 512)
-        private String logOrderNature;
+    // ASG(Assign) / RET(return) / EXC(Exchange)
+    // ARS(Advanced Reserve) / CARS(Cancel advance reserve) / APU(Advance pick up)
+    // RREQ(Replenishment request)
+    // SOTS(stock out to shop)/ SIFS(stock in from shop)
+    // SOTW(stock out to warehouse)/ SIFW(stock in from warehouse)
+    // SIWPO(stock in without PO)
+    // ST(Stock Take) / STA(Stock Take Adjustment)
+    // SCC(stock change category)
+    @Column(name = "log_orderNature", length = 512)
+    private String logOrderNature;
 
-        // W - waiting LIS to handle / D - Done
-        @Column(name = "status",length = 4)
-        private String status;
+    // W - waiting LIS to handle / D - Done
+    @Column(name = "status",length = 4)
+    private String status;
 
-        // remark
-        @Column(name = "remark",length = 512)
-        private String remark;
-
-    // Shop code mapping
-    @Column(name = "ccc", length = 512)
-    private String ccc;
-
-    //  Work order
-    @Column(name = "wo", length = 512)
-    private String wo;
+    // remark
+    @Column(name = "remark",length = 512)
+    private String remark;
 
     @Column(name = "courier")
     private String courier;

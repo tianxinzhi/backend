@@ -3,6 +3,8 @@ package com.pccw.backend.ctrl;
 import com.pccw.backend.bean.BaseDeleteBean;
 import com.pccw.backend.bean.JsonResult;
 import com.pccw.backend.bean.StaticVariable;
+import com.pccw.backend.bean.interfaceForOrdering.InputBean;
+import com.pccw.backend.bean.interfaceForOrdering.InputItemBean;
 import com.pccw.backend.bean.stock_reservation.CreateBean;
 import com.pccw.backend.bean.stock_reservation.EditBean;
 import com.pccw.backend.bean.stock_reservation.SearchBean;
@@ -17,8 +19,10 @@ import org.jxls.util.JxlsHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.ServletOutputStream;
@@ -29,6 +33,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -50,40 +55,26 @@ public class Stock_ReservationCtrl extends BaseCtrl<DbResReservation> {
     ResSkuRepository skuRepository;
     @Autowired
     ResRepoRepository repoRepository;
-    @Autowired
-    ResStockTakeRepository stockTakeRepository;
-
-    @Autowired
-    HttpServletResponse response;
-
-    private String inPath =  "excel/stock_take.xlsx";
-    private String outPath = System.getProperty("user.dir")+"/data/stock_take.xls";
 
     @ApiOperation(value="预留",tags={"stock_reservation"},notes="查询")
     @RequestMapping("/search")
     public JsonResult search(@RequestBody SearchBean bean) {
-        try {
-            System.out.println(bean.toString());
-            Specification<DbResReservation> spec = Convertor.<DbResReservation>convertSpecification(bean);
-            List<DbResReservation> list = reservationRepository.findAll();
-            list = list.stream().filter(b -> b.getActive().equals("Y")).collect(Collectors.toList());
-            if(bean.getCustomerType()!=null&&!bean.getCustomerType().equals("")){
-                list = list.stream().filter(b -> bean.getCustomerType().contains(b.getCustomerType())).collect(Collectors.toList());
-            }
-            if(bean.getPaymentStatus()!=null&&!bean.getPaymentStatus().equals("")){
-                list = list.stream().filter(b -> b.getPaymentStatus().contains(bean.getPaymentStatus())).collect(Collectors.toList());
-            }
-            if(bean.getRepoId()!=null){
-                list = list.stream().filter(b -> b.getRepoId().toString().contains(bean.getRepoId()+"")).collect(Collectors.toList());
-            }
-            if(bean.getSku()!=null){
-                list = list.stream().filter(b -> bean.getSku().toString().contains(b.getSkuId()+"")).collect(Collectors.toList());
-            }
-            return JsonResult.success(list);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-            return JsonResult.fail(e);
+        System.out.println(bean.toString());
+//            ,PageRequest.of(bean.getPageIndex(), bean.getPageSize())
+        List<DbResReservation> list = reservationRepository.findDbResReservationsByActiveEquals("Y");
+        if(bean.getCustomerType()!=null&&!bean.getCustomerType().equals("")){
+            list = list.stream().filter(b -> bean.getCustomerType().contains(b.getCustomerType())).collect(Collectors.toList());
         }
+        if(bean.getPaymentStatus()!=null&&!bean.getPaymentStatus().equals("")){
+            list = list.stream().filter(b -> b.getPaymentStatus().contains(bean.getPaymentStatus())).collect(Collectors.toList());
+        }
+        if(bean.getRepoId()!=null){
+            list = list.stream().filter(b -> b.getRepoId().toString().contains(bean.getRepoId()+"")).collect(Collectors.toList());
+        }
+        if(bean.getSku()!=null){
+            list = list.stream().filter(b -> bean.getSku().toString().contains(b.getSkuId()+"")).collect(Collectors.toList());
+        }
+        return JsonResult.success(list);
     }
 
     @ApiOperation(value="预留",tags={"stock_reservation"},notes="新增")
@@ -310,53 +301,73 @@ public class Stock_ReservationCtrl extends BaseCtrl<DbResReservation> {
         return transationNumber;
     }
 
-    @RequestMapping(method = RequestMethod.POST,path = "/print")
-    public JsonResult print(@RequestBody EditBean b){
+    /**
+     * 给第三方api调用
+     * @param b
+     * @param txtNum
+     * @return
+     */
+    public String outerApi(InputBean b,String txtNum){
         try {
-            DbResStockTake stockTake = stockTakeRepository.findById(b.getId()).get();
-            DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            Map map = new HashMap<>();
-            map.put("number",stockTake.getStockTakeNumber());
-            map.put("channel",repoRepository.findById(stockTake.getChannelId()).get().getRepoCode());
-            map.put("time",stockTake.getCompleteTime() == null ?"":sdf.format(stockTake.getCompleteTime()));
-            String skuCode = "";
-            List<Map> dtls = new LinkedList<>();
-            for (DbResStockTakeDtl dtl : stockTake.getLine()) {
-                Map kMap = new HashMap();
-                DbResSku sku = skuRepository.findById(dtl.getSkuId()).get();
-                skuCode += sku.getSkuCode()+",";
-                kMap.put("sku",sku.getSkuCode()==null?"":sku.getSkuCode());
-                kMap.put("one",dtl.getStockTakeOne()==null?"":dtl.getStockTakeOne());
-                kMap.put("two",dtl.getStockTakeTwo()==null?"":dtl.getStockTakeTwo());
-                kMap.put("three",dtl.getStockTakeThree()==null?"":dtl.getStockTakeThree());
-                kMap.put("balance",dtl.getStockTakeBalance()==null?"":dtl.getStockTakeBalance());
-                dtls.add(kMap);
+            DateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+            long time = System.currentTimeMillis();
+            for (InputItemBean item : b.getItem_details()) {
+                DbResReservation res = new DbResReservation();
+                res.setStaffId(b.getSales_id());
+                res.setOrderNo(b.getOrder_id());
+                res.setCustomerName(b.getOrder_system());
+                res.setRemark(b.getRemarks());
+                DbResSku sku = skuRepository.findFirst1BySkuCode(item.getSku_code());
+                res.setSkuId(sku.getId());
+                DbResRepo repo = repoRepository.findFirst1ByRepoCode(item.getRepo_id());
+                long qty = Long.parseLong(item.getQuantity());
+                res.setRepoId(repo.getId());
+                res.setLogTxtBum(txtNum);
+                res.setQty(qty);
+                res.setOrderDate(sdf.parse(b.getBiz_date()).getTime());
+                res.setReservationDate(sdf.parse(b.getTx_date()).getTime());
+                res.setDays(Long.parseLong(sku.getMaxReserveDays()));
+                res.setActive("Y");
+                res.setUpdateAt(sdf.parse(b.getBiz_date()).getTime());
+                res.setCreateAt(sdf.parse(b.getBiz_date()).getTime());
+                res.setCreateBy(getAccount());
+                res.setUpdateBy(getAccount());
+
+
+                DbResSkuRepo avaliable = skuRepoRepository.findQtyByRepoAndShopAndType(repo.getId(), sku.getId(), 3L);
+                if(avaliable == null || avaliable.getQty()<qty){
+                    return "The SKU:"+item.getSku_code()+" in the channel:"+item.getRepo_id()+" is not enough,Available qty is "+(avaliable==null?0:avaliable.getQty());
+                }
+                reservationRepository.saveAndFlush(res);
+                avaliable.setQty(avaliable.getQty()-Long.parseLong(item.getQuantity()));
+                avaliable.setUpdateAt(time);
+                skuRepoRepository.saveAndFlush(avaliable);
+                DbResSkuRepo reserve = skuRepoRepository.findQtyByRepoAndShopAndType(repo.getId(), sku.getId(), 4L);
+                if(reserve!=null){
+                    reserve.setQty(reserve.getQty()+qty);
+                    reserve.setUpdateAt(time);
+                    skuRepoRepository.saveAndFlush(reserve);
+                } else {
+                    DbResSkuRepo value = new DbResSkuRepo();
+                    value.setRepo(repo);
+                    value.setSku(sku);
+                    DbResStockType type = new DbResStockType();type.setId(4L);
+                    value.setStockType(type);
+                    value.setQty(qty);
+                    value.setRemark(b.getRemarks());
+                    value.setCreateAt(time);
+                    value.setUpdateAt(time);
+                    value.setCreateBy(getAccount());
+                    value.setUpdateBy(getAccount());
+                    value.setActive("Y");
+                    skuRepoRepository.saveAndFlush(value);
+                }
             }
-            map.put("sku",skuCode);
-            map.put("list",dtls);
-
-            System.out.println("导出前查询list:=====================");
-            System.out.println(map.toString());
-
-            InputStream in = new ClassPathResource(inPath).getInputStream();
-            String filename = URLEncoder.encode("stock_take"+sdf.format(new Date())+".xlsx", "UTF-8");
-            response.setHeader("Content-Disposition", "attachment;filename="+filename);
-            /*response.setContentType("application/ms-excel;charset=UTF-8");*/
-            response.setContentType("application/x-xls;charset=UTF-8");
-            OutputStream out = response.getOutputStream();
-            Context context = new Context();
-            context.putVar("test",map);
-
-//        JxlsHelper jxlsHelper = JxlsHelper.getInstance();
-//        Transformer transformer = jxlsHelper.createTransformer(in, out);
-//        jxlsHelper.processTemplate(context, transformer);
-            JxlsHelper.getInstance().processTemplate(in, out, context);
-            System.out.println("导出完毕！");
-            return JsonResult.success(Arrays.asList());
-        } catch (Exception e) {
+        } catch (ParseException e) {
             e.printStackTrace();
-            return JsonResult.fail(e);
+            log.info(e.getMessage());
         }
+        return "";
     }
 
 }

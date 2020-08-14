@@ -20,6 +20,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @SequenceGenerator(name="id_logRor",sequenceName = "logRor_seq",allocationSize = 1)
+@Deprecated
 public class DbResLogRor extends BaseLog {
     @Id
     @Column(name = "id")

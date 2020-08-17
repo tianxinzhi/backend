@@ -21,8 +21,10 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.ServletOutputStream;
@@ -52,6 +54,8 @@ public class Stock_ReservationCtrl extends BaseCtrl<DbResReservation> {
     @Autowired
     ResReservationRepository reservationRepository;
     @Autowired
+    ResReservationRuleRepository ruleRepository;
+    @Autowired
     ResSkuRepository skuRepository;
     @Autowired
     ResRepoRepository repoRepository;
@@ -60,8 +64,20 @@ public class Stock_ReservationCtrl extends BaseCtrl<DbResReservation> {
     @RequestMapping("/search")
     public JsonResult search(@RequestBody SearchBean bean) {
         System.out.println(bean.toString());
-//            ,PageRequest.of(bean.getPageIndex(), bean.getPageSize())
-        List<DbResReservation> list = reservationRepository.findDbResReservationsByActiveEquals("Y");
+        List<Sort.Order> orders = new ArrayList<>();
+        orders.add(new Sort.Order(Sort.Direction.DESC,"selected"));
+        orders.add(new Sort.Order(Sort.Direction.ASC,"orderDate"));
+        List<DbResReservation> list = reservationRepository.findDbResReservationsByActiveEquals("Y",Sort.by(orders));
+        if(bean.getSortByRule().equals("Y")){
+            for (int i=list.size()-1;i>=0;i--) {
+                DbResReservation reserve = list.get(i);
+                List<DbResReservationRule> rules = ruleRepository.getDbResReservationRulesBySkuIdAndPaymentStatusAndCustomerType(reserve.getSkuId(), reserve.getPaymentStatus(), reserve.getCustomerType());
+                if(rules!=null && rules.size()>0){
+                    list.remove(reserve);
+                    list.add(0,reserve);
+                }
+            }
+        }
         if(bean.getCustomerType()!=null&&!bean.getCustomerType().equals("")){
             list = list.stream().filter(b -> bean.getCustomerType().contains(b.getCustomerType())).collect(Collectors.toList());
         }
@@ -179,7 +195,10 @@ public class Stock_ReservationCtrl extends BaseCtrl<DbResReservation> {
     public JsonResult delete(@RequestBody EditBean bean) {
         try {
             System.out.println(bean);
+            long time = System.currentTimeMillis();
             DbResReservation dbResReservation = reservationRepository.findById(bean.getId()).get();
+            dbResReservation.setUpdateAt(time);
+            dbResReservation.setUpdateBy(getAccount());
             dbResReservation.setActive("N");
             reservationRepository.saveAndFlush(dbResReservation);
 
@@ -190,6 +209,8 @@ public class Stock_ReservationCtrl extends BaseCtrl<DbResReservation> {
             //删除时，扣减之前的reserved qty 加到available qty
             if(skuRepo != null){
                 skuRepo.setQty(skuRepo.getQty()+dbResReservation.getQty());
+                skuRepo.setUpdateAt(time);
+                skuRepo.setUpdateBy(getAccount());
                 skuRepoRepository.saveAndFlush(skuRepo);
             }
             DbResStockType stockType2 = new DbResStockType();stockType2.setId(4L);
@@ -197,6 +218,8 @@ public class Stock_ReservationCtrl extends BaseCtrl<DbResReservation> {
             //扣减之前reserved的qty
             if(skuRepo2 != null){
                 skuRepo2.setQty(skuRepo2.getQty()-dbResReservation.getQty());
+                skuRepo2.setUpdateAt(time);
+                skuRepo2.setUpdateBy(getAccount());
                 skuRepoRepository.saveAndFlush(skuRepo2);
             }
         } catch (Exception e) {
@@ -212,6 +235,7 @@ public class Stock_ReservationCtrl extends BaseCtrl<DbResReservation> {
         try {
             System.out.println(bean.toString());
             DbResReservation dbResReservation = reservationRepository.findById(bean.getId()).get();
+            long time = System.currentTimeMillis();
             //没有修改repo和sku，即扣减之前reserved的qty，添加新的reserved qty
             if(bean.getRepoId() == dbResReservation.getRepoId() &&
                 bean.getSkuId() == dbResReservation.getSkuId()){
@@ -223,12 +247,16 @@ public class Stock_ReservationCtrl extends BaseCtrl<DbResReservation> {
                 //avalible的加上之前reserved的qty，扣减新的reserved qty
                 if(skuRepo!=null){
                     skuRepo.setQty(skuRepo.getQty()+dbResReservation.getQty()-bean.getQty());
+                    skuRepo.setUpdateAt(time);
+                    skuRepo.setUpdateBy(getAccount());
                     skuRepoRepository.saveAndFlush(skuRepo);
                 }
                 //reserved的减去之前的qty加上现在的qty
                 DbResStockType stockType2 = new DbResStockType();stockType2.setId(4L);
                 DbResSkuRepo skuRepo2 = skuRepoRepository.findDbResSkuRepoByRepoAndSkuAndStockType(repo, sku, stockType2);
                 if(skuRepo2 != null){
+                    skuRepo2.setUpdateAt(time);
+                    skuRepo2.setUpdateBy(getAccount());
                     skuRepo2.setQty(skuRepo2.getQty()-dbResReservation.getQty()+bean.getQty());
                     skuRepoRepository.saveAndFlush(skuRepo2);
                 }
@@ -241,6 +269,8 @@ public class Stock_ReservationCtrl extends BaseCtrl<DbResReservation> {
                 //找到之前的available加上之前的resereved qty
                 if(value != null) {
                     value.setQty(value.getQty()+dbResReservation.getQty());
+                    value.setUpdateAt(time);
+                    value.setUpdateBy(getAccount());
                     skuRepoRepository.saveAndFlush(value);
 
                     DbResSku sku3 = new DbResSku();sku3.setId(bean.getSkuId());
@@ -249,22 +279,27 @@ public class Stock_ReservationCtrl extends BaseCtrl<DbResReservation> {
                     //找到现在的available，减去现在的qty
                     if(value2!=null){
                         value2.setQty(value2.getQty()-bean.getQty());
+                        value2.setUpdateAt(time);
+                        value2.setUpdateBy(getAccount());
                         skuRepoRepository.saveAndFlush(value2);
 
                         DbResStockType stockType3 = new DbResStockType();stockType3.setId(4L);
                         //找到之前的reserved减去之前qty
                         DbResSkuRepo resereved = skuRepoRepository.findDbResSkuRepoByRepoAndSkuAndStockType(repo2, sku2, stockType3);
                         if(resereved!=null){
+                            resereved.setUpdateAt(time);
+                            resereved.setUpdateBy(getAccount());
                             resereved.setQty(resereved.getQty()-dbResReservation.getQty());
                             skuRepoRepository.saveAndFlush(resereved);
 
                             //找到现在的reserved加上现在的qty
                             DbResSkuRepo resereved1 = skuRepoRepository.findDbResSkuRepoByRepoAndSkuAndStockType(repo3, sku3, stockType3);
                             if(resereved1 != null){
+                                resereved1.setUpdateAt(time);
+                                resereved1.setUpdateBy(getAccount());
                                 resereved1.setQty(resereved1.getQty()+bean.getQty());
                                 skuRepoRepository.saveAndFlush(value2);
                             } else {
-                                long time = System.currentTimeMillis();
                                 DbResSkuRepo newReserved = new DbResSkuRepo();
                                 newReserved.setRepo(repo3);
                                 newReserved.setSku(sku3);
@@ -341,11 +376,13 @@ public class Stock_ReservationCtrl extends BaseCtrl<DbResReservation> {
                 reservationRepository.saveAndFlush(res);
                 avaliable.setQty(avaliable.getQty()-Long.parseLong(item.getQuantity()));
                 avaliable.setUpdateAt(time);
+                avaliable.setUpdateBy(getAccount());
                 skuRepoRepository.saveAndFlush(avaliable);
                 DbResSkuRepo reserve = skuRepoRepository.findQtyByRepoAndShopAndType(repo.getId(), sku.getId(), 4L);
                 if(reserve!=null){
                     reserve.setQty(reserve.getQty()+qty);
                     reserve.setUpdateAt(time);
+                    reserve.setUpdateBy(getAccount());
                     skuRepoRepository.saveAndFlush(reserve);
                 } else {
                     DbResSkuRepo value = new DbResSkuRepo();

@@ -30,4 +30,7 @@ public class SearchBean extends BaseSearchBean {
 
     @ApiModelProperty(value="sku",name="sku",example="")
     private List<Long> sku;
+
+    @ApiModelProperty(value="true",name="sortByRule",example="")
+    private String sortByRule;
 }

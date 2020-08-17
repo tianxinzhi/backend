@@ -49,6 +49,9 @@ public class CreateBean extends BaseBean {
     @ApiModelProperty(value="days",name="",example="")
     private Long days;
 
+    @ApiModelProperty(value="selected",name="",example="")
+    private String selected;
+
     @ApiModelProperty(value="remark",name="",example="")
     private String remark;
 }

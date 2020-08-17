@@ -60,6 +60,10 @@ public class DbResReservation extends Base{
 	@Column(name = "days")
 	private Long days;
 
+	// Y,N
+	@Column(name = "selected")
+	private String selected;
+
 	@Column(name = "remark")
 	private String remark;
 }

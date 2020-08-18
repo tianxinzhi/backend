@@ -21,6 +21,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -164,7 +165,6 @@ public class BaseCtrl<T>{
         }
         return name;
     }
-
 
     /**
      * 将默认查询结果集按照指定bean格式,并装入JsonResult返回

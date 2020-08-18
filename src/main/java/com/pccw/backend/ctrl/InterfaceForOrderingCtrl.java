@@ -25,7 +25,7 @@ import java.util.*;
 @RestController
 @RequestMapping("/api/external/ppos/v1")
 @CrossOrigin(methods = RequestMethod.POST,origins = "*", allowCredentials = "false")
-public class InterfaceForOrderingCtrl extends BaseCtrl<DbResLogMgt> {
+public class InterfaceForOrderingCtrl extends BaseStockCtrl<DbResLogMgt> {
 
     @Autowired
     private ResLogMgtRepository repo;
@@ -35,9 +35,6 @@ public class InterfaceForOrderingCtrl extends BaseCtrl<DbResLogMgt> {
 
     @Autowired
     ResRepoRepository repoRepository;
-
-    @Autowired
-    Stock_ReservationCtrl reservationCtrl;
 
     @Autowired
     ResSkuRepository skuRepository;
@@ -59,7 +56,7 @@ public class InterfaceForOrderingCtrl extends BaseCtrl<DbResLogMgt> {
             mgt.setStaffNumber(b.getSales_id());mgt.setLogOrderNature(b.getRequest_nature());
             mgt.setRemark(b.getRemarks());mgt.setLogOrderType("N");
             mgt.setTxDate(b.getTx_date());
-            mgt.setLogType("O");mgt.setActive("Y");
+            mgt.setLogType(StaticVariable.LOGTYPE_ORDER);mgt.setActive("Y");
             mgt.setUpdateAt(sdf.parse(b.getBiz_date()).getTime());mgt.setCreateAt(sdf.parse(b.getBiz_date()).getTime());
             mgt.setCreateBy(getAccount());mgt.setUpdateBy(getAccount());
             List<DbResLogMgtDtl> logMgtDtls=new ArrayList<>();
@@ -72,13 +69,14 @@ public class InterfaceForOrderingCtrl extends BaseCtrl<DbResLogMgt> {
 
                 DbResSku s = skuRepository.findFirst1BySkuCode(item.getSku_code());
                 DbResRepo r = repoRepository.findFirst1ByRepoCode(item.getRepo_id());
-                DbResItem i = itemRepository.findFirst1ByItemCode(item.getItem_code());
+//                DbResItem i = itemRepository.findFirst1ByItemCode(item.getItem_code());
                 Long skuId = Objects.isNull(s) ? null : s.getId();
                 Long repoId = Objects.isNull(r) ? null : r.getId();
-                Long itemId = Objects.isNull(i) ? null : i.getId();
+//                Long itemId = Objects.isNull(i) ? null : i.getId();
 
                 DbResLogMgtDtl mgtDtl=new DbResLogMgtDtl();
-                mgtDtl.setDtlSkuId(skuId);mgtDtl.setDtlItemId(itemId);
+                mgtDtl.setDtlSkuId(skuId);
+//                mgtDtl.setDtlItemId(itemId);
                 mgtDtl.setDtlRepoId(repoId);mgtDtl.setDtlQty(Long.parseLong(item.getQuantity()));
                 mgtDtl.setItemCode(item.getItem_code());mgtDtl.setDetailId(item.getDetail_id());
                 mgtDtl.setResLogMgt(mgt);
@@ -124,7 +122,7 @@ public class InterfaceForOrderingCtrl extends BaseCtrl<DbResLogMgt> {
                     mgtDtl2.setDtlSubin(StaticVariable.DTLSUBIN_AVAILABLE);
 
                     logMgtDtls.add(mgtDtl2);
-                    String s2 = reservationCtrl.outerApi(b, txtNum);
+                    String s2 = Stock_ReservationCtrl.class.newInstance().outerApi(b, txtNum);
                     if(!s2.equals("")) {
                         return CollectionBuilder.builder(new HashMap<>()).put("state", "failed").put("code", "500").put("msg", s2).put("data", null).build();
                     }
@@ -152,7 +150,6 @@ public class InterfaceForOrderingCtrl extends BaseCtrl<DbResLogMgt> {
     public Map createAO(@RequestBody InputBean b){
         try {
             //输入验证
-            long time = System.currentTimeMillis();
             String s1 = validateParam(b.getItem_details());
             if(!s1.equals("")) return CollectionBuilder.builder(new HashMap<>()).put("state", "failed").put("code", "500").put("msg", s1).put("data", null).build();
             long t = new Date().getTime();
@@ -162,7 +159,7 @@ public class InterfaceForOrderingCtrl extends BaseCtrl<DbResLogMgt> {
             mgt.setStaffNumber(b.getSales_id());mgt.setLogOrderNature(b.getRequest_nature());
             mgt.setRemark(b.getRemarks());mgt.setLogOrderType("N");
             mgt.setTxDate(b.getTx_date());
-            mgt.setLogType("O");mgt.setActive("Y");
+            mgt.setLogType(StaticVariable.LOGTYPE_ORDER);mgt.setActive("Y");
             mgt.setUpdateAt(sdf.parse(b.getBiz_date()).getTime());mgt.setCreateAt(sdf.parse(b.getBiz_date()).getTime());
             mgt.setCreateBy(getAccount());mgt.setUpdateBy(getAccount());
             List<DbResLogMgtDtl> logMgtDtls=new ArrayList<>();
@@ -175,11 +172,12 @@ public class InterfaceForOrderingCtrl extends BaseCtrl<DbResLogMgt> {
 
                 DbResSku s = skuRepository.findFirst1BySkuCode(item.getSku_code());
                 DbResRepo r = repoRepository.findFirst1ByRepoCode(item.getRepo_id());
-                DbResItem i = itemRepository.findFirst1ByItemCode(item.getItem_code());
+//                DbResItem i = itemRepository.findFirst1ByItemCode(item.getItem_code());
                 Long skuId = Objects.isNull(s) ? null : s.getId();Long repoId = Objects.isNull(r) ? null : r.getId();
-                Long itemId = Objects.isNull(i) ? null : r.getId();
+//                Long itemId = Objects.isNull(i) ? null : r.getId();
                 DbResLogMgtDtl mgtDtl=new DbResLogMgtDtl();
-                mgtDtl.setDtlSkuId(skuId);mgtDtl.setDtlItemId(itemId);
+                mgtDtl.setDtlSkuId(skuId);
+//                mgtDtl.setDtlItemId(itemId);
                 mgtDtl.setDtlRepoId(repoId);mgtDtl.setDtlQty(Long.parseLong(item.getQuantity()));
                 mgtDtl.setItemCode(item.getItem_code());mgtDtl.setDetailId(item.getDetail_id());
                 mgtDtl.setResLogMgt(mgt);
@@ -198,7 +196,7 @@ public class InterfaceForOrderingCtrl extends BaseCtrl<DbResLogMgt> {
                     mgtDtl2.setDtlSubin(StaticVariable.DTLSUBIN_AVAILABLE);
 
                     logMgtDtls.add(mgtDtl2);
-                    String s2 = reservationCtrl.outerApi(b, txtNum);
+                    String s2 = Stock_ReservationCtrl.class.newInstance().outerApi(b, txtNum);
                     if(!s2.equals("")) {
                         return CollectionBuilder.builder(new HashMap<>()).put("state", "failed").put("code", "500").put("msg", s2).put("data", null).build();
                     }
@@ -257,7 +255,7 @@ public class InterfaceForOrderingCtrl extends BaseCtrl<DbResLogMgt> {
             mgt.setStaffNumber(b.getSales_id());mgt.setLogOrderNature(b.getRequest_nature());
             mgt.setRemark(b.getRemarks());mgt.setLogOrderType("N");
             mgt.setTxDate(b.getTx_date());
-            mgt.setLogType("O");mgt.setActive("Y");
+            mgt.setLogType(StaticVariable.LOGTYPE_ORDER);mgt.setActive("Y");
             mgt.setUpdateAt(sdf.parse(b.getBiz_date()).getTime());mgt.setCreateAt(sdf.parse(b.getBiz_date()).getTime());
             mgt.setCreateBy(getAccount());mgt.setUpdateBy(getAccount());
             List<DbResLogMgtDtl> logMgtDtls=new ArrayList<>();
@@ -269,13 +267,14 @@ public class InterfaceForOrderingCtrl extends BaseCtrl<DbResLogMgt> {
 
                 DbResSku s = skuRepository.findFirst1BySkuCode(item.getSku_code());
                 DbResRepo r = repoRepository.findFirst1ByRepoCode(item.getRepo_id());
-                DbResItem i = itemRepository.findFirst1ByItemCode(item.getItem_code());
+//                DbResItem i = itemRepository.findFirst1ByItemCode(item.getItem_code());
                 Long skuId = Objects.isNull(s) ? null : s.getId();
                 Long repoId = Objects.isNull(r) ? null : r.getId();
-                Long itemId = Objects.isNull(i) ? null : r.getId();
+//                Long itemId = Objects.isNull(i) ? null : r.getId();
 
                 DbResLogMgtDtl mgtDtl=new DbResLogMgtDtl();
-                mgtDtl.setDtlSkuId(skuId);mgtDtl.setDtlItemId(itemId);
+                mgtDtl.setDtlSkuId(skuId);
+//                mgtDtl.setDtlItemId(itemId);
                 mgtDtl.setDtlRepoId(repoId);mgtDtl.setDtlQty(Long.parseLong(item.getQuantity()));
                 mgtDtl.setItemCode(item.getItem_code());mgtDtl.setDetailId(item.getDetail_id());
                 mgtDtl.setResLogMgt(mgt);
@@ -303,7 +302,7 @@ public class InterfaceForOrderingCtrl extends BaseCtrl<DbResLogMgt> {
                     DbResLogMgtDtl mgtDtl1 = new DbResLogMgtDtl();
                     BeanUtils.copyProperties(mgtDtl,mgtDtl1);
                     if("NRS".equals(b.getRequest_nature())) {
-                        String s2 = reservationCtrl.outerApi(b, txtNum);
+                        String s2 = Stock_ReservationCtrl.class.newInstance().outerApi(b, txtNum);
                         if(!s2.equals("")) {
                             return CollectionBuilder.builder(new HashMap<>()).put("state", "failed").put("code", "500").put("msg", s2).put("data", null).build();
                         }
@@ -336,16 +335,16 @@ public class InterfaceForOrderingCtrl extends BaseCtrl<DbResLogMgt> {
         try {
             DbResSku s = skuRepository.findFirst1BySkuCode(b.getSku_code());
             DbResRepo r = repoRepository.findFirst1ByRepoCode(b.getRepo_id());
-            DbResItem i = itemRepository.findFirst1ByItemCode(b.getItem_code());
+//            DbResItem i = itemRepository.findFirst1ByItemCode(b.getItem_code());
             Long skuId = Objects.isNull(s) ? null : s.getId();
             Long repoId = Objects.isNull(r) ? null : r.getId();
-            Long itemId = Objects.isNull(i) ? null : r.getId();
+//            Long itemId = Objects.isNull(i) ? null : r.getId();
             Long qty = 0l;
-            if(Objects.isNull(itemId)){
+//            if(Objects.isNull(itemId)){
                 qty = skuRepoRepository.findQtyByRepoAndSkuAndType(repoId, skuId, 3l);
-            }else {
-                qty = skuRepoRepository.findQtyByRepoAndSkuAndItemAndType(repoId, skuId, itemId, 3l);
-            }
+//            }else {
+//                qty = skuRepoRepository.findQtyByRepoAndSkuAndItemAndType(repoId, skuId, itemId, 3l);
+//            }
             Map outputdata = CollectionBuilder.builder(new HashMap<>()).put("tx_id","").put("repo_id",b.getRepo_id()).put("quantity",qty).put("sku_code",b.getSku_code()).put("item_code",b.getItem_code()).build();
             Map jsonResult = CollectionBuilder.builder(new HashMap<>()).put("state", "success").put("code", "200").put("msg", "stock level enquiry successfully").put("data", outputdata).build();
             return jsonResult;

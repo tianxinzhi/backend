@@ -65,17 +65,18 @@ public class Stock_InCtrl extends BaseCtrl<DbResLogMgt> {
 
             if(result.getCode().equals("000")){
                 //创建工作流对象
-                DbResProcess process = new DbResProcess();
-
-                process.setLogTxtBum(bean.getLogTxtBum());
-                process.setRepoId(bean.getLogRepoIn());
-                process.setRemark(bean.getRemark());
-                process.setCreateAt(t);
-                process.setUpdateAt(t);
-                process.setLogOrderNature(bean.getLogOrderNature());
-
-                //生成工作流数据
-                processProcessCtrl.joinToProcess(process);
+//                DbResProcess process = new DbResProcess();
+//
+//                process.setLogTxtBum(bean.getLogTxtBum());
+//                process.setRepoId(bean.getLogRepoIn());
+//                process.setRemark(bean.getRemark());
+//                process.setCreateAt(t);
+//                process.setUpdateAt(t);
+//                process.setLogOrderNature(bean.getLogOrderNature());
+//
+//                //生成工作流数据
+//                processProcessCtrl.joinToProcess(process);
+                this.UpdateSkuRepoQty(bean.getLogTxtBum());
             }
 
             return result;

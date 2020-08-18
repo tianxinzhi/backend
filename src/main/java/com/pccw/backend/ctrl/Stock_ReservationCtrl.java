@@ -8,6 +8,7 @@ import com.pccw.backend.bean.interfaceForOrdering.InputItemBean;
 import com.pccw.backend.bean.stock_reservation.CreateBean;
 import com.pccw.backend.bean.stock_reservation.EditBean;
 import com.pccw.backend.bean.stock_reservation.SearchBean;
+import com.pccw.backend.cusinterface.IOuterApi;
 import com.pccw.backend.entity.*;
 import com.pccw.backend.repository.*;
 import com.pccw.backend.util.Convertor;
@@ -45,7 +46,7 @@ import java.util.stream.Collectors;
 @CrossOrigin(methods = RequestMethod.POST,origins = "*", allowCredentials = "false")
 @RequestMapping("/stock_reservation")
 @Api(value="Stock_ReservationCtrl",tags={"stock_reservation"})
-public class Stock_ReservationCtrl extends BaseCtrl<DbResReservation> {
+public class Stock_ReservationCtrl extends BaseStockCtrl<DbResReservation> implements IOuterApi {
 
     @Autowired
     ResLogMgtRepository logMgtRepository;
@@ -61,14 +62,14 @@ public class Stock_ReservationCtrl extends BaseCtrl<DbResReservation> {
     ResRepoRepository repoRepository;
 
     @ApiOperation(value="预留",tags={"stock_reservation"},notes="查询")
-    @RequestMapping("/search")
+    @RequestMapping(value = "/search",method = RequestMethod.POST)
     public JsonResult search(@RequestBody SearchBean bean) {
         System.out.println(bean.toString());
         List<Sort.Order> orders = new ArrayList<>();
         orders.add(new Sort.Order(Sort.Direction.DESC,"selected"));
         orders.add(new Sort.Order(Sort.Direction.ASC,"orderDate"));
         List<DbResReservation> list = reservationRepository.findDbResReservationsByActiveEquals("Y",Sort.by(orders));
-        if(bean.getSortByRule().equals("Y")){
+        if(bean.getSortByRule()!=null&&bean.getSortByRule().equals("Y")){
             for (int i=list.size()-1;i>=0;i--) {
                 DbResReservation reserve = list.get(i);
                 List<DbResReservationRule> rules = ruleRepository.getDbResReservationRulesBySkuIdAndPaymentStatusAndCustomerType(reserve.getSkuId(), reserve.getPaymentStatus(), reserve.getCustomerType());
@@ -94,10 +95,11 @@ public class Stock_ReservationCtrl extends BaseCtrl<DbResReservation> {
     }
 
     @ApiOperation(value="预留",tags={"stock_reservation"},notes="新增")
-    @RequestMapping("/create")
+    @RequestMapping(value = "/create",method = RequestMethod.POST)
     public JsonResult create(@RequestBody CreateBean bean) {
         try {
             //保存 reservation
+            if(bean.getSelected()==null) bean.setSelected("false");
             bean.setLogTxtBum(genTranNum(new Date(),"RV",repoRepository.findById(bean.getRepoId()).get().getRepoCode()));
             this.create(reservationRepository,DbResReservation.class,bean);
             DbResSku sku = new DbResSku();sku.setId(bean.getSkuId());
@@ -111,6 +113,8 @@ public class Stock_ReservationCtrl extends BaseCtrl<DbResReservation> {
                 DbResSkuRepo skuRepo2 = skuRepoRepository.findDbResSkuRepoByRepoAndSkuAndStockType(repo, sku, stockType2);
                 //存在reserved，修改qty
                 if(skuRepo2 != null){
+                    skuRepo2.setUpdateBy(getAccount());
+                    skuRepo2.setUpdateAt(time);
                     skuRepo2.setQty(skuRepo2.getQty()+bean.getQty());
                     skuRepoRepository.saveAndFlush(skuRepo2);
                 } else {
@@ -130,6 +134,8 @@ public class Stock_ReservationCtrl extends BaseCtrl<DbResReservation> {
                 }
                 //扣除对应available的qty
                 skuRepo.setQty(skuRepo.getQty()-bean.getQty());
+                skuRepo.setUpdateBy(getAccount());
+                skuRepo.setUpdateAt(time);
                 skuRepoRepository.saveAndFlush(skuRepo);
             }
             //插入日志
@@ -155,7 +161,7 @@ public class Stock_ReservationCtrl extends BaseCtrl<DbResReservation> {
             dtl.setDtlQty(bean.getQty());
             dtl.setLogTxtBum(bean.getLogTxtBum());
             dtl.setStatus(StaticVariable.STATUS_RESERVED);
-            dtl.setLisStatus(StaticVariable.LISSTATUS_WAITING);
+//            dtl.setLisStatus(StaticVariable.LISSTATUS_WAITING);
             dtl.setDtlAction(StaticVariable.DTLACTION_ADD);
             dtl.setDtlSubin(StaticVariable.DTLSUBIN_RESERVED);
             dtl.setCreateAt(time);
@@ -170,7 +176,7 @@ public class Stock_ReservationCtrl extends BaseCtrl<DbResReservation> {
             dtl2.setDtlQty(bean.getQty());
             dtl2.setLogTxtBum(bean.getLogTxtBum());
             dtl2.setStatus(StaticVariable.STATUS_AVAILABLE);
-            dtl2.setLisStatus(StaticVariable.LISSTATUS_WAITING);
+//            dtl2.setLisStatus(StaticVariable.LISSTATUS_WAITING);
             dtl2.setDtlAction(StaticVariable.DTLACTION_DEDUCT);
             dtl2.setDtlSubin(StaticVariable.DTLSUBIN_AVAILABLE);
             dtl2.setCreateAt(time);
@@ -325,79 +331,66 @@ public class Stock_ReservationCtrl extends BaseCtrl<DbResReservation> {
         return JsonResult.success(Arrays.asList());
     }
 
-    public String genTranNum(Date date, String tpye, String storeNameFrom) {
-
-        SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd HHmmss");
-        String strDate = format.format(date);
-        System.out.println(strDate);
-        String prefix = strDate.substring(2, 8);
-        String suffix = strDate.substring(9);
-        String transationNumber = prefix + tpye + storeNameFrom  + suffix;
-        return transationNumber;
-    }
-
-    /**
-     * 给第三方api调用
-     * @param b
-     * @param txtNum
-     * @return
-     */
-    public String outerApi(InputBean b,String txtNum){
+    @Override
+    public String outerApi(Object o, String logTxtNum) {
         try {
             DateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
             long time = System.currentTimeMillis();
-            for (InputItemBean item : b.getItem_details()) {
-                DbResReservation res = new DbResReservation();
-                res.setStaffId(b.getSales_id());
-                res.setOrderNo(b.getOrder_id());
-                res.setCustomerName(b.getOrder_system());
-                res.setRemark(b.getRemarks());
-                DbResSku sku = skuRepository.findFirst1BySkuCode(item.getSku_code());
-                res.setSkuId(sku.getId());
-                DbResRepo repo = repoRepository.findFirst1ByRepoCode(item.getRepo_id());
-                long qty = Long.parseLong(item.getQuantity());
-                res.setRepoId(repo.getId());
-                res.setLogTxtBum(txtNum);
-                res.setQty(qty);
-                res.setOrderDate(sdf.parse(b.getBiz_date()).getTime());
-                res.setReservationDate(sdf.parse(b.getTx_date()).getTime());
-                res.setDays(Long.parseLong(sku.getMaxReserveDays()));
-                res.setActive("Y");
-                res.setUpdateAt(sdf.parse(b.getBiz_date()).getTime());
-                res.setCreateAt(sdf.parse(b.getBiz_date()).getTime());
-                res.setCreateBy(getAccount());
-                res.setUpdateBy(getAccount());
+            if(o instanceof InputBean) {
+                InputBean bean = (InputBean) o;
+                for (InputItemBean item : bean.getItem_details()) {
+                    DbResReservation res = new DbResReservation();
+                    res.setStaffId(bean.getSales_id());
+                    res.setOrderNo(bean.getOrder_id());
+                    res.setCustomerName(bean.getOrder_system());
+                    res.setRemark(bean.getRemarks());
+                    DbResSku sku = skuRepository.findFirst1BySkuCode(item.getSku_code());
+                    res.setSkuId(sku.getId());
+                    DbResRepo repo = repoRepository.findFirst1ByRepoCode(item.getRepo_id());
+                    long qty = Long.parseLong(item.getQuantity());
+                    res.setRepoId(repo.getId());
+                    res.setLogTxtBum(logTxtNum);
+                    res.setQty(qty);
+                    res.setOrderDate(sdf.parse(bean.getBiz_date()).getTime());
+                    res.setReservationDate(sdf.parse(bean.getTx_date()).getTime());
+                    res.setDays(Long.parseLong(sku.getMaxReserveDays()));
+                    res.setActive("Y");
+                    res.setUpdateAt(sdf.parse(bean.getBiz_date()).getTime());
+                    res.setCreateAt(sdf.parse(bean.getBiz_date()).getTime());
+                    res.setCreateBy(getAccount());
+                    res.setUpdateBy(getAccount());
 
 
-                DbResSkuRepo avaliable = skuRepoRepository.findQtyByRepoAndShopAndType(repo.getId(), sku.getId(), 3L);
-                if(avaliable == null || avaliable.getQty()<qty){
-                    return "The SKU:"+item.getSku_code()+" in the channel:"+item.getRepo_id()+" is not enough,Available qty is "+(avaliable==null?0:avaliable.getQty());
-                }
-                reservationRepository.saveAndFlush(res);
-                avaliable.setQty(avaliable.getQty()-Long.parseLong(item.getQuantity()));
-                avaliable.setUpdateAt(time);
-                avaliable.setUpdateBy(getAccount());
-                skuRepoRepository.saveAndFlush(avaliable);
-                DbResSkuRepo reserve = skuRepoRepository.findQtyByRepoAndShopAndType(repo.getId(), sku.getId(), 4L);
-                if(reserve!=null){
-                    reserve.setQty(reserve.getQty()+qty);
-                    reserve.setUpdateAt(time);
-                    reserve.setUpdateBy(getAccount());
-                    skuRepoRepository.saveAndFlush(reserve);
-                } else {
-                    DbResSkuRepo value = new DbResSkuRepo();
-                    value.setRepo(repo);
-                    value.setSku(sku);
-                    DbResStockType type = new DbResStockType();type.setId(4L);
-                    value.setStockType(type);
-                    value.setQty(qty);
-                    value.setRemark(b.getRemarks());
-                    value.setCreateAt(time);
-                    value.setUpdateAt(time);
-                    value.setCreateBy(getAccount());
-                    value.setUpdateBy(getAccount());
-                    value.setActive("Y");
-                    skuRepoRepository.saveAndFlush(value);
+                    DbResSkuRepo avaliable = skuRepoRepository.findQtyByRepoAndShopAndType(repo.getId(), sku.getId(), 3L);
+                    if(avaliable == null || avaliable.getQty()<qty){
+                        return "The SKU:"+item.getSku_code()+" in the channel:"+item.getRepo_id()+" is not enough,Available qty is "+(avaliable==null?0:avaliable.getQty());
+                    }
+                    reservationRepository.saveAndFlush(res);
+                    avaliable.setQty(avaliable.getQty()-Long.parseLong(item.getQuantity()));
+                    avaliable.setUpdateAt(time);
+                    avaliable.setUpdateBy(getAccount());
+                    skuRepoRepository.saveAndFlush(avaliable);
+                    DbResSkuRepo reserve = skuRepoRepository.findQtyByRepoAndShopAndType(repo.getId(), sku.getId(), 4L);
+                    if(reserve!=null){
+                        reserve.setQty(reserve.getQty()+qty);
+                        reserve.setUpdateAt(time);
+                        reserve.setUpdateBy(getAccount());
+                        skuRepoRepository.saveAndFlush(reserve);
+                    } else {
+                        DbResSkuRepo value = new DbResSkuRepo();
+                        value.setRepo(repo);
+                        value.setSku(sku);
+                        DbResStockType type = new DbResStockType();type.setId(4L);
+                        value.setStockType(type);
+                        value.setQty(qty);
+                        value.setRemark(bean.getRemarks());
+                        value.setCreateAt(time);
+                        value.setUpdateAt(time);
+                        value.setCreateBy(getAccount());
+                        value.setUpdateBy(getAccount());
+                        value.setActive("Y");
+                        skuRepoRepository.saveAndFlush(value);
+                    }
                 }
             }
         } catch (ParseException e) {
@@ -406,5 +399,4 @@ public class Stock_ReservationCtrl extends BaseCtrl<DbResReservation> {
         }
         return "";
     }
-
 }

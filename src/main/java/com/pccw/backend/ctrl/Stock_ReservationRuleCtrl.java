@@ -30,7 +30,7 @@ public class Stock_ReservationRuleCtrl extends BaseCtrl<DbResReservationRule> {
     ResReservationRuleRepository reservationRepository;
 
     @ApiOperation(value="预留sku优先级",tags={"stock_reservation_rule"},notes="查询")
-    @RequestMapping("/search")
+    @RequestMapping(value = "/search",method = RequestMethod.POST)
     public JsonResult search(@RequestBody SearchBean bean) {
         try {
             System.out.println(bean.toString());
@@ -47,7 +47,7 @@ public class Stock_ReservationRuleCtrl extends BaseCtrl<DbResReservationRule> {
     }
 
     @ApiOperation(value="预留sku优先级",tags={"stock_reservation_rule"},notes="新增")
-    @RequestMapping("/create")
+    @RequestMapping(value = "/create",method = RequestMethod.POST)
     public JsonResult create(@RequestBody CreateBean bean) {
         return create(reservationRepository,DbResReservationRule.class,bean);
     }

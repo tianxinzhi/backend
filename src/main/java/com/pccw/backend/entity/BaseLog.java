@@ -31,6 +31,12 @@ public class BaseLog extends Base {
     @Column(name = "log_orderNature", length = 512)
     private String logOrderNature;
 
+    @Column(name = "log_order_nature_desc", length = 512)
+    private String logOrderNatureDesc;
+
+    @Column(name = "log_order_nature_source")
+    private String logOrderNatureSource;
+
     // W - waiting LIS to handle / D - Done
     @Column(name = "status",length = 4)
     private String status;

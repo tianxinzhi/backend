@@ -9,6 +9,7 @@ import com.pccw.backend.bean.api_external.api_stock_in.CreateSIFSBean;
 import com.pccw.backend.bean.api_external.api_stock_out.ApiStockBean;
 import com.pccw.backend.bean.api_external.api_stock_out.ApiStockDtlBean;
 import com.pccw.backend.ctrl.BaseCtrl;
+import com.pccw.backend.ctrl.BaseStockCtrl;
 import com.pccw.backend.entity.DbResLogMgt;
 import com.pccw.backend.entity.DbResLogMgtDtl;
 import com.pccw.backend.entity.DbResRepo;
@@ -32,7 +33,7 @@ import java.util.*;
 @RestController
 @RequestMapping("/api/external/v1")
 @CrossOrigin(methods = RequestMethod.POST,origins = "*", allowCredentials = "false")
-public class InterfaceForExternalCtrl extends BaseCtrl<DbResLogMgt> {
+public class InterfaceForExternalCtrl extends BaseStockCtrl<DbResLogMgt> {
 
 
     @Autowired
@@ -325,24 +326,6 @@ public class InterfaceForExternalCtrl extends BaseCtrl<DbResLogMgt> {
             e.printStackTrace();
             return JsonResult.fail(e);
         }
-    }
-
-    /**
-     * 生成transaction number
-     * @param date
-     * @param tpye
-     * @param storeNameFrom
-     * @return
-     */
-    public String genTranNum(Date date, String tpye, String storeNameFrom) {
-
-        SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd HHmmss");
-        String strDate = format.format(date);
-        System.out.println(strDate);
-        String prefix = strDate.substring(2, 8);
-        String suffix = strDate.substring(9);
-        String transationNumber = prefix + tpye + storeNameFrom  + suffix;
-        return transationNumber;
     }
 
 }

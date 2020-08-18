@@ -75,6 +75,12 @@ public class DbResLogMgt extends BaseLog {
 	@Column(name="reservation_id")
 	private Long reservationId;
 
+	@Column(name="approval")
+	private String approval;
+
+	@Column(name="approval_by")
+	private String approvalBy;
+
 	@JsonManagedReference
 	@OneToMany(cascade = CascadeType.ALL)  //ALL  PERSIST
 	@JoinColumn(name = "log_mgt_id")

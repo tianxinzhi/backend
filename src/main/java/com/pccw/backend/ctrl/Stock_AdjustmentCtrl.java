@@ -121,14 +121,15 @@ public class Stock_AdjustmentCtrl extends BaseCtrl<DbResLogMgt> {
             ent.setLine(lstMgtDtl);
             logMgtRepository.saveAndFlush(ent);
 //            //生成工作流数据
-            DbResProcess process = new DbResProcess();
-            process.setLogTxtBum(bean.getTransactionNumber());
-            process.setRepoId(bean.getLogRepoOut());
-            process.setRemark(bean.getRemark());
-            process.setCreateAt(System.currentTimeMillis());
-            process.setUpdateAt(System.currentTimeMillis());
-            process.setLogOrderNature(StaticVariable.LOGORDERNATURE_STOCK_TAKE_ADJUSTMENT);
-            processProcessCtrl.joinToProcess(process);
+//            DbResProcess process = new DbResProcess();
+//            process.setLogTxtBum(bean.getTransactionNumber());
+//            process.setRepoId(bean.getLogRepoOut());
+//            process.setRemark(bean.getRemark());
+//            process.setCreateAt(System.currentTimeMillis());
+//            process.setUpdateAt(System.currentTimeMillis());
+//            process.setLogOrderNature(StaticVariable.LOGORDERNATURE_STOCK_TAKE_ADJUSTMENT);
+//            processProcessCtrl.joinToProcess(process);
+            this.UpdateSkuRepoQty(bean.getTransactionNumber());
             //调用Lis api同步sku
 //            transApi(bean);
             return JsonResult.success(Arrays.asList());

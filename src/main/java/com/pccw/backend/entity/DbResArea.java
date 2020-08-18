@@ -10,6 +10,7 @@ import javax.persistence.*;
  */
 
 @Data
+@Deprecated
 @Entity
 @Table(name = "res_area")
 @SequenceGenerator(name="id_area",sequenceName = "area_seq",allocationSize = 1)
@@ -22,14 +23,14 @@ public class DbResArea extends Base {
 	// @Id
 	// @GeneratedValue
 	// private Long id;
-	
+
 	@Column(name = "area_name", length = 64)
 	private String areaName;
-	
+
 	@Column(name = "area_desc", length = 256)
 	private String areaDesc;
-	
-	// @Column(name = "status", length = 6)	
+
+	// @Column(name = "status", length = 6)
 	// private String status;
 
 }

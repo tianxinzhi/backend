@@ -47,15 +47,16 @@ public class Stock_ThresholdCtrl extends BaseCtrl<DbResLogMgt> {
             JsonResult jsonResult = this.create(resLogMgtRepository, DbResLogMgt.class, b);
             //创建工作流对象
             if(jsonResult.getCode().equals("000")) {
-                DbResProcess process = new DbResProcess();
-                process.setLogTxtBum(b.getLogTxtBum());
-                process.setRepoId(b.getLogRepoOut());
-                process.setRemark(b.getRemark());
-                process.setCreateAt(t);
-                process.setUpdateAt(t);
-                process.setLogOrderNature(b.getLogOrderNature());
-                //生成工作流数据
-                processProcessCtrl.joinToProcess(process);
+//                DbResProcess process = new DbResProcess();
+//                process.setLogTxtBum(b.getLogTxtBum());
+//                process.setRepoId(b.getLogRepoOut());
+//                process.setRemark(b.getRemark());
+//                process.setCreateAt(t);
+//                process.setUpdateAt(t);
+//                process.setLogOrderNature(b.getLogOrderNature());
+//                //生成工作流数据
+//                processProcessCtrl.joinToProcess(process);
+
             }
             return jsonResult;
         } catch (Exception e) {

@@ -98,8 +98,8 @@ public class Stock_MovementCtrl extends BaseCtrl<DbResProcess> {
                 map.put("logTxtBum", dbResLogMgt.getLogTxtBum());
                 map.put("logOrderNature", dbResLogMgt.getLogOrderNature());
                 map.put("reason", dbResLogMgt.getRemark());
-                map.put("approval", dbResLogMgt.getCreateAt());
-                map.put("approvalBy", getAccountName(dbResLogMgt.getCreateBy()));
+                map.put("approval", dbResLogMgt.getApproval());
+                map.put("approvalBy", dbResLogMgt.getApprovalBy());
 
                 map.put("staff", dbResLogMgt.getStaffNumber());
                 map.put("remark", dbResLogMgt.getRemark());
@@ -135,7 +135,8 @@ public class Stock_MovementCtrl extends BaseCtrl<DbResProcess> {
                     map.put("fromStatus", line.get(i).getDtlSubin());
 
                     String itemCodes = line.get(i).getItemCode();
-                    if ( Objects.nonNull(itemCodes) ) {
+
+                   if ( Objects.nonNull(itemCodes) ) {
                         List<String> items = Arrays.asList(itemCodes.split(","));
                         for (int j = 0; j < items.size(); j = j + 1) {
                             itemList.add(skuQtyString + " , itemCode" + (j + 1) + ": " + items.get(j));
@@ -169,7 +170,14 @@ public class Stock_MovementCtrl extends BaseCtrl<DbResProcess> {
                 list = list.stream().filter(map -> map.get("logOrderNature") != null && map.get("logOrderNature").toString().equals(b.getLogOrderNature())).collect(Collectors.toList());
             }
             if ( b.getSkuNum() != null && b.getSkuNum().size() > 0 ) {
-                list = list.stream().filter(map -> map.get("skuId") != null && b.getSkuNum().toString().contains(map.get("skuId").toString())).collect(Collectors.toList());
+                list = list.stream().filter(map ->{
+                    for (String s : b.getSkuNum()) {
+                        if(map.get("skuId") != null && s.equals(map.get("skuId").toString())){
+                            return   true;
+                        }
+                    }
+                    return false;
+                }).collect(Collectors.toList());
             }
             if ( b.getRepoId() != null && b.getRepoId() != 0 ) {
                 list = list.stream().filter(map -> map.get("repoId") != null && Long.parseLong(map.get("repoId").toString()) == b.getRepoId()).collect(Collectors.toList());

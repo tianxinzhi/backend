@@ -64,34 +64,55 @@ public class Stock_ReservationCtrl extends BaseStockCtrl<DbResReservation> imple
     @ApiOperation(value="预留",tags={"stock_reservation"},notes="查询")
     @RequestMapping(value = "/search",method = RequestMethod.POST)
     public JsonResult search(@RequestBody SearchBean bean) {
-        System.out.println(bean.toString());
-        List<Sort.Order> orders = new ArrayList<>();
-        orders.add(new Sort.Order(Sort.Direction.DESC,"selected"));
-        orders.add(new Sort.Order(Sort.Direction.ASC,"orderDate"));
-        List<DbResReservation> list = reservationRepository.findDbResReservationsByActiveEquals("Y",Sort.by(orders));
-        if(bean.getSortByRule()!=null&&bean.getSortByRule().equals("Y")){
-            for (int i=list.size()-1;i>=0;i--) {
-                DbResReservation reserve = list.get(i);
-                List<DbResReservationRule> rules = ruleRepository.getDbResReservationRulesBySkuIdAndPaymentStatusAndCustomerType(reserve.getSkuId(), reserve.getPaymentStatus(), reserve.getCustomerType());
-                if(rules!=null && rules.size()>0){
-                    list.remove(reserve);
-                    list.add(0,reserve);
+        try {
+            System.out.println(bean.toString());
+            List<Sort.Order> orders = new ArrayList<>();
+            orders.add(new Sort.Order(Sort.Direction.DESC,"selected"));
+            orders.add(new Sort.Order(Sort.Direction.ASC,"orderDate"));
+            List<DbResReservation> list = reservationRepository.findDbResReservationsByActiveEquals("Y",Sort.by(orders));
+            //sortByRule
+            if(bean.getSortByRule()!=null&&bean.getSortByRule().equals("Y")){
+                List<DbResReservation> sortList = new ArrayList<>();
+                for (int i=list.size()-1;i>=0;i--) {
+                    DbResReservation reserve = list.get(i);
+                    List<DbResReservationRule> rules = ruleRepository.getDbResReservationRulesBySkuIdAndPaymentStatusAndCustomerType(reserve.getSkuId(), reserve.getPaymentStatus(), reserve.getCustomerType());
+                    if(rules!=null && rules.size()>0){
+                        list.remove(reserve);
+                        reserve.setUpdateAccountName(rules.get(0).getPriority()+"");
+                        sortList.add(reserve);
+                    }
                 }
+                sortList = sortList.stream().sorted(Comparator.comparing(DbResReservation::getUpdateAccountName)).collect(Collectors.toList());
+                for (DbResReservation dbResReservation : sortList) {
+                    dbResReservation.setUpdateAccountName(null);
+                }
+                list.addAll(0,sortList);
             }
+            //search condition
+            if(bean.getCustomerType()!=null&&!bean.getCustomerType().equals("")){
+                list = list.stream().filter(b -> bean.getCustomerType().equals(b.getCustomerType())).collect(Collectors.toList());
+            }
+            if(bean.getPaymentStatus()!=null&&!bean.getPaymentStatus().equals("")){
+                list = list.stream().filter(b -> b.getPaymentStatus().equals(bean.getPaymentStatus())).collect(Collectors.toList());
+            }
+            if(bean.getRepoId()!=null){
+                list = list.stream().filter(b -> b.getRepoId().toString().equals(bean.getRepoId()+"")).collect(Collectors.toList());
+            }
+            if (bean.getSku() != null && bean.getSku().size() > 0 ) {
+                list = list.stream().filter(map ->{
+                    for (Long s : bean.getSku()) {
+                        if(map.getSkuId() != null && s==map.getSkuId()){
+                            return true;
+                        }
+                    }
+                    return false;
+                }).collect(Collectors.toList());
+            }
+            return JsonResult.success(list);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return JsonResult.fail(e);
         }
-        if(bean.getCustomerType()!=null&&!bean.getCustomerType().equals("")){
-            list = list.stream().filter(b -> bean.getCustomerType().contains(b.getCustomerType())).collect(Collectors.toList());
-        }
-        if(bean.getPaymentStatus()!=null&&!bean.getPaymentStatus().equals("")){
-            list = list.stream().filter(b -> b.getPaymentStatus().contains(bean.getPaymentStatus())).collect(Collectors.toList());
-        }
-        if(bean.getRepoId()!=null){
-            list = list.stream().filter(b -> b.getRepoId().toString().contains(bean.getRepoId()+"")).collect(Collectors.toList());
-        }
-        if(bean.getSku()!=null){
-            list = list.stream().filter(b -> bean.getSku().toString().contains(b.getSkuId()+"")).collect(Collectors.toList());
-        }
-        return JsonResult.success(list);
     }
 
     @ApiOperation(value="预留",tags={"stock_reservation"},notes="新增")

@@ -88,8 +88,7 @@ public class Stock_MovementCtrl extends BaseCtrl<DbResProcess> {
 //                }
 //                list.add(map);
 //            }
-
-            for (DbResLogMgt dbResLogMgt : logMgtRepo.findAll()) {
+            for (DbResLogMgt dbResLogMgt : logMgtRepo.findAll(PageRequest.of(b.getPageIndex(),b.getPageSize()))) {
                 Map map = new HashMap();
 
                 map.put("createAccountName", getAccountName(dbResLogMgt.getCreateBy()));

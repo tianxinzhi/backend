@@ -59,4 +59,18 @@ public interface ResLogMgtRepository extends BaseRepository<DbResLogMgt> {
 
     List<DbResLogMgt> findByDeliveryNumber(String deliveryNumber);
 
+    @Query(value = "select DISTINCT(t1.id) id,t1.CREATE_AT creatAt,a1.account_name createAccountName,\n" +
+            "t1.log_txt_num logTxtBum,t1.log_order_nature logOrderNature,t1.remark reason,\n" +
+            "t1.approval approval,t1.approval_by approvalBy,t1.staff_number staff,t1.remark remark\n" +
+            ",t1.courier courier,t1.serial serial,t1.iccId iccID,t1.imei imei,t1.mobile_number mobileNumber,\n" +
+            "t1.source_system sourceSystem,t1.source_txn_header txnHeader,t1.source_line txnLine,\n" +
+            "r1.id repoId ,r1.repo_code fromChannel,r2.id toRepoId ,r2.repo_code toChannel,\n" +
+            "s.id skuId,s.sku_name sku,s.sku_desc skuDesc,T2.DTL_QTY qty,T2.DTL_SUBIN fromStatus\n" +
+            " from res_log_mgt t1 inner join RES_LOG_MGT_DTL t2 on t1.id = T2.LOG_MGT_ID\n" +
+            "inner join res_sku s on t2.dtl_sku_id = s.id\n" +
+            "left JOIN RES_ACCOUNT a1 on a1.id = t1.create_by\n" +
+            "left join res_repo r1 on r1.id = t1.log_repo_out\n" +
+            "left join res_repo r2 on r2.id = t1.log_repo_in\n" +
+            "",nativeQuery = true)
+    List<Map> getTransactionHistory();
 }

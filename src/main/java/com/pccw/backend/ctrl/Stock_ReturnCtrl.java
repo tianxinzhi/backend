@@ -147,6 +147,7 @@ public class Stock_ReturnCtrl extends BaseStockCtrl<DbResStockReturn> {
 
             DbResLogMgtDtl dtl2 = new DbResLogMgtDtl();
             BeanUtils.copyProperties(dtl,dtl2);
+            dtl2.setDtlRepoId(bean.getFromChannel());
             dtl2.setStatus(StaticVariable.STATUS_AVAILABLE);
             dtl2.setLisStatus(StaticVariable.LISSTATUS_WAITING);
             dtl2.setDtlAction(StaticVariable.DTLACTION_DEDUCT);

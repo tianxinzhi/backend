@@ -7,6 +7,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.Column;
 import java.util.List;
 
 /**
@@ -18,50 +19,39 @@ import java.util.List;
  @ApiModel(value="StockReplenishment 模块 - CreateReplBean",description="")
 public class CreateReplBean extends BaseBean {
 
-    @ApiModelProperty(value="补货批次",name="logBatchId",example="")
-    private long logBatchId;
+    @ApiModelProperty(value="",name="fromChannelId",example="")
+    private Long fromChannelId;
 
-    @ApiModelProperty(value="交货单号",name="logDNNum",example="")
-    private long logDNNum;
+    @ApiModelProperty(value="",name="toChannelId",example="")
+    private Long toChannelId;
 
-    @ApiModelProperty(value="交易号",name="logTxtBum",example="")
-    private String logTxtBum;
+    @ApiModelProperty(value="",name="fromChannelName",example="")
+    private String fromChannelName;
 
-    @ApiModelProperty(value="业务类型",name="logType",example="")
-    private String logType;
+    @ApiModelProperty(value="",name="toChannelName",example="")
+    private String toChannelName;
 
-    @ApiModelProperty(value="订单方式",name="logOrderNature",example="")
-    private String logOrderNature;
+    @ApiModelProperty(value="",name="skuId",example="")
+    private Long skuId;
 
-    @ApiModelProperty(value="状态",name="status",example="")
-    private String status;
+    @ApiModelProperty(value="",name="stock",example="")
+    private Long stock;
 
-    @ApiModelProperty(value="备注",name="remark",example="")
-    private String remark;
+    @ApiModelProperty(value="",name="qty",example="")
+    private Long qty;
 
-    @ApiModelProperty(value="商店code",name="ccc",example="")
-    private String ccc;
+    @ApiModelProperty(value="",name="lastReplenish",example="")
+    private Long lastReplenish;
 
-    @ApiModelProperty(value="Work order",name="wo",example="")
-    private String wo;
+    @ApiModelProperty(value="",name="suggestedQty1",example="")
+    private Long suggestedQty1;
 
-    @ApiModelProperty(value="warehouseID",name="repoIdFrom",example="")
-    private long repoIdFrom;
+    @ApiModelProperty(value="",name="suggestedQty2",example="")
+    private Long suggestedQty2;
 
-    @ApiModelProperty(value="shop ID",name="repoIdTo",example="")
-    private long repoIdTo;
+    @ApiModelProperty(value="",name="suggestedQty3",example="")
+    private Long suggestedQty3;
 
-    private long logRepoIn;
-
-    private Long logRepoOut;
-
-    private String replType;
-
-    private List<CreateReplDtlBean> line;
-
-
-
-
-
-
+    @ApiModelProperty(value="",name="logTxtNum",example="")
+    private String logTxtNum;
 }

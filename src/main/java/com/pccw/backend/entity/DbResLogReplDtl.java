@@ -8,6 +8,7 @@ import javax.persistence.*;
 /**
  * ROR = RESOURCE ORDER REQUES
  */
+@Deprecated
 @Data
 @Entity
 @Table(name = "res_log_repl_dtl")
@@ -25,10 +26,10 @@ public class DbResLogReplDtl extends BaseLogDtl {
 
 	@Column(name="dtl_itemId")
 	private long dtlItemId;
-	
+
 	@Column(name="dtl_repoId")
 	private long dtlRepoId;
-	
+
 	@Column(name="dtl_qty")
 	private long dtlQty;
 

@@ -29,7 +29,7 @@ public class DbResStockReturn extends Base{
     private String returnLineId;
 
     @Column(name = "sku_id")
-    private Long SkuId;
+    private Long skuId;
 
     @Column(name = "from_repo_id")
     private Long fromChannel;

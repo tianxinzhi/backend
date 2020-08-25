@@ -46,13 +46,14 @@ public class BaseCtrl<T>{
         try {
             log.info(b.toString());
             Specification<T> spec = Convertor.<T>convertSpecification(b);
-            List<T> res =repo.findAll(spec);
+            long count = repo.count(spec);
+            List<T> res =repo.findAll(spec,PageRequest.of(b.getPageIndex(),b.getPageSize())).getContent();
             for (T re : res) {
                 Base base = (Base)re;
                 base.setCreateAccountName(getAccountName(base.getCreateBy()));
                 base.setUpdateAccountName(getAccountName(base.getUpdateBy()));
             }
-            return JsonResult.success(res);
+            return JsonResult.success(res,count);
         } catch (Exception e) {
             e.printStackTrace();
             log.info(e.getMessage());

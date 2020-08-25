@@ -1,27 +1,26 @@
 package com.pccw.backend.ctrl;
 
 
-import com.alibaba.fastjson.JSON;
 import com.pccw.backend.bean.JsonResult;
 import com.pccw.backend.bean.StaticVariable;
 import com.pccw.backend.bean.stock_movement.SearchBean;
 import com.pccw.backend.entity.*;
 import com.pccw.backend.repository.*;
-import com.pccw.backend.util.CollectionBuilder;
-import com.pccw.backend.util.Convertor;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+import java.math.BigDecimal;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 /**
@@ -46,49 +45,62 @@ public class Stock_MovementCtrl extends BaseCtrl<DbResProcess> {
     @Autowired
     ResSkuRepository skuRepo;
 
+    private EntityManager entityManager;
+
+    @RequestMapping(value = "/test",method = RequestMethod.GET)
+    public JsonResult getHistoryInfo(String adjustReasonId,
+                                         String startDate,
+                                         String remark,
+                                         Pageable pageable) {
+
+        StringBuffer dataBuffer = new StringBuffer(
+                "select * from res_log_mgt WHERE 1 = 1");
+        StringBuffer countBuffer = new StringBuffer(
+                "select count(*) from res_log_mgt WHERE 1 = 1");
+
+        StringBuffer paramBuffer = new StringBuffer();
+
+        if (adjustReasonId != null) {
+            paramBuffer.append(" AND adjust_reason_id = '" + adjustReasonId + "'");
+        }
+        if(startDate != null) {
+            paramBuffer
+                    .append(" AND CREATE_at like '%" + startDate + "%'");
+        }
+        if (remark != null && !remark.equals("")) {
+            paramBuffer.append(" AND remark like '% "+remark+"%'");
+        }
+
+        StringBuffer orderBuffer = new StringBuffer(
+                " order by CREATE_at desc");
+
+        String dataSql = (dataBuffer.append(paramBuffer).append(orderBuffer))
+                .toString();
+        String countSql = (countBuffer.append(paramBuffer)).toString();
+
+        System.out.println("{} dataSql= " + dataSql);
+        System.out.println("{} countSql= " + countSql);
+
+        Query dataQuery = entityManager.createNativeQuery(dataSql);
+        Query countQuery = entityManager.createNativeQuery(countSql);
+
+        dataQuery.setFirstResult((int) pageable.getOffset());
+        dataQuery.setMaxResults(pageable.getPageSize());
+        BigDecimal count = (BigDecimal) countQuery.getSingleResult();
+        Long total = count.longValue();
+        List<Object[]> content = total > pageable.getOffset() ? dataQuery
+                .getResultList() : Collections.emptyList();
+        return JsonResult.success(new PageImpl<>(content, pageable, total).getContent());
+        // return null;
+    }
+
     @ApiOperation(value = "搜索Stock_Movement", tags = {"stock_movement"}, notes = "注意问题点")
     @RequestMapping(method = RequestMethod.POST, path = "/search")
     public JsonResult search(@RequestBody SearchBean b) {
         log.info(b.toString());
         try {
             List<Map> list = new ArrayList<>();
-
-            //List<DbResProcess> res = processRepo.findAll(PageRequest.of(b.getPageIndex(),b.getPageSize(),sort)).getContent();
-            //movemenet根据不同的nature显示不同的详情
-//            for (DbResLogRepl dbResLogRepl : logReplRepo.findAll()) {
-//
-//                Map map = new HashMap();
-//                //map = JSON.parseObject(JSON.toJSONString(p), Map.class);
-//                map.put("createAccountName", getAccountName(dbResLogRepl.getCreateBy()));
-//                map.put("createAt", dbResLogRepl.getCreateAt());
-//                map.put("id", dbResLogRepl.getId());
-//                map.put("logTxtBum", dbResLogRepl.getLogTxtBum());
-//                map.put("logOrderNature", dbResLogRepl.getLogOrderNature());
-//                map.put("reason", dbResLogRepl.getRemark());
-//                map.put("approval", dbResLogRepl.getCreateAt());
-//                map.put("approvalBy", getAccountName(dbResLogRepl.getCreateBy()));
-//
-//                DbResRepo fromName = repoRepo.findById(dbResLogRepl.getRepoIdFrom()).get();
-//                DbResRepo toName = repoRepo.findById(dbResLogRepl.getRepoIdTo()).get();
-//                //map.put("repoName","From: "+fromName+" , To: "+toName);
-//
-//                List<DbResLogReplDtl> line = dbResLogRepl.getLine();
-//                for (DbResLogReplDtl dtl : line) {
-//                    map.put("fromChannel", fromName.getRepoCode());
-//                    map.put("toChannel", toName.getRepoCode());
-//                    map.put("repoId", fromName.getId());
-//                    map.put("toRepoId", toName.getId());
-//                    DbResSku sku = skuRepo.findById(dtl.getDtlSkuId()).get();
-//                    map.put("sku", sku.getSkuName());
-//                    map.put("skuId", sku.getId());
-//                    map.put("skuDesc", sku.getSkuDesc());
-//                    map.put("qty", dtl.getDtlQty());
-//                    map.put("fromStatus", dtl.getDtlSubin());
-//
-//                }
-//                list.add(map);
-//            }
-            for (DbResLogMgt dbResLogMgt : logMgtRepo.findAll(PageRequest.of(b.getPageIndex(),b.getPageSize()))) {
+            for (DbResLogMgt dbResLogMgt : logMgtRepo.findAll()) {
                 Map map = new HashMap();
 
                 map.put("createAccountName", getAccountName(dbResLogMgt.getCreateBy()));
@@ -152,37 +164,60 @@ public class Stock_MovementCtrl extends BaseCtrl<DbResProcess> {
                 list.add(map);
             }
 
+            long[] count = {logMgtRepo.count()};
             //搜索filter
             if ( b.getCreateAt() != null ) {
                 list = list.stream().filter(map -> {
                     long dte = Long.parseLong(map.get("createAt").toString());
-                    if ( b.getCreateAt()[0] != null )
-                        return dte >= Long.parseLong(b.getCreateAt()[0]);
-                    if ( b.getCreateAt()[1] != null )
-                        return dte <= Long.parseLong(b.getCreateAt()[1]);
-                    else
-                        return dte >= Long.parseLong(b.getCreateAt()[0]) && dte <= Long.parseLong(b.getCreateAt()[1]);
+                    if(dte >= Long.parseLong(b.getCreateAt()[0]) && dte <= Long.parseLong(b.getCreateAt()[1]))
+                        return true;
+                    else {
+                        count[0] -= 1;
+                        return false;
+                    }
                 }).collect(Collectors.toList());
             }
 
             if ( b.getLogOrderNature() != null && !b.getLogOrderNature().equals("") ) {
-                list = list.stream().filter(map -> map.get("logOrderNature") != null && map.get("logOrderNature").toString().equals(b.getLogOrderNature())).collect(Collectors.toList());
+                list = list.stream().filter(map -> {
+                    if(map.get("logOrderNature") != null && map.get("logOrderNature").toString().equals(b.getLogOrderNature())){
+                        return true;
+                    } else {
+                        count[0] --;
+                        return false;
+                    }
+                }).collect(Collectors.toList());
             }
             if ( b.getSkuNum() != null && b.getSkuNum().size() > 0 ) {
                 list = list.stream().filter(map ->{
                     for (String s : b.getSkuNum()) {
                         if(map.get("skuId") != null && s.equals(map.get("skuId").toString())){
-                            return   true;
+                            return true;
                         }
                     }
+                    count[0] --;
                     return false;
                 }).collect(Collectors.toList());
             }
             if ( b.getRepoId() != null && b.getRepoId() != 0 ) {
-                list = list.stream().filter(map -> map.get("repoId") != null && Long.parseLong(map.get("repoId").toString()) == b.getRepoId()).collect(Collectors.toList());
+                list = list.stream().filter(map -> {
+                    if(map.get("repoId") != null && Long.parseLong(map.get("repoId").toString()) == b.getRepoId()){
+                        return true;
+                    } else {
+                        count[0] --;
+                        return false;
+                    }
+                }).collect(Collectors.toList());
             }
             if ( b.getToRepoId() != 0 ) {
-                list = list.stream().filter(map -> map.get("toRepoId") != null && Long.parseLong(map.get("toRepoId").toString()) == b.getToRepoId()).collect(Collectors.toList());
+                list = list.stream().filter(map -> {
+                    if(map.get("toRepoId") != null && Long.parseLong(map.get("toRepoId").toString()) == b.getToRepoId()){
+                        return true;
+                    } else {
+                        count[0] --;
+                        return false;
+                    }
+                } ).collect(Collectors.toList());
             }
             Collections.sort(list, (o1, o2) -> {
                 if ( o1.get("sku") != null && o2.get("sku") != null )
@@ -190,11 +225,23 @@ public class Stock_MovementCtrl extends BaseCtrl<DbResProcess> {
                         return 0;
                     }
             );
-            return JsonResult.success(list);
+//            (0,10) (1,10)
+ //           b.getPageIndex()*b.getPageSize(),(b.getPageIndex()+1)*b.getPageSize();
+            int begin = b.getPageIndex()*b.getPageSize();
+            int end = (b.getPageIndex()+1)*b.getPageSize()>list.size()? list.size() : (b.getPageIndex()+1)*b.getPageSize();
+            for (int i=list.size()-1;i>=0;i--) {
+                Map map = list.get(i);
+                if(list.indexOf(map)<begin||
+                    list.indexOf(map)>=end){
+                    list.remove(map);
+                }
+            }
+            return JsonResult.success(list,count[0]);
         } catch (Exception e) {
             e.printStackTrace();
             log.info(e.getMessage());
             return JsonResult.fail(e);
         }
     }
+
 }

@@ -1,6 +1,7 @@
 package com.pccw.backend.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -25,7 +26,7 @@ public class DbResStockReturnSerial extends Base{
     private Long skuId;
 
     @Column(name = "return_line")
-    private Long returnLineId;
+    private String returnLineId;
 
     @Column(name = "serial_no")
     private String serialNo;
@@ -33,7 +34,7 @@ public class DbResStockReturnSerial extends Base{
     @Column(name = "expiry_date")
     private Long expiryDate;
 
-    @JsonBackReference
+    @JsonIgnore
     @JoinColumn(name = "stock_return_id")
     @ManyToOne(targetEntity = DbResStockReturn.class)
     private DbResStockReturn stockReturn;

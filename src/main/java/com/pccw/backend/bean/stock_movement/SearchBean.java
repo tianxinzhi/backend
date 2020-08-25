@@ -36,7 +36,7 @@ public class SearchBean {
     @ApiModelProperty(value="时间范围",name="creatAt",example="")
     private String[] createAt;
 
-    @PredicateAnnotation(type = PredicateType.LIKE)
+//    @PredicateAnnotation(type = PredicateType.LIKE)
     private List<String> skuNum; // same as entity property and relative to the data clomun
 
     @PredicateAnnotation(type = PredicateType.LIKE)

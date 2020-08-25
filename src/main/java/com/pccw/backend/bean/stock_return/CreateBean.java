@@ -19,7 +19,7 @@ public class CreateBean extends BaseBean {
     private String returnHeaderId;
 
     @ApiModelProperty(value="returnLineId",name="",example="")
-    private Long returnLineId;
+    private String returnLineId;
 
     @ApiModelProperty(value="SkuId",name="",example="")
     private Long skuId;

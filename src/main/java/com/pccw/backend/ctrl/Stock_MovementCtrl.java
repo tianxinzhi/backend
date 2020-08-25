@@ -45,6 +45,7 @@ public class Stock_MovementCtrl extends BaseCtrl<DbResProcess> {
     @Autowired
     ResSkuRepository skuRepo;
 
+    @Autowired
     private EntityManager entityManager;
 
     @RequestMapping(value = "/test",method = RequestMethod.GET)

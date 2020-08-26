@@ -83,19 +83,19 @@ public class Auth_RoleCtrl extends BaseCtrl<DbResRole> implements ICheck {
             System.out.println("result:" + resultBean);
             resultBeans.add(resultBean);
             }
-           return JsonResult.success(resultBeans);
+           return JsonResult.success(resultBeans,repo.count(spec));
         }catch (Exception e) {
                 log.info(e.getMessage());
                 return JsonResult.fail(e);
             }
     }
-    
+
     @RequestMapping(method = RequestMethod.POST,path = "/delete")
     @ApiOperation(value="删除角色",tags={"auth_role"},notes="注意问题点")
     public JsonResult delete(@RequestBody BaseDeleteBean ids){
         return this.delete(repo,ids);
     }
-    
+
     @RequestMapping(method = RequestMethod.POST,path="/create")
     @ApiOperation(value="新增角色",tags={"auth_role"},notes="注意问题点")
     public JsonResult create(@RequestBody CreateBean b){

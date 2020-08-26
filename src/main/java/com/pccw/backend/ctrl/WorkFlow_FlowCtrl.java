@@ -74,7 +74,7 @@ public class WorkFlow_FlowCtrl extends BaseCtrl<DbResFlow> implements ICheck {
                     dbResFlow.add(searchBean);
                 }
             }
-            return JsonResult.success(dbResFlow);
+            return JsonResult.success(dbResFlow,repo.count(specification));
         } catch (Exception e) {
             log.info(e.getMessage());
             return JsonResult.fail(e);

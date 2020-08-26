@@ -46,18 +46,18 @@ public class Auth_RightCtrl extends BaseCtrl<DbResRight> implements ICheck {
         try {
             Specification<DbResRight> spec = Convertor.convertSpecification(b);
             List<DbResRight> res = repo.findAll(spec).stream().filter(r-> Objects.nonNull(r.getRightPid())).collect(Collectors.toList());
-            return JsonResult.success(res);
+            return JsonResult.success(res,repo.count(spec));
         } catch (IllegalAccessException e) {
             return JsonResult.fail(e);
         }
     }
-    
+
     @RequestMapping(method = RequestMethod.POST,path = "/delete")
     @ApiOperation(value="删除权限",tags={"auth_right"},notes="注意问题点")
     public JsonResult delete(@RequestBody BaseDeleteBean ids){
         return this.delete(repo,ids);
     }
-    
+
     @RequestMapping(method = RequestMethod.POST,path="/create")
     @ApiOperation(value="新增权限",tags={"auth_right"},notes="注意问题点")
     public JsonResult create(@RequestBody CreateBean b){

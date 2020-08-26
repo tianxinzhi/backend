@@ -156,7 +156,7 @@ public class MasterFile_AttrCtrl extends BaseCtrl<DbResAttr> implements ICheck {
                 resultBeans.add(resultBean);
             }
 
-            return JsonResult.success(resultBeans);
+            return JsonResult.success(resultBeans,repo.count(spec));
         } catch (IllegalArgumentException | IllegalAccessException | BeansException e) {
            return JsonResult.fail(e);
         }

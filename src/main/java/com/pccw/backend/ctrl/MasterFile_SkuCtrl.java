@@ -331,7 +331,7 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> implements ICheck {
                     skuResultBeans.add(resultBean);
                 }
             }
-            return  JsonResult.success(skuResultBeans);
+            return  JsonResult.success(skuResultBeans,skuRepo.count(spec));
         } catch (IllegalArgumentException | IllegalAccessException | BeansException e) {
             e.printStackTrace();
             return  JsonResult.fail(e);

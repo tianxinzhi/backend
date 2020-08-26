@@ -55,7 +55,7 @@ public class MasterFile_ClassCtrl extends BaseCtrl<DbResClass> implements ICheck
                 searchBean.setUpdateAccountName(getAccountName(d.getUpdateBy()));
                 list.add(searchBean);
             });
-            return JsonResult.success(list);
+            return JsonResult.success(list,repo.count(spec));
         } catch (Exception e) {
             log.info(e.getMessage());
             return JsonResult.fail(e);

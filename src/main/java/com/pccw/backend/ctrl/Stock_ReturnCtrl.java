@@ -70,7 +70,6 @@ public class Stock_ReturnCtrl extends BaseStockCtrl<DbResStockReturn> {
             bean.setLogTxtNum(genTranNum(new Date(),"RT",repoRepository.findById(bean.getFromChannel()).get().getRepoCode()));
             long time = System.currentTimeMillis();
             for (DbResStockReturnSerial serial : bean.getLine()) {
-                serial.setReturnLineId(bean.getReturnLineId());
                 serial.setSkuId(bean.getSkuId());
                 serial.setCreateAt(time);
                 serial.setCreateBy(getAccount());
@@ -209,11 +208,11 @@ public class Stock_ReturnCtrl extends BaseStockCtrl<DbResStockReturn> {
     public JsonResult edit(@RequestBody EditBean bean) {
         try {
             System.out.println(bean.toString());
-            DbResStockReturn DbResStockReturn = returnRepository.findById(bean.getId()).get();
+            DbResStockReturn stockReturn = returnRepository.findById(bean.getId()).get();
             long time = System.currentTimeMillis();
             //没有修改repo和sku，即扣减之前faulty的qty，添加新的faulty qty
-            if(bean.getFromChannel() == DbResStockReturn.getFromChannel() &&
-                bean.getSkuId() == DbResStockReturn.getSkuId()){
+            if(bean.getFromChannel() == stockReturn.getFromChannel() &&
+                bean.getSkuId() == stockReturn.getSkuId()){
                 DbResSku sku = new DbResSku();sku.setId(bean.getSkuId());
                 DbResRepo repo = new DbResRepo();repo.setId(bean.getFromChannel());
                 DbResStockType stockType = new DbResStockType();stockType.setId(3L);
@@ -221,7 +220,7 @@ public class Stock_ReturnCtrl extends BaseStockCtrl<DbResStockReturn> {
                 DbResSkuRepo skuRepo = skuRepoRepository.findDbResSkuRepoByRepoAndSkuAndStockType(repo, sku, stockType);
                 //avalible的加上之前faulty的qty，扣减新的faulty qty
                 if(skuRepo!=null){
-                    skuRepo.setQty(skuRepo.getQty()+DbResStockReturn.getQty()-bean.getQty());
+                    skuRepo.setQty(skuRepo.getQty()+stockReturn.getQty()-bean.getQty());
                     skuRepo.setUpdateAt(time);
                     skuRepo.setUpdateBy(getAccount());
                     skuRepoRepository.saveAndFlush(skuRepo);
@@ -232,18 +231,18 @@ public class Stock_ReturnCtrl extends BaseStockCtrl<DbResStockReturn> {
                 if(skuRepo2 != null){
                     skuRepo2.setUpdateAt(time);
                     skuRepo2.setUpdateBy(getAccount());
-                    skuRepo2.setQty(skuRepo2.getQty()-DbResStockReturn.getQty()+bean.getQty());
+                    skuRepo2.setQty(skuRepo2.getQty()-stockReturn.getQty()+bean.getQty());
                     skuRepoRepository.saveAndFlush(skuRepo2);
                 }
             } else {
             //修改了repo或者sku
-                DbResSku sku2 = new DbResSku();sku2.setId(DbResStockReturn.getSkuId());
-                DbResRepo repo2 = new DbResRepo();repo2.setId(DbResStockReturn.getFromChannel());
+                DbResSku sku2 = new DbResSku();sku2.setId(stockReturn.getSkuId());
+                DbResRepo repo2 = new DbResRepo();repo2.setId(stockReturn.getFromChannel());
                 DbResStockType stockType2 = new DbResStockType();stockType2.setId(3L);
                 DbResSkuRepo value = skuRepoRepository.findDbResSkuRepoByRepoAndSkuAndStockType(repo2, sku2, stockType2);
                 //找到之前的available加上之前的faulty qty
                 if(value != null) {
-                    value.setQty(value.getQty()+DbResStockReturn.getQty());
+                    value.setQty(value.getQty()+stockReturn.getQty());
                     value.setUpdateAt(time);
                     value.setUpdateBy(getAccount());
                     skuRepoRepository.saveAndFlush(value);
@@ -264,7 +263,7 @@ public class Stock_ReturnCtrl extends BaseStockCtrl<DbResStockReturn> {
                         if(resereved!=null){
                             resereved.setUpdateAt(time);
                             resereved.setUpdateBy(getAccount());
-                            resereved.setQty(resereved.getQty()-DbResStockReturn.getQty());
+                            resereved.setQty(resereved.getQty()-stockReturn.getQty());
                             skuRepoRepository.saveAndFlush(resereved);
 
                             //找到现在的faulty加上现在的qty
@@ -291,6 +290,16 @@ public class Stock_ReturnCtrl extends BaseStockCtrl<DbResStockReturn> {
                         }
                     }
                 }
+            }
+            stockReturn.getLine().clear();
+            for (DbResStockReturnSerial serial : bean.getLine()) {
+                serial.setSkuId(bean.getSkuId());
+                serial.setCreateAt(time);
+                serial.setCreateBy(getAccount());
+                serial.setUpdateAt(time);
+                serial.setUpdateBy(getAccount());
+                serial.setActive("Y");
+                stockReturn.getLine().add(serial);
             }
             this.edit(returnRepository, DbResStockReturn.class, bean);
         } catch (Exception e) {

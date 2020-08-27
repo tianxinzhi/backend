@@ -95,14 +95,14 @@ import com.pccw.backend.annotation.PredicateType;
                          String[] arr = (String[])parm.getValue();
 							 list.add(builder.between(root.get(parm.getName()).as(String.class),arr[0],arr[1]));
                          break;
-						case IN:
+                         case IN:
 							List<String> inArr = (List<String>)parm.getValue();
-							String in = "";
+							CriteriaBuilder.In<String> in = builder.in(root.get(parm.getName()).as(String.class));
 							for (Object s : inArr) {
-								in += "'"+s+"',";
+								in.value((String) s);
 							}
-//							list.add(builder.in(root.get(parm.getName()).as(String.class),"("+in+")"));
-							break;
+							list.add(in);
+						 break;
 						default:
 							break;
 					}

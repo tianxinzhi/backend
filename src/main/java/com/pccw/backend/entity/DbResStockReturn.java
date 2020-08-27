@@ -25,8 +25,8 @@ public class DbResStockReturn extends Base{
     @Column(name = "return_header",length = 512)
     private String returnHeaderId;
 
-    @Column(name = "return_line")
-    private String returnLineId;
+//    @Column(name = "return_line")
+//    private String returnLineId;
 
     @Column(name = "sku_id")
     private Long skuId;
@@ -55,7 +55,8 @@ public class DbResStockReturn extends Base{
     @Column(name = "log_txt_num", length = 512)
     private String logTxtNum;
 
-    @OneToMany(cascade = CascadeType.ALL,mappedBy = "stockReturn",orphanRemoval = true)  //ALL  PERSIST
+    @JsonManagedReference
+    @OneToMany(cascade = CascadeType.ALL,orphanRemoval = true)
+    @JoinColumn(name = "stock_return_id")
     private List<DbResStockReturnSerial> line;
-
 }

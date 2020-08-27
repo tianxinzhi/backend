@@ -34,8 +34,4 @@ public class DbResStockReturnSerial extends Base{
     @Column(name = "expiry_date")
     private Long expiryDate;
 
-    @JsonIgnore
-    @JoinColumn(name = "stock_return_id")
-    @ManyToOne(targetEntity = DbResStockReturn.class)
-    private DbResStockReturn stockReturn;
 }

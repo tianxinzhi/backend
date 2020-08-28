@@ -9,11 +9,14 @@ import com.pccw.backend.repository.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.query.internal.NativeQueryImpl;
+import org.hibernate.transform.Transformers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityManager;
@@ -48,55 +51,100 @@ public class Stock_MovementCtrl extends BaseCtrl<DbResProcess> {
     @Autowired
     private EntityManager entityManager;
 
-    @RequestMapping(value = "/test",method = RequestMethod.GET)
-    public JsonResult getHistoryInfo(String adjustReasonId,
-                                         String startDate,
-                                         String remark,
-                                         Pageable pageable) {
+    @ApiOperation(value = "搜索Stock_Movement", tags = {"stock_movement"}, notes = "注意问题点")
+    @RequestMapping(value = "/search",method = RequestMethod.POST)
+    public JsonResult getHistoryInfo(@RequestBody SearchBean b) {
+        String skuSearch="";
+        if (b.getSkuNum() != null && b.getSkuNum().size()>0) {
+            skuSearch += "where sku.id in(";
+            for (String s : b.getSkuNum()) {
+                skuSearch += "'"+s+"',";
+            }
+            skuSearch = skuSearch.substring(0,skuSearch.length()-1);
+            skuSearch += ")";
+        }
+        StringBuffer baseSql = new StringBuffer("select t1.id id,t1.CREATE_AT createAt,a1.account_name createAccountName,\n" +
+                "t1.log_txt_num logTxtBum,t1.log_order_nature logOrderNature,t1.remark reason,\n" +
+                "t1.approval approval,t1.approval_by approvalBy,t1.staff_number staff,t1.remark remark\n" +
+                ",t1.courier courier,t1.serial serial,t1.iccId iccID,t1.imei imei,t1.mobile_number mobileNumber,\n" +
+                "t1.source_system sourceSystem,t1.source_txn_header txnHeader,t1.source_line txnLine,\n" +
+                "r1.id repoId ,r1.repo_code fromChannel,r2.id toRepoId ,r2.repo_code toChannel,\n" +
+                "t4.skuId,t4.sku,t4.skuDesc,t4.qty,t4.fromStatus\n" +
+                "from res_log_mgt t1 left JOIN RES_ACCOUNT a1 on a1.id = t1.create_by\n" +
+                "left join res_repo r1 on r1.id = t1.log_repo_out\n" +
+                "left join res_repo r2 on r2.id = t1.log_repo_in left join\n" +
+                "(select  \n" +
+                "dtl.log_mgt_id , sku.id skuId,sku.sku_name sku,sku.sku_desc skuDesc,dtl.DTL_QTY qty,dtl.DTL_SUBIN fromStatus\n" +
+                "\tfrom RES_LOG_MGT_DTL dtl \n" +
+                " inner join res_sku sku on dtl.dtl_sku_id = sku.id "+skuSearch+" ) t4 on t1.id = t4.log_mgt_id where 1=1");
 
-        StringBuffer dataBuffer = new StringBuffer(
-                "select * from res_log_mgt WHERE 1 = 1");
+        if(!StringUtils.isEmpty(b.getLogOrderNature())) {
+            baseSql.append(" and t1.log_order_nature="+"'"+b.getLogOrderNature()+"'");
+        }
+        if (!StringUtils.isEmpty(b.getCreateAt())&&b.getCreateAt().length>0) {
+            baseSql.append("and t1.CREATE_AT between "+b.getCreateAt()[0]+" and "+b.getCreateAt()[1]);
+        }
+        if(b.getRepoId()!=null&&b.getRepoId()!=0){
+            baseSql.append(" and r1.id="+b.getRepoId());
+        }
+        if(b.getToRepoId()!=null&&b.getToRepoId()!=0){
+            baseSql.append(" and r2.id="+b.getToRepoId());
+        }
+
         StringBuffer countBuffer = new StringBuffer(
-                "select count(*) from res_log_mgt WHERE 1 = 1");
+                "select count(*) from ("+baseSql+")");
+        baseSql.append(" order by t1.CREATE_at desc");
 
-        StringBuffer paramBuffer = new StringBuffer();
+        Query dataQuery = entityManager.createNativeQuery(baseSql.toString());
+        Query countQuery = entityManager.createNativeQuery(countBuffer.toString());
 
-        if (adjustReasonId != null) {
-            paramBuffer.append(" AND adjust_reason_id = '" + adjustReasonId + "'");
-        }
-        if(startDate != null) {
-            paramBuffer
-                    .append(" AND CREATE_at like '%" + startDate + "%'");
-        }
-        if (remark != null && !remark.equals("")) {
-            paramBuffer.append(" AND remark like '% "+remark+"%'");
-        }
-
-        StringBuffer orderBuffer = new StringBuffer(
-                " order by CREATE_at desc");
-
-        String dataSql = (dataBuffer.append(paramBuffer).append(orderBuffer))
-                .toString();
-        String countSql = (countBuffer.append(paramBuffer)).toString();
-
-        System.out.println("{} dataSql= " + dataSql);
-        System.out.println("{} countSql= " + countSql);
-
-        Query dataQuery = entityManager.createNativeQuery(dataSql);
-        Query countQuery = entityManager.createNativeQuery(countSql);
-
-        dataQuery.setFirstResult((int) pageable.getOffset());
-        dataQuery.setMaxResults(pageable.getPageSize());
+        dataQuery.setFirstResult(b.getPageIndex()*b.getPageSize());
+        dataQuery.setMaxResults(b.getPageSize());
+        dataQuery.unwrap(NativeQueryImpl.class).setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
         BigDecimal count = (BigDecimal) countQuery.getSingleResult();
         Long total = count.longValue();
-        List<Object[]> content = total > pageable.getOffset() ? dataQuery
-                .getResultList() : Collections.emptyList();
-        return JsonResult.success(new PageImpl<>(content, pageable, total).getContent());
+        List<Map> content = dataQuery.getResultList();
+        for (Map map : content) {
+            map.put("createAccountName", map.get("CREATEACCOUNTNAME"));map.remove("CREATEACCOUNTNAME");
+            map.put("createAt", map.get("CREATEAT"));map.remove("CREATEAT");
+            map.put("id", map.get("ID"));map.remove("ID");
+            map.put("logTxtBum", map.get("LOGTXTBUM"));map.remove("LOGTXTBUM");
+            map.put("logOrderNature", map.get("LOGORDERNATURE"));map.remove("LOGORDERNATURE");
+            map.put("reason", map.get("REASON"));map.remove("REASON");
+            map.put("approval", map.get("APPROVAL"));map.remove("APPROVAL");
+            map.put("approvalBy", map.get("APPROVALBY"));map.remove("APPROVALBY");
+
+            map.put("staff", map.get("STAFF"));map.remove("STAFF");
+            map.put("remark", map.get("REMARK"));map.remove("REMARK");
+            map.put("courier", map.get("COURIER"));map.remove("COURIER");
+            map.put("serial", map.get("SERIAL"));map.remove("SERIAL");
+            map.put("iccID", map.get("ICCID"));map.remove("ICCID");
+            map.put("imei", map.get("IMEI"));map.remove("IMEI");
+            map.put("mobileNumber", map.get("MOBILENUMBER"));map.remove("MOBILENUMBER");
+            map.put("sourceSystem", map.get("SOURCESYSTEM"));map.remove("SOURCESYSTEM");
+            map.put("txnHeader", map.get("TXNHEADER"));map.remove("TXNHEADER");
+            map.put("txnLine", map.get("TXNLINE"));map.remove("TXNLINE");
+            map.put("fromChannel", map.get("FROMCHANNEL"));map.remove("FROMCHANNEL");
+            map.put("repoId", map.get("REPOID"));map.remove("REPOID");
+            map.put("toChannel", map.get("TOCHANNEL"));map.remove("TOCHANNEL");
+            map.put("toRepoId", map.get("TOREPOID"));map.remove("TOREPOID");
+            map.put("sku", map.get("SKU"));map.remove("SKU");
+            map.put("skuId", map.get("SKUID"));map.remove("SKUID");
+            map.put("skuDesc", map.get("SKUDESC"));map.remove("SKUDESC");
+            map.put("qty", map.get("QTY"));map.remove("QTY");
+            map.put("fromStatus", map.get("FROMSTATUS"));map.remove("FROMSTATUS");
+            if(map.get("logOrderNature").toString().equals(StaticVariable.LOGORDERNATURE_STOCK_CATEGORY)){
+                List<DbResLogMgtDtl> ids = logMgtRepo.findById(Long.parseLong(map.get("id").toString())).get().getLine();
+                if(ids!=null&&ids.size()>1)
+                map.put("toStatus",ids.get(1).getDtlSubin());
+            }
+        }
+        return JsonResult.success(content,total);
         // return null;
     }
 
     @ApiOperation(value = "搜索Stock_Movement", tags = {"stock_movement"}, notes = "注意问题点")
-    @RequestMapping(method = RequestMethod.POST, path = "/search")
+    @RequestMapping(method = RequestMethod.POST, path = "/search2")
     public JsonResult search(@RequestBody SearchBean b) {
         log.info(b.toString());
         try {

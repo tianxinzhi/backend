@@ -221,10 +221,10 @@ public class Stock_ReplenishmentCtrl extends BaseStockCtrl<DbResStockReplenishme
                 //修改了repo或者sku
                 DbResSku sku2 = new DbResSku();sku2.setId(replenishment.getSkuId());
                 DbResRepo repo2 = new DbResRepo();repo2.setId(replenishment.getFromChannelId());
-                DbResRepo repo3 = new DbResRepo();repo2.setId(replenishment.getToChannelId());
+                DbResRepo repo3 = new DbResRepo();repo3.setId(replenishment.getToChannelId());
                 DbResStockType stockType2 = new DbResStockType();stockType2.setId(3L);
                 DbResSkuRepo value = rsRepo.findDbResSkuRepoByRepoAndSkuAndStockType(repo2, sku2, stockType2);
-                //找到之前的available加上之前的faulty qty
+                //找到之前的from available加上之前的faulty qty
                 if(value != null) {
                     value.setQty(value.getQty()+replenishment.getQty());
                     value.setUpdateAt(time);
@@ -232,7 +232,9 @@ public class Stock_ReplenishmentCtrl extends BaseStockCtrl<DbResStockReplenishme
                     rsRepo.saveAndFlush(value);
 
                     DbResSku sku3 = new DbResSku();sku3.setId(bean.getSkuId());
-                    DbResSkuRepo value2 = rsRepo.findDbResSkuRepoByRepoAndSkuAndStockType(repo2, sku3, stockType2);
+                    DbResRepo repo4 = new DbResRepo();repo4.setId(bean.getFromChannelId());
+                    DbResRepo repo5 = new DbResRepo();repo5.setId(bean.getToChannelId());
+                    DbResSkuRepo value2 = rsRepo.findDbResSkuRepoByRepoAndSkuAndStockType(repo4, sku3, stockType2);
                     //找到现在的available，减去现在的qty
                     if(value2!=null){
                         value2.setQty(value2.getQty()-bean.getQty());
@@ -240,8 +242,8 @@ public class Stock_ReplenishmentCtrl extends BaseStockCtrl<DbResStockReplenishme
                         value2.setUpdateBy(getAccount());
                         rsRepo.saveAndFlush(value2);
 
-                        //找到之前的faulty减去之前qty
-                        DbResSkuRepo resereved = rsRepo.findDbResSkuRepoByRepoAndSkuAndStockType(repo2, sku2, stockType2);
+                        //找到之前的to avaible减去之前qty
+                        DbResSkuRepo resereved = rsRepo.findDbResSkuRepoByRepoAndSkuAndStockType(repo3, sku2, stockType2);
                         if(resereved!=null){
                             resereved.setUpdateAt(time);
                             resereved.setUpdateBy(getAccount());
@@ -249,7 +251,7 @@ public class Stock_ReplenishmentCtrl extends BaseStockCtrl<DbResStockReplenishme
                             rsRepo.saveAndFlush(resereved);
 
                             //找到现在的faulty加上现在的qty
-                            DbResSkuRepo resereved1 = rsRepo.findDbResSkuRepoByRepoAndSkuAndStockType(repo3, sku3, stockType2);
+                            DbResSkuRepo resereved1 = rsRepo.findDbResSkuRepoByRepoAndSkuAndStockType(repo5, sku3, stockType2);
                             if(resereved1 != null){
                                 resereved1.setUpdateAt(time);
                                 resereved1.setUpdateBy(getAccount());

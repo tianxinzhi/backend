@@ -3,6 +3,7 @@ package com.pccw.backend.bean.stock_movement;
 
 import com.pccw.backend.annotation.PredicateAnnotation;
 import com.pccw.backend.annotation.PredicateType;
+import com.pccw.backend.bean.BaseSearchBean;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -41,13 +42,13 @@ public class SearchBean {
 
     @PredicateAnnotation(type = PredicateType.LIKE)
     @ApiModelProperty(value="商店Id",name="toRepoId",example="")
-    private long toRepoId;
+    private Long toRepoId;
 
     @NotNull
     private Integer pageIndex=0;
     @NotNull
-    private Integer pageSize=100;
-//    private long createAt;
+    private Integer pageSize=10;
+
     private long createBy;
     private long updateAt;
     private long updateBy;

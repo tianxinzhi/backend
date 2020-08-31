@@ -272,8 +272,8 @@ public class InterfaceForExternalCtrl extends BaseStockCtrl<DbResLogMgt> {
             mgt.setStatus(StaticVariable.STATUS_WAITING);
             mgt.setUpdateAt(t);
             mgt.setCreateAt(t);
-            mgt.setCreateBy(0);
-            mgt.setUpdateBy(0);
+            mgt.setCreateBy(0L);
+            mgt.setUpdateBy(0L);
             mgt.setActive("Y");
 
             List<DbResLogMgtDtl> dtls = new LinkedList<>();
@@ -291,8 +291,8 @@ public class InterfaceForExternalCtrl extends BaseStockCtrl<DbResLogMgt> {
                 va.setLogTxtBum(transNum);
                 va.setUpdateAt(t);
                 va.setCreateAt(t);
-                va.setCreateBy(0);
-                va.setUpdateBy(0);
+                va.setCreateBy(0L);
+                va.setUpdateBy(0L);
                 va.setActive("Y");
 
 
@@ -307,8 +307,8 @@ public class InterfaceForExternalCtrl extends BaseStockCtrl<DbResLogMgt> {
                 va2.setLogTxtBum(transNum);
                 va2.setUpdateAt(t);
                 va2.setCreateAt(t);
-                va2.setCreateBy(0);
-                va2.setUpdateBy(0);
+                va2.setCreateBy(0L);
+                va2.setUpdateBy(0L);
                 va2.setActive("Y");
 
                 dtls.add(va);

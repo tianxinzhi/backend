@@ -87,6 +87,11 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
+		<dependency>
+			<groupId>p6spy</groupId>
+			<artifactId>p6spy</artifactId>
+			<version>3.7.0</version>
+		</dependency>
 
 		<dependency>
 			<groupId>org.jxls</groupId>

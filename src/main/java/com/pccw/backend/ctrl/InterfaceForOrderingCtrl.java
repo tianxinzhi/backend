@@ -1,11 +1,13 @@
 package com.pccw.backend.ctrl;
 
 
+import com.pccw.backend.bean.JsonResult;
 import com.pccw.backend.bean.StaticVariable;
 import com.pccw.backend.bean.interfaceForOrdering.InputBean;
 import com.pccw.backend.bean.interfaceForOrdering.InputItemBean;
 import com.pccw.backend.bean.interfaceForOrdering.OutputItemBean;
 import com.pccw.backend.bean.interfaceForOrdering.SearchBean;
+import com.pccw.backend.bean.stock_replenishment.CreateReplBean;
 import com.pccw.backend.entity.*;
 import com.pccw.backend.repository.*;
 import com.pccw.backend.util.CollectionBuilder;
@@ -13,12 +15,19 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.*;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Predicate;
 import javax.transaction.Transactional;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Slf4j
@@ -366,6 +375,39 @@ public class InterfaceForOrderingCtrl extends BaseStockCtrl<DbResLogMgt> {
             }
         }
         return "";
+    }
+
+    /**
+     *  JPASpecification 实现复杂分页查询
+     * @param b
+     * @return
+     */
+    @RequestMapping(value = "/test",method = RequestMethod.POST)
+    public JsonResult findAll(@RequestBody com.pccw.backend.bean.stock_movement.SearchBean b) {
+        Specification specification = (Specification) (root, query, criteriaBuilder) -> {
+            Predicate predicate = criteriaBuilder.conjunction();
+            if(!StringUtils.isEmpty(b.getRepoId())){
+                predicate.getExpressions().add( criteriaBuilder.equal(root.get("logRepoOut"),b.getRepoId()));
+            }
+            if(!StringUtils.isEmpty(b.getToRepoId())){
+                predicate.getExpressions().add(criteriaBuilder.equal(root.get("logRepoIn"),b.getToRepoId()));
+            }
+            Path line = root.get("line");
+            if(!StringUtils.isEmpty(b.getSkuNum())){
+                CriteriaBuilder.In in = criteriaBuilder.in(line.get("dtlSkuId"));
+                for (String s : b.getSkuNum()) {
+                    in.value(s);
+                }
+                predicate.getExpressions().add(in);
+            }
+            if(!StringUtils.isEmpty(b.getCreateAt())){
+                predicate.getExpressions().add(criteriaBuilder.between(root.get("createAt"),b.getCreateAt()[0],b.getCreateAt()[1]));
+            }
+            query.where(predicate);
+            return predicate;
+        };
+        Page all = repo.findAll(specification, PageRequest.of(b.getPageIndex(), b.getPageSize()));
+        return JsonResult.success(Arrays.asList(all.get().collect(Collectors.toList())));
     }
 
 }

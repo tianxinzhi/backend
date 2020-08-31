@@ -54,4 +54,10 @@ public class CreateReplBean extends BaseBean {
 
     @ApiModelProperty(value="",name="logTxtNum",example="")
     private String logTxtNum;
+
+    @ApiModelProperty(value="",name="skuName",example="")
+    private String skuName;
+
+    @ApiModelProperty(value="",name="repoId",example="")
+    private Long repoId;
 }

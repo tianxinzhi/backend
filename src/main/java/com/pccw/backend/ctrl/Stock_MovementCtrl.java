@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 @CrossOrigin(methods = RequestMethod.POST, origins = "*", allowCredentials = "false")
 @RequestMapping("/stock_movement")
 @Api(value="Stock_MovementCtrl",tags={"stock_movement"})
-public class Stock_MovementCtrl extends BaseCtrl<DbResProcess> {
+public class Stock_MovementCtrl extends BaseCtrl<DbResLogMgt> {
 
     @Autowired
     ResProcessRepository processRepo;
@@ -68,14 +68,14 @@ public class Stock_MovementCtrl extends BaseCtrl<DbResProcess> {
                     "t1.log_txt_num \"logTxtBum\",t1.log_order_nature \"logOrderNature\",t1.remark \"reason\", \n" +
                     "t1.approval \"approval\",t1.approval_by \"approvalBy\",t1.staff_number \"staff\",t1.remark \"remark\" ,\n" +
                     "t1.courier \"courier\",t1.serial \"serial\",t1.iccId \"iccID\",t1.imei \"imei\",t1.mobile_number \"mobileNumber\", \n" +
-                    "t1.source_system \"sourceSystem\",t1.source_txn_header \"txnHeader\",t1.source_line \"txnLine\", \n" +
+                    "t1.source_system \"sourceSystem\",t1.source_txn_header \"txnHeader\",t1.source_line \"txnLine\",t1.publish_to_lis \"pubToLis\",t1.receive_from_lis \"recFromLis\", \n" +
                     "r1.id \"repoId\" ,r1.repo_code \"fromChannel\",r2.id \"toRepoId\" ,r2.repo_code \"toChannel\",\n" +
-                    " t4.skuId \"skuId\",t4.sku \"sku\",t4.skuDesc \"skuDesc\",t4.qty \"qty\",t4.fromStatus \"fromStatus\"" +
+                    " t4.skuId \"skuId\",t4.sku \"sku\",t4.skuDesc \"skuDesc\",t4.uom \"uom\",t4.qty \"qty\",t4.fromStatus \"fromStatus\"" +
                     " from res_log_mgt t1 left JOIN RES_ACCOUNT a1 on a1.id = t1.create_by\n" +
                     "left join res_repo r1 on r1.id = t1.log_repo_out\n" +
                     "left join res_repo r2 on r2.id = t1.log_repo_in left join\n" +
                     "(select  \n" +
-                    "dtl.log_mgt_id , sku.id skuId,sku.sku_name sku,sku.sku_desc skuDesc,dtl.DTL_QTY qty,dtl.DTL_SUBIN fromStatus\n" +
+                    "dtl.log_mgt_id , sku.id skuId,sku.sku_name sku,sku.sku_desc skuDesc,sku.uom uom,dtl.DTL_QTY qty,dtl.DTL_SUBIN fromStatus\n" +
                     "\tfrom RES_LOG_MGT_DTL dtl \n" +
                     " inner join res_sku sku on dtl.dtl_sku_id = sku.id "+skuSearch+" ) t4 on t1.id = t4.log_mgt_id where 1=1");
 

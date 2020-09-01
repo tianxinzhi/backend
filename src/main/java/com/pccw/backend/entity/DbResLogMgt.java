@@ -81,6 +81,12 @@ public class DbResLogMgt extends BaseLog {
 	@Column(name="approval_by")
 	private String approvalBy;
 
+	@Column(name="publish_to_lis")
+	private String pubToLis;
+
+	@Column(name="receive_from_lis")
+	private String recFromLis;
+
 	@JsonManagedReference
 	@OneToMany(cascade = CascadeType.ALL)  //ALL  PERSIST
 	@JoinColumn(name = "log_mgt_id")

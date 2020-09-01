@@ -22,19 +22,19 @@ public class Base implements Serializable{
 //        private Long id;
 
         @Column(name="create_at")
-        private long createAt;
+        private Long createAt;
 
 
         @Column(name="update_at")
-        private long updateAt;
+        private Long updateAt;
 
 
         @Column(name="create_by")
-        private long createBy;
+        private Long createBy;
 
 
         @Column(name="update_by")
-        private long updateBy;
+        private Long updateBy;
 
 
         // Y - avaliable , N - deleted

@@ -29,9 +29,9 @@ public class CheckRightAspect {
 
     @Autowired
     Session session;
-    
+
     //execution表达式自行搜索引擎
-    @Pointcut("execution(* com.pccw.backend.ctrl.*.*(..)) && !execution(* com.pccw.backend.ctrl.SystemCtrl.*(..)) && !execution(* com.pccw.backend.ctrl.CommonCtrl.*(..))&& !execution(* com.pccw.backend.ctrl.InterfaceForOrderingCtrl.*(..))&& !execution(* com.pccw.backend.ctrl.Stock_CURDCtrl.*(..))")
+    @Pointcut("execution(* com.pccw.backend.ctrl.*.*(..)) && !execution(* com.pccw.backend.ctrl.SystemCtrl.*(..)) && !execution(* com.pccw.backend.ctrl.CommonCtrl.*(..))&& !execution(* com.pccw.backend.ctrl.InterfaceForOrderingCtrl.*(..))&& !execution(* com.pccw.backend.ctrl.Stock_CURDCtrl.*(..))&& !execution(* com.pccw.backend.ctrl.Stock_TakeCtrl.print(..))")
     public void pointcut() {}
 
     @Before("pointcut()&&@annotation(requestMapping)")
@@ -69,7 +69,7 @@ public class CheckRightAspect {
         }
         // 【4】抛异常
         // throw BaseException.getNoLoginException();
-        
+
     }
 
     /**

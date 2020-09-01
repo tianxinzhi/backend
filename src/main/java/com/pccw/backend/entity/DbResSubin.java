@@ -12,6 +12,7 @@ import javax.persistence.*;
 @Data
 @Entity
 @Table(name = "res_subin")
+@Deprecated
 @SequenceGenerator(name="id_subin",sequenceName = "subin_seq",allocationSize = 1)
 public class DbResSubin extends Base {
 	@Id
@@ -21,7 +22,7 @@ public class DbResSubin extends Base {
 
 	@Column(name = "repo_id")
 	private Long repoId;
-	
+
 	@Column(name = "subin_code")
 	private String subinCode;
 

@@ -95,7 +95,7 @@ public class MasterFile_TypeCtrl extends BaseCtrl<DbResType> implements ICheck {
                     dbResTypes.add(searchBean);
                 }
             }
-            return JsonResult.success(dbResTypes);
+            return JsonResult.success(dbResTypes,repo.count(spec));
         } catch (Exception e) {
             log.info(e.getMessage());
             return JsonResult.fail(e);

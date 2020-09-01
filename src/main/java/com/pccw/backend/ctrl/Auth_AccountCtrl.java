@@ -132,7 +132,7 @@ public class Auth_AccountCtrl extends BaseCtrl<DbResAccount> implements ICheck {
                 resBean.setUpdateAccountName(getAccountName(resBean.getUpdateBy()));
                 resList.add(resBean);
             }
-            return JsonResult.success(resList);
+            return JsonResult.success(resList,repo.count(spec));
         } catch (IllegalArgumentException | IllegalAccessException | BeansException e) {
             return JsonResult.fail(e);
         }

@@ -21,6 +21,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -45,13 +46,14 @@ public class BaseCtrl<T>{
         try {
             log.info(b.toString());
             Specification<T> spec = Convertor.<T>convertSpecification(b);
+            long count = repo.count(spec);
             List<T> res =repo.findAll(spec,PageRequest.of(b.getPageIndex(),b.getPageSize())).getContent();
             for (T re : res) {
                 Base base = (Base)re;
                 base.setCreateAccountName(getAccountName(base.getCreateBy()));
                 base.setUpdateAccountName(getAccountName(base.getUpdateBy()));
             }
-            return JsonResult.success(res);
+            return JsonResult.success(res,count);
         } catch (Exception e) {
             e.printStackTrace();
             log.info(e.getMessage());
@@ -79,7 +81,7 @@ public class BaseCtrl<T>{
             b.setActive("Y");
             b.setCreateBy(b.getCreateBy()==0 ? b.getCreateBy():getAccount());
             b.setUpdateBy(b.getCreateBy()==0 ? b.getCreateBy():getAccount());
-            saveAndFlush(repo, cls, b);       
+            saveAndFlush(repo, cls, b);
             return JsonResult.success(Arrays.asList());
         } catch (Exception e) {
             e.printStackTrace();
@@ -100,7 +102,7 @@ public class BaseCtrl<T>{
         }
     }
     private void saveAndFlush(BaseRepository repo, Class<T> cls, BaseBean b) throws Exception {
-        try {         
+        try {
             T entity = cls.newInstance();
             BeanUtils.copyProperties(b, entity);
             log.info(entity.toString());
@@ -164,7 +166,6 @@ public class BaseCtrl<T>{
         }
         return name;
     }
-
 
     /**
      * 将默认查询结果集按照指定bean格式,并装入JsonResult返回

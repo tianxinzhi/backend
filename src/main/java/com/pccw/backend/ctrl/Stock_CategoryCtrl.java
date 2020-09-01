@@ -106,19 +106,19 @@ public class Stock_CategoryCtrl extends BaseCtrl<DbResLogMgt> {
             dbResLogMgt.setLine(list);
             resLogMgtRepository.saveAndFlush(dbResLogMgt);
 
-//            this.UpdateSkuRepoQty(b.getLogTxtBum());
+            this.UpdateSkuRepoQty(b.getLogTxtBum());
             //创建工作流对象
-            DbResProcess process = new DbResProcess();
-
-            process.setLogTxtBum(b.getLogTxtBum());
-            process.setRepoId(b.getLogRepoOut());
-            process.setRemark(b.getRemark());
-            process.setCreateAt(t);
-            process.setUpdateAt(t);
-            process.setLogOrderNature(b.getLogOrderNature());
-
-            //生成工作流数据
-            processProcessCtrl.joinToProcess(process);
+//            DbResProcess process = new DbResProcess();
+//
+//            process.setLogTxtBum(b.getLogTxtBum());
+//            process.setRepoId(b.getLogRepoOut());
+//            process.setRemark(b.getRemark());
+//            process.setCreateAt(t);
+//            process.setUpdateAt(t);
+//            process.setLogOrderNature(b.getLogOrderNature());
+//
+//            //生成工作流数据
+//            processProcessCtrl.joinToProcess(process);
             return JsonResult.success(Arrays.asList());
         } catch (Exception e) {
             return JsonResult.fail(e);
@@ -154,15 +154,15 @@ public class Stock_CategoryCtrl extends BaseCtrl<DbResLogMgt> {
                 skuRepo.setQty(qty);
                 //处理sku_repo表关联的itemcode表数据
 
-                List<DbResSkuRepoItem> skuRepoItemList = skuRepo.getSkuRepoItemList();
-                for (DbResSkuRepoItem item:skuRepoItemList){
-                    if(Arrays.asList(itemCodeArr).contains(item.getItemCode())){
-                        skuRepoItemList.remove(item);
-                    }
-                }
-                if(skuRepoItemList.size()>0){
-                skuRepo.setSkuRepoItemList(skuRepoItemList);
-                }
+//                List<DbResSkuRepoItem> skuRepoItemList = skuRepo.getSkuRepoItemList();
+//                for (DbResSkuRepoItem item:skuRepoItemList){
+//                    if(Arrays.asList(itemCodeArr).contains(item.getItemCode())){
+//                        skuRepoItemList.remove(item);
+//                    }
+//                }
+//                if(skuRepoItemList.size()>0){
+//                skuRepo.setSkuRepoItemList(skuRepoItemList);
+//                }
                 skuRepoRepository.saveAndFlush(skuRepo);
             }else {
                 //dtlAction为A时  skuRepo对应的sku的qty做加法
@@ -199,7 +199,7 @@ public class Stock_CategoryCtrl extends BaseCtrl<DbResLogMgt> {
                     skuRepo1.setUpdateAt(t);
                     skuRepo1.setUpdateBy(getAccount());
                     //处理sku_repo表关联的itemcode表数据
-                    List<DbResSkuRepoItem> skuRepoItemList = skuRepo1.getSkuRepoItemList();
+//                    List<DbResSkuRepoItem> skuRepoItemList = skuRepo1.getSkuRepoItemList();
 //                    for (String i:itemCodeArr){
 //                        DbResSkuRepoItem skuRepoItem = new DbResSkuRepoItem();
 //                        skuRepoItem.setActive("Y");

@@ -61,7 +61,7 @@ public class MasterFile_SpecCtrl extends BaseCtrl<DbResSpec> implements ICheck {
                     dbResSpec.add(searchBean);
                 }
             }
-            return JsonResult.success(dbResSpec);
+            return JsonResult.success(dbResSpec,repo.count(specification));
         } catch (Exception e) {
             log.info(e.getMessage());
             return JsonResult.fail(e);

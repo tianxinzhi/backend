@@ -1,7 +1,9 @@
 package com.pccw.backend.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.Valid;
@@ -22,16 +24,16 @@ public class DbResLogMgtDtl extends BaseLogDtl {
 	private Long id;
 
 
-	
+
 	@Column(name="dtl_skuId")
-	private long dtlSkuId;
+	private Long dtlSkuId;
 
 
 	@Column(name="dtl_itemId")
-	private long dtlItemId;
-	
+	private Long dtlItemId;
+
 	@Column(name="dtl_repoId")
-	private long dtlRepoId;
+	private Long dtlRepoId;
 
 	@Valid
 	@Min(1)
@@ -40,6 +42,9 @@ public class DbResLogMgtDtl extends BaseLogDtl {
 
 	@Column(name = "item_code",length = 512)
 	private String itemCode;
+
+	@Column(name="detail_id")
+	private String detailId;
 
 	@JsonBackReference
 	@JoinColumn(name = "log_mgt_id")

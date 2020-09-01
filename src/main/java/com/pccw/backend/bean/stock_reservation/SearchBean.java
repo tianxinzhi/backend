@@ -17,17 +17,20 @@ import java.util.List;
 public class SearchBean extends BaseSearchBean {
 
     @ApiModelProperty(value="customerType",name="customerType",example="")
-    @PredicateAnnotation(type = PredicateType.LIKE)
+//    @PredicateAnnotation(type = PredicateType.LIKE)
     private String customerType;
 
     @ApiModelProperty(value="repoId",name="repoId",example="")
-    @PredicateAnnotation(type = PredicateType.EQUEL)
+//    @PredicateAnnotation(type = PredicateType.EQUEL)
     private Long repoId;
 
     @ApiModelProperty(value="paymentStatus",name="paymentStatus",example="")
-    @PredicateAnnotation(type = PredicateType.LIKE)
+//    @PredicateAnnotation(type = PredicateType.LIKE)
     private String paymentStatus;
 
     @ApiModelProperty(value="sku",name="sku",example="")
     private List<Long> sku;
+
+    @ApiModelProperty(value="true",name="sortByRule",example="")
+    private String sortByRule;
 }

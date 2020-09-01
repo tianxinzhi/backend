@@ -27,12 +27,16 @@ public class JsonResult<T> {
 
     /**
      * quick method to return a JsonResult when SUCESSED
-     * @param <G> 
+     * @param <G>
      * @param data
      * @return
      */
     public static <T> JsonResult<T> success(List<T> data) {
         return new JsonResult<T>("success", "000","", data);
+    }
+
+    public static <T> JsonResult<T> success(List<T> data,long totalSize) {
+        return new JsonResult<T>("success", "000",totalSize+"", data);
     }
     /**
      * quick method to return a JsonResult when FAILED

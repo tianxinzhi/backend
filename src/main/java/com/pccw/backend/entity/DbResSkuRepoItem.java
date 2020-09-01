@@ -9,6 +9,7 @@ import javax.persistence.*;
 
 @Getter
 @Setter
+@Deprecated
 @Entity
 @Table(name = "res_skuRepoItem")
 @SequenceGenerator(name="id_skuRepoItem",sequenceName = "skuRepoItem_seq",allocationSize = 1)

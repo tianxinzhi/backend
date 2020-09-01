@@ -1,5 +1,6 @@
 package com.pccw.backend.ctrl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.pccw.backend.bean.BaseDeleteBean;
 import com.pccw.backend.bean.JsonResult;
 import com.pccw.backend.bean.LabelAndValue;
@@ -10,7 +11,6 @@ import com.pccw.backend.bean.masterfile_sku.ResultBean;
 import com.pccw.backend.bean.masterfile_sku.SearchBean;
 import com.pccw.backend.cusinterface.ICheck;
 import com.pccw.backend.entity.*;
-import com.pccw.backend.entity.DbResSku;
 import com.pccw.backend.repository.*;
 import com.pccw.backend.util.Convertor;
 import io.swagger.annotations.Api;
@@ -20,6 +20,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -64,7 +65,7 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> implements ICheck {
     @RequestMapping(method = RequestMethod.POST,value = "/create")
     public JsonResult create(@RequestBody CreateBean bean) {
         try {
-            System.out.println("bean:" + bean);
+            System.out.println(JSONObject.toJSONString(bean));
             long time = System.currentTimeMillis();
             DbResSku sku = new DbResSku();
             sku.setSkuCode(bean.getSkuCode());
@@ -276,7 +277,9 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> implements ICheck {
     public JsonResult search(@RequestBody SearchBean bean){
         try {
             Specification<DbResSku> spec = Convertor.<DbResSku>convertSpecification(bean);
-            List<DbResSku> skuList = skuRepo.findAll(spec, PageRequest.of(bean.getPageIndex(),bean.getPageSize())).getContent();
+            List<Sort.Order> orders = new ArrayList<>();
+            orders.add(new Sort.Order(Sort.Direction.DESC,"createAt"));
+            List<DbResSku> skuList = skuRepo.findAll(spec, PageRequest.of(bean.getPageIndex(),bean.getPageSize(),Sort.by(orders))).getContent();
             List<ResultBean> skuResultBeans = new LinkedList<>();
             for (DbResSku sku : skuList) {
 
@@ -331,7 +334,7 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> implements ICheck {
                     skuResultBeans.add(resultBean);
                 }
             }
-            return  JsonResult.success(skuResultBeans);
+            return  JsonResult.success(skuResultBeans,skuRepo.count(spec));
         } catch (IllegalArgumentException | IllegalAccessException | BeansException e) {
             e.printStackTrace();
             return  JsonResult.fail(e);

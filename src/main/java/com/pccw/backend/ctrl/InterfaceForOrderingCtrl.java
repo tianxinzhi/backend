@@ -1,10 +1,13 @@
 package com.pccw.backend.ctrl;
 
 
+import com.pccw.backend.bean.JsonResult;
+import com.pccw.backend.bean.StaticVariable;
 import com.pccw.backend.bean.interfaceForOrdering.InputBean;
 import com.pccw.backend.bean.interfaceForOrdering.InputItemBean;
 import com.pccw.backend.bean.interfaceForOrdering.OutputItemBean;
 import com.pccw.backend.bean.interfaceForOrdering.SearchBean;
+import com.pccw.backend.bean.stock_replenishment.CreateReplBean;
 import com.pccw.backend.entity.*;
 import com.pccw.backend.repository.*;
 import com.pccw.backend.util.CollectionBuilder;
@@ -12,20 +15,29 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.*;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Predicate;
+import javax.transaction.Transactional;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Slf4j
 @RestController
 @RequestMapping("/api/external/ppos/v1")
 @CrossOrigin(methods = RequestMethod.POST,origins = "*", allowCredentials = "false")
-public class InterfaceForOrderingCtrl extends BaseCtrl<DbResLogRor> {
+public class InterfaceForOrderingCtrl extends BaseStockCtrl<DbResLogMgt> {
 
     @Autowired
-    private ResLogRorRepository repo;
+    private ResLogMgtRepository repo;
 
     @Autowired
     ResSkuRepoRepository skuRepoRepository;
@@ -34,91 +46,110 @@ public class InterfaceForOrderingCtrl extends BaseCtrl<DbResLogRor> {
     ResRepoRepository repoRepository;
 
     @Autowired
-    Process_ProcessCtrl processProcessCtrl;
-
-    @Autowired
     ResSkuRepository skuRepository;
 
     @Autowired
     ResItemRepository itemRepository;
-
 
     @ApiOperation(value="创建stock_update",tags={"stock_update"},notes="说明")
     @RequestMapping(method = RequestMethod.POST,path="/stock_update")
     public Map create(@RequestBody InputBean b){
         try {
             //输入验证
+            String s1 = validateParam(b.getItem_details());
+            if(!s1.equals("")) return CollectionBuilder.builder(new HashMap<>()).put("state", "failed").put("code", "500").put("msg", s1).put("data", null).build();
             long t = new Date().getTime();
-            DbResLogRor logRor= new DbResLogRor(null,b.getOrder_system(),b.getOrder_id(),null,"N",b.getSales_id(),b.getTx_date(),b.getBiz_date(),null,null,0,0,null,null);
-            logRor.setLogOrderNature(b.getRequest_nature());
-            logRor.setRemark(b.getRemarks());
-            logRor.setLogType("O");
-            logRor.setActive("Y");
-            logRor.setUpdateAt(t);
-            logRor.setCreateAt(t);
-            logRor.setCreateBy(getAccount());
-            logRor.setUpdateBy(getAccount());
-            List<DbResLogRorDtl> logRorDtls=new ArrayList<>();
-            ArrayList<Object> list = new ArrayList<>();
-            if(Objects.nonNull(b.getItem_details()) && b.getItem_details().size() > 0){
-                b.getItem_details().forEach(item -> {
-                    //Output数据
-                    OutputItemBean outputItem= new OutputItemBean(item.getDetail_id(),item.getSku_code(),String.valueOf(item.getQuantity()),
-                            item.getItem_code(), item.getRepo_id(),item.getCcc(),item.getWo());
-                    list.add(outputItem);
+            DateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+            DbResLogMgt mgt= new DbResLogMgt();
+            mgt.setSourceSystem(b.getOrder_system());mgt.setLogOrderId(b.getOrder_id());
+            mgt.setStaffNumber(b.getSales_id());mgt.setLogOrderNature(b.getRequest_nature());
+            mgt.setRemark(b.getRemarks());mgt.setLogOrderType("N");
+            mgt.setTxDate(b.getTx_date());
+            mgt.setLogType(StaticVariable.LOGTYPE_ORDER);mgt.setActive("Y");
+            mgt.setUpdateAt(sdf.parse(b.getBiz_date()).getTime());mgt.setCreateAt(sdf.parse(b.getBiz_date()).getTime());
+            mgt.setCreateBy(getAccount());mgt.setUpdateBy(getAccount());
+            List<DbResLogMgtDtl> logMgtDtls=new ArrayList<>();
+            List<Object> list = new ArrayList<>();
+            for (InputItemBean item : b.getItem_details()) {
+                //Output数据
+                OutputItemBean outputItem= new OutputItemBean(item.getDetail_id(),item.getSku_code(),String.valueOf(item.getQuantity()),
+                        item.getItem_code(), item.getRepo_id(),item.getCcc(),item.getWo());
+                list.add(outputItem);
 
-                    DbResSku s = skuRepository.findFirst1BySkuCode(item.getSku_code());
-                    DbResRepo r = repoRepository.findFirst1ByRepoCode(item.getRepo_id());
-                    DbResItem i = itemRepository.findFirst1ByItemCode(item.getItem_code());
-                    Long skuId = Objects.isNull(s) ? null : s.getId();
-                    Long repoId = Objects.isNull(r) ? null : r.getId();
-                    Long itemId = Objects.isNull(i) ? null : r.getId();
+                DbResSku s = skuRepository.findFirst1BySkuCode(item.getSku_code());
+                DbResRepo r = repoRepository.findFirst1ByRepoCode(item.getRepo_id());
+//                DbResItem i = itemRepository.findFirst1ByItemCode(item.getItem_code());
+                Long skuId = Objects.isNull(s) ? null : s.getId();
+                Long repoId = Objects.isNull(r) ? null : r.getId();
+//                Long itemId = Objects.isNull(i) ? null : i.getId();
 
-                    DbResLogRorDtl rorDtl=new DbResLogRorDtl(null,skuId,itemId,repoId,Long.parseLong(item.getQuantity()),item.getCcc(),item.getWo(),item.getDetail_id(),logRor);
-                    rorDtl.setActive("Y");
-                    rorDtl.setUpdateAt(t);
-                    rorDtl.setCreateAt(t);
-                    rorDtl.setCreateBy(getAccount());
-                    rorDtl.setUpdateBy(getAccount());
-                    String dnNum = "";
-                    if(b.getRequest_nature().equals("ASG")){
-                        rorDtl.setDtlAction("D");
-                        rorDtl.setStatus("AVL");
-                        rorDtl.setDtlSubin("Good");
-                        dnNum = "S";
-                    }else if(b.getRequest_nature().equals("RET")){
-                        rorDtl.setDtlAction("A");
-                        rorDtl.setStatus("FAU");
-                        rorDtl.setDtlSubin("Faulty");
-                        dnNum = "E";
-                    }else if(b.getRequest_nature().equals("EXC")){
-                        rorDtl.setDtlAction("A");
-                        rorDtl.setStatus("FAU");
-                        rorDtl.setDtlSubin("Faulty");
-                        dnNum = "X";
-                        DbResLogRorDtl secRorDtl=new DbResLogRorDtl();
-                        BeanUtils.copyProperties(rorDtl,secRorDtl);
-                        secRorDtl.setDtlAction("D");
-                        secRorDtl.setStatus("AVL");
-                        secRorDtl.setDtlSubin("Good");
-                        String txtNum = new SimpleDateFormat("yyMMdd hhmmss").format(new Date()).replace(" ", dnNum+rorDtl.getDtlRepoId());
-                        secRorDtl.setLogTxtBum(txtNum);
-                        logRorDtls.add(secRorDtl);
+                DbResLogMgtDtl mgtDtl=new DbResLogMgtDtl();
+                mgtDtl.setDtlSkuId(skuId);
+//                mgtDtl.setDtlItemId(itemId);
+                mgtDtl.setDtlRepoId(repoId);mgtDtl.setDtlQty(Long.parseLong(item.getQuantity()));
+                mgtDtl.setItemCode(item.getItem_code());mgtDtl.setDetailId(item.getDetail_id());
+                mgtDtl.setResLogMgt(mgt);
+                mgtDtl.setActive("Y");mgtDtl.setUpdateAt(t);mgtDtl.setCreateAt(t);
+                mgtDtl.setCreateBy(getAccount());mgtDtl.setUpdateBy(getAccount());
+                String dnNum = "";
+                if(b.getRequest_nature().equals("ASG")){
+                    mgtDtl.setDtlAction("D");
+                    mgtDtl.setStatus("AVL");
+                    mgtDtl.setDtlSubin("Good");
+                    dnNum = "S";
+                }else if(b.getRequest_nature().equals("RET")){
+                    mgtDtl.setDtlAction("A");
+                    mgtDtl.setStatus("FAU");
+                    mgtDtl.setDtlSubin("Faulty");
+                    dnNum = "E";
+                }else if(b.getRequest_nature().equals("EXC")){
+                    mgtDtl.setDtlAction("A");
+                    mgtDtl.setStatus("FAU");
+                    mgtDtl.setDtlSubin("Faulty");
+                    dnNum = "X";
+                    DbResLogMgtDtl secRorDtl=new DbResLogMgtDtl();
+                    BeanUtils.copyProperties(mgtDtl,secRorDtl);
+                    secRorDtl.setDtlAction("D");
+                    secRorDtl.setStatus("AVL");
+                    secRorDtl.setDtlSubin("Good");
+                    String txtNum = new SimpleDateFormat("yyMMdd hhmmss").format(new Date()).replace(" ", dnNum+mgtDtl.getDtlRepoId());
+                    secRorDtl.setLogTxtBum(txtNum);
+                    logMgtDtls.add(secRorDtl);
+                } else if(b.getRequest_nature().equals("RES")){
+                    dnNum = "RV";
+                    String txtNum = new SimpleDateFormat("yyMMdd hhmmss").format(new Date()).replace(" ", dnNum+mgtDtl.getDtlRepoId());
+
+                    mgtDtl.setLogTxtBum(txtNum);
+                    mgtDtl.setStatus(StaticVariable.STATUS_RESERVED);
+                    mgtDtl.setDtlAction(StaticVariable.DTLACTION_ADD);
+                    mgtDtl.setDtlSubin(StaticVariable.DTLSUBIN_RESERVED);
+
+                    DbResLogMgtDtl mgtDtl2 = new DbResLogMgtDtl();
+                    BeanUtils.copyProperties(mgtDtl,mgtDtl2);
+                    mgtDtl2.setStatus(StaticVariable.STATUS_AVAILABLE);
+                    mgtDtl2.setDtlAction(StaticVariable.DTLACTION_DEDUCT);
+                    mgtDtl2.setDtlSubin(StaticVariable.DTLSUBIN_AVAILABLE);
+
+                    logMgtDtls.add(mgtDtl2);
+                    String s2 = Stock_ReservationCtrl.class.newInstance().outerApi(b, txtNum);
+                    if(!s2.equals("")) {
+                        return CollectionBuilder.builder(new HashMap<>()).put("state", "failed").put("code", "500").put("msg", s2).put("data", null).build();
                     }
-                    String txtNum = new SimpleDateFormat("yyMMdd hhmmss").format(new Date()).replace(" ", dnNum+rorDtl.getDtlRepoId());
-                    rorDtl.setLogTxtBum(txtNum);
-                    logRor.setLogTxtBum(txtNum);
-                    logRorDtls.add(rorDtl);
-                });
+                }
+                String txtNum = new SimpleDateFormat("yyMMdd hhmmss").format(new Date()).replace(" ", dnNum+mgtDtl.getDtlRepoId());
+                mgtDtl.setLogTxtBum(txtNum);
+                mgt.setLogTxtBum(txtNum);
+                logMgtDtls.add(mgtDtl);
             }
-            logRor.setLine(logRorDtls);
-            repo.saveAndFlush(logRor);
+            mgt.setLine(logMgtDtls);
+            repo.saveAndFlush(mgt);
 
-            Map outputdata = CollectionBuilder.builder(new HashMap<>()).put("item_details",list).put("tx_id",logRor.getLogTxtBum()).build();
+            Map outputdata = CollectionBuilder.builder(new HashMap<>()).put("item_details",list).put("tx_id",mgt.getLogTxtBum()).build();
             Map jsonResult = CollectionBuilder.builder(new HashMap<>()).put("state", "success").put("code", "200").put("msg", "stock update successfully").put("data", outputdata).build();
             return jsonResult;
         } catch (Exception e) {
-            return CollectionBuilder.builder(new HashMap<>()).put("state", "failed").put("code", "200").put("msg", e.getMessage()).put("data", null).build();
+            e.printStackTrace();
+            return CollectionBuilder.builder(new HashMap<>()).put("state", "failed").put("code", "500").put("msg", e.getMessage()).put("data", null).build();
         }
     }
 
@@ -128,79 +159,92 @@ public class InterfaceForOrderingCtrl extends BaseCtrl<DbResLogRor> {
     public Map createAO(@RequestBody InputBean b){
         try {
             //输入验证
+            String s1 = validateParam(b.getItem_details());
+            if(!s1.equals("")) return CollectionBuilder.builder(new HashMap<>()).put("state", "failed").put("code", "500").put("msg", s1).put("data", null).build();
             long t = new Date().getTime();
-            DbResLogRor logRor= new DbResLogRor(null,b.getOrder_system(),b.getOrder_id(),null,"N",b.getSales_id(),b.getTx_date(),b.getBiz_date(),null,null,0,0,null,null);
-            logRor.setLogOrderNature(b.getRequest_nature());
-            logRor.setRemark(b.getRemarks());
-            logRor.setLogType("O");
-            logRor.setActive("Y");
-            logRor.setUpdateAt(t);
-            logRor.setCreateAt(t);
-            logRor.setCreateBy(getAccount());
-            logRor.setUpdateBy(getAccount());
-            List<DbResLogRorDtl> logRorDtls=new ArrayList<>();
-            ArrayList<Object> list = new ArrayList<>();
-            if(Objects.nonNull(b.getItem_details()) && b.getItem_details().size() > 0){
-                b.getItem_details().forEach(item -> {
-                    //Output数据
-                    OutputItemBean outputItem= new OutputItemBean(item.getDetail_id(),item.getSku_code(),String.valueOf(item.getQuantity()),
-                            item.getItem_code(), item.getRepo_id(),item.getCcc(),item.getWo());
-                    list.add(outputItem);
+            DateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+            DbResLogMgt mgt= new DbResLogMgt();
+            mgt.setSourceSystem(b.getOrder_system());mgt.setLogOrderId(b.getOrder_id());
+            mgt.setStaffNumber(b.getSales_id());mgt.setLogOrderNature(b.getRequest_nature());
+            mgt.setRemark(b.getRemarks());mgt.setLogOrderType("N");
+            mgt.setTxDate(b.getTx_date());
+            mgt.setLogType(StaticVariable.LOGTYPE_ORDER);mgt.setActive("Y");
+            mgt.setUpdateAt(sdf.parse(b.getBiz_date()).getTime());mgt.setCreateAt(sdf.parse(b.getBiz_date()).getTime());
+            mgt.setCreateBy(getAccount());mgt.setUpdateBy(getAccount());
+            List<DbResLogMgtDtl> logMgtDtls=new ArrayList<>();
+            List<Object> list = new ArrayList<>();
+            for(InputItemBean item:b.getItem_details()){
+                //Output数据
+                OutputItemBean outputItem= new OutputItemBean(item.getDetail_id(),item.getSku_code(),String.valueOf(item.getQuantity()),
+                        item.getItem_code(), item.getRepo_id(),item.getCcc(),item.getWo());
+                list.add(outputItem);
 
-                    DbResSku s = skuRepository.findFirst1BySkuCode(item.getSku_code());
-                    DbResRepo r = repoRepository.findFirst1ByRepoCode(item.getRepo_id());
-                    DbResItem i = itemRepository.findFirst1ByItemCode(item.getItem_code());
-                    Long skuId = Objects.isNull(s) ? null : s.getId();
-                    Long repoId = Objects.isNull(r) ? null : r.getId();
-                    Long itemId = Objects.isNull(i) ? null : r.getId();
-                    DbResLogRorDtl rorDtl=new DbResLogRorDtl(null,skuId,itemId,repoId,Long.parseLong(item.getQuantity()),item.getCcc(),item.getWo(),item.getDetail_id(),logRor);
-                    rorDtl.setActive("Y");
-                    rorDtl.setUpdateAt(t);
-                    rorDtl.setCreateAt(t);
-                    rorDtl.setCreateBy(getAccount());
-                    rorDtl.setUpdateBy(getAccount());
-                    String dnNum = "";
-                    if(b.getRequest_nature().equals("ARS")){
-                        rorDtl.setDtlAction("A");
-                        rorDtl.setStatus("OST");
-                        rorDtl.setDtlSubin("");
-                        dnNum = "T";
-                    }else if(b.getRequest_nature().equals("CARS")){
-                        rorDtl.setDtlAction("D");
-                        rorDtl.setStatus("OST");
-                        rorDtl.setDtlSubin("");
-                        dnNum = "W";
-                    }else if(b.getRequest_nature().equals("CARSW")){
-                        rorDtl.setDtlAction("A");
-                        rorDtl.setStatus("AVL");
-                        rorDtl.setDtlSubin("");
-                        dnNum = "Y";
-                        DbResLogRorDtl secRorDtl=new DbResLogRorDtl();
-                        BeanUtils.copyProperties(rorDtl,secRorDtl);
-                        secRorDtl.setDtlAction("D");
-                        secRorDtl.setStatus("ARE");
-                        String txtNum = new SimpleDateFormat("yyMMdd hhmmss").format(new Date()).replace(" ", dnNum+rorDtl.getDtlRepoId());
-                        secRorDtl.setLogTxtBum(txtNum);
-                        logRorDtls.add(secRorDtl);
+                DbResSku s = skuRepository.findFirst1BySkuCode(item.getSku_code());
+                DbResRepo r = repoRepository.findFirst1ByRepoCode(item.getRepo_id());
+//                DbResItem i = itemRepository.findFirst1ByItemCode(item.getItem_code());
+                Long skuId = Objects.isNull(s) ? null : s.getId();Long repoId = Objects.isNull(r) ? null : r.getId();
+//                Long itemId = Objects.isNull(i) ? null : r.getId();
+                DbResLogMgtDtl mgtDtl=new DbResLogMgtDtl();
+                mgtDtl.setDtlSkuId(skuId);
+//                mgtDtl.setDtlItemId(itemId);
+                mgtDtl.setDtlRepoId(repoId);mgtDtl.setDtlQty(Long.parseLong(item.getQuantity()));
+                mgtDtl.setItemCode(item.getItem_code());mgtDtl.setDetailId(item.getDetail_id());
+                mgtDtl.setResLogMgt(mgt);
+                mgtDtl.setActive("Y");mgtDtl.setUpdateAt(t);mgtDtl.setCreateAt(t);
+                mgtDtl.setCreateBy(getAccount());mgtDtl.setUpdateBy(getAccount());
+                String dnNum = "";
+                if(b.getRequest_nature().equals("ARS")){
+                    dnNum = "T";
+                    String txtNum = new SimpleDateFormat("yyMMdd hhmmss").format(new Date()).replace(" ", dnNum+mgtDtl.getDtlRepoId());
+                    mgtDtl.setLogTxtBum(txtNum);mgtDtl.setStatus("OST");
+                    mgtDtl.setDtlAction(StaticVariable.DTLACTION_ADD);mgtDtl.setDtlSubin(StaticVariable.DTLSUBIN_RESERVED);
 
-                    }else if(b.getRequest_nature().equals("APU")){
-                        rorDtl.setDtlAction("D");
-                        rorDtl.setStatus("ARE");
-                        rorDtl.setDtlSubin("Good");
-                        dnNum = "U";
+                    DbResLogMgtDtl mgtDtl2 = new DbResLogMgtDtl();
+                    BeanUtils.copyProperties(mgtDtl,mgtDtl2);
+                    mgtDtl2.setDtlAction(StaticVariable.DTLACTION_DEDUCT);
+                    mgtDtl2.setDtlSubin(StaticVariable.DTLSUBIN_AVAILABLE);
+
+                    logMgtDtls.add(mgtDtl2);
+                    String s2 = Stock_ReservationCtrl.class.newInstance().outerApi(b, txtNum);
+                    if(!s2.equals("")) {
+                        return CollectionBuilder.builder(new HashMap<>()).put("state", "failed").put("code", "500").put("msg", s2).put("data", null).build();
                     }
-                    String txtNum = new SimpleDateFormat("yyMMdd hhmmss").format(new Date()).replace(" ", dnNum+rorDtl.getDtlRepoId());
-                    rorDtl.setLogTxtBum(txtNum);
-                    logRor.setLogTxtBum(txtNum);
-                    logRorDtls.add(rorDtl);
-                });
-            }
-            logRor.setLine(logRorDtls);
-            repo.saveAndFlush(logRor);
+                }else if(b.getRequest_nature().equals("CARS")){
+                    mgtDtl.setDtlAction("D");
+                    mgtDtl.setStatus("OST");
+                    mgtDtl.setDtlSubin("");
+                    dnNum = "W";
+                }else if(b.getRequest_nature().equals("CARSW")){
+                    mgtDtl.setDtlAction("A");
+                    mgtDtl.setStatus("AVL");
+                    mgtDtl.setDtlSubin("");
+                    dnNum = "Y";
+                    DbResLogMgtDtl secRorDtl=new DbResLogMgtDtl();
+                    BeanUtils.copyProperties(mgtDtl,secRorDtl);
+                    secRorDtl.setDtlAction("D");
+                    secRorDtl.setStatus("ARE");
+                    String txtNum = new SimpleDateFormat("yyMMdd hhmmss").format(new Date()).replace(" ", dnNum+mgtDtl.getDtlRepoId());
+                    secRorDtl.setLogTxtBum(txtNum);
+                    logMgtDtls.add(secRorDtl);
 
-            Map outputdata = CollectionBuilder.builder(new HashMap<>()).put("tx_id",logRor.getLogTxtBum()).put("item_details",list).build();
+                }else if(b.getRequest_nature().equals("APU")){
+                    mgtDtl.setDtlAction("D");
+                    mgtDtl.setStatus("ARE");
+                    mgtDtl.setDtlSubin("Good");
+                    dnNum = "U";
+                }
+                String txtNum = new SimpleDateFormat("yyMMdd hhmmss").format(new Date()).replace(" ", dnNum+mgtDtl.getDtlRepoId());
+                mgtDtl.setLogTxtBum(txtNum);
+                mgt.setLogTxtBum(txtNum);
+                logMgtDtls.add(mgtDtl);
+            }
+            mgt.setLine(logMgtDtls);
+            repo.saveAndFlush(mgt);
+
+            Map outputdata = CollectionBuilder.builder(new HashMap<>()).put("tx_id",mgt.getLogTxtBum()).put("item_details",list).build();
             Map jsonResult = CollectionBuilder.builder(new HashMap<>()).put("state", "success").put("code", "200").put("msg", "stock update successfully").put("data", outputdata).build();
             return jsonResult;
+
         } catch (Exception e) {
             return CollectionBuilder.builder(new HashMap<>()).put("state", "failed").put("code", "200").put("msg", "stock update failed").put("data", null).build();
         }
@@ -210,85 +254,83 @@ public class InterfaceForOrderingCtrl extends BaseCtrl<DbResLogRor> {
     @RequestMapping(method = RequestMethod.POST,path="/stock_update_nr")
     public Map createNR(@RequestBody InputBean b){
         try {
-            ArrayList<Object> list = new ArrayList<>();
+            List<Object> list = new ArrayList<>();
+            String s1 = validateParam(b.getItem_details());
+            if(!s1.equals("")) return CollectionBuilder.builder(new HashMap<>()).put("state", "failed").put("code", "500").put("msg", s1).put("data", null).build();
+            long t = new Date().getTime();
+            DateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+            DbResLogMgt mgt= new DbResLogMgt();
+            mgt.setSourceSystem(b.getOrder_system());mgt.setLogOrderId(b.getOrder_id());
+            mgt.setStaffNumber(b.getSales_id());mgt.setLogOrderNature(b.getRequest_nature());
+            mgt.setRemark(b.getRemarks());mgt.setLogOrderType("N");
+            mgt.setTxDate(b.getTx_date());
+            mgt.setLogType(StaticVariable.LOGTYPE_ORDER);mgt.setActive("Y");
+            mgt.setUpdateAt(sdf.parse(b.getBiz_date()).getTime());mgt.setCreateAt(sdf.parse(b.getBiz_date()).getTime());
+            mgt.setCreateBy(getAccount());mgt.setUpdateBy(getAccount());
+            List<DbResLogMgtDtl> logMgtDtls=new ArrayList<>();
+            for(InputItemBean item:b.getItem_details()){
+                //Output数据
+                OutputItemBean outputItem= new OutputItemBean(item.getDetail_id(),item.getSku_code(),String.valueOf(item.getQuantity()),
+                        item.getItem_code(), item.getRepo_id(),item.getCcc(),item.getWo());
+                list.add(outputItem);
 
-            //处理头表数据
-            long time = new Date().getTime();
-            DbResLogRor dbResLogRor= new DbResLogRor(null,b.getOrder_system(),b.getOrder_id(),null,"N",b.getSales_id(),b.getTx_date(),b.getBiz_date(),null,null,0,0,null,null);
-            dbResLogRor.setLogTxtBum("NR000");
-            dbResLogRor.setActive("Y");
-            dbResLogRor.setUpdateAt(time);
-            dbResLogRor.setCreateAt(time);
-            dbResLogRor.setCreateBy(getAccount());
-            dbResLogRor.setUpdateBy(getAccount());
-//            dbResLogRor.setCcc();
-//            dbResLogRor.setWo();
-            dbResLogRor.setLogOrderNature(b.getRequest_nature());
-            dbResLogRor.setLogType("o");
-//            dbResLogRor.setStatus();
-            dbResLogRor.setRemark(b.getRemarks());
-            //处理行表数据
-            List<DbResLogRorDtl> logRorDtlList = new ArrayList<>();
-            List<InputItemBean> item_details = b.getItem_details();
-            if(Objects.nonNull(item_details) && item_details.size() > 0){
-                item_details.forEach(d->{
-                    //Output数据
-                    OutputItemBean outputItem= new OutputItemBean(d.getDetail_id(),d.getSku_code(),String.valueOf(d.getQuantity()),
-                    d.getItem_code(), d.getRepo_id(),d.getCcc(),d.getWo());
-                    list.add(outputItem);
+                DbResSku s = skuRepository.findFirst1BySkuCode(item.getSku_code());
+                DbResRepo r = repoRepository.findFirst1ByRepoCode(item.getRepo_id());
+//                DbResItem i = itemRepository.findFirst1ByItemCode(item.getItem_code());
+                Long skuId = Objects.isNull(s) ? null : s.getId();
+                Long repoId = Objects.isNull(r) ? null : r.getId();
+//                Long itemId = Objects.isNull(i) ? null : r.getId();
 
-                    DbResSku s = skuRepository.findFirst1BySkuCode(d.getSku_code());
-                    DbResRepo r = repoRepository.findFirst1ByRepoCode(d.getRepo_id());
-                    DbResItem i = itemRepository.findFirst1ByItemCode(d.getItem_code());
-                    Long skuId = Objects.isNull(s) ? null : s.getId();
-                    Long repoId = Objects.isNull(r) ? null : r.getId();
-                    Long itemId = Objects.isNull(i) ? null : r.getId();
-                    DbResLogRorDtl dbResLogRorDtl = new DbResLogRorDtl(null,
-                            skuId,itemId,repoId,Long.parseLong(d.getQuantity()),d.getCcc(),d.getWo(),d.getDetail_id(),dbResLogRor);
-                    dbResLogRorDtl.setActive("Y");
-                    dbResLogRorDtl.setCreateAt(time);
-                    dbResLogRorDtl.setCreateBy(getAccount());
-                    dbResLogRorDtl.setUpdateAt(time);
-                    dbResLogRorDtl.setUpdateBy(getAccount());
-                    String dnNum = "";
-                    if("NRS".equals(b.getRequest_nature())){
-                        dbResLogRorDtl.setDtlAction("A");
-                        dbResLogRorDtl.setStatus("NRE");
-                        dnNum = "N";
-                    }else if("CNRS".equals(b.getRequest_nature())){
-                        dbResLogRorDtl.setDtlAction("A");
-                        dbResLogRorDtl.setStatus("AVL");
-                        dnNum = "F";
-                    }else {
-                        dbResLogRorDtl.setDtlAction("D");
-                        dbResLogRorDtl.setStatus("NRE");
-                        dbResLogRorDtl.setLisStatus("Good");
-                        dnNum = "K";
-                    }
-                    String txtNum = new SimpleDateFormat("yyMMdd hhmmss").format(new Date()).replace(" ", dnNum+dbResLogRorDtl.getDtlRepoId());
-                    dbResLogRorDtl.setLogTxtBum(txtNum);
-                    dbResLogRor.setLogTxtBum(txtNum);
-                    logRorDtlList.add(dbResLogRorDtl);
-                    if(!"NPU".equals(b.getRequest_nature())){
-                        DbResLogRorDtl dbResLogRorDtl1 = new DbResLogRorDtl();
-                        BeanUtils.copyProperties(dbResLogRorDtl,dbResLogRorDtl1);
-                        if("NRS".equals(b.getRequest_nature())) {
-                            dbResLogRorDtl1.setDtlAction("D");
-                            dbResLogRorDtl1.setStatus("AVL");
-                            dbResLogRorDtl1.setLogTxtBum(txtNum);
-                        }else if("CNRS".equals(b.getRequest_nature())){
-                            dbResLogRorDtl1.setDtlAction("D");
-                            dbResLogRorDtl1.setStatus("NRE");
-                            dbResLogRorDtl1.setLogTxtBum(txtNum);
+                DbResLogMgtDtl mgtDtl=new DbResLogMgtDtl();
+                mgtDtl.setDtlSkuId(skuId);
+//                mgtDtl.setDtlItemId(itemId);
+                mgtDtl.setDtlRepoId(repoId);mgtDtl.setDtlQty(Long.parseLong(item.getQuantity()));
+                mgtDtl.setItemCode(item.getItem_code());mgtDtl.setDetailId(item.getDetail_id());
+                mgtDtl.setResLogMgt(mgt);
+                mgtDtl.setActive("Y");mgtDtl.setUpdateAt(t);mgtDtl.setCreateAt(t);
+                mgtDtl.setCreateBy(getAccount());mgtDtl.setUpdateBy(getAccount());
+                String dnNum = "";
+                if("NRS".equals(b.getRequest_nature())){
+                    mgtDtl.setDtlAction("A");
+                    mgtDtl.setStatus("NRE");
+                    dnNum = "N";
+                }else if("CNRS".equals(b.getRequest_nature())){
+                    mgtDtl.setDtlAction("A");
+                    mgtDtl.setStatus("AVL");
+                    dnNum = "F";
+                }else {
+                    mgtDtl.setDtlAction("D");
+                    mgtDtl.setStatus("NRE");
+                    mgtDtl.setLisStatus("Good");
+                    dnNum = "K";
+                }
+                String txtNum = new SimpleDateFormat("yyMMdd hhmmss").format(new Date()).replace(" ", dnNum+mgtDtl.getDtlRepoId());
+                mgtDtl.setLogTxtBum(txtNum);
+                logMgtDtls.add(mgtDtl);
+                if(!"NPU".equals(b.getRequest_nature())){
+                    DbResLogMgtDtl mgtDtl1 = new DbResLogMgtDtl();
+                    BeanUtils.copyProperties(mgtDtl,mgtDtl1);
+                    if("NRS".equals(b.getRequest_nature())) {
+                        String s2 = Stock_ReservationCtrl.class.newInstance().outerApi(b, txtNum);
+                        if(!s2.equals("")) {
+                            return CollectionBuilder.builder(new HashMap<>()).put("state", "failed").put("code", "500").put("msg", s2).put("data", null).build();
                         }
-                        logRorDtlList.add(dbResLogRorDtl1);
+                        mgtDtl1.setDtlAction("D");
+                        mgtDtl1.setStatus("AVL");
+                        mgtDtl1.setLogTxtBum(txtNum);
+                    }else if("CNRS".equals(b.getRequest_nature())){
+                        mgtDtl1.setDtlAction("D");
+                        mgtDtl1.setStatus("NRE");
+                        mgtDtl1.setLogTxtBum(txtNum);
                     }
-                });
+                    logMgtDtls.add(mgtDtl1);
+                }
+                mgt.setLogTxtBum(txtNum);
             }
-            dbResLogRor.setLine(logRorDtlList);
-            repo.saveAndFlush(dbResLogRor);
+            mgt.setLine(logMgtDtls);
+            repo.saveAndFlush(mgt);
 
-            Map outputdata = CollectionBuilder.builder(new HashMap<>()).put("tx_id",dbResLogRor.getLogTxtBum()).put("item_details",list).build();
+            Map outputdata = CollectionBuilder.builder(new HashMap<>()).put("tx_id",mgt.getLogTxtBum()).put("item_details",list).build();
             Map jsonResult = CollectionBuilder.builder(new HashMap<>()).put("state", "success").put("code", "200").put("msg", "stock update successfully").put("data", outputdata).build();
             return jsonResult;
         } catch (Exception e) {
@@ -302,16 +344,16 @@ public class InterfaceForOrderingCtrl extends BaseCtrl<DbResLogRor> {
         try {
             DbResSku s = skuRepository.findFirst1BySkuCode(b.getSku_code());
             DbResRepo r = repoRepository.findFirst1ByRepoCode(b.getRepo_id());
-            DbResItem i = itemRepository.findFirst1ByItemCode(b.getItem_code());
+//            DbResItem i = itemRepository.findFirst1ByItemCode(b.getItem_code());
             Long skuId = Objects.isNull(s) ? null : s.getId();
             Long repoId = Objects.isNull(r) ? null : r.getId();
-            Long itemId = Objects.isNull(i) ? null : r.getId();
+//            Long itemId = Objects.isNull(i) ? null : r.getId();
             Long qty = 0l;
-            if(Objects.isNull(itemId)){
+//            if(Objects.isNull(itemId)){
                 qty = skuRepoRepository.findQtyByRepoAndSkuAndType(repoId, skuId, 3l);
-            }else {
-                qty = skuRepoRepository.findQtyByRepoAndSkuAndItemAndType(repoId, skuId, itemId, 3l);
-            }
+//            }else {
+//                qty = skuRepoRepository.findQtyByRepoAndSkuAndItemAndType(repoId, skuId, itemId, 3l);
+//            }
             Map outputdata = CollectionBuilder.builder(new HashMap<>()).put("tx_id","").put("repo_id",b.getRepo_id()).put("quantity",qty).put("sku_code",b.getSku_code()).put("item_code",b.getItem_code()).build();
             Map jsonResult = CollectionBuilder.builder(new HashMap<>()).put("state", "success").put("code", "200").put("msg", "stock level enquiry successfully").put("data", outputdata).build();
             return jsonResult;
@@ -319,4 +361,53 @@ public class InterfaceForOrderingCtrl extends BaseCtrl<DbResLogRor> {
             return CollectionBuilder.builder(new HashMap<>()).put("state", "failed").put("code", "200").put("msg", "stock level enquiry failed").put("data", null).build();
         }
     }
+
+    public String validateParam(Object o){
+        if(o instanceof List){
+            List<InputItemBean> list = (List<InputItemBean>) o;
+            for (InputItemBean item : list) {
+                if(item.getSku_code()==null||skuRepository.findFirst1BySkuCode(item.getSku_code())==null){
+                    return "the SKU code: "+item.getSku_code()+" is not exist!";
+                }
+                if(item.getRepo_id()==null||repoRepository.findFirst1ByRepoCode(item.getRepo_id())==null){
+                    return "the Repo id: "+item.getRepo_id()+" is not exist!";
+                }
+            }
+        }
+        return "";
+    }
+
+    /**
+     *  JPASpecification 实现复杂分页查询
+     * @param b
+     * @return
+     */
+    @RequestMapping(value = "/test",method = RequestMethod.POST)
+    public JsonResult findAll(@RequestBody com.pccw.backend.bean.stock_movement.SearchBean b) {
+        Specification specification = (Specification) (root, query, criteriaBuilder) -> {
+            Predicate predicate = criteriaBuilder.conjunction();
+            if(!StringUtils.isEmpty(b.getRepoId())){
+                predicate.getExpressions().add( criteriaBuilder.equal(root.get("logRepoOut"),b.getRepoId()));
+            }
+            if(!StringUtils.isEmpty(b.getToRepoId())){
+                predicate.getExpressions().add(criteriaBuilder.equal(root.get("logRepoIn"),b.getToRepoId()));
+            }
+            Path line = root.get("line");
+            if(!StringUtils.isEmpty(b.getSkuNum())){
+                CriteriaBuilder.In in = criteriaBuilder.in(line.get("dtlSkuId"));
+                for (String s : b.getSkuNum()) {
+                    in.value(s);
+                }
+                predicate.getExpressions().add(in);
+            }
+            if(!StringUtils.isEmpty(b.getCreateAt())){
+                predicate.getExpressions().add(criteriaBuilder.between(root.get("createAt"),b.getCreateAt()[0],b.getCreateAt()[1]));
+            }
+            query.where(predicate);
+            return predicate;
+        };
+        Page all = repo.findAll(specification, PageRequest.of(b.getPageIndex(), b.getPageSize()));
+        return JsonResult.success(Arrays.asList(all.get().collect(Collectors.toList())));
+    }
+
 }

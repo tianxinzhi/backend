@@ -37,6 +37,10 @@ public class DbResStockTake extends Base{
     @Column(name = "fillStatus")
     private String fillStatus;
 
+    // Y , N
+    @Column(name = "display_quantity",length = 8)
+    private String displayQuantity;
+
     @JsonManagedReference
     @OneToMany(cascade = CascadeType.ALL)  //ALL  PERSIST
     @JoinColumn(name = "stock_take_id")

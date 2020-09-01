@@ -4,18 +4,13 @@ import com.pccw.backend.annotation.JsonResultParamMapAnnotation;
 import com.pccw.backend.bean.GeneralBean;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.annotation.Aspect;
+import org.hibernate.loader.plan.build.internal.spaces.QuerySpaceHelper;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.JoinColumn;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import javax.persistence.criteria.*;
+import java.lang.reflect.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -48,7 +43,7 @@ import com.pccw.backend.annotation.PredicateType;
 		ArrayList<Parm> arr = new ArrayList<Parm>();
 
 		for (Field f : fieldArr) {
-			f.setAccessible(true); 
+			f.setAccessible(true);
 			Object obj = f.get(o);
 			if(obj!=null){
 				PredicateAnnotation annotation = f.getAnnotation(PredicateAnnotation.class);
@@ -63,7 +58,7 @@ import com.pccw.backend.annotation.PredicateType;
 		// return multiple search condition
         return new Specification<T>() {
 			private static final long serialVersionUID = 1L;
-			
+
 			@Override
 			public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query,
 			CriteriaBuilder builder) {
@@ -100,6 +95,14 @@ import com.pccw.backend.annotation.PredicateType;
                          String[] arr = (String[])parm.getValue();
 							 list.add(builder.between(root.get(parm.getName()).as(String.class),arr[0],arr[1]));
                          break;
+                         case IN:
+							List<String> inArr = (List<String>)parm.getValue();
+							CriteriaBuilder.In<String> in = builder.in(root.get(parm.getName()).as(String.class));
+							for (Object s : inArr) {
+								in.value((String) s);
+							}
+							list.add(in);
+						 break;
 						default:
 							break;
 					}
@@ -126,7 +129,6 @@ import com.pccw.backend.annotation.PredicateType;
 		}
 		return resultMap;
 	}
-
 
 	/**
 	 * 将Map中的key由下划线转换为驼峰

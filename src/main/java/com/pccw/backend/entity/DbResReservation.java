@@ -42,6 +42,12 @@ public class DbResReservation extends Base{
 	@Column(name = "repo_id")
 	private Long repoId;
 
+	@Column(name = "subinventory_id")
+	private Long subinventoryID;
+
+	@Column(name = "subinventory")
+	private String subinventory;
+
 	@Column(name = "qty")
 	private Long qty;
 
@@ -58,8 +64,33 @@ public class DbResReservation extends Base{
 	private String paymentStatus;
 
 	@Column(name = "days")
-	private double days;
+	private Long days;
+
+	// Y,N
+	@Column(name = "selected")
+	private String selected;
 
 	@Column(name = "remark")
 	private String remark;
+
+	@Column(name = "reason")
+	private String reason;
+
+	@Column(name = "courier")
+	private String courier;
+
+	@Column(name = "serial")
+	private String serial;
+
+	@Column(name = "serial_type")
+	private String serialType;
+
+	@Column(name = "iccID")
+	private String iccID;
+
+	@Column(name = "imei")
+	private String imei;
+
+	@Column(name = "mobile_number")
+	private String mobileNumber;
 }

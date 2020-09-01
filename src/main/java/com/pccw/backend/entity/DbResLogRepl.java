@@ -9,6 +9,7 @@ import java.util.List;
 /**
  * ROR = RESOURCE ORDER REQUEST
  */
+@Deprecated
 @Data
 @Entity
 @Table(name = "res_log_repl")
@@ -24,7 +25,7 @@ public class DbResLogRepl extends BaseLog {
 	// BatchId
 	@Column(name="log_batchId")
 	private long logBatchId;
-	
+
 	// DN Num
 	@Column(name="log_dnNum")
 	private long logDNNum;

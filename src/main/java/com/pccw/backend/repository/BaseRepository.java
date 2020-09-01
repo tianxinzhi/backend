@@ -13,7 +13,7 @@ import java.util.ArrayList;
 @Repository
 @NoRepositoryBean
 @Transactional
-    public interface BaseRepository<T> extends JpaRepository<T,Long>,JpaSpecificationExecutor<T> {
+public interface BaseRepository<T> extends JpaRepository<T,Long>,JpaSpecificationExecutor<T> {
 
     // Page<DbResRight> findAll(Specification<DbResRight> spec,Pageable p);
 

@@ -12,6 +12,7 @@ import javax.persistence.*;
 
 @Getter
 @Setter
+@Deprecated
 @Entity
 @Table(name = "res_class_lis")
 @SequenceGenerator(name="id_classLis",sequenceName = "classLis_seq",allocationSize = 1)
@@ -32,6 +33,6 @@ public class DbResClassLis extends Base {
 //	@JsonBackReference
 //	@OneToMany(cascade={CascadeType.ALL},mappedBy = "classLisId",orphanRemoval = true)
 //	List<DbResSkuAttrValueLis> attrValueLisList;
-	
+
 
 }

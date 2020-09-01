@@ -47,7 +47,10 @@ public class CreateBean extends BaseBean {
     private String paymentStatus;
 
     @ApiModelProperty(value="days",name="",example="")
-    private double days;
+    private Long days;
+
+    @ApiModelProperty(value="selected",name="",example="")
+    private String selected;
 
     @ApiModelProperty(value="remark",name="",example="")
     private String remark;

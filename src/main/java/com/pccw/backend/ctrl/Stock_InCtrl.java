@@ -6,12 +6,14 @@ import com.pccw.backend.bean.StaticVariable;
 import com.pccw.backend.bean.stock_in.CreateBean;
 import com.pccw.backend.bean.stock_in.SearchBean;
 import com.pccw.backend.entity.*;
+import com.pccw.backend.repository.ResLogMgtRepository;
 import com.pccw.backend.repository.ResSkuRepoRepository;
 import com.pccw.backend.repository.ResStockInRepository;
 import com.pccw.backend.util.Session;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,6 +38,9 @@ public class Stock_InCtrl extends BaseCtrl<DbResLogMgt> {
 
     @Autowired
     Process_ProcessCtrl processProcessCtrl;
+
+    @Autowired
+    ResLogMgtRepository logMgtRepository;
 
     @Autowired
     Session session;
@@ -182,18 +187,26 @@ public class Stock_InCtrl extends BaseCtrl<DbResLogMgt> {
 
             if(result.getCode().equals("000")){
 
-                //创建工作流对象
-                DbResProcess process = new DbResProcess();
 
-                process.setLogTxtBum(bean.getLogTxtBum());
-                process.setRepoId(bean.getLogRepoOut());
-                process.setRemark(bean.getRemark());
-                process.setCreateAt(t);
-                process.setUpdateAt(t);
-                process.setLogOrderNature(bean.getLogOrderNature());
+                DbResLogMgt originMgt = logMgtRepository.getOne(bean.getOriginId());
+                originMgt.setStatus("C");
+                logMgtRepository.saveAndFlush(originMgt);
+                UpdateSkuRepoQty(bean.getLogTxtBum());
+
+                //创建工作流对象
+//                DbResProcess process = new DbResProcess();
+//
+//                process.setLogTxtBum(bean.getLogTxtBum());
+//                process.setRepoId(bean.getLogRepoOut());
+//                process.setRemark(bean.getRemark());
+//                process.setCreateAt(t);
+//                process.setUpdateAt(t);
+//                process.setLogOrderNature(bean.getLogOrderNature());
 
                 //生成工作流数据
-                processProcessCtrl.joinToProcess(process);
+//                processProcessCtrl.joinToProcess(process);
+
+                this.UpdateSkuRepoQty(bean.getLogTxtBum());
             }
 
             return result;

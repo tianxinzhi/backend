@@ -17,6 +17,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.query.internal.NativeQueryImpl;
+import org.hibernate.transform.Transformers;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -24,6 +26,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -50,56 +54,50 @@ public class Stock_CURDCtrl extends BaseCtrl<DbResSkuRepo> implements ICheck {
     @Autowired
     ResSkuRepoRepository skuRepoRepository;
 
+    @Autowired
+    EntityManager manager;
+
     @ApiOperation(value="查询shop",tags={"stock_curd"},notes="说明")
     @RequestMapping(method = RequestMethod.POST,path="/search")
     public JsonResult search(@RequestBody SearchBean bean) {
         try {
-            //List<Map> valueMap = new LinkedList<>();
 
-           // Specification<DbResSkuRepo> spec = Convertor.convertSpecification(bean);
-//            List<DbResSkuRepo> skuList = skuRepoRepository.findAll(spec, PageRequest.of(bean.getPageIndex(),bean.getPageSize())).getContent();
-            List<Map> skuList = skuRepoRepository.getBalanceQty();
-//           skuList =  skuList.stream().sorted(Comparator.comparing((HashMap)map -> ).reversed()).collect(Collectors.toList());
- //           for (Map skuRepo : skuList) {
-               // if(skuRepo.getSku()==null || skuRepo.getStockType() == null || skuRepo.getRepo() == null) continue;
-//                Map value = new LinkedHashMap();
-//
-//                Optional<DbResSku> skubyId = skuRepository.findById(skuRepo.getSku().getId());
-//                value.put("sku",skubyId == null ? "" : skubyId.get().getSkuCode());
-//
-//                Optional<DbResStockType> typebyId = typeRepository.findById(skuRepo.getStockType().getId());
-//                value.put("stockType",typebyId == null ? "" : typebyId.get().getStockTypeName());
-//
-//                Optional<DbResRepo> shopbyId = shopRepository.findById(skuRepo.getRepo().getId());
-//                value.put("store",shopbyId == null ? "" : shopbyId.get().getRepoCode());
-//
-//                value.put("qty",skuRepo.getQty());
-//                value.put("resQty",skuRepo.getRemark());
-//                value.put("id",skuRepo.getId());
- //               valueMap.add(value);
+            StringBuffer baseSql = new StringBuffer("select r.sku_id \"skuId\",r.repo_id \"repoId\", s.sku_code \"sku\" ," +
+                    "s.sku_desc \"skuDesc\" ,t1.repo_code \"shop\", \n" +
+                    " sum(nvl(decode(r.stock_type_id ,1,r.QTY),0)) \"staging\",\n" +
+                    " sum(nvl(decode(r.stock_type_id ,2,r.QTY),0)) \"faulty\",\n" +
+                    " sum(nvl(decode(r.stock_type_id ,3,r.QTY),0)) \"fg\",\n" +
+                    " sum(nvl(decode(r.stock_type_id ,4,r.QTY),0)) \"reserve\",\n" +
+                    " sum(nvl(decode(r.stock_type_id ,5,r.QTY),0)) \"intransit\",\n" +
+                    " sum(nvl(decode(r.stock_type_id ,6,r.QTY),0)) \"rao\",\n" +
+                    " sum(nvl(decode(r.stock_type_id ,7,r.QTY),0)) \"rro\" from res_sku_repo r\n" +
+                    "left join res_sku s on r.sku_id = s.id left join res_repo t1 on r.repo_id = t1.id\n" +
+                    " where 1=1 " );
 
- //           }
-            if ( bean.getSkuNum() != null && bean.getSkuNum().size() > 0 ) {
-                skuList = skuList.stream().filter(map ->{
-                    for (String s : bean.getSkuNum()) {
-                        if(map.get("skuId") != null && s.equals(map.get("skuId").toString())){
-                            return   true;
-                        }
-                    }
-                    return false;
-                }).collect(Collectors.toList());
+            if (bean.getSkuNum() != null && bean.getSkuNum().size()>0) {
+                baseSql.append(" and r.sku_id in(");
+                for (String s : bean.getSkuNum()) {
+                    baseSql.append( "'"+s+"',");
+                }
+                baseSql.deleteCharAt(baseSql.length()-1);
+                baseSql.append(")");
             }
+
             if(bean.getSkuDesc()!=null && !bean.getSkuDesc().equals("")){
-                skuList = skuList.stream().filter(map -> map.get("skuDesc").toString().contains(bean.getSkuDesc())).collect(Collectors.toList());
+                baseSql.append(" and s.sku_desc like '%"+bean.getSkuDesc()+"%'");
             }
             if(bean.getShopId()!=0){
-                skuList = skuList.stream().filter(map -> Long.valueOf(map.get("shopId").toString())==bean.getShopId()).collect(Collectors.toList());
+                baseSql.append(" and r.repo_id = "+bean.getShopId());
             }
             if(bean.getStockTypeId()!=0){
-                skuList = skuList.stream().filter(map -> Long.valueOf(map.get("stockTypeId").toString())==bean.getStockTypeId()).collect(Collectors.toList());
+                baseSql.append(" and r.stock_type_id = "+bean.getStockTypeId());
             }
-            //Collections.sort(skuList,(o1,o2) -> Integer.valueOf(o2.get("id").toString())-Integer.valueOf(o1.get("id").toString()));
-            return JsonResult.success(skuList);
+            baseSql.append(" GROUP BY r.sku_id,r.repo_id,s.sku_code ,s.sku_desc ,t1.repo_code" +
+                    " ORDER BY t1.repo_code desc, s.sku_code desc ");
+
+            Query dataQuery = manager.createNativeQuery(baseSql.toString());
+            dataQuery.unwrap(NativeQueryImpl.class).setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
+            return JsonResult.success(dataQuery.getResultList());
         } catch (Exception e) {
             e.printStackTrace();
             log.info(e.getMessage());

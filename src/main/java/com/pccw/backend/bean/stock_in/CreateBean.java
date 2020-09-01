@@ -40,6 +40,8 @@ public class CreateBean extends BaseBean {
     @ApiModelProperty(value="deliveryStatus",name="deliveryStatus",example="")
     private String deliveryStatus;
 
+    private Long originId;
+
     @ApiModelProperty(value="dtlList",name="dtlList",example="")
     private List<DbResLogMgtDtl> line;
 }

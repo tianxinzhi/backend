@@ -23,10 +23,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -180,6 +177,14 @@ public class CommonCtrl  extends BaseCtrl{
     @RequestMapping(method = RequestMethod.GET,path="/stockTypeModule")
     public JsonResult<LabelAndValue> searchStockType(){
         return this.JsonResultHandle(stockTypeRepository,new LabelAndValue());
+    }
+
+
+    @ApiOperation(value="获取用户的session信息",tags={"common"},notes="注意问题点")
+    @RequestMapping(method = RequestMethod.GET,path="/searchUserSession")
+    public JsonResult<Map> searchUserSession(){
+        Map user = (Map) session.getUser();
+        return JsonResult.success(Arrays.asList(user));
     }
 
     @ApiOperation(value = "提交right变更时，更新用户菜单", tags = {"system"}, notes = "注意问题点")

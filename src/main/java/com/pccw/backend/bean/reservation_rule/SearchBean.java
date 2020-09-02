@@ -15,6 +15,7 @@ import java.util.List;
 @ApiModel(value="Stock_ReservationCtrl",description="")
 public class SearchBean extends BaseSearchBean {
 
+    @PredicateAnnotation(type = PredicateType.IN)
     @ApiModelProperty(value="sku",name="sku",example="")
-    private List<Long> sku;
+    private List<String> skuId;
 }

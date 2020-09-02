@@ -29,4 +29,6 @@ public class DbResSpecAttr extends Base {
 	@Column(name = "attr_value_id", columnDefinition = "number(11)")
 	private String attrValueId;
 
+	@Column(name = "is_spec",length = 4)
+	private String isSpec;
 }

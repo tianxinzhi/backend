@@ -19,16 +19,22 @@ public class CreateBean extends BaseBean {
     @ApiModelProperty(value="skuCode",name="sku编码",example="")
     private String skuCode;
 
-    private Boolean tangible;
+    @ApiModelProperty(value="false",name="tangible",example="")
+    private String tangible;
 
-    private Boolean inventoryAssetFlag;
+    @ApiModelProperty(value="false",name="inventoryAssetFlag",example="")
+    private String inventoryAssetFlag;
 
-    private Boolean returnable;
+    @ApiModelProperty(value="true",name="returnable",example="")
+    private String returnable;
 
+    @ApiModelProperty(value="87953543",name="startDate",example="")
     private Long startDate;
 
+    @ApiModelProperty(value="75686797",name="endDate",example="")
     private Long endDate;
 
+    @ApiModelProperty(value="4",name="maxReserveDays",example="")
     private String maxReserveDays;
 
     @ApiModelProperty(value="skuDesc",name="sku详情",example="")
@@ -49,10 +55,14 @@ public class CreateBean extends BaseBean {
     @ApiModelProperty(value="attrs",name="attr值",example="[2，3]")
     private long[] attrs;
 
-    @ApiModelProperty(value="attrValueList",name="attrValue值",example="{[4,5],[4,6]}")
+    @ApiModelProperty(value="attrValueList",name="attrValue值",example="[[4,5],[4,6]]")
     private List<int[]> attrValueList;
-//    private Attr attr
 
+    @ApiModelProperty(value="",name="newAttrs",example="['1','color']")
+    private Object[] newAttrs;
+
+    @ApiModelProperty(value="",name="newAttrValues",example="[['blue',1,5],[4,6]]")
+    private List<Object[]> newAttrValues;
 
     private Long[] specChecked;
 }

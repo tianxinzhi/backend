@@ -36,17 +36,17 @@ public class Stock_ReservationRuleCtrl extends BaseCtrl<DbResReservationRule> {
             System.out.println(bean.toString());
             Specification<DbResReservationRule> spec = Convertor.<DbResReservationRule>convertSpecification(bean);
             List<DbResReservationRule> list = reservationRepository.findAll(spec, PageRequest.of(bean.getPageIndex(),bean.getPageSize())).getContent();
-            if(bean.getSku() != null && bean.getSku().size() > 0 ) {
-                list = list.stream().filter(map ->{
-                    for (Long s : bean.getSku()) {
-                        if(map.getSkuId() != null && s==map.getSkuId()){
-                            return true;
-                        }
-                    }
-                    return false;
-                }).collect(Collectors.toList());
-            }
-            return JsonResult.success(list);
+//            if(bean.getSku() != null && bean.getSku().size() > 0 ) {
+//                list = list.stream().filter(map ->{
+//                    for (Long s : bean.getSku()) {
+//                        if(map.getSkuId() != null && s==map.getSkuId()){
+//                            return true;
+//                        }
+//                    }
+//                    return false;
+//                }).collect(Collectors.toList());
+//            }
+            return JsonResult.success(list,reservationRepository.count(spec));
         } catch (IllegalAccessException e) {
             e.printStackTrace();
             return JsonResult.fail(e);

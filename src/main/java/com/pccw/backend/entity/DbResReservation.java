@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.pccw.backend.annotation.JsonResultParamMapAnnotation;
 import lombok.Data;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.util.List;
@@ -18,6 +19,7 @@ import java.util.List;
 @Data
 @SequenceGenerator(name="id_reservation",sequenceName = "reservation_seq",allocationSize = 1)
 //@JsonResultParamMapAnnotation(param1 = "id",param2 = "attrValue")
+@Where(clause = "active ='Y'")
 public class DbResReservation extends Base{
 	@Id
 	@Column(name = "id")

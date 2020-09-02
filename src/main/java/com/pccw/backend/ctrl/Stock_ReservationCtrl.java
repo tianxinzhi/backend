@@ -22,6 +22,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.transaction.annotation.Transactional;
@@ -69,7 +70,8 @@ public class Stock_ReservationCtrl extends BaseStockCtrl<DbResReservation> imple
             List<Sort.Order> orders = new ArrayList<>();
             orders.add(new Sort.Order(Sort.Direction.DESC,"selected"));
             orders.add(new Sort.Order(Sort.Direction.ASC,"orderDate"));
-            List<DbResReservation> list = reservationRepository.findDbResReservationsByActiveEquals("Y",Sort.by(orders));
+            Specification<DbResReservation> spec = Convertor.<DbResReservation>convertSpecification(bean);
+            List<DbResReservation> list = reservationRepository.findAll(spec, PageRequest.of(bean.getPageIndex(),bean.getPageSize(),Sort.by(orders))).getContent();
             //sortByRule
             if(bean.getSortByRule()!=null&&bean.getSortByRule().equals("Y")){
                 List<DbResReservation> sortList = new ArrayList<>();
@@ -89,26 +91,26 @@ public class Stock_ReservationCtrl extends BaseStockCtrl<DbResReservation> imple
                 list.addAll(0,sortList);
             }
             //search condition
-            if(bean.getCustomerType()!=null&&!bean.getCustomerType().equals("")){
-                list = list.stream().filter(b -> bean.getCustomerType().equals(b.getCustomerType())).collect(Collectors.toList());
-            }
-            if(bean.getPaymentStatus()!=null&&!bean.getPaymentStatus().equals("")){
-                list = list.stream().filter(b -> b.getPaymentStatus().equals(bean.getPaymentStatus())).collect(Collectors.toList());
-            }
-            if(bean.getRepoId()!=null){
-                list = list.stream().filter(b -> b.getRepoId().toString().equals(bean.getRepoId()+"")).collect(Collectors.toList());
-            }
-            if (bean.getSku() != null && bean.getSku().size() > 0 ) {
-                list = list.stream().filter(map ->{
-                    for (Long s : bean.getSku()) {
-                        if(map.getSkuId() != null && s==map.getSkuId()){
-                            return true;
-                        }
-                    }
-                    return false;
-                }).collect(Collectors.toList());
-            }
-            return JsonResult.success(list);
+//            if(bean.getCustomerType()!=null&&!bean.getCustomerType().equals("")){
+//                list = list.stream().filter(b -> bean.getCustomerType().equals(b.getCustomerType())).collect(Collectors.toList());
+//            }
+//            if(bean.getPaymentStatus()!=null&&!bean.getPaymentStatus().equals("")){
+//                list = list.stream().filter(b -> b.getPaymentStatus().equals(bean.getPaymentStatus())).collect(Collectors.toList());
+//            }
+//            if(bean.getRepoId()!=null){
+//                list = list.stream().filter(b -> b.getRepoId().toString().equals(bean.getRepoId()+"")).collect(Collectors.toList());
+//            }
+//            if (bean.getSku() != null && bean.getSku().size() > 0 ) {
+//                list = list.stream().filter(map ->{
+//                    for (Long s : bean.getSku()) {
+//                        if(map.getSkuId() != null && s==map.getSkuId()){
+//                            return true;
+//                        }
+//                    }
+//                    return false;
+//                }).collect(Collectors.toList());
+//            }
+            return JsonResult.success(list,reservationRepository.count(spec));
         } catch (Exception e) {
             e.printStackTrace();
             return JsonResult.fail(e);

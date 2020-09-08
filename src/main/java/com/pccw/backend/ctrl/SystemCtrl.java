@@ -2,11 +2,11 @@ package com.pccw.backend.ctrl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.pccw.backend.annotation.NoAuthorized;
 import com.pccw.backend.bean.JsonResult;
 import com.pccw.backend.bean.ResultRecode;
 import com.pccw.backend.bean.system.LoginBean;
 import com.pccw.backend.bean.system.TreeNode;
-import com.pccw.backend.bean.system.UrlBean;
 import com.pccw.backend.entity.DbResAccount;
 import com.pccw.backend.entity.DbResRight;
 import com.pccw.backend.entity.DbResRole;
@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 @CrossOrigin(methods = {RequestMethod.POST,RequestMethod.GET}, origins = "*", allowCredentials = "false")
 @RequestMapping("system")
 @Api(value = "SystemCtrl", tags = {"system"})
+@NoAuthorized
 public class SystemCtrl extends BaseCtrl<DbResAccount> {
 
     @Autowired

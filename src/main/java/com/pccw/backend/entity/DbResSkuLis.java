@@ -26,9 +26,7 @@ public class DbResSkuLis extends Base {
 	@Column(name = "repo_id", length = 32)
 	private Long repoId;
 
-	@OneToOne(cascade = CascadeType.ALL,orphanRemoval = true)
-	@JoinColumn(name = "sku_id", referencedColumnName = "id")
-	private DbResSku skuId;//外键关联res_sku
+	private Long skuId;//外键关联res_sku
 
 //	@JsonBackReference
 //	@OneToMany(cascade = CascadeType.ALL,orphanRemoval = true)

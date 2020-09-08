@@ -1,5 +1,6 @@
 package com.pccw.backend.ctrl;
 
+import com.pccw.backend.annotation.NoAuthorized;
 import com.pccw.backend.bean.JsonResult;
 import com.pccw.backend.bean.LabelAndValue;
 import com.pccw.backend.bean.TreeNode;
@@ -34,6 +35,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/common")
 @CrossOrigin(origins = "*", allowCredentials = "false")
+@NoAuthorized
 public class CommonCtrl  extends BaseCtrl{
 
     @Autowired

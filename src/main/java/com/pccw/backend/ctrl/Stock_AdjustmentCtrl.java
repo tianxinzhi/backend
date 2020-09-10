@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @RestController
 @CrossOrigin(methods = RequestMethod.POST,origins = "*", allowCredentials = "false")
-@RequestMapping("/stock_adjustment")
+    @RequestMapping("/stock_adjustment")
 @Api(value="Stock_AdjustmentCtrl",tags={"stock_adjustment"})
 public class Stock_AdjustmentCtrl extends BaseCtrl<DbResLogMgt> {
 
@@ -271,6 +271,21 @@ public class Stock_AdjustmentCtrl extends BaseCtrl<DbResLogMgt> {
         } catch (Exception e) {
             return JsonResult.fail(e);
         }
+    }
+
+
+    @ApiOperation(value="查询调货记录",tags={"stock_adjustment"},notes="说明")
+    @RequestMapping("/search")
+    public JsonResult search(@RequestBody SearchBean bean) {
+        List<String> status = new ArrayList<>();
+        status.add(StaticVariable.LOGORDERNATURE_STOCK_TAKE_ADJUSTMENT);
+        List<DbResLogMgt> logMgts = logMgtRepository.findByLogOrderNatureIn(status);
+        List<DbResLogMgt> result = logMgts.stream().map(dbResLogMgt -> {
+            DbResAdjustReason reason = reasonRepository.getOne(dbResLogMgt.getAdjustReasonId());
+            dbResLogMgt.setRemark(reason.getRemark());
+            return dbResLogMgt;
+        }).collect(Collectors.toList());
+        return JsonResult.success(result);
     }
 
     private static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {

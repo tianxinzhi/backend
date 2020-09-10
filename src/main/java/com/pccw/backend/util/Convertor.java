@@ -45,7 +45,7 @@ import com.pccw.backend.annotation.PredicateType;
 		for (Field f : fieldArr) {
 			f.setAccessible(true);
 			Object obj = f.get(o);
-			if(obj!=null){
+			if(obj!=null&&!obj.toString().equals("")){
 				PredicateAnnotation annotation = f.getAnnotation(PredicateAnnotation.class);
 				if(annotation!=null){
 					Parm parm = new Parm(annotation.type(), f.getName(), obj);

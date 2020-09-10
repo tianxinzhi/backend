@@ -22,6 +22,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
@@ -51,6 +54,7 @@ public class Stock_MovementCtrl extends BaseCtrl<DbResLogMgt> {
     @Autowired
     private EntityManager entityManager;
 
+
     @ApiOperation(value = "搜索Stock_Movement", tags = {"stock_movement"}, notes = "注意问题点")
     @RequestMapping(value = "/search",method = RequestMethod.POST)
     public JsonResult getHistoryInfo(@RequestBody SearchBean b) {
@@ -73,7 +77,7 @@ public class Stock_MovementCtrl extends BaseCtrl<DbResLogMgt> {
                     " t4.skuId \"skuId\",t4.sku \"sku\",t4.skuDesc \"skuDesc\",t4.uom \"uom\",t4.qty \"qty\",t4.fromStatus \"fromStatus\"" +
                     " from res_log_mgt t1 left JOIN RES_ACCOUNT a1 on a1.id = t1.create_by\n" +
                     "left join res_repo r1 on r1.id = t1.log_repo_out\n" +
-                    "left join res_repo r2 on r2.id = t1.log_repo_in left join\n" +
+                    "left join res_repo r2 on r2.id = t1.log_repo_in right join\n" +
                     "(select  \n" +
                     "dtl.log_mgt_id , sku.id skuId,sku.sku_name sku,sku.sku_desc skuDesc,sku.uom uom,dtl.DTL_QTY qty,dtl.DTL_SUBIN fromStatus\n" +
                     "\tfrom RES_LOG_MGT_DTL dtl \n" +
@@ -82,8 +86,9 @@ public class Stock_MovementCtrl extends BaseCtrl<DbResLogMgt> {
             if(!StringUtils.isEmpty(b.getLogOrderNature())) {
                 baseSql.append(" and t1.log_order_nature="+"'"+b.getLogOrderNature()+"'");
             }
+            DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             if (!StringUtils.isEmpty(b.getCreateAt())&&b.getCreateAt().length>0) {
-                baseSql.append("and t1.CREATE_AT between "+b.getCreateAt()[0]+" and "+b.getCreateAt()[1]);
+                baseSql.append("and t1.CREATE_AT between "+sdf.parse(b.getCreateAt()[0]).getTime()+" and "+sdf.parse(b.getCreateAt()[1]).getTime());
             }
             if(b.getRepoId()!=null&&b.getRepoId()!=0){
                 baseSql.append(" and r1.id="+b.getRepoId());
@@ -94,7 +99,7 @@ public class Stock_MovementCtrl extends BaseCtrl<DbResLogMgt> {
 
             StringBuffer countBuffer = new StringBuffer(
                     "select count(*) from ("+baseSql+")");
-            baseSql.append(" order by t1.CREATE_at desc");
+            baseSql.append(" order by t1.id desc");
 
             Query dataQuery = entityManager.createNativeQuery(baseSql.toString());
             Query countQuery = entityManager.createNativeQuery(countBuffer.toString());
@@ -106,14 +111,20 @@ public class Stock_MovementCtrl extends BaseCtrl<DbResLogMgt> {
             Long total = count.longValue();
             List<Map> content = dataQuery.getResultList();
             for (Map map : content) {
-                if(map.get("logOrderNature").toString().equals(StaticVariable.LOGORDERNATURE_STOCK_CATEGORY)){
+                if(map.get("logOrderNature") !=null && (map.get("logOrderNature").toString().equals(StaticVariable.LOGORDERNATURE_STOCK_CATEGORY)
+                 || map.get("logOrderNature").toString().equals(StaticVariable.LOGORDERNATURE_STOCK_OUT_STS)
+                 || map.get("logOrderNature").toString().equals(StaticVariable.LOGORDERNATURE_STOCK_OUT_STS)
+                 || map.get("logOrderNature").toString().equals(StaticVariable.LOGORDERNATURE_REPLENISHMENT_REQUEST)
+                 || map.get("logOrderNature").toString().equals(StaticVariable.LOGORDERNATURE_STOCK_RESERVE)
+                 || map.get("logOrderNature").toString().equals(StaticVariable.LOGORDERNATURE_RETURN)
+                ) ) {
                     List<DbResLogMgtDtl> ids = logMgtRepo.findById(Long.parseLong(map.get("id").toString())).get().getLine();
                     if(ids!=null&&ids.size()>1)
                     map.put("toStatus",ids.get(1).getDtlSubin());
                 }
             }
             return JsonResult.success(content,total);
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException | ParseException e) {
             e.printStackTrace();
             return JsonResult.fail(e);
         }

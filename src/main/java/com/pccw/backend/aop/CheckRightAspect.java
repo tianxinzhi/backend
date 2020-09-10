@@ -31,7 +31,7 @@ public class CheckRightAspect {
     Session session;
 
     //execution表达式自行搜索引擎
-    @Pointcut("execution(* com.pccw.backend.ctrl.*.*(..)) && !execution(* com.pccw.backend.ctrl.SystemCtrl.*(..)) && !execution(* com.pccw.backend.ctrl.CommonCtrl.*(..))&& !execution(* com.pccw.backend.ctrl.InterfaceForOrderingCtrl.*(..))&& !execution(* com.pccw.backend.ctrl.Stock_CURDCtrl.*(..))&& !execution(* com.pccw.backend.ctrl.Stock_TakeCtrl.print(..))")
+    @Pointcut("execution(* com.pccw.backend.ctrl.*.*(..))  && !@target(com.pccw.backend.annotation.NoAuthorized) && !@annotation(com.pccw.backend.annotation.NoAuthorized)")
     public void pointcut() {}
 
     @Before("pointcut()&&@annotation(requestMapping)")

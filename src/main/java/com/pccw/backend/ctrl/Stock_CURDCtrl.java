@@ -1,6 +1,7 @@
 package com.pccw.backend.ctrl;
 
 
+import com.pccw.backend.annotation.NoAuthorized;
 import com.pccw.backend.bean.BaseDeleteBean;
 import com.pccw.backend.bean.JsonResult;
 import com.pccw.backend.bean.stock_balance.SearchBean;
@@ -40,6 +41,7 @@ import java.util.stream.Collectors;
 @CrossOrigin(methods = RequestMethod.POST,origins = "*", allowCredentials = "false")
 @RequestMapping("/stock_curd")
 @Api(value="Stock_CURDCtrl",tags={"stock_curd"})
+@NoAuthorized
 public class Stock_CURDCtrl extends BaseCtrl<DbResSkuRepo> implements ICheck {
 
     @Autowired

@@ -1,5 +1,6 @@
 package com.pccw.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.pccw.backend.annotation.JsonResultParamMapAnnotation;
 
@@ -86,7 +87,8 @@ public class DbResSku extends Base {
 //    @OneToOne(cascade = {CascadeType.ALL},mappedBy = "sku",orphanRemoval = true)
 //    private DbResTypeSkuSpec dbResTypeSkuSpec;
 
-	@JsonManagedReference
+	@JsonBackReference
+//	@JsonManagedReference
 	@OneToMany(cascade = CascadeType.ALL,orphanRemoval = true)
 	@JoinColumn(name = "sku_id")
 	private List<DbResSpecAttr> skuAttrs;

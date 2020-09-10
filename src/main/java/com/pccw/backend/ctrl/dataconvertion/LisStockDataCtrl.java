@@ -544,7 +544,6 @@ public class LisStockDataCtrl {
                 //skuLis
                 DbResSkuLis skuLis = new DbResSkuLis();
                 BeanUtils.copyProperties(sku,skuLis);
-                skuLis.setSkuId(sku);
                 //List<DbResClassLis> skuType1 = classLisRepository.getDbResClassLissByClassDesc(skuDatum.get("skuType").toString());
                 //skuLis.setClassLisId(skuType1 == null ? null:skuType1.get(0));
                 skuLis.setRepoId(Long.parseLong(skuDatum.get("repoId").toString()));
@@ -577,7 +576,7 @@ public class LisStockDataCtrl {
                         specAttrList.add(specAttr);
                         //
                         DbResSkuAttrValueLis skuAttrValueLis = new DbResSkuAttrValueLis();
-                        skuAttrValueLis.setSkuLis(skuLis);
+                        //skuAttrValueLis.setSkuLis(skuLis);
                         //skuAttrValueLis.setSkuAttrValueId(skuAttrValue);
                         skuAttrValueLis.setAttrName(attrEntry.getKey());
                         skuAttrValueLis.setAttrValue(o.toString());
@@ -602,7 +601,8 @@ public class LisStockDataCtrl {
                 skuLis.setSkuAttrValueLisList(skuAttrValueLisList);
                 //skuLisSet.add(skuLis);
                 count++;
-                skuRepository.saveAndFlush(sku);
+                DbResSku sku1 = skuRepository.saveAndFlush(sku);
+                skuLis.setSkuId(sku1.getId());
                 skuLisRepository.saveAndFlush(skuLis);
             }
             log.info("插入sku数量为："+count);

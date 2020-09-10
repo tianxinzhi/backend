@@ -1,13 +1,13 @@
 package com.pccw.backend.ctrl;
 
 
+import com.pccw.backend.annotation.NoAuthorized;
 import com.pccw.backend.bean.JsonResult;
 import com.pccw.backend.bean.StaticVariable;
 import com.pccw.backend.bean.interfaceForOrdering.InputBean;
 import com.pccw.backend.bean.interfaceForOrdering.InputItemBean;
 import com.pccw.backend.bean.interfaceForOrdering.OutputItemBean;
 import com.pccw.backend.bean.interfaceForOrdering.SearchBean;
-import com.pccw.backend.bean.stock_replenishment.CreateReplBean;
 import com.pccw.backend.entity.*;
 import com.pccw.backend.repository.*;
 import com.pccw.backend.util.CollectionBuilder;
@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
-import javax.transaction.Transactional;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -34,6 +33,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/external/ppos/v1")
 @CrossOrigin(methods = RequestMethod.POST,origins = "*", allowCredentials = "false")
+@NoAuthorized
 public class InterfaceForOrderingCtrl extends BaseStockCtrl<DbResLogMgt> {
 
     @Autowired

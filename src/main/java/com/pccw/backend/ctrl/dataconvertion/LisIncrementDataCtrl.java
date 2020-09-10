@@ -421,7 +421,7 @@ public class LisIncrementDataCtrl {
                             resSpecAttrList.add(specAttr);
 
                             DbResSkuAttrValueLis skuAttrValueLis = new DbResSkuAttrValueLis();
-                            skuAttrValueLis.setSkuLis(skuLis);
+                            //skuAttrValueLis.setSkuLis(skuLis);
                             skuAttrValueLis.setAttrName(attrEntry.getKey());
                             skuAttrValueLis.setAttrValue(o.toString());
                             skuAttrValueLisList.add(skuAttrValueLis);
@@ -456,7 +456,7 @@ public class LisIncrementDataCtrl {
                                 specAttrList.add(specAttr);
 
                                 DbResSkuAttrValueLis skuAttrValueLis = new DbResSkuAttrValueLis();
-                                skuAttrValueLis.setSkuLis(skuLis);
+                                //skuAttrValueLis.setSkuLis(skuLis);
                                 skuAttrValueLis.setAttrName(attrEntry.getKey());
                                 skuAttrValueLis.setAttrValue(o.toString());
                                 skuAttrValueLisList.add(skuAttrValueLis);
@@ -484,12 +484,12 @@ public class LisIncrementDataCtrl {
                     }
                 }
                 BeanUtils.copyProperties(sku,skuLis);
-                skuLis.setSkuId(sku);
                 skuLis.setRepoId(Long.parseLong(skuDatum.get("repoId").toString()));
                 skuLis.setSkuAttrValueLisList(skuAttrValueLisList);
                 //skuLisSet.add(skuLis);
                 count++;
-                skuRepository.saveAndFlush(sku);
+                DbResSku sku1 = skuRepository.saveAndFlush(sku);
+                skuLis.setSkuId(sku1.getId());
                 skuLisRepository.saveAndFlush(skuLis);
             }
             log.info("插入sku数量为："+count);

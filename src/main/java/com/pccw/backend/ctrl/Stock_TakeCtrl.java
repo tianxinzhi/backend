@@ -1,5 +1,6 @@
 package com.pccw.backend.ctrl;
 
+import com.pccw.backend.annotation.NoAuthorized;
 import com.pccw.backend.bean.JsonResult;
 import com.pccw.backend.bean.ResultRecode;
 import com.pccw.backend.bean.stock_take.*;
@@ -17,14 +18,10 @@ import org.jxls.util.JxlsHelper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URLEncoder;
@@ -127,6 +124,7 @@ public class Stock_TakeCtrl extends BaseCtrl<DbResStockTake>{
     }
 
     @RequestMapping(value = "/print",method = RequestMethod.GET)
+    @NoAuthorized
     public JsonResult print(Long id) throws Exception{
         DbResStockTake stockTake = stockTakeRepository.findById(id).get();
         DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

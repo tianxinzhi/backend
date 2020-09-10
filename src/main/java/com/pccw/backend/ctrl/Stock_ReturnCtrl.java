@@ -9,14 +9,18 @@ import com.pccw.backend.bean.stock_return.EditBean;
 import com.pccw.backend.bean.stock_return.SearchBean;
 import com.pccw.backend.entity.*;
 import com.pccw.backend.repository.*;
+import com.pccw.backend.util.Convertor;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.bind.annotation.*;
 
+import javax.transaction.Transactional;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -46,25 +50,23 @@ public class Stock_ReturnCtrl extends BaseStockCtrl<DbResStockReturn> {
     @ApiOperation(value="退货",tags={"stock_return"},notes="查询")
     @RequestMapping(value = "/search",method = RequestMethod.POST)
     public JsonResult search(@RequestBody SearchBean bean) {
-        System.out.println(bean.toString());
-        List<Sort.Order> orders = new ArrayList<>();
-        orders.add(new Sort.Order(Sort.Direction.ASC,"returnDate"));
-        List<DbResStockReturn> list = returnRepository.findDbResStockReturnsByActiveEquals("Y",Sort.by(orders));
+        try {
+            System.out.println(bean.toString());
+            List<Sort.Order> orders = new ArrayList<>();
+            orders.add(new Sort.Order(Sort.Direction.ASC,"returnDate"));
+            Specification<DbResStockReturn> spec = Convertor.<DbResStockReturn>convertSpecification(bean);
+            List<DbResStockReturn> list = returnRepository.findAll(spec, PageRequest.of(bean.getPageIndex(),bean.getPageSize(),Sort.by(orders))).getContent();
 
-        if(bean.getFromChannel()!=null){
-            list = list.stream().filter(b -> bean.getFromChannel()==b.getFromChannel()).collect(Collectors.toList());
+            return JsonResult.success(list,returnRepository.count(spec));
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+            return JsonResult.fail(e);
         }
-        if(bean.getToWareHouse()!=null){
-            list = list.stream().filter(b -> b.getToWareHouse()==bean.getToWareHouse()).collect(Collectors.toList());
-        }
-        if(bean.getSku()!=null){
-            list = list.stream().filter(b -> bean.getSku().toString().contains(b.getSkuId()+"")).collect(Collectors.toList());
-        }
-        return JsonResult.success(list);
     }
 
     @ApiOperation(value="退货",tags={"stock_return"},notes="新增")
     @RequestMapping(value = "/create",method = RequestMethod.POST)
+    @Transactional(rollbackOn = Exception.class)
     public JsonResult create(@RequestBody CreateBean bean) {
         try {
             bean.setLogTxtNum(genTranNum(new Date(),"RT",repoRepository.findById(bean.getFromChannel()).get().getRepoCode()));
@@ -166,6 +168,7 @@ public class Stock_ReturnCtrl extends BaseStockCtrl<DbResStockReturn> {
 
     @ApiOperation(value="删除",tags={"stock_return"},notes="")
     @RequestMapping(method = RequestMethod.POST,value = "/delete")
+    @Transactional(rollbackOn = Exception.class)
     public JsonResult delete(@RequestBody EditBean bean) {
         try {
             System.out.println(bean);
@@ -205,6 +208,7 @@ public class Stock_ReturnCtrl extends BaseStockCtrl<DbResStockReturn> {
 
     @ApiOperation(value="修改",tags={"stock_return"},notes="")
     @RequestMapping(method = RequestMethod.POST,value = "/edit")
+    @Transactional(rollbackOn = Exception.class)
     public JsonResult edit(@RequestBody EditBean bean) {
         try {
             System.out.println(bean.toString());

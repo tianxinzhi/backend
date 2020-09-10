@@ -7,8 +7,8 @@ import java.util.List;
 
 /**
  * @description:
- * @author: ChenShuCheng
- * @create: 2020-07-30 09:30
+ * @author: XiaoZhi
+ * @create: 2020-08-30 09:30
  **/
 @Data
 @Table(name = "res_stock_replenishment")
@@ -53,6 +53,9 @@ public class DbResStockReplenishment extends Base{
 
     @Column(name = "suggested_qty_3")
     private Long suggestedQty3;
+
+    @Column(name = "request_date")
+    private Long requestDate;
 
     @Column(name = "log_txt_num", length = 512)
     private String logTxtNum;

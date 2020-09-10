@@ -1,6 +1,7 @@
 package com.pccw.backend.ctrl;
 
 
+import com.alibaba.fastjson.JSONObject;
 import com.pccw.backend.bean.JsonResult;
 import com.pccw.backend.bean.StaticVariable;
 import com.pccw.backend.bean.stock_movement.SearchBean;
@@ -27,6 +28,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 /**
@@ -49,6 +51,8 @@ public class Stock_MovementCtrl extends BaseCtrl<DbResLogMgt> {
     @Autowired
     ResLogMgtRepository logMgtRepo;
     @Autowired
+    ResLogMgtDtlSerialRepository serialRepo;
+    @Autowired
     ResSkuRepository skuRepo;
 
     @Autowired
@@ -61,12 +65,18 @@ public class Stock_MovementCtrl extends BaseCtrl<DbResLogMgt> {
         try {
             String skuSearch="";
             if (b.getSkuNum() != null && b.getSkuNum().size()>0) {
+                int i =0;
                 skuSearch += "where sku.id in(";
                 for (String s : b.getSkuNum()) {
+                    if(s.equals("0"))continue;
                     skuSearch += "'"+s+"',";
+                    i++;
                 }
                 skuSearch = skuSearch.substring(0,skuSearch.length()-1);
                 skuSearch += ")";
+                if(i<1&&!skuSearch.contains(",")){
+                    skuSearch = "";
+                }
             }
             StringBuffer baseSql = new StringBuffer(" select t1.id \"id\",t1.CREATE_AT \"createAt\",a1.account_name \"createAccountName\", \n" +
                     "t1.log_txt_num \"logTxtBum\",t1.log_order_nature \"logOrderNature\",t1.remark \"reason\", \n" +
@@ -75,10 +85,10 @@ public class Stock_MovementCtrl extends BaseCtrl<DbResLogMgt> {
                     "t1.source_system \"sourceSystem\",t1.source_txn_header \"txnHeader\",t1.source_line \"txnLine\",t1.publish_to_lis \"pubToLis\",t1.receive_from_lis \"recFromLis\", \n" +
                     "r1.id \"repoId\" ,r1.repo_code \"fromChannel\",r2.id \"toRepoId\" ,r2.repo_code \"toChannel\",\n" +
                     " t4.skuId \"skuId\",t4.sku \"sku\",t4.skuDesc \"skuDesc\",t4.uom \"uom\",t4.qty \"qty\",t4.fromStatus \"fromStatus\"" +
-                    " from res_log_mgt t1 left JOIN RES_ACCOUNT a1 on a1.id = t1.create_by\n" +
+                    " ,t4.id \"dtlId\" from res_log_mgt t1 left JOIN RES_ACCOUNT a1 on a1.id = t1.create_by\n" +
                     "left join res_repo r1 on r1.id = t1.log_repo_out\n" +
                     "left join res_repo r2 on r2.id = t1.log_repo_in right join\n" +
-                    "(select  \n" +
+                    "(select dtl.id, \n" +
                     "dtl.log_mgt_id , sku.id skuId,sku.sku_name sku,sku.sku_desc skuDesc,sku.uom uom,dtl.DTL_QTY qty,dtl.DTL_SUBIN fromStatus\n" +
                     "\tfrom RES_LOG_MGT_DTL dtl \n" +
                     " inner join res_sku sku on dtl.dtl_sku_id = sku.id "+skuSearch+" ) t4 on t1.id = t4.log_mgt_id where 1=1");
@@ -99,7 +109,7 @@ public class Stock_MovementCtrl extends BaseCtrl<DbResLogMgt> {
 
             StringBuffer countBuffer = new StringBuffer(
                     "select count(*) from ("+baseSql+")");
-            baseSql.append(" order by t1.id desc");
+            baseSql.append(" order by t1.create_at desc");
 
             Query dataQuery = entityManager.createNativeQuery(baseSql.toString());
             Query countQuery = entityManager.createNativeQuery(countBuffer.toString());
@@ -121,6 +131,19 @@ public class Stock_MovementCtrl extends BaseCtrl<DbResLogMgt> {
                     List<DbResLogMgtDtl> ids = logMgtRepo.findById(Long.parseLong(map.get("id").toString())).get().getLine();
                     if(ids!=null&&ids.size()>1)
                     map.put("toStatus",ids.get(1).getDtlSubin());
+                }
+                if(map.get("dtlId") !=null){
+                    List<DbResLogMgtDtlSerial> dtlId = serialRepo.findAllByDtlId(Long.parseLong(map.get("dtlId").toString()));
+                    List<Map> line = new LinkedList<>();
+                    for (DbResLogMgtDtlSerial serial : dtlId) {
+                        Map linemap = new HashMap();
+                        linemap.put("courier",serial.getCourier());
+                        linemap.put("serial",serial.getSerial());
+                        linemap.put("expiryDate",serial.getExpiryDate());
+
+                        line.add(linemap);
+                    }
+                    map.put("line",line);
                 }
             }
             return JsonResult.success(content,total);

@@ -2,6 +2,7 @@ package com.pccw.backend.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.List;
 @Table(name = "res_stock_return")
 @Entity
 @SequenceGenerator(name="id_stockReturn",sequenceName = "stockReturn_seq",allocationSize = 1)
+@Where(clause = " active='Y' ")
 public class DbResStockReturn extends Base{
 
     @Id

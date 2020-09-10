@@ -1,6 +1,7 @@
 package com.pccw.backend.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,6 +9,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
+import java.util.List;
 
 
 /**
@@ -53,4 +55,9 @@ public class DbResLogMgtDtl extends BaseLogDtl {
 
 	@Transient
 	private String skuCode;
+
+	@JsonManagedReference
+	@OneToMany(cascade = CascadeType.ALL,orphanRemoval = true)
+	@JoinColumn(name = "log_mgt_dtl_id")
+	private List<DbResLogMgtDtlSerial> line;
 }

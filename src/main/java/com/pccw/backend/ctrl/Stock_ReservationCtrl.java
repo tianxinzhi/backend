@@ -25,12 +25,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
+import javax.transaction.Transactional;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -119,6 +119,7 @@ public class Stock_ReservationCtrl extends BaseStockCtrl<DbResReservation> imple
 
     @ApiOperation(value="预留",tags={"stock_reservation"},notes="新增")
     @RequestMapping(value = "/create",method = RequestMethod.POST)
+    @Transactional(rollbackOn = Exception.class)
     public JsonResult create(@RequestBody CreateBean bean) {
         try {
             //保存 reservation
@@ -221,6 +222,7 @@ public class Stock_ReservationCtrl extends BaseStockCtrl<DbResReservation> imple
 
     @ApiOperation(value="删除",tags={"stock_reservation"},notes="")
     @RequestMapping(method = RequestMethod.POST,value = "/delete")
+    @Transactional(rollbackOn = Exception.class)
     public JsonResult delete(@RequestBody EditBean bean) {
         try {
             System.out.println(bean);
@@ -260,6 +262,7 @@ public class Stock_ReservationCtrl extends BaseStockCtrl<DbResReservation> imple
 
     @ApiOperation(value="修改",tags={"stock_reservation"},notes="")
     @RequestMapping(method = RequestMethod.POST,value = "/edit")
+    @Transactional(rollbackOn = Exception.class)
     public JsonResult edit(@RequestBody EditBean bean) {
         try {
             System.out.println(bean.toString());

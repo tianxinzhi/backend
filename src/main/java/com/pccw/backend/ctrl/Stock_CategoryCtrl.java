@@ -1,6 +1,7 @@
 package com.pccw.backend.ctrl;
 
 
+import com.pccw.backend.annotation.NoAuthorized;
 import com.pccw.backend.bean.JsonResult;
 import com.pccw.backend.bean.StaticVariable;
 import com.pccw.backend.bean.stock_category.CategoryLogMgtBean;
@@ -215,4 +216,14 @@ public class Stock_CategoryCtrl extends BaseCtrl<DbResLogMgt> {
             }
         });
     }
+
+//    @NoAuthorized
+    @RequestMapping(method = RequestMethod.POST,path = "/search")
+    public JsonResult search(@RequestBody SearchBean sb){
+        List<String> status = new ArrayList<>();
+        status.add(StaticVariable.LOGORDERNATURE_STOCK_CATEGORY);
+        List<DbResLogMgt> logMgts = resLogMgtRepository.findByLogOrderNatureIn(status);
+        return JsonResult.success(logMgts);
+    }
+
 }

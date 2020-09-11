@@ -35,4 +35,6 @@ public class DbResTrxType extends Base {
 	@Column(name="disable_date")
 	private Long disableDate;
 
+	@Column(name = "serial_control",length = 4)
+	private String serialControl;
 }

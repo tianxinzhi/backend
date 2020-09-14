@@ -1,5 +1,6 @@
 package com.pccw.backend.entity;
 
+import com.pccw.backend.annotation.JsonResultParamMapAnnotation;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -13,6 +14,7 @@ import java.util.List;
 @Entity
 @Table(name = "res_trx_type")
 @SequenceGenerator(name="id_trxType",sequenceName = "trxType_seq",allocationSize = 1)
+@JsonResultParamMapAnnotation(param1 = "id",param2 = "transactionTypeName")
 public class DbResTrxType extends Base {
 
 	@Id

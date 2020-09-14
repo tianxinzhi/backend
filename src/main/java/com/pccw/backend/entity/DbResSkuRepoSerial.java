@@ -11,15 +11,15 @@ import javax.persistence.*;
  * @create: 2020-09-03 09:30
  **/
 @Data
-@Table(name = "res_sku_serial")
+@Table(name = "res_sku_repo_serial")
 @Entity
-@SequenceGenerator(name="id_skuSerial",sequenceName = "skuSerial_seq",allocationSize = 1)
-@Where(clause = " active='Y'")
-public class DbResSkuSerial extends Base{
+@SequenceGenerator(name="id_skuRepoSerial",sequenceName = "skuRepoSerial_seq",allocationSize = 1)
+//@Where(clause = " active='Y'")
+public class DbResSkuRepoSerial extends Base{
 
     @Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "id_skuSerial")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "id_skuRepoSerial")
     private Long id;
 
     @Column(name = "courier")

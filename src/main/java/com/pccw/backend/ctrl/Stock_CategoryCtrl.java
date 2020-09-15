@@ -144,7 +144,7 @@ public class Stock_CategoryCtrl extends BaseCtrl<DbResLogMgt> {
                 }else {
                     stockTyepId = 1l;
                 }
-            String[] itemCodeArr = l.getItemCode().split(",");
+//            String[] itemCodeArr = l.getItemCode().split(",");
             //dtlAction为D时  skuRepo对应的sku的qty做减法
             if(StaticVariable.DTLACTION_DEDUCT.equals(l.getDtlAction())){
                 DbResSkuRepo sk = skuRepoRepository.findQtyByRepoAndShopAndType(l.getDtlRepoId(), l.getDtlSkuId(),stockTyepId);

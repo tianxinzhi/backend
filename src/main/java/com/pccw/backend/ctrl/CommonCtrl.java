@@ -65,6 +65,8 @@ public class CommonCtrl  extends BaseCtrl{
     @Autowired
     ResStockTypeRepository stockTypeRepository;
     @Autowired
+    ResTrxTypeRepository trxTypeRepository;
+    @Autowired
     ResAccountRepository accountRepository;
 
     @ApiOperation(value="获取res_right表的信息",tags={"common"},notes="注意问题点")
@@ -181,6 +183,11 @@ public class CommonCtrl  extends BaseCtrl{
         return this.JsonResultHandle(stockTypeRepository,new LabelAndValue());
     }
 
+    @ApiOperation(value="获取res_trx_type表的transactionTypeName和id信息",tags={"common"},notes="注意问题点")
+    @RequestMapping(method = RequestMethod.GET,path="/trxTypeModule")
+    public JsonResult<LabelAndValue> searchTrxType(){
+        return this.JsonResultHandle(trxTypeRepository,new LabelAndValue());
+    }
 
     @ApiOperation(value="获取用户的session信息",tags={"common"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.GET,path="/searchUserSession")

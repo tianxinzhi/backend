@@ -23,10 +23,10 @@ public class DbResLogMgt extends BaseLog {
 	private Long id;
 
 	@Column(name = "adjust_reason_id")
-	private long adjustReasonId;
+	private Long adjustReasonId;
 
 	@Column(name = "delivery_date")
-	private long deliveryDate;
+	private Long deliveryDate;
 
 	@Column(name = "delivery_status")
 	private String deliveryStatus;
@@ -86,6 +86,9 @@ public class DbResLogMgt extends BaseLog {
 
 	@Column(name="receive_from_lis")
 	private String recFromLis;
+
+	@Column(name="trx_type_id")
+	private Long trxTypeId;
 
 	@JsonManagedReference
 	@OneToMany(cascade = CascadeType.ALL)  //ALL  PERSIST

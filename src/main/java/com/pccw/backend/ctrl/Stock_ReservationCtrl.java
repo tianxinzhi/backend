@@ -170,7 +170,7 @@ public class Stock_ReservationCtrl extends BaseStockCtrl<DbResReservation> imple
             logMgt.setLogOrderNature(StaticVariable.LOGORDERNATURE_STOCK_RESERVE);
             logMgt.setStatus(StaticVariable.STATUS_WAITING);
             logMgt.setStaffNumber(bean.getStaffId());
-            logMgt.setReservationId(reservationRepository.findAll().stream().max(Comparator.comparing(DbResReservation::getId)).get().getId());
+            //logMgt.setReservationId(reservationRepository.findAll().stream().max(Comparator.comparing(DbResReservation::getId)).get().getId());
             logMgt.setRemark(bean.getRemark());
             logMgt.setCreateAt(time);
             logMgt.setUpdateAt(time);

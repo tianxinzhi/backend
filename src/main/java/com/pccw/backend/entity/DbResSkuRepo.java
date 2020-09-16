@@ -1,6 +1,7 @@
 package com.pccw.backend.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -69,6 +70,10 @@ public class DbResSkuRepo extends Base{
 
 	@Column(name = "is_consigned",length = 8)
 	private String isConsigned;
+
+	@JsonBackReference
+	@OneToMany(cascade = CascadeType.ALL,mappedBy = "skuRepo",orphanRemoval = true)
+	private List<DbResSkuRepoSerial> serials;
 
 	public DbResSkuRepo(Object o, DbResSku dbResSku, DbResRepo dbResRepo, Object o1, DbResStockType dbResStockType, Object o2, long parseInt, Object o3) {
 	}

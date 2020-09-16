@@ -112,7 +112,7 @@ public class CommonCtrl  extends BaseCtrl{
             };
             List<DbResAttrValue> list = attr_value_repo.findAll(spec,sort);
             List<LabelAndValue> res = list.stream().map(item -> {
-                return  Objects.nonNull(item.getAttrValue()) ? new LabelAndValue(item.getId(), item.getAttrValue(), null) : new LabelAndValue(item.getId(), item.getValueFrom()+"~"+item.getValueTo(),null );
+                return  Objects.nonNull(item.getAttrValue()) ? new LabelAndValue(item.getId(), item.getAttrValue(), null,null) : new LabelAndValue(item.getId(), item.getValueFrom()+"~"+item.getValueTo(),null,null );
             }).collect(Collectors.toList());
 
             return JsonResult.success(res);

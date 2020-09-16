@@ -72,9 +72,6 @@ public class DbResLogMgt extends BaseLog {
 	@Column(name="log_repo_out")
 	private long logRepoOut;
 
-	@Column(name="reservation_id")
-	private Long reservationId;
-
 	@Column(name="approval")
 	private String approval;
 

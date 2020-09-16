@@ -25,4 +25,7 @@ public class SearchBean extends BaseSearchBean {
     @ApiModelProperty(value="来源",name="transactionSource",example="")
     private String transactionSource;
 
+    @PredicateAnnotation(type = PredicateType.LIKE)
+    @ApiModelProperty(value="来源",name="natureType",example="")
+    private String natureType;
 }

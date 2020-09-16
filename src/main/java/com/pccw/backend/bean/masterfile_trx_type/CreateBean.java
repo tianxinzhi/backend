@@ -27,4 +27,10 @@ public class CreateBean extends BaseBean {
 
     @ApiModelProperty(value="属性值",name="disableDate",example="")
     private Long disableDate;
+
+    @ApiModelProperty(value="属性值",name="serialControl",example="Y")
+    private String serialControl;
+
+    @ApiModelProperty(value="属性值",name="natureType",example="In/Out/Transfer")
+    private String natureType;
 }

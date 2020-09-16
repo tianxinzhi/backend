@@ -56,8 +56,6 @@ public class DbResLogMgtDtl extends BaseLogDtl {
 	@Transient
 	private String skuCode;
 
-	@JsonManagedReference
-	@OneToMany(cascade = CascadeType.ALL,orphanRemoval = true)
-	@JoinColumn(name = "log_mgt_dtl_id")
-	private List<DbResLogMgtDtlSerial> line;
+	@Transient
+	private List<DbResSkuRepoSerial> line;
 }

@@ -1,5 +1,6 @@
 package com.pccw.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import org.hibernate.annotations.Where;
 
@@ -31,4 +32,8 @@ public class DbResSkuRepoSerial extends Base{
     @Column(name = "expiry_date")
     private Long expiryDate;
 
+    @ManyToOne
+    @JsonIgnoreProperties(value = { "serials" })
+    @JoinColumn(name = "sku_repo_id")
+    private DbResSkuRepo skuRepo;
 }

@@ -227,7 +227,7 @@ import com.pccw.backend.annotation.PredicateType;
 		try {
 			//将bean的属性类型存入数组
 			Field[] generalBeanFields = generalBean.getClass().getDeclaredFields();
-			Class[] classes = new Class[3];
+			Class[] classes = new Class[4];
 			for (int i = 0; i <generalBeanFields.length ; i++) {
 				classes[i] = generalBeanFields[i].getType();
 			}
@@ -235,6 +235,7 @@ import com.pccw.backend.annotation.PredicateType;
 			Object param1 = null;
 			Object param2 = null;
 			Object param3 = null;
+			Object param4 = null;
 			Method[] methods = annotation.getClass().getDeclaredMethods();
 			for (int i = 0; i <methods.length; i++) {
 				if(!methods[i].getName().contains("param")){
@@ -270,6 +271,9 @@ import com.pccw.backend.annotation.PredicateType;
 						case "param3" :
 							param3 = entityFieldValue;
 							break;
+						case "param4" :
+							param4 = entityFieldValue;
+							break;
 					}
 
 				}
@@ -279,7 +283,7 @@ import com.pccw.backend.annotation.PredicateType;
 			Constructor<? extends GeneralBean> constructor = generalBean.getClass().getConstructor(classes);
 			constructor.setAccessible(true);
 			//装配参数
-			bean = constructor.newInstance(new Object[]{param1,param2,param3});
+			bean = constructor.newInstance(new Object[]{param1,param2,param3,param4});
 
 		} catch (NoSuchFieldException e) {
 			e.printStackTrace();

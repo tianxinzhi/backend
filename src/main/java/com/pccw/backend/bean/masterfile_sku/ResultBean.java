@@ -32,20 +32,25 @@ public class ResultBean extends BaseBean {
     @ApiModelProperty(value="skuName",name="sku名称",example="")
     private String skuName;
 
+    @ApiModelProperty(value="tangibleItem",name="tangibleItem",example="")
     private String tangibleItem;
 
+    @ApiModelProperty(value="inventoryAssetFlag",name="inventoryAssetFlag",example="")
     private String inventoryAssetFlag;
 
+    @ApiModelProperty(value="returnableFlag",name="returnableFlag",example="")
     private String returnableFlag;
 
+    @ApiModelProperty(value="startDateActive",name="startDateActive",example="")
     private Long startDateActive;
 
+    @ApiModelProperty(value="endDateActive",name="endDateActive",example="")
     private Long endDateActive;
 
     @ApiModelProperty(value="qty",name="qty",example="")
     private long qty;
 
-    @ApiModelProperty(value="spec",name="spec",example="1")
+    @ApiModelProperty(value="type",name="type",example="1")
     private long type;
 
     @ApiModelProperty(value="typeName",name="typeName",example="iphone")
@@ -68,6 +73,18 @@ public class ResultBean extends BaseBean {
 
     @ApiModelProperty(value="attrValueNames",name="attrValueNames",example="[['red','green'],['red','blue']]")
     private List<String[]> attrValueNames;
+
+    @ApiModelProperty(value="skuAttrs",name="skuAttrs",example="[2,3]")
+    private long[] skuAttrs;
+
+    @ApiModelProperty(value="skuAttrNames",name="skuAttrNames",example="['color','shape']")
+    private String[] skuAttrNames;
+
+    @ApiModelProperty(value="skuAttrValues",name="skuAttrValues",example="[['4','6'],['5','7']]")
+    private List<String[]> skuAttrValues;
+
+    @ApiModelProperty(value="skuAttrValueNames",name="skuAttrValueNames",example="[['red','green'],['red','blue']]")
+    private List<String[]> skuAttrValueNames;
 
     private List<Map> attrData;
 

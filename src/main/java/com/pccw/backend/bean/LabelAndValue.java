@@ -11,4 +11,5 @@ public class LabelAndValue implements GeneralBean {
     private Object Value;
     private Object Label;
     private Object Other;
+    private Object Flag;
 }

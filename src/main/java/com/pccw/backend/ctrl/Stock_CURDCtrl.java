@@ -14,6 +14,7 @@ import com.pccw.backend.entity.DbResSkuRepo;
 import com.pccw.backend.entity.DbResStockType;
 import com.pccw.backend.repository.*;
 import com.pccw.backend.util.Convertor;
+import com.pccw.backend.util.IDUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.Data;
@@ -99,7 +100,13 @@ public class Stock_CURDCtrl extends BaseCtrl<DbResSkuRepo> implements ICheck {
 
             Query dataQuery = manager.createNativeQuery(baseSql.toString());
             dataQuery.unwrap(NativeQueryImpl.class).setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
-            return JsonResult.success(dataQuery.getResultList());
+            List<Map> resultList = dataQuery.getResultList();
+            for (Map map : resultList) {
+                List<Map> line = new LinkedList<>();
+                map.put("line",line);
+                map.put("id", String.valueOf(IDUtil.getRandomId()) );
+            }
+            return JsonResult.success(resultList);
         } catch (Exception e) {
             e.printStackTrace();
             log.info(e.getMessage());

@@ -14,7 +14,7 @@ import java.util.List;
 @Entity
 @Table(name = "res_trx_type")
 @SequenceGenerator(name="id_trxType",sequenceName = "trxType_seq",allocationSize = 1)
-@JsonResultParamMapAnnotation(param1 = "id",param2 = "transactionTypeName")
+@JsonResultParamMapAnnotation(param1 = "id",param2 = "transactionTypeName",param3 = "natureType",param4 = "serialControl")
 public class DbResTrxType extends Base {
 
 	@Id
@@ -37,6 +37,9 @@ public class DbResTrxType extends Base {
 	@Column(name="disable_date")
 	private Long disableDate;
 
-	@Column(name = "serial_control",length = 4)
+	@Column(name = "serial_control",length = 8)
 	private String serialControl;
+
+	@Column(name = "nature_type")
+	private String natureType;
 }

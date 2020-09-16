@@ -20,7 +20,7 @@ import java.util.List;
 @Getter
 @Setter
 @SequenceGenerator(name="id_sku",sequenceName = "sku_seq",allocationSize = 1)
-@JsonResultParamMapAnnotation(param1 = "id",param2 = "skuCode")
+@JsonResultParamMapAnnotation(param1 = "id",param2 = "skuCode",param3 = "serialControl")
 public class DbResSku extends Base {
 
 	@Id

@@ -7,7 +7,7 @@ import lombok.Data;
  */
 
 @Data
-public class BaseException extends Exception {
+public class BaseException extends RuntimeException {
 
     public static final String EXCEPTION_CODE_RUNTIMEEXCEPTION = "888";
     public static final String EXCEPTION_CODE_ACCANDPWDERROREXCEPTION = "003";
@@ -22,7 +22,7 @@ public class BaseException extends Exception {
     // private Exception exception;
 
     private String msg;
-    
+
     public static BaseException getException(String code){
         BaseException e = new BaseException();
         e.setCode(code);
@@ -43,7 +43,7 @@ public class BaseException extends Exception {
     public static BaseException getRuntimeException() {
         return BaseException.getException(BaseException.EXCEPTION_CODE_RUNTIMEEXCEPTION);
     }
-    
+
     public static BaseException getAccAndPwdException() {
         return BaseException.getException(BaseException.EXCEPTION_CODE_ACCANDPWDERROREXCEPTION);
     }

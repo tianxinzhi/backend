@@ -8,6 +8,7 @@ import com.pccw.backend.bean.stock_in.SearchBean;
 import com.pccw.backend.entity.*;
 import com.pccw.backend.repository.ResLogMgtRepository;
 import com.pccw.backend.repository.ResSkuRepoRepository;
+import com.pccw.backend.repository.ResSkuRepoSerialRepository;
 import com.pccw.backend.repository.ResStockInRepository;
 import com.pccw.backend.util.Session;
 import io.swagger.annotations.Api;
@@ -41,6 +42,9 @@ public class Stock_InCtrl extends BaseCtrl<DbResLogMgt> {
 
     @Autowired
     ResLogMgtRepository logMgtRepository;
+
+    @Autowired
+    ResSkuRepoSerialRepository serialRepository;
 
     @Autowired
     Session session;
@@ -81,12 +85,28 @@ public class Stock_InCtrl extends BaseCtrl<DbResLogMgt> {
 //
 //                //生成工作流数据
 //                processProcessCtrl.joinToProcess(process);
+
+                //生成sku serial
+                for (DbResLogMgtDtl dbResLogMgtDtl : bean.getLine()) {
+                    DbResSkuRepo sr = skuRepoRepository.findQtyByRepoAndShopAndType(bean.getLogRepoIn(), dbResLogMgtDtl.getDtlSkuId(), 3L);
+                    if(dbResLogMgtDtl.getLine() !=null && dbResLogMgtDtl.getLine().size()>0){
+                        for (DbResSkuRepoSerial dbResSkuRepoSerial : dbResLogMgtDtl.getLine()) {
+                            DbResSkuRepoSerial serial = new DbResSkuRepoSerial();
+                            BeanUtils.copyProperties(dbResSkuRepoSerial,serial);
+                            serial.setUpdateAt(t);
+                            serial.setCreateAt(t);
+                            serial.setUpdateBy(getAccount());
+                            serial.setCreateBy(getAccount());
+                            serial.setActive("Y");
+                            serial.setSkuRepo(sr);
+                            serialRepository.saveAndFlush(serial);
+                        }
+                    }
+                }
                 this.UpdateSkuRepoQty(bean.getLogTxtBum());
             }
 
             return result;
-
-
         }catch (Exception e){
             return JsonResult.fail(e);
         }

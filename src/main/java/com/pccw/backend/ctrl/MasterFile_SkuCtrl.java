@@ -26,6 +26,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
+import java.util.regex.Pattern;
 
 /**
  * @Author xiaozhi
@@ -47,6 +48,9 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> implements ICheck {
     ResAttrRepository attrRepo;
 
     @Autowired
+    ResAttrValueRepository valueRepo;
+
+    @Autowired
     ResStockTypeRepository stockTypeRepository;
 
     @Autowired
@@ -65,23 +69,74 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> implements ICheck {
     @RequestMapping(method = RequestMethod.POST,value = "/create")
     public JsonResult create(@RequestBody CreateBean bean) {
         try {
-            System.out.println(JSONObject.toJSONString(bean));
             long time = System.currentTimeMillis();
+            //新创建的attr保存到spec_attr的sku,不是数字说明是新的attr
             DbResSku sku = new DbResSku();
-            sku.setSkuCode(bean.getSkuCode());
-            sku.setSkuDesc(bean.getSkuDesc());
-            sku.setSkuName(bean.getSkuName());
-            sku.setActive("Y");
-            sku.setCreateAt(time);
-            sku.setUpdateAt(time);
-            sku.setCreateBy(getAccount());
-            sku.setUpdateBy(getAccount());
+            List<DbResSpecAttr> skuAttrs = new LinkedList<>();
+            if(bean.getNewAttrs()!=null && bean.getNewAttrs().length>0){
+                for (int i=0;i<bean.getNewAttrs().length;i++) {
+                    Object newAttr = bean.getNewAttrs()[i];
+                    DbResAttr attr = null;
+                    List<DbResAttrAttrValue> values = null;
+                    boolean attrDigit = Pattern.compile("[0-9]*").matcher(newAttr+"").matches();
+                    if(!attrDigit) {
+                        attr = new DbResAttr();
+                        attr.setAttrDesc(newAttr.toString());attr.setAttrName(newAttr.toString());
+                        attr.setActive("Y");attr.setCreateAt(time);
+                        attr.setUpdateAt(time);attr.setCreateBy(getAccount());attr.setUpdateBy(getAccount());
+                    } else {
+                        attr = new DbResAttr();
+                        attr.setId(Long.parseLong(newAttr.toString()));
+                    }
+                    Object[] newAttrValue = bean.getNewAttrValues().get(i);
+                    values = new LinkedList<>();
+                    for (Object o : newAttrValue) {
+                        DbResAttrValue value = null;
+                        if(!Pattern.compile("[0-9]*").matcher(o+"").matches()){
+                            value = new DbResAttrValue();
+                            value.setAttrValue(o.toString());value.setActive("Y");value.setCreateAt(time);
+                            value.setUpdateAt(time);value.setCreateBy(getAccount());value.setUpdateBy(getAccount());
+                            valueRepo.saveAndFlush(value);
+                        } else {
+                            value = new DbResAttrValue();
+                            value.setId(Long.parseLong(o.toString()));
+                        }
+                        //
+                        DbResAttrAttrValue attrAttrValue = new DbResAttrAttrValue();
+                        attrAttrValue.setAttr(attr);attrAttrValue.setAttrValue(value);
+                        attrAttrValue.setActive("Y");attrAttrValue.setCreateAt(time);attrAttrValue.setUpdateAt(time);
+                        attrAttrValue.setCreateBy(getAccount());attrAttrValue.setUpdateBy(getAccount());
+
+                        values.add(attrAttrValue);
+
+                        //
+                        DbResSpecAttr specAttr = new DbResSpecAttr();
+                        specAttr.setIsSpec("N");
+                        specAttr.setAttrId(attrDigit ? attr.getId()+"":null);
+                        specAttr.setAttrValueId(value.getId()+"");
+                        specAttr.setActive("Y");specAttr.setCreateAt(time);specAttr.setUpdateAt(time);
+                        specAttr.setCreateBy(getAccount());specAttr.setUpdateBy(getAccount());
+                        skuAttrs.add(specAttr);
+                    }
+
+                    if(!attrDigit){
+                        attr.setAttrAttrValueList(values);
+                        DbResAttr attr1 = attrRepo.saveAndFlush(attr);
+                        skuAttrs.forEach(sr ->{
+                            if(sr.getAttrId()==null){
+                                sr.setAttrId(attr1.getId()+"");
+                            }
+                        });
+                    }
+                }
+            }
+            sku.setSkuAttrs(skuAttrs);
+            sku.setSkuCode(bean.getSkuCode());sku.setSkuDesc(bean.getSkuDesc());sku.setSkuName(bean.getSkuName());
+            sku.setActive("Y");sku.setCreateAt(time);
+            sku.setUpdateAt(time);sku.setCreateBy(getAccount());sku.setUpdateBy(getAccount());
             sku.setSkuOrigin(StaticVariable.SKU_ORIGIN_FROM_WITHPO);
-
-
             sku.setStartDateActive(bean.getStartDate() == null ? 0L : bean.getStartDate());
             sku.setEndDateActive(bean.getEndDate() == null ? 0L : bean.getEndDate());
-
             sku.setReturnableFlag(bean.getReturnable().equals("true")?"Y":"N");
             sku.setInventoryAssetFlag(bean.getInventoryAssetFlag().equals("true")?"I":"");
             sku.setMaxReserveDays(bean.getMaxReserveDays()==null?"0":bean.getMaxReserveDays());
@@ -99,55 +154,36 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> implements ICheck {
             if(typeSkuSpec!=null && typeSkuSpec.size()>0){
                 DbResSpec spec = specRepository.findById(typeSkuSpec.get(0).getSpecId()).get(0);
                 DbResSpec newSpec = new DbResSpec();
-                newSpec.setSpecName(spec.getSpecName());
-                newSpec.setSpecDesc(spec.getSpecDesc());
-                newSpec.setVerId(spec.getVerId());
-                newSpec.setCreateAt(time);
-                newSpec.setUpdateBy(getAccount());
-                newSpec.setUpdateAt(time);
-                newSpec.setUpdateBy(getAccount());
-                newSpec.setActive("Y");
+                newSpec.setSpecName(spec.getSpecName());newSpec.setSpecDesc(spec.getSpecDesc());newSpec.setVerId(spec.getVerId());
+                newSpec.setCreateBy(getAccount());newSpec.setCreateAt(time);newSpec.setUpdateBy(getAccount());
+                newSpec.setUpdateAt(time);newSpec.setUpdateBy(getAccount());newSpec.setActive("Y");
 
                 List<DbResSpecAttr> specAttrList = new LinkedList<>();
                 for(int i=0;i<bean.getAttrs().length;i++){
                     for(int value : bean.getAttrValueList().get(i)){
                         DbResSpecAttr specAttr = new DbResSpecAttr();
-                        specAttr.setAttrId(String.valueOf(bean.getAttrs()[i]));
-                        specAttr.setAttrValueId(String.valueOf(value));
-                        specAttr.setActive("Y");
-                        specAttr.setCreateAt(time);
-                        specAttr.setUpdateAt(time);
-                        specAttr.setCreateBy(getAccount());
-                        specAttr.setUpdateBy(getAccount());
+                        specAttr.setAttrId(String.valueOf(bean.getAttrs()[i]));specAttr.setAttrValueId(String.valueOf(value));
+                        specAttr.setIsSpec("Y");specAttr.setActive("Y");specAttr.setCreateAt(time);
+                        specAttr.setUpdateAt(time);specAttr.setCreateBy(getAccount());specAttr.setUpdateBy(getAccount());
                         specAttrList.add(specAttr);
                     }
                 }
                 newSpec.setResSpecAttrList(specAttrList);
-                specRepository.saveAndFlush(newSpec);
+                DbResSpec spec1 = specRepository.saveAndFlush(newSpec);
 
-                List<DbResSpec> dbResSpecsBySpecName = specRepository.getDbResSpecsBySpecName(spec.getSpecName());
-                DbResSpec maxSpec = dbResSpecsBySpecName.stream().max(Comparator.comparing(DbResSpec::getId)).get();
-                List<Long> specIds = Arrays.asList(bean.getSpecChecked());
-                List<Long> specIdList = new ArrayList(specIds);
-                specIdList.add(maxSpec.getId());
+//                List<DbResSpec> dbResSpecsBySpecName = specRepository.getDbResSpecsBySpecName(spec.getSpecName());
+//                DbResSpec maxSpec = dbResSpecsBySpecName.stream().max(Comparator.comparing(DbResSpec::getId)).get();
+//                List<Long> specIds = Arrays.asList(bean.getSpecChecked());
+//                List<Long> specIdList = new ArrayList(specIds);
+//                specIdList.add(maxSpec.getId());
                 List<DbResTypeSkuSpec> typeSkuSpecs = new ArrayList<>();
-                for (Long id : specIdList) {
+//                for (Long id : specIdList) {
 
-                    DbResTypeSkuSpec newTypeSpec = new DbResTypeSkuSpec();
-                    //BeanUtils.copyProperties(typeSkuSpec,newTypeSpec);
-//                    newTypeSpec.setSpecId(maxSpec.getId());
-                    newTypeSpec.setSpecId(id);
-                    newTypeSpec.setType(typeSkuSpec.get(0).getType());
-                    newTypeSpec.setSku(sku);
-                    newTypeSpec.setIsType("N");
-                    newTypeSpec.setCreateAt(time);
-                    newTypeSpec.setUpdateBy(getAccount());
-                    newTypeSpec.setUpdateAt(time);
-                    newTypeSpec.setUpdateBy(getAccount());
-                    newTypeSpec.setActive("Y");
-                    typeSkuSpecs.add(newTypeSpec);
-                }
-//                sku.setDbResTypeSkuSpec(newTypeSpec);
+                DbResTypeSkuSpec newTypeSpec = new DbResTypeSkuSpec();
+                newTypeSpec.setSpecId(spec1.getId());newTypeSpec.setType(typeSkuSpec.get(0).getType());newTypeSpec.setSku(sku);
+                newTypeSpec.setIsType("N");newTypeSpec.setCreateAt(time);newTypeSpec.setUpdateBy(getAccount());
+                newTypeSpec.setUpdateAt(time);newTypeSpec.setUpdateBy(getAccount());newTypeSpec.setActive("Y");
+                typeSkuSpecs.add(newTypeSpec);
                 sku.setDbResTypeSkuSpec(typeSkuSpecs);
 
                 skuRepo.saveAndFlush(sku);
@@ -165,8 +201,8 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> implements ICheck {
         for (Long id : ids.getIds()) {
             DbResSku sku = new DbResSku();
             sku.setId(id);
-            DbResSkuLis skuLisBySkuId = skuLisRepository.getDbResSkuLisBySkuId(sku);
-            if(skuLisBySkuId != null) skuLisRepository.delete(skuLisBySkuId);
+//            DbResSkuLis skuLisBySkuId = skuLisRepository.getDbResSkuLisBySkuId(sku);
+//            if(skuLisBySkuId != null) skuLisRepository.delete(skuLisBySkuId);
             //删除此sku的spec
             DbResTypeSkuSpec dbResTypeSkuSpecBySku = typeSkuSpecRepository.getDbResTypeSkuSpecBySku(sku);
             DbResSpec spec = specRepository.getOne(dbResTypeSkuSpecBySku.getSpecId());
@@ -182,12 +218,22 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> implements ICheck {
             System.out.println("bean:" + bean);
             long time = System.currentTimeMillis();
             DbResSku sku = skuRepo.findById(bean.getId()).get();
-            sku.setSkuCode(bean.getSkuCode());
-            sku.setSkuName(bean.getSkuName());
-            sku.setSkuDesc(bean.getSkuDesc());
-            sku.setUpdateAt(time);
-            sku.setUpdateBy(getAccount());
+            sku.setSkuCode(bean.getSkuCode());sku.setSkuName(bean.getSkuName());sku.setSkuDesc(bean.getSkuDesc());
+            sku.setUpdateAt(time);sku.setUpdateBy(getAccount());
             sku.setSkuOrigin(StaticVariable.SKU_ORIGIN_FROM_WITHPO);
+            sku.setStartDateActive(bean.getStartDate() == null ? 0L : bean.getStartDate());
+            sku.setEndDateActive(bean.getEndDate() == null ? 0L : bean.getEndDate());
+            sku.setReturnableFlag(bean.getReturnable().equals("true")?"Y":"N");
+            sku.setInventoryAssetFlag(bean.getInventoryAssetFlag().equals("true")?"I":"");
+            sku.setMaxReserveDays(bean.getMaxReserveDays()==null?"0":bean.getMaxReserveDays());
+            if (bean.getTangible().equals("true")) {
+                sku.setTangibleItem("Y");
+                sku.setIntangibleItem("N");
+            }else {
+                sku.setTangibleItem("N");
+                sku.setIntangibleItem("Y");
+            }
+            //spec edit
             DbResType type = new DbResType();
             type.setId(bean.getType());
             DbResTypeSkuSpec typeSkuSpec = typeSkuSpecRepository.getDbResTypeSkuSpecsBySkuAndType(sku,type);
@@ -262,7 +308,66 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> implements ICheck {
 //                    sku.setDbResTypeSkuSpec(newTypeSpec);
                 }
             }
+            //custom spec
+            if(bean.getNewAttrs()!=null && bean.getNewAttrs().length>0){
+                List<DbResSpecAttr> skuAttrs = sku.getSkuAttrs();
+                skuAttrs.clear();
+                for (int i=0;i<bean.getNewAttrs().length;i++) {
+                    Object newAttr = bean.getNewAttrs()[i];
+                    DbResAttr attr = null;
+                    List<DbResAttrAttrValue> values = null;
+                    boolean attrDigit = Pattern.compile("[0-9]*").matcher(newAttr+"").matches();
+                    if(!attrDigit) {
+                        attr = new DbResAttr();
+                        attr.setAttrDesc(newAttr.toString());attr.setAttrName(newAttr.toString());
+                        attr.setActive("Y");attr.setCreateAt(time);
+                        attr.setUpdateAt(time);attr.setCreateBy(getAccount());attr.setUpdateBy(getAccount());
+                    } else {
+                        attr = new DbResAttr();
+                        attr.setId(Long.parseLong(newAttr.toString()));
+                    }
+                    Object[] newAttrValue = bean.getNewAttrValues().get(i);
+                    values = new LinkedList<>();
+                    for (Object o : newAttrValue) {
+                        DbResAttrValue value = null;
+                        if(!Pattern.compile("[0-9]*").matcher(o+"").matches()){
+                            value = new DbResAttrValue();
+                            value.setAttrValue(o.toString());value.setActive("Y");value.setCreateAt(time);
+                            value.setUpdateAt(time);value.setCreateBy(getAccount());value.setUpdateBy(getAccount());
+                            valueRepo.saveAndFlush(value);
+                        } else {
+                            value = new DbResAttrValue();
+                            value.setId(Long.parseLong(o.toString()));
+                        }
+                        //
+                        DbResAttrAttrValue attrAttrValue = new DbResAttrAttrValue();
+                        attrAttrValue.setAttr(attr);attrAttrValue.setAttrValue(value);
+                        attrAttrValue.setActive("Y");attrAttrValue.setCreateAt(time);attrAttrValue.setUpdateAt(time);
+                        attrAttrValue.setCreateBy(getAccount());attrAttrValue.setUpdateBy(getAccount());
 
+                        values.add(attrAttrValue);
+
+                        //
+                        DbResSpecAttr specAttr = new DbResSpecAttr();
+                        specAttr.setIsSpec("N");
+                        specAttr.setAttrId(attrDigit ? attr.getId()+"":null);
+                        specAttr.setAttrValueId(value.getId()+"");
+                        specAttr.setActive("Y");specAttr.setCreateAt(time);specAttr.setUpdateAt(time);
+                        specAttr.setCreateBy(getAccount());specAttr.setUpdateBy(getAccount());
+                        skuAttrs.add(specAttr);
+                    }
+
+                    if(!attrDigit){
+                        attr.setAttrAttrValueList(values);
+                        DbResAttr attr1 = attrRepo.saveAndFlush(attr);
+                        skuAttrs.forEach(sr ->{
+                            if(sr.getAttrId()==null){
+                                sr.setAttrId(attr1.getId()+"");
+                            }
+                        });
+                    }
+                }
+            }
             skuRepo.saveAndFlush(sku);
 
             return JsonResult.success(Arrays.asList());
@@ -308,7 +413,7 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> implements ICheck {
                         if(attr!=null) {
                             for(int k=0;k<attr.getAttrAttrValueList().size();k++) {
                                 DbResAttrValue value = attr.getAttrAttrValueList().get(k).getAttrValue();
-                                LabelAndValue lb = new LabelAndValue(value.getId(),value.getAttrValue()!=null?value.getAttrValue():value.getValueFrom()+"~"+value.getValueTo(),null);
+                                LabelAndValue lb = new LabelAndValue(value.getId(),value.getAttrValue()!=null?value.getAttrValue():value.getValueFrom()+"~"+value.getValueTo(),null,null);
                                 lbs.add(lb);
                             }
                         }
@@ -369,7 +474,7 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> implements ICheck {
                     if(attr!=null) {
                         for(int k=0;k<attr.getAttrAttrValueList().size();k++) {
                             DbResAttrValue value = attr.getAttrAttrValueList().get(k).getAttrValue();
-                            LabelAndValue lb = new LabelAndValue(value.getId(),value.getAttrValue()!=null?value.getAttrValue():value.getValueFrom()+"~"+value.getValueTo(),null);
+                            LabelAndValue lb = new LabelAndValue(value.getId(),value.getAttrValue()!=null?value.getAttrValue():value.getValueFrom()+"~"+value.getValueTo(),null,null);
                             lbs.add(lb);
                         }
                     }
@@ -419,11 +524,17 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> implements ICheck {
             List<Map> types = skuRepo.getTypeDtlsBySku(bean.getId());
             List<ResultBean> skuResultBeans = new LinkedList<>();
 
-            long[] attrs = new long[types.size()];
-            String[] attrNames = new String[types.size()];
-            List<String[]> attrValueNames = new LinkedList<>();
-            List<String[]> attrValues = new LinkedList<>();
             if(types!=null&&types.size()>0){
+                long[] attrs = new long[types.size()];
+                String[] attrNames = new String[types.size()];
+                List<String[]> attrValueNames = new LinkedList<>();
+                List<String[]> attrValues = new LinkedList<>();
+
+//                long[] skuAttrs = new long[types.size()];
+//                String[] skuAttrNames = new String[types.size()];
+//                List<String[]> skuAttrValueNames = new LinkedList<>();
+//                List<String[]> skuAttrValues = new LinkedList<>();
+
                 for (int i = 0; i < types.size(); i++) {
 
                     attrs[i] = types.get(i).get("attr") == null ? 0:Long.valueOf(types.get(i).get("attr").toString());
@@ -431,8 +542,15 @@ public class MasterFile_SkuCtrl extends BaseCtrl<DbResSku> implements ICheck {
                     String[] attrValueName = types.get(i).get("attrValueName") == null ? null:StringUtils.commaDelimitedListToStringArray(types.get(i).get("attrValueName").toString());
                     String[] attrValue = types.get(i).get("attrValue") == null ? null:StringUtils.commaDelimitedListToStringArray(types.get(i).get("attrValue").toString());
 
+//                    skuAttrs[i] = types.get(i).get("skuAttr") == null ? 0:Long.valueOf(types.get(i).get("skuAttr").toString());
+//                    skuAttrNames[i] = types.get(i).get("skuAttrName") == null ? "":types.get(i).get("skuAttrName").toString();
+//                    String[] skuAttrValueName = types.get(i).get("skuAttrValueName") == null ? null:StringUtils.commaDelimitedListToStringArray(types.get(i).get("skuAttrValueName").toString());
+//                    String[] skuAttrValue = types.get(i).get("skuAttrValue") == null ? null:StringUtils.commaDelimitedListToStringArray(types.get(i).get("skuAttrValue").toString());
+
                     attrValues.add(attrValue);
                     attrValueNames.add(attrValueName);
+//                    skuAttrValues.add(skuAttrValue);
+//                    skuAttrValueNames.add(skuAttrValueName);
                 }
 
                 ResultBean skuResult = new ResultBean();

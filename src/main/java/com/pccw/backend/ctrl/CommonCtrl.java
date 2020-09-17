@@ -186,7 +186,8 @@ public class CommonCtrl  extends BaseCtrl{
     @ApiOperation(value="获取res_trx_type表的transactionTypeName和id信息",tags={"common"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.GET,path="/trxTypeModule")
     public JsonResult<LabelAndValue> searchTrxType(){
-        return this.JsonResultHandle(trxTypeRepository,new LabelAndValue());
+//        return this.JsonResultHandle(trxTypeRepository,new LabelAndValue());
+        return this.JsonResultHandle(trxTypeRepository);
     }
 
     @ApiOperation(value="获取用户的session信息",tags={"common"},notes="注意问题点")

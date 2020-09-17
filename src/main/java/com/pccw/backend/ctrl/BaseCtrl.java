@@ -236,4 +236,24 @@ public class BaseCtrl<T>{
 //        List<E> list = repo.findAll();
         return Convertor.getCollect(bean, list);
     }
+
+    /**
+     * 使用JsonResultParamMapPro对结果进行处理
+     * @param repo
+     * @param <E>
+     * @return
+     */
+    public <E> JsonResult JsonResultHandle(BaseRepository repo){
+        Sort sort = new Sort(Sort.Direction.DESC, "id");
+        Specification<E> spec = new Specification<E>() {
+            @Override
+            public Predicate toPredicate(Root<E> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
+                Predicate predicate = criteriaBuilder.equal(root.get("active").as(String.class), "Y");
+                return predicate;
+            }
+        };
+        List<E> list = repo.findAll(spec,sort);
+        List<Map> maps = Convertor.entityTransfer(list);
+        return JsonResult.success(maps);
+    }
 }

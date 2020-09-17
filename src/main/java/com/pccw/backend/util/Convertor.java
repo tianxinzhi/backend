@@ -1,6 +1,7 @@
 package com.pccw.backend.util;
 
 import com.pccw.backend.annotation.JsonResultParamMapAnnotation;
+import com.pccw.backend.annotation.JsonResultParamMapPro;
 import com.pccw.backend.bean.GeneralBean;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.annotation.Aspect;
@@ -297,5 +298,63 @@ import com.pccw.backend.annotation.PredicateType;
 			e.printStackTrace();
 		}
 		return bean;
+	}
+
+	/**
+	 * 将实体集合转换为map集合
+	 * @param list
+	 * @param <E>
+	 * @return
+	 */
+	public static  <E> List<Map> entityTransfer(List<E> list){
+		List<Map> mapList = list.stream().map(entity -> {
+			Map<String, Object> map = JsonResultParamMapProHandler(entity);
+			return map;
+		}).collect(Collectors.toList());
+		return mapList;
+	}
+
+	/**
+	 * 将实体中的 JsonResultParamMapPro注解的内容：目标字段名=当前类字段名
+	 * 转换为Map（Key：目标字段名 Value：当前类字段名的值）输出
+	 * @param entity 包含JsonResultParamMapPro注解的对象
+	 * @param <E>
+	 * @return Map（Key：目标字段名 Value：当前类字段名的值）
+	 */
+	private static <E> Map<String, Object> JsonResultParamMapProHandler(E entity){
+		JsonResultParamMapPro annotation = entity.getClass().getAnnotation(JsonResultParamMapPro.class);
+		Map<String, Object> map = null;
+		try {
+			Method method = annotation.getClass().getDeclaredMethod("fieldMapping");
+			map = new HashMap<>();
+			String[] fieldMappings = (String[]) method.invoke(annotation);
+			for (String fieldRelation : fieldMappings) {
+				String[] fields = fieldRelation.split("=");
+				String targeField = fields[0];
+				String sourceField = fields[1];
+				Field declaredField = entity.getClass().getDeclaredField(sourceField);
+				declaredField.setAccessible(true);
+				JoinColumn joinColumn = declaredField.getAnnotation(JoinColumn.class);
+				Object value = null;
+				if (Objects.nonNull(joinColumn)) {
+					Class<?> fieldClass = declaredField.get(entity).getClass();
+					Field idField = fieldClass.getDeclaredField("id");
+					idField.setAccessible(true);
+					value = idField.get(declaredField.get(entity));
+				} else {
+					value = declaredField.get(entity);
+				}
+				map.put(targeField, value);
+			}
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		} catch (NoSuchFieldException e) {
+			e.printStackTrace();
+		}
+		return map;
 	}
 }

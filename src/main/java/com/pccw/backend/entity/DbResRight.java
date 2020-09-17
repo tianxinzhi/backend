@@ -5,6 +5,7 @@ import javax.persistence.*;
 import javax.persistence.Entity;
 
 import com.pccw.backend.annotation.JsonResultParamMapAnnotation;
+import com.pccw.backend.annotation.JsonResultParamMapPro;
 import lombok.Data;
 
 /**
@@ -15,7 +16,8 @@ import lombok.Data;
  @Data
  @Table(name = "res_right")
  @SequenceGenerator(name="id_right",sequenceName = "right_seq",allocationSize = 1)
- @JsonResultParamMapAnnotation(param1 = "id",param2 = "rightPid",param3 = "rightName")
+// @JsonResultParamMapAnnotation(param1 = "id",param2 = "rightPid",param3 = "rightName")
+ @JsonResultParamMapPro(fieldMapping = {"id=id","pid=rightPid","name=rightName"})
 public class DbResRight extends Base{
     @Id
     @Column(name = "id")

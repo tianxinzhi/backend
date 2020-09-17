@@ -256,4 +256,10 @@ public class BaseCtrl<T>{
         List<Map> maps = Convertor.entityTransfer(list);
         return JsonResult.success(maps);
     }
+
+    public <E> JsonResult addRowJsonResultHandle(BaseRepository repo,Map map){
+        JsonResult result = this.JsonResultHandle(repo);
+        result.getData().add(map);
+        return result;
+    }
 }

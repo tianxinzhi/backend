@@ -10,6 +10,7 @@ import com.pccw.backend.entity.DbResAdjustReason;
 import com.pccw.backend.entity.DbResAttrValue;
 import com.pccw.backend.entity.DbResRepo;
 import com.pccw.backend.repository.*;
+import com.pccw.backend.util.CollectionBuilder;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,7 +73,8 @@ public class CommonCtrl  extends BaseCtrl{
     @ApiOperation(value="获取res_right表的信息",tags={"common"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.GET,path="/rightModule")
     public JsonResult<TreeNode> search() {
-         return this.addRowJsonResultHandle(right_repo,new TreeNode(0L,-1L,"SMP"));
+//         return this.addRowJsonResultHandle(right_repo,new TreeNode(0L,-1L,"SMP"));
+        return this.addRowJsonResultHandle(right_repo, CollectionBuilder.builder(new HashMap<>()).put("id",0).put("pid",-1).put("name","SMP").build());
     }
 
     @ApiOperation(value="获取res_sku表的skuCode和id信息",tags={"common"},notes="注意问题点")
@@ -121,7 +123,7 @@ public class CommonCtrl  extends BaseCtrl{
     @ApiOperation(value="获取res_class表的ClassName和id信息",tags={"common"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.GET,path="/classValueModule")
     public JsonResult<TreeNode> searchClass() {
-        return this.JsonResultHandle(class_repo,new TreeNode());
+        return this.JsonResultHandle(class_repo);
     }
 
     @ApiOperation(value="获取res_repo表的RepoCode，RepoType，id信息",tags={"common"},notes="注意问题点")

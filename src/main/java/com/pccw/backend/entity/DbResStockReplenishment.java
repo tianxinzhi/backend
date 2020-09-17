@@ -21,17 +21,14 @@ public class DbResStockReplenishment extends Base{
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "id_stockReplenishment")
     private Long id;
 
-    @Column(name = "from_channel_id")
-    private Long fromChannelId;
-
     @Column(name = "to_channel_id")
     private Long toChannelId;
 
-    @Column(name = "from_channel_name")
-    private String fromChannelName;
-
-    @Column(name = "to_channel_name")
-    private String toChannelName;
+//    @Column(name = "from_channel_name")
+//    private String fromChannelName;
+//
+//    @Column(name = "to_channel_name")
+//    private String toChannelName;
 
     @Column(name = "sku_id")
     private Long skuId;

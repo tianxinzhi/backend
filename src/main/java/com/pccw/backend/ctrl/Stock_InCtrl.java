@@ -211,7 +211,6 @@ public class Stock_InCtrl extends BaseCtrl<DbResLogMgt> {
                 DbResLogMgt originMgt = logMgtRepository.getOne(bean.getOriginId());
                 originMgt.setStatus("C");
                 logMgtRepository.saveAndFlush(originMgt);
-                UpdateSkuRepoQty(bean.getLogTxtBum());
 
                 //创建工作流对象
 //                DbResProcess process = new DbResProcess();

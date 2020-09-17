@@ -23,5 +23,11 @@ public class CreateReplBean extends BaseBean {
     @ApiModelProperty(value="",name="logTxtNum",example="")
     private String logTxtNum;
 
+    @ApiModelProperty(value="",name="fromChannelId",example="")
+    private Long fromChannelId;
+
+    @ApiModelProperty(value="",name="status",example="")
+    private String status;
+
     private List<DbResStockReplenishment> line;
 }

@@ -42,8 +42,8 @@ public class DbResStockTake extends Base{
     private String displayQuantity;
 
     @JsonManagedReference
-    @OneToMany(cascade = CascadeType.ALL)  //ALL  PERSIST
-    @JoinColumn(name = "stock_take_id")
+    @OneToMany(cascade = CascadeType.ALL,mappedBy = "resStockTake")  //ALL  PERSIST
+//    @JoinColumn(name = "stock_take_id")
     private List<DbResStockTakeDtl> line;
 
 }

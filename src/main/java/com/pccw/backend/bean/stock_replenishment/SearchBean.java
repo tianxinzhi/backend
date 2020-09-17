@@ -11,11 +11,16 @@ import java.util.List;
 
 @Data
 @NoArgsConstructor
-public class SearchBean extends BaseSearchBean {
+public class SearchBean {
     private String logBatchId;
     private String logDnNum;
 
     @ApiModelProperty(value="sku",name="sku",example="")
     @PredicateAnnotation(type = PredicateType.IN)
-    private List<String> skuId;
+    private Long skuId;
+
+    private String[] createAt;
+    private String logTxtNum;
+    private Integer pageIndex;
+    private Integer pageSize;
 }

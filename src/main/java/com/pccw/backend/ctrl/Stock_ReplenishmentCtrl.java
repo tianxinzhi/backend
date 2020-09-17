@@ -11,14 +11,23 @@ import com.pccw.backend.repository.*;
 import com.pccw.backend.util.Convertor;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.query.internal.NativeQueryImpl;
+import org.hibernate.transform.Transformers;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import javax.transaction.Transactional;
+import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 
@@ -41,17 +50,53 @@ public class Stock_ReplenishmentCtrl extends BaseStockCtrl<DbResStockReplenishme
     @Autowired
     ResStockReplenishmentHeaderRepository headerRepository;
 
+    @Autowired
+    private EntityManager entityManager;
+
     @ApiOperation(value="补货搜索",tags={"stock_replenishment"},notes="查询")
     @RequestMapping(value = "/search",method = RequestMethod.POST)
-    public JsonResult search(@RequestBody SearchBean bean) {
-        try {
-            System.out.println(bean.toString());
-            List<Sort.Order> orders = new ArrayList<>();
-            orders.add(new Sort.Order(Sort.Direction.DESC,"id"));
-            Specification<DbResStockReplenishmentHeader> spec = Convertor.<DbResStockReplenishmentHeader>convertSpecification(bean);
-            List<DbResStockReplenishmentHeader> list = headerRepository.findAll(spec, PageRequest.of(bean.getPageIndex(),bean.getPageSize(),Sort.by(orders))).getContent();
-            return JsonResult.success(list,headerRepository.count(spec));
-        } catch (IllegalAccessException e) {
+    public JsonResult search(@RequestBody SearchBean b) {
+        try{
+
+            StringBuffer baseSql = new StringBuffer(" select t1.id \"id\",t1.create_at \"creatAt\",t3.account_name \"createName\" ,t1.log_txt_num \"logTxtNum\",\n" +
+                    "t1.from_channel_id \"fromChannelId\",t1.status \"status\"\n" +
+                    "from res_stock_replenishment_header t1 left join res_stock_replenishment t2\n" +
+                    "on t2.replenishment_header_id = t1.id left join res_account t3 on t1.create_by= t3.id where 1=1");
+
+            if(!StringUtils.isEmpty(b.getSkuId())) {
+                baseSql.append(" and t2.sku_id="+"'"+b.getSkuId()+"'");
+            }
+            DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            if (!StringUtils.isEmpty(b.getCreateAt())&&b.getCreateAt().length>0) {
+                baseSql.append(" and t1.CREATE_AT between "+sdf.parse(b.getCreateAt()[0]).getTime()+" and "+sdf.parse(b.getCreateAt()[1]).getTime());
+            }
+            if(b.getLogTxtNum()!=null && !b.getLogTxtNum().equals("")){
+                baseSql.append(" and t1.log_txt_num like '%"+b.getLogTxtNum()+"%'");
+            }
+
+            StringBuffer countBuffer = new StringBuffer(
+                    "select count(*) from ("+baseSql+")");
+            baseSql.append(" order by t1.create_at desc");
+
+            Query dataQuery = entityManager.createNativeQuery(baseSql.toString());
+            Query countQuery = entityManager.createNativeQuery(countBuffer.toString());
+
+            dataQuery.setFirstResult(b.getPageIndex()*b.getPageSize());
+            dataQuery.setMaxResults(b.getPageSize());
+            dataQuery.unwrap(NativeQueryImpl.class).setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
+            BigDecimal count = (BigDecimal) countQuery.getSingleResult();
+            Long total = count.longValue();
+            List<Map> content = dataQuery.getResultList();
+            for (Map map : content) {
+                Query nativeQuery = entityManager.createNativeQuery("select t2.to_channel_id \"toChannelId\",\n" +
+                        "t2.sku_id \"skuId\",t2.qty \"qty\",t2.request_date \"requestDate\",t2.stock \"stock\",t2.suggested_qty_1 \"suggestedQty1\",\n" +
+                        "t2.suggested_qty_2 \"suggestedQty2\",t2.suggested_qty_3 \"suggestedQty3\" from res_stock_replenishment t2 where t2.replenishment_header_id="+Long.parseLong(map.get("id").toString()));
+                nativeQuery.unwrap(NativeQueryImpl.class).setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
+                List<Map> resultList = nativeQuery.getResultList();
+                map.put("line",resultList);
+            }
+            return JsonResult.success(content,total);
+        } catch (NumberFormatException | ParseException e) {
             e.printStackTrace();
             return JsonResult.fail(e);
         }
@@ -68,7 +113,7 @@ public class Stock_ReplenishmentCtrl extends BaseStockCtrl<DbResStockReplenishme
     public JsonResult create(@RequestBody CreateReplBean bean) {
         try {
             long time = System.currentTimeMillis();
-            bean.setLogTxtNum(genTranNum(new Date(),"RP",rRepo.findById(bean.getLine().get(0).getFromChannelId()).get().getRepoCode()));
+            bean.setLogTxtNum(genTranNum(new Date(),"RP",rRepo.findById(bean.getFromChannelId()).get().getRepoCode()));
             for (DbResStockReplenishment replenishment : bean.getLine()) {
                 replenishment.setLogTxtNum(bean.getLogTxtNum());
                 replenishment.setCreateAt(time);
@@ -77,7 +122,7 @@ public class Stock_ReplenishmentCtrl extends BaseStockCtrl<DbResStockReplenishme
                 replenishment.setUpdateBy(getAccount());
                 replenishment.setActive("Y");
                 DbResSku sku = new DbResSku();sku.setId(replenishment.getSkuId());
-                DbResRepo repo = new DbResRepo();repo.setId(replenishment.getFromChannelId());
+                DbResRepo repo = new DbResRepo();repo.setId(bean.getFromChannelId());
                 DbResRepo repo2 = new DbResRepo();repo2.setId(replenishment.getToChannelId());
                 DbResStockType stockType = new DbResStockType();stockType.setId(3L);
                 DbResSkuRepo skuRepo = rsRepo.findDbResSkuRepoByRepoAndSkuAndStockType(repo, sku, stockType);
@@ -113,7 +158,7 @@ public class Stock_ReplenishmentCtrl extends BaseStockCtrl<DbResStockReplenishme
                 }
                 //插入日志
                 DbResLogMgt logMgt = new DbResLogMgt();
-                logMgt.setLogRepoOut(replenishment.getFromChannelId());
+                logMgt.setLogRepoOut(bean.getFromChannelId());
                 logMgt.setLogRepoIn(replenishment.getToChannelId());
                 logMgt.setLogTxtBum(bean.getLogTxtNum());
                 logMgt.setLogType(StaticVariable.LOGTYPE_REPL);
@@ -144,7 +189,7 @@ public class Stock_ReplenishmentCtrl extends BaseStockCtrl<DbResStockReplenishme
 
                 DbResLogMgtDtl dtl2 = new DbResLogMgtDtl();
                 BeanUtils.copyProperties(dtl,dtl2);
-                dtl2.setDtlRepoId(replenishment.getFromChannelId());
+                dtl2.setDtlRepoId(bean.getFromChannelId());
                 dtl2.setStatus(StaticVariable.STATUS_AVAILABLE);
                 dtl2.setLisStatus(StaticVariable.LISSTATUS_WAITING);
                 dtl2.setDtlAction(StaticVariable.DTLACTION_DEDUCT);
@@ -178,7 +223,7 @@ public class Stock_ReplenishmentCtrl extends BaseStockCtrl<DbResStockReplenishme
 
             for (DbResStockReplenishment replenishment : replenishmentHeader.getLine()) {
                 DbResSku sku = new DbResSku();sku.setId(replenishment.getSkuId());
-                DbResRepo repo = new DbResRepo();repo.setId(replenishment.getFromChannelId());
+                DbResRepo repo = new DbResRepo();repo.setId(replenishmentHeader.getFromChannelId());
                 DbResRepo repo2 = new DbResRepo();repo2.setId(replenishment.getToChannelId());
                 DbResStockType stockType = new DbResStockType();stockType.setId(3L);
                 DbResSkuRepo skuRepo = rsRepo.findDbResSkuRepoByRepoAndSkuAndStockType(repo, sku, stockType);
@@ -215,7 +260,7 @@ public class Stock_ReplenishmentCtrl extends BaseStockCtrl<DbResStockReplenishme
             long time = System.currentTimeMillis();
             for (DbResStockReplenishment replenishment : replenishmentHeader.getLine()) {
                 DbResSku sku = new DbResSku();sku.setId(replenishment.getSkuId());
-                DbResRepo repo = new DbResRepo();repo.setId(replenishment.getFromChannelId());
+                DbResRepo repo = new DbResRepo();repo.setId(replenishmentHeader.getFromChannelId());
                 DbResRepo repo2 = new DbResRepo();repo2.setId(replenishment.getToChannelId());
                 DbResStockType stockType = new DbResStockType();stockType.setId(3L);
 
@@ -242,7 +287,7 @@ public class Stock_ReplenishmentCtrl extends BaseStockCtrl<DbResStockReplenishme
                 newReplenishment.setUpdateBy(getAccount());
                 //修改了repo或者sku
                 DbResSku sku2 = new DbResSku();sku2.setId(newReplenishment.getSkuId());
-                DbResRepo repo2 = new DbResRepo();repo2.setId(newReplenishment.getFromChannelId());
+                DbResRepo repo2 = new DbResRepo();repo2.setId(bean.getFromChannelId());
                 DbResRepo repo3 = new DbResRepo();repo3.setId(newReplenishment.getToChannelId());
                 DbResStockType stockType2 = new DbResStockType();stockType2.setId(3L);
                 DbResSkuRepo value = rsRepo.findDbResSkuRepoByRepoAndSkuAndStockType(repo2, sku2, stockType2);

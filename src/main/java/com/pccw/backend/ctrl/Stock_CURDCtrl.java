@@ -73,7 +73,8 @@ public class Stock_CURDCtrl extends BaseCtrl<DbResSkuRepo> implements ICheck {
                     " sum(nvl(decode(r.stock_type_id ,4,r.QTY),0)) \"reserve\",\n" +
                     " sum(nvl(decode(r.stock_type_id ,5,r.QTY),0)) \"intransit\",\n" +
                     " sum(nvl(decode(r.stock_type_id ,6,r.QTY),0)) \"rao\",\n" +
-                    " sum(nvl(decode(r.stock_type_id ,7,r.QTY),0)) \"rro\" from res_sku_repo r\n" +
+                    " sum(nvl(decode(r.stock_type_id ,7,r.QTY),0)) \"rro\"," +
+                    " sum(nvl(decode(r.stock_type_id ,8,r.QTY),0)) \"awaitReturn\" from res_sku_repo r\n" +
                     "left join res_sku s on r.sku_id = s.id left join res_repo t1 on r.repo_id = t1.id\n" +
                     " where 1=1 " );
 

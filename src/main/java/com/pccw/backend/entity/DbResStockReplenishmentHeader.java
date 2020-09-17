@@ -24,8 +24,14 @@ public class DbResStockReplenishmentHeader extends Base{
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "id_stockReplenishmentHeader")
     private Long id;
 
+    @Column(name = "from_channel_id")
+    private Long fromChannelId;
+
     @Column(name = "log_txt_num", length = 512)
     private String logTxtNum;
+
+    @Column(name = "status")
+    private String status;
 
     @JsonManagedReference
     @OneToMany(cascade = CascadeType.ALL,orphanRemoval = true)

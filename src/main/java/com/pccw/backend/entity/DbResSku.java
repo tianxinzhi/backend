@@ -67,7 +67,7 @@ public class DbResSku extends Base {
 	@Column(name = "item_type")
 	private String itemType;
 
-	@Column(name = "serial_control",length = 4)
+	@Column(name = "serial_control",length = 8)
 	private String serialControl;
 
 	@Column(name = "uom")

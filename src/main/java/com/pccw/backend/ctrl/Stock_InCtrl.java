@@ -123,6 +123,7 @@ public class Stock_InCtrl extends BaseCtrl<DbResLogMgt> {
                 dbResStockType.setId(3L);
                 DbResSkuRepo skuRepo = skuRepoRepository.findDbResSkuRepoByRepoAndSkuAndStockType(dbResRepo, dbResSku, dbResStockType);
 
+                List<DbResSkuRepoSerial> serials = null;
                 if (Objects.isNull(skuRepo)){
 
                     skuRepo = new DbResSkuRepo();
@@ -132,23 +133,26 @@ public class Stock_InCtrl extends BaseCtrl<DbResLogMgt> {
                     skuRepo.setCreateAt(bean.getCreateAt());
                     skuRepo.setUpdateAt(bean.getCreateAt());
                     skuRepo.setUpdateBy(bean.getUpdateBy());
+                    serials = new LinkedList<>();
                     //skuRepo = skuRepoRepository.saveAndFlush(skuRepo);
                 }else {
                     skuRepo.setUpdateAt(System.currentTimeMillis());
                     skuRepo.setUpdateBy(getAccount());
                     skuRepo.setQty(skuRepo.getQty()+line.getDtlQty());
+                    serials = skuRepo.getSerials();
                     //skuRepo = skuRepoRepository.saveAndFlush(skuRepo);
                 }
                 if(line.getSerials() != null && line.getSerials().size()>0){
-                    List<DbResSkuRepoSerial> serialList = new LinkedList<>();
+
                     for (DbResLogMgtDtlSerial serial : line.getSerials()) {
                         DbResSkuRepoSerial skuSerial = new DbResSkuRepoSerial();
                         BeanUtils.copyProperties(serial,skuSerial);
                         skuSerial.setId(null);
                         skuSerial.setSkuRepo(skuRepo);
-                        serialList.add(skuSerial);
+
+                        serials.add(skuSerial);
                     }
-                    skuRepo.setSerials(serialList);
+                    skuRepo.setSerials(serials);
                 }
                 skuRepoRepository.saveAndFlush(skuRepo);
             }

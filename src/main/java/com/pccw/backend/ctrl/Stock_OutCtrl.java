@@ -137,6 +137,7 @@ public class Stock_OutCtrl  extends BaseCtrl<DbResLogMgt> {
                     //skuRepoRepository.updateQtyByRepoAndShopAndTypeAndQty(b.getLogRepoOut(),dtl.getDtlSkuId(),3,-dtl.getDtlQty());
                 } else {
                     DbResSkuRepo inSkuRepo = skuRepoRepository.findQtyByRepoAndShopAndType(b.getLogRepoIn(), dtl.getDtlSkuId(), 3L);
+                    List<DbResSkuRepoSerial> serials = null;
                     if(inSkuRepo==null){
                         inSkuRepo = new DbResSkuRepo();
                         DbResRepo repo = new DbResRepo();repo.setId(b.getLogRepoIn());
@@ -152,23 +153,23 @@ public class Stock_OutCtrl  extends BaseCtrl<DbResLogMgt> {
                         inSkuRepo.setCreateBy(getAccount());
                         inSkuRepo.setUpdateBy(getAccount());
                         inSkuRepo.setActive("Y");
+                        serials = new LinkedList<>();
                     } else {
                         inSkuRepo.setQty(inSkuRepo.getQty()+dtl.getDtlQty());
                         inSkuRepo.setUpdateAt(time);
                         inSkuRepo.setUpdateBy(getAccount());
-                        inSkuRepo.getSerials().clear();
+                        serials = inSkuRepo.getSerials();
                     }
 
                     if(dtl.getSerials() != null && dtl.getSerials().size()>0){
-//                        List<DbResSkuRepoSerial> serialList = new LinkedList<>();
                         for (DbResLogMgtDtlSerial serial : dtl.getSerials()) {
                             DbResSkuRepoSerial skuSerial = new DbResSkuRepoSerial();
                             BeanUtils.copyProperties(serial,skuSerial);
                             skuSerial.setId(null);
                             skuSerial.setSkuRepo(inSkuRepo);
-                            inSkuRepo.getSerials().add(skuSerial);
+                            serials.add(skuSerial);
                         }
-//                        inSkuRepo.setSerials(serialList);
+                        inSkuRepo.setSerials(serials);
                     }
                     skuRepoRepository.saveAndFlush(inSkuRepo);
                 }

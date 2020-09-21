@@ -27,12 +27,12 @@ public class  DbResClass extends Base {
 	@Column(name = "id")
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "id_class")
 	private Long id;
-	
+
 
 
 	@Column(name = "parent_class_id", length = 11)
 	private String parentClassId;
-	
+
 	@Column(name = "class_name", length = 32)
 	private String className;
 
@@ -49,6 +49,6 @@ public class  DbResClass extends Base {
 
 	@OneToMany(cascade={CascadeType.ALL},mappedBy = "classs",orphanRemoval = true)
 	List<DbResClassType> relationOfTypeClass;
-	
+
 
 }

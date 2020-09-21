@@ -8,12 +8,22 @@ import java.util.List;
 @Entity
 @Data
 @Table(name = "res_process")
-@SequenceGenerator(name = "id_process",sequenceName = "process_seq",allocationSize = 1)
+//@SequenceGenerator(name = "id_process",sequenceName = "process_seq",allocationSize = 1)
 public class DbResProcess extends Base{
 
     @Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE,generator = "id_process")
+//    @GeneratedValue(strategy = GenerationType.SEQUENCE,generator = "id_process")
+    @GeneratedValue(strategy=GenerationType.TABLE,generator="res_process_gen")
+    @TableGenerator(
+            name = "res_process_gen",
+            table="fendo_generator",
+            pkColumnName="seq_name",     //指定主键的名字
+            pkColumnValue="res_process_pk",      //指定下次插入主键时使用默认的值
+            valueColumnName="seq_id",    //该主键当前所生成的值，它的值将会随着每次创建累加
+            //initialValue = 1,            //初始化值
+            allocationSize=1             //累加值
+            )
     private Long id;
 
     @Column(name="log_txtNum",length = 512)

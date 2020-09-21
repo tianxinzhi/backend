@@ -112,7 +112,7 @@ public class Stock_CURDCtrl extends BaseCtrl<DbResSkuRepo> implements ICheck {
 //                List<Map> line = new LinkedList<>();
                 List<Map> balanceSerials = serialRepository.getBalanceSerials(Long.parseLong(map.get("skuId").toString()), Long.parseLong(map.get("repoId").toString()));
                 map.put("line",balanceSerials);
-                //map.put("id", String.valueOf(IDUtil.getRandomId()) );
+                map.put("id", String.valueOf(IDUtil.getRandomId()) );
             }
             return JsonResult.success(resultList,count.longValue());
         } catch (Exception e) {

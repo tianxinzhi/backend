@@ -8,10 +8,7 @@ import com.pccw.backend.bean.stock_balance.SearchBean;
 import com.pccw.backend.bean.stock_balance.StockCreateBean;
 import com.pccw.backend.bean.stock_balance.StockEditBean;
 import com.pccw.backend.cusinterface.ICheck;
-import com.pccw.backend.entity.DbResRepo;
-import com.pccw.backend.entity.DbResSku;
-import com.pccw.backend.entity.DbResSkuRepo;
-import com.pccw.backend.entity.DbResStockType;
+import com.pccw.backend.entity.*;
 import com.pccw.backend.repository.*;
 import com.pccw.backend.util.Convertor;
 import com.pccw.backend.util.IDUtil;
@@ -30,6 +27,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -46,7 +44,7 @@ import java.util.stream.Collectors;
 public class Stock_CURDCtrl extends BaseCtrl<DbResSkuRepo> implements ICheck {
 
     @Autowired
-    ResSkuRepository skuRepository;
+    ResSkuRepoSerialRepository serialRepository;
 
     @Autowired
     ResRepoRepository shopRepository;
@@ -96,18 +94,27 @@ public class Stock_CURDCtrl extends BaseCtrl<DbResSkuRepo> implements ICheck {
             if(bean.getStockTypeId()!=0){
                 baseSql.append(" and r.stock_type_id = "+bean.getStockTypeId());
             }
-            baseSql.append(" GROUP BY r.sku_id,r.repo_id,s.sku_code ,s.sku_desc ,t1.repo_code" +
-                    " ORDER BY t1.repo_code desc, s.sku_code desc ");
 
+            baseSql.append(" GROUP BY r.sku_id,r.repo_id,s.sku_code ,s.sku_desc ,t1.repo_code");
+            StringBuffer countBuffer = new StringBuffer(
+                    "select count(*) from ("+baseSql+")");
+
+            baseSql.append(" ORDER BY t1.repo_code desc, s.sku_code desc ");
+
+            Query countQuery = manager.createNativeQuery(countBuffer.toString());
             Query dataQuery = manager.createNativeQuery(baseSql.toString());
+            dataQuery.setFirstResult(bean.getPageIndex()*bean.getPageSize());
+            dataQuery.setMaxResults(bean.getPageSize());
             dataQuery.unwrap(NativeQueryImpl.class).setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
             List<Map> resultList = dataQuery.getResultList();
+            BigDecimal count = (BigDecimal) countQuery.getSingleResult();
             for (Map map : resultList) {
-                List<Map> line = new LinkedList<>();
-                map.put("line",line);
-                map.put("id", String.valueOf(IDUtil.getRandomId()) );
+//                List<Map> line = new LinkedList<>();
+                List<Map> balanceSerials = serialRepository.getBalanceSerials(Long.parseLong(map.get("skuId").toString()), Long.parseLong(map.get("repoId").toString()));
+                map.put("line",balanceSerials);
+                //map.put("id", String.valueOf(IDUtil.getRandomId()) );
             }
-            return JsonResult.success(resultList);
+            return JsonResult.success(resultList,count.longValue());
         } catch (Exception e) {
             e.printStackTrace();
             log.info(e.getMessage());

@@ -1,5 +1,8 @@
 package com.pccw.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 import org.hibernate.annotations.Where;
@@ -33,4 +36,8 @@ public class DbResLogMgtDtlSerial extends Base{
     @Column(name = "expiry_date")
     private Long expiryDate;
 
+    @ManyToOne
+    @JsonBackReference
+    @JoinColumn(name = "log_mgt_dtl_id" )
+    private DbResLogMgtDtl logMgtDtl;
 }

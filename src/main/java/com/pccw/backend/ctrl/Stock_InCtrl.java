@@ -16,6 +16,8 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -30,9 +32,6 @@ public class Stock_InCtrl extends BaseCtrl<DbResLogMgt> {
 
     @Autowired
     ResStockInRepository rsipo;
-
-    @Autowired
-    ResSkuRepoRepository rsrr;
 
     @Autowired
     ResSkuRepoRepository skuRepoRepository;
@@ -51,21 +50,30 @@ public class Stock_InCtrl extends BaseCtrl<DbResLogMgt> {
 
     @ApiOperation(value="stock_in",tags={"stock_in"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.POST,value = "/create")
+    @Transactional(rollbackFor = Exception.class)
     public JsonResult create(@RequestBody CreateBean bean) {
         try {
             long t = new Date().getTime();
             bean.setLogOrderNature(StaticVariable.LOGORDERNATURE_STOCK_IN_WITHOUT_PO_STW);
             List<DbResLogMgtDtl> lineList = bean.getLine();
-            for (int i = 0; i <lineList.size() ; i++) {
-                lineList.get(i).setDtlSubin(StaticVariable.DTLSUBIN_AVAILABLE);
-                lineList.get(i).setDtlAction(StaticVariable.DTLACTION_ADD);
-                lineList.get(i).setStatus(StaticVariable.STATUS_AVAILABLE);
-                lineList.get(i).setLisStatus(StaticVariable.LISSTATUS_WAITING);
-                lineList.get(i).setLogTxtBum(bean.getLogTxtBum());
-                lineList.get(i).setDtlRepoId(bean.getLogRepoIn());
-                lineList.get(i).setCreateAt(t);
-                lineList.get(i).setUpdateAt(t);
-                lineList.get(i).setId(null);
+            for (DbResLogMgtDtl dtl : lineList) {
+                dtl.setDtlSubin(StaticVariable.DTLSUBIN_AVAILABLE);
+                dtl.setDtlAction(StaticVariable.DTLACTION_ADD);
+                dtl.setStatus(StaticVariable.STATUS_AVAILABLE);
+                dtl.setLisStatus(StaticVariable.LISSTATUS_WAITING);
+                dtl.setLogTxtBum(bean.getLogTxtBum());
+                dtl.setDtlRepoId(bean.getLogRepoIn());
+                dtl.setCreateAt(t);dtl.setUpdateAt(t);
+                dtl.setCreateBy(getAccount());dtl.setUpdateBy(getAccount());
+                dtl.setActive("Y");
+                dtl.setId(null);
+                if(dtl.getSerials() != null && dtl.getSerials().size()>0){
+                    for (DbResLogMgtDtlSerial serial : dtl.getSerials()) {
+                        serial.setCreateAt(t);serial.setUpdateAt(t);
+                        serial.setCreateBy(getAccount());serial.setUpdateBy(getAccount());
+                        serial.setActive("Y");
+                    }
+                }
             }
 
             bean.setLine(lineList);
@@ -87,27 +95,12 @@ public class Stock_InCtrl extends BaseCtrl<DbResLogMgt> {
 //                processProcessCtrl.joinToProcess(process);
 
                 //生成sku serial
-                for (DbResLogMgtDtl dbResLogMgtDtl : bean.getLine()) {
-                    DbResSkuRepo sr = skuRepoRepository.findQtyByRepoAndShopAndType(bean.getLogRepoIn(), dbResLogMgtDtl.getDtlSkuId(), 3L);
-                    if(dbResLogMgtDtl.getLine() !=null && dbResLogMgtDtl.getLine().size()>0){
-                        for (DbResSkuRepoSerial dbResSkuRepoSerial : dbResLogMgtDtl.getLine()) {
-                            DbResSkuRepoSerial serial = new DbResSkuRepoSerial();
-                            BeanUtils.copyProperties(dbResSkuRepoSerial,serial);
-                            serial.setUpdateAt(t);
-                            serial.setCreateAt(t);
-                            serial.setUpdateBy(getAccount());
-                            serial.setCreateBy(getAccount());
-                            serial.setActive("Y");
-                            serial.setSkuRepo(sr);
-                            serialRepository.saveAndFlush(serial);
-                        }
-                    }
-                }
                 this.UpdateSkuRepoQty(bean.getLogTxtBum());
             }
 
             return result;
         }catch (Exception e){
+            e.printStackTrace();
             return JsonResult.fail(e);
         }
     }
@@ -132,16 +125,32 @@ public class Stock_InCtrl extends BaseCtrl<DbResLogMgt> {
 
                 if (Objects.isNull(skuRepo)){
 
-                    DbResSkuRepo dbResSkuRepo = new DbResSkuRepo(null,dbResSku,dbResRepo,null,dbResStockType, null,(long) Integer.parseInt(String.valueOf(line.getDtlQty())),null);
-                    dbResSkuRepo.setCreateBy(bean.getCreateBy());
-                    dbResSkuRepo.setCreateAt(bean.getCreateAt());
-                    dbResSkuRepo.setUpdateAt(bean.getCreateAt());
-                    dbResSkuRepo.setUpdateBy(bean.getCreateBy());
-                    rsrr.saveAndFlush(dbResSkuRepo);
+                    skuRepo = new DbResSkuRepo();
+                    skuRepo.setRepo(dbResRepo);skuRepo.setSku(dbResSku);skuRepo.setStockType(dbResStockType);
+                    skuRepo.setQty(line.getDtlQty());skuRepo.setActive("Y");
+                    skuRepo.setCreateBy(bean.getCreateBy());
+                    skuRepo.setCreateAt(bean.getCreateAt());
+                    skuRepo.setUpdateAt(bean.getCreateAt());
+                    skuRepo.setUpdateBy(bean.getUpdateBy());
+                    //skuRepo = skuRepoRepository.saveAndFlush(skuRepo);
                 }else {
-                    skuRepoRepository.updateQtyByRepoAndShopAndTypeAndQty(bean.getLogRepoIn(),line.getDtlSkuId(),3L,line.getDtlQty());
+                    skuRepo.setUpdateAt(System.currentTimeMillis());
+                    skuRepo.setUpdateBy(getAccount());
+                    skuRepo.setQty(skuRepo.getQty()+line.getDtlQty());
+                    //skuRepo = skuRepoRepository.saveAndFlush(skuRepo);
                 }
-
+                if(line.getSerials() != null && line.getSerials().size()>0){
+                    List<DbResSkuRepoSerial> serialList = new LinkedList<>();
+                    for (DbResLogMgtDtlSerial serial : line.getSerials()) {
+                        DbResSkuRepoSerial skuSerial = new DbResSkuRepoSerial();
+                        BeanUtils.copyProperties(serial,skuSerial);
+                        skuSerial.setId(null);
+                        skuSerial.setSkuRepo(skuRepo);
+                        serialList.add(skuSerial);
+                    }
+                    skuRepo.setSerials(serialList);
+                }
+                skuRepoRepository.saveAndFlush(skuRepo);
             }
         } catch (NumberFormatException e) {
             e.printStackTrace();

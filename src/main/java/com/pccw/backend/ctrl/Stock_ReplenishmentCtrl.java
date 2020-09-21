@@ -58,7 +58,7 @@ public class Stock_ReplenishmentCtrl extends BaseStockCtrl<DbResStockReplenishme
     public JsonResult search(@RequestBody SearchBean b) {
         try{
 
-            StringBuffer baseSql = new StringBuffer(" select t1.id \"id\",t1.create_at \"creatAt\",t3.account_name \"createName\" ,t1.log_txt_num \"logTxtNum\",\n" +
+            StringBuffer baseSql = new StringBuffer(" select t1.id \"id\",t1.create_at \"createAt\",t3.account_name \"createAccountName\" ,t1.log_txt_num \"logTxtNum\",\n" +
                     "t1.from_channel_id \"fromChannelId\",t1.status \"status\"\n" +
                     "from res_stock_replenishment_header t1 left join res_stock_replenishment t2\n" +
                     "on t2.replenishment_header_id = t1.id left join res_account t3 on t1.create_by= t3.id where 1=1");

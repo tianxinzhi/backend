@@ -1,6 +1,8 @@
 package com.pccw.backend.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -53,9 +55,12 @@ public class DbResLogMgtDtl extends BaseLogDtl {
 	@ManyToOne(targetEntity = DbResLogMgt.class)
 	private DbResLogMgt resLogMgt;
 
+	@JsonManagedReference
+	@OneToMany(cascade = CascadeType.ALL,orphanRemoval = true)  //ALL  PERSIST
+	@JoinColumn(name = "log_mgt_dtl_id")
+	private List<DbResLogMgtDtlSerial> serials;
+
 	@Transient
 	private String skuCode;
 
-	@Transient
-	private List<DbResSkuRepoSerial> line;
 }

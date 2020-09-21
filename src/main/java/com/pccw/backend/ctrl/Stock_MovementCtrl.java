@@ -118,7 +118,6 @@ public class Stock_MovementCtrl extends BaseCtrl<DbResLogMgt> {
             dataQuery.setMaxResults(b.getPageSize());
             dataQuery.unwrap(NativeQueryImpl.class).setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
             BigDecimal count = (BigDecimal) countQuery.getSingleResult();
-            Long total = count.longValue();
             List<Map> content = dataQuery.getResultList();
             for (Map map : content) {
                 if(map.get("logOrderNature") !=null && (map.get("logOrderNature").toString().equals(StaticVariable.LOGORDERNATURE_STOCK_CATEGORY)
@@ -146,7 +145,7 @@ public class Stock_MovementCtrl extends BaseCtrl<DbResLogMgt> {
                     map.put("line",line);
                 }
             }
-            return JsonResult.success(content,total);
+            return JsonResult.success(content,count.longValue());
         } catch (NumberFormatException | ParseException e) {
             e.printStackTrace();
             return JsonResult.fail(e);

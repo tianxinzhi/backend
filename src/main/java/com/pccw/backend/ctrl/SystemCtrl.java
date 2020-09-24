@@ -59,12 +59,15 @@ public class SystemCtrl extends BaseCtrl<DbResAccount> {
 
             //获取用户权限
             List<Long> rightIdList = getUserRightIds(rwe);
+            //构建所有权限的树形结构
+            HashMap<Long, TreeNode> nodeMap = getAllRightMap();
             //根据权限id构建权限树
-            HashMap<Long, TreeNode> nodeMap = generateRightTree(rightIdList);
+//            HashMap<Long, TreeNode> nodeMap = generateRightTree(rightIdList);
             //构建用户可操作权限的K,V(module，button)数据结构
             Map<String, List> accountButtonMap = getAccountButtonMap(rightIdList, nodeMap);
             //按照用户权限，筛选出对应菜单
-            List<TreeNode> userMenu = getUserMenu(nodeMap);
+            List<TreeNode> userMenu = getUserMenu(rightIdList, nodeMap);
+//            List<TreeNode> userMenu = getUserMenu(nodeMap);
 
             //处理存入redis的用户信息
             Map<String, Object> map = new HashMap<>();
@@ -144,58 +147,58 @@ public class SystemCtrl extends BaseCtrl<DbResAccount> {
      * @param nodeMap
      * @return
      */
-    public List<TreeNode> getUserMenu(HashMap<Long, TreeNode> nodeMap) {
-        return nodeMap.get(0L).getChildren().stream().sorted((n1, n2) -> {
-            if (n1.getSortNo().longValue() >= n2.getSortNo().longValue()) {
-                return n1.getSortNo().compareTo(n2.getSortNo());
-            } else {
-                return n1.getSortNo().compareTo(n2.getSortNo());
-            }
-        }).collect(Collectors.toList());
-    }
+//    public List<TreeNode> getUserMenu(HashMap<Long, TreeNode> nodeMap) {
+//        return nodeMap.get(0L).getChildren().stream().sorted((n1, n2) -> {
+//            if (n1.getSortNo().longValue() >= n2.getSortNo().longValue()) {
+//                return n1.getSortNo().compareTo(n2.getSortNo());
+//            } else {
+//                return n1.getSortNo().compareTo(n2.getSortNo());
+//            }
+//        }).collect(Collectors.toList());
+//    }
 
     /**
      * 按照登录人权限构建树
      * @param rightIdList
      * @return
      */
-    public HashMap<Long, TreeNode> generateRightTree(List<Long> rightIdList) {
-        //根据rightId，递归查找父节点和子节点
-        List<Map<String,Object>> rightTreeList = rightRepository.findRightTreeByIds(rightIdList);
-
-        List<Map<String, Object>> maps = ResultRecode.returnHumpNameForList(rightTreeList);
-        List<DbResRight> rights = maps.stream().map(r -> {
-            return JSON.parseObject(JSON.toJSONString(r), DbResRight.class);
-        }).collect(Collectors.toList());
-
-        List<TreeNode> nodes = rights.stream().map(r -> {
-            DbResRight parentRight = rightRepository.findDbResRightById(r.getRightPid());
-            String moduleName = Objects.nonNull(parentRight) ? parentRight.getRightName() : null;
-            return new TreeNode(r.getId(), r.getRightPid(), r.getRightName(), moduleName, r.getRightUrl(), true, r.getRightType(), r.getRightIdentifier(), r.getSortNum(), new ArrayList<TreeNode>());
-        }).collect(Collectors.toList());
-        //构建map
-        Iterator<TreeNode> nodeIterator = nodes.iterator();
-        HashMap<Long, TreeNode> nodeMap = new HashMap<Long, TreeNode>();
-        while (nodeIterator.hasNext()) {
-            TreeNode node = nodeIterator.next();
-            nodeMap.put(node.getId(), node);
-        }
-
-        //标记非子结点，并收集子节点
-        Iterator<Long> iterator = nodeMap.keySet().iterator();
-        while (iterator.hasNext()) {
-            Long key = iterator.next();
-            TreeNode treeNode = nodeMap.get(key);
-            if (Objects.nonNull(treeNode.getParentId())) {
-                TreeNode parentNode = nodeMap.get(treeNode.getParentId());
-                parentNode.setLeaf(false);
-                List<TreeNode> children = parentNode.getChildren();
-                children.add(treeNode);
-            }
-
-        }
-        return nodeMap;
-    }
+//    public HashMap<Long, TreeNode> generateRightTree(List<Long> rightIdList) {
+//        //根据rightId，递归查找父节点和子节点
+//        List<Map<String,Object>> rightTreeList = rightRepository.findRightTreeByIds(rightIdList);
+//
+//        List<Map<String, Object>> maps = ResultRecode.returnHumpNameForList(rightTreeList);
+//        List<DbResRight> rights = maps.stream().map(r -> {
+//            return JSON.parseObject(JSON.toJSONString(r), DbResRight.class);
+//        }).collect(Collectors.toList());
+//
+//        List<TreeNode> nodes = rights.stream().map(r -> {
+//            DbResRight parentRight = rightRepository.findDbResRightById(r.getRightPid());
+//            String moduleName = Objects.nonNull(parentRight) ? parentRight.getRightName() : null;
+//            return new TreeNode(r.getId(), r.getRightPid(), r.getRightName(), moduleName, r.getRightUrl(), true, r.getRightType(), r.getRightIdentifier(), r.getSortNum(), new ArrayList<TreeNode>());
+//        }).collect(Collectors.toList());
+//        //构建map
+//        Iterator<TreeNode> nodeIterator = nodes.iterator();
+//        HashMap<Long, TreeNode> nodeMap = new HashMap<Long, TreeNode>();
+//        while (nodeIterator.hasNext()) {
+//            TreeNode node = nodeIterator.next();
+//            nodeMap.put(node.getId(), node);
+//        }
+//
+//        //标记非子结点，并收集子节点
+//        Iterator<Long> iterator = nodeMap.keySet().iterator();
+//        while (iterator.hasNext()) {
+//            Long key = iterator.next();
+//            TreeNode treeNode = nodeMap.get(key);
+//            if (Objects.nonNull(treeNode.getParentId())) {
+//                TreeNode parentNode = nodeMap.get(treeNode.getParentId());
+//                parentNode.setLeaf(false);
+//                List<TreeNode> children = parentNode.getChildren();
+//                children.add(treeNode);
+//            }
+//
+//        }
+//        return nodeMap;
+//    }
 
     /**
      * 构建用户可操作权限的K,V(module，button)数据结构
@@ -250,4 +253,134 @@ public class SystemCtrl extends BaseCtrl<DbResAccount> {
         }
     }
 
+    /**
+     * 根据用户权限，筛选出对应的权限树
+     *
+     * @param rightIdList 登录人权限id
+     * @param nodeMap     所有权限的树形结构
+     * @return 对应权限的树
+     */
+    public List<TreeNode> getUserMenu(List<Long> rightIdList, HashMap<Long, TreeNode> nodeMap) {
+        Iterator<Long> idIterator = rightIdList.iterator();
+        Map<Long, TreeNode> accoutRightMap = new HashMap();
+        //如果有SMP最大权限则直接返回最大权限
+        if(rightIdList.contains(0L)){
+            return nodeMap.get(0L).getChildren().stream().sorted((n1,n2)->{
+                if(n1.getSortNo().longValue() >= n2.getSortNo().longValue()){
+                    return n1.getSortNo().compareTo(n2.getSortNo());
+                }else {
+                    return n1.getSortNo().compareTo(n2.getSortNo());
+                }
+            }).collect(Collectors.toList());
+        }
+        //找到当前节点的父节点，并把当前节点放入父节点，并递归
+        while (idIterator.hasNext()) {
+            Long key = idIterator.next();
+            TreeNode treeNode = nodeMap.get(key);
+            Long parentId = treeNode.getParentId();
+            if (treeNode.getTpye().equals("Button")) {//如果当前节点是Button，则从父节点开始递归
+                TreeNode parentNode = nodeMap.get(parentId);
+                parentNode.setChildren(Arrays.asList());
+                findParent(accoutRightMap, nodeMap, parentNode, parentNode.getParentId());
+
+            } else {
+                if (treeNode.getTpye().equals("Menu")) {
+                    treeNode.setChildren(Arrays.asList());
+                }
+                findParent(accoutRightMap, nodeMap, treeNode, parentId);
+            }
+        }
+        //构建返回到前端的菜单树
+        List<TreeNode> recode = accoutRightMap.values().stream().collect(Collectors.toList());
+        List<TreeNode> userMenu = recode.get(0).getChildren();
+        return userMenu.stream().sorted((n1,n2)->{
+            if(n1.getSortNo().longValue() >= n2.getSortNo().longValue()){
+                return n1.getSortNo().compareTo(n2.getSortNo());
+            }else {
+                return n1.getSortNo().compareTo(n2.getSortNo());
+            }
+        }).collect(Collectors.toList());
+    }
+
+    /**
+     * 构建所有权限的树形结构
+     *
+     * @return
+     */
+    public HashMap<Long, TreeNode> getAllRightMap() {
+        //查询所有权限
+        List<DbResRight> allRight = rightRepository.findAll();
+        //构建TreeNode数据结构
+        List<TreeNode> nodes = allRight.stream().map(r -> {
+            DbResRight parentRight = rightRepository.findDbResRightById(r.getRightPid());
+            String moduleName = Objects.nonNull(parentRight) ? parentRight.getRightName() : null;
+            return new TreeNode(r.getId(), r.getRightPid(), r.getRightName(), moduleName, r.getRightUrl(), true, r.getRightType(),r.getRightIdentifier(),r.getSortNum(), new ArrayList<TreeNode>());
+        }).collect(Collectors.toList());
+
+        //构建map
+        Iterator<TreeNode> nodeIterator = nodes.iterator();
+        HashMap<Long, TreeNode> nodeMap = new HashMap<Long, TreeNode>();
+        while (nodeIterator.hasNext()) {
+            TreeNode node = nodeIterator.next();
+            nodeMap.put(node.getId(), node);
+        }
+
+        //标记非子结点，并收集子节点
+        try {
+            Iterator<Long> iterator = nodeMap.keySet().iterator();
+            while (iterator.hasNext()) {
+                Long key = iterator.next();
+                TreeNode treeNode = nodeMap.get(key);
+                if (Objects.nonNull(treeNode.getParentId())) {
+                    TreeNode parentNode = nodeMap.get(treeNode.getParentId());
+                    if (parentNode == null) {
+                        log.error(treeNode.toString());
+                        throw BaseException.getException("888","parent node not found");
+                    }
+                    parentNode.setLeaf(false);
+                    List<TreeNode> children = parentNode.getChildren();
+                    children.add(treeNode);
+                }
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return nodeMap;
+    }
+
+    /**
+     * 寻找父节点
+     *
+     * @param accoutRightMap 用户权限的map
+     * @param nodeMap        所有权限的Map
+     * @param treeNode       当前节点
+     * @param parentId       父节点id
+     */
+    private void findParent(Map<Long, TreeNode> accoutRightMap, HashMap<Long, TreeNode> nodeMap, TreeNode treeNode, Long parentId) {
+        if (nodeMap.containsKey(parentId)) {
+            TreeNode parentNode = new TreeNode();
+            if (accoutRightMap.containsKey(parentId)) {
+                parentNode = accoutRightMap.get(parentId);
+                List<TreeNode> children = parentNode.getChildren();
+
+                List<Long> ids = children.stream().map(r -> {
+                    return r.getId();
+                }).collect(Collectors.toList());
+
+                if (!ids.contains(treeNode.getId())) {
+                    children.add(treeNode);
+                }
+
+            } else {
+                parentNode = nodeMap.get(parentId);
+                List list = new ArrayList();
+                list.add(treeNode);
+                parentNode.setChildren(list);
+            }
+            accoutRightMap.put(parentId, parentNode);
+            Long pId = parentNode.getParentId();
+            findParent(accoutRightMap, nodeMap, parentNode, pId);
+        }
+    }
 }

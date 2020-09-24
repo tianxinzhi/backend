@@ -34,7 +34,7 @@ public class BaseException extends RuntimeException {
     //     e.setException(exception);
     //     return e;
     // }
-    private static BaseException getException(String code, String msg){
+    public static BaseException getException(String code, String msg){
         BaseException e = new BaseException();
         e.setCode(code);
         e.setMsg(msg);

@@ -80,7 +80,7 @@ public class CommonCtrl  extends BaseCtrl{
     @ApiOperation(value="获取res_sku表的skuCode和id信息",tags={"common"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.GET,path="/skuModule")
     public JsonResult<LabelAndValue> searchSku() {
-       return this.JsonResultHandle(sku_repo,new LabelAndValue());
+        return this.JsonResultHandle(sku_repo,new LabelAndValue());
     }
 
     @ApiOperation(value="获取res_spec表的SpecName和id信息",tags={"common"},notes="注意问题点")
@@ -104,25 +104,25 @@ public class CommonCtrl  extends BaseCtrl{
     @ApiOperation(value="获取res_attr_value表的AttrValue和id信息",tags={"common"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.GET,path="/attrValueModule")
     public JsonResult<LabelAndValue> searchAttrValue() {
-            Sort sort = new Sort(Sort.Direction.DESC, "id");
-            Specification<DbResAttrValue> spec = new Specification<DbResAttrValue>() {
-                @Override
-                public Predicate toPredicate(Root<DbResAttrValue> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
-                    Predicate predicate = criteriaBuilder.equal(root.get("active").as(String.class), "Y");
-                    return predicate;
-                }
-            };
-            List<DbResAttrValue> list = attr_value_repo.findAll(spec,sort);
-            List<LabelAndValue> res = list.stream().map(item -> {
-                return  Objects.nonNull(item.getAttrValue()) ? new LabelAndValue(item.getId(), item.getAttrValue(), null,null) : new LabelAndValue(item.getId(), item.getValueFrom()+"~"+item.getValueTo(),null,null );
-            }).collect(Collectors.toList());
+        Sort sort = new Sort(Sort.Direction.DESC, "id");
+        Specification<DbResAttrValue> spec = new Specification<DbResAttrValue>() {
+            @Override
+            public Predicate toPredicate(Root<DbResAttrValue> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
+                Predicate predicate = criteriaBuilder.equal(root.get("active").as(String.class), "Y");
+                return predicate;
+            }
+        };
+        List<DbResAttrValue> list = attr_value_repo.findAll(spec,sort);
+        List<LabelAndValue> res = list.stream().map(item -> {
+            return  Objects.nonNull(item.getAttrValue()) ? new LabelAndValue(item.getId(), item.getAttrValue(), null,null) : new LabelAndValue(item.getId(), item.getValueFrom()+"~"+item.getValueTo(),null,null );
+        }).collect(Collectors.toList());
 
-            return JsonResult.success(res);
+        return JsonResult.success(res);
     }
 
     @ApiOperation(value="获取res_class表的ClassName和id信息",tags={"common"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.GET,path="/classValueModule")
-    public JsonResult<TreeNode> searchClass() {
+    public JsonResult searchClass() {
         return this.JsonResultHandle(class_repo);
     }
 
@@ -154,17 +154,17 @@ public class CommonCtrl  extends BaseCtrl{
     @ApiOperation(value="获取res_adjust_reason表的adjustReasonName和id信息",tags={"common"},notes="注意问题点")
     @RequestMapping(method = RequestMethod.GET,path="/adjustReasonModule")
     public JsonResult<LabelAndValue> searchAdjustReason(){
-            Sort sort = new Sort(Sort.Direction.DESC, "id");
-            Specification<DbResAdjustReason> spec = new Specification<DbResAdjustReason>() {
-             @Override
-             public Predicate toPredicate(Root<DbResAdjustReason> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
-                   Predicate predicate = criteriaBuilder.equal(root.get("active").as(String.class), "Y");
-                  return predicate;
-                }
-            };
-            List<DbResAdjustReason> list =  adjustReasonRepository.findAll(spec,sort).stream().filter
-                    (reason -> !reason.getAdjustReasonName().equals("Other Reason")).collect(Collectors.toList());
-            return this.customSearchJsonResultHandle(new LabelAndValue(),list);
+        Sort sort = new Sort(Sort.Direction.DESC, "id");
+        Specification<DbResAdjustReason> spec = new Specification<DbResAdjustReason>() {
+            @Override
+            public Predicate toPredicate(Root<DbResAdjustReason> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
+                Predicate predicate = criteriaBuilder.equal(root.get("active").as(String.class), "Y");
+                return predicate;
+            }
+        };
+        List<DbResAdjustReason> list =  adjustReasonRepository.findAll(spec,sort).stream().filter
+                (reason -> !reason.getAdjustReasonName().equals("Other Reason")).collect(Collectors.toList());
+        return this.customSearchJsonResultHandle(new LabelAndValue(),list);
     }
 
     @ApiOperation(value="获取res_role表的roleName和id信息",tags={"common"},notes="注意问题点")
@@ -210,9 +210,12 @@ public class CommonCtrl  extends BaseCtrl{
         //获取用户权限
         List<Long> rightIdList = systemCtrl.getUserRightIds(account);
         //根据权限id构建权限树
-        HashMap<Long, com.pccw.backend.bean.system.TreeNode> nodeMap = systemCtrl.generateRightTree(rightIdList);
+//        HashMap<Long, com.pccw.backend.bean.system.TreeNode> nodeMap = systemCtrl.generateRightTree(rightIdList);
+        //构建所有权限的树形结构
+        HashMap<Long, com.pccw.backend.bean.system.TreeNode> nodeMap = systemCtrl.getAllRightMap();
         //按照用户权限，筛选出对应菜单
-        List<com.pccw.backend.bean.system.TreeNode> userMenu = systemCtrl.getUserMenu(nodeMap);
+//        List<com.pccw.backend.bean.system.TreeNode> userMenu = systemCtrl.getUserMenu(nodeMap);
+        List<com.pccw.backend.bean.system.TreeNode> userMenu = systemCtrl.getUserMenu(rightIdList,nodeMap);
         return JsonResult.success(userMenu);
     }
 

@@ -33,15 +33,11 @@ public class DbResSpecAttr extends Base {
 //	@Column(name = "ver_id", columnDefinition = "varchar(16)")
 //	private String verId;
 
-//	@Column(name = "attr_id", columnDefinition = "number(11)")
-//	private String attrId;
-	@Column(name = "attr_id" )
-	private Long attrId;
+	@Column(name = "attr_id")
+	private String attrId;
 
-//	@Column(name = "attr_value_id", columnDefinition = "number(11)")
-//	private String attrValueId;
 	@Column(name = "attr_value_id")
-	private Long attrValueId;
+	private String attrValueId;
 
 	@Column(name = "is_spec",length = 4)
 	private String isSpec;

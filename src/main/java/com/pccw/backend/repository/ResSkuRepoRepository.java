@@ -16,13 +16,13 @@ import java.util.Map;
 public interface  ResSkuRepoRepository extends BaseRepository<DbResSkuRepo>{
 
     @Query(value = "select ROWNUM id, a.* from (select RS.SKU_DESC description,RS.SKU_CODE sku,RR.REPO_CODE AS store,\n" +
-            "sum(nvl(decode(RST.STOCKTYPE_NAME ,'Intransit(DEL)',RSR.QTY),0)) DELQTY,\n" +
-            "sum(nvl(decode(RST.STOCKTYPE_NAME ,'Faulty(FAU)',RSR.QTY),0))    FAUQTY,\n" +
-            "sum(nvl(decode(RST.STOCKTYPE_NAME ,'Reserved(RES)',RSR.QTY),0))  RESQTY,\n" +
-            "sum(nvl(decode(RST.STOCKTYPE_NAME ,'Available(AVL)',RSR.QTY),0)) AVLQTY,\n" +
-            "sum(nvl(decode(RST.STOCKTYPE_NAME ,'Demo(DEM)',RSR.QTY),0))      DEMQTY,\n" +
-            "sum(nvl(decode(RST.STOCKTYPE_NAME ,'Reserved With AO(RAO)',RSR.QTY),0)) RAOQTY,\n" +
-            "sum(nvl(decode(RST.STOCKTYPE_NAME ,'Reserved With Remote(RRO)',RSR.QTY),0)) RROQTY\n" +
+            "sum(coalesce(case when RST.STOCKTYPE_NAME='Intransit(DEL)' then RSR.QTY end,0)) DELQTY,\n" +
+            "sum(coalesce(case when RST.STOCKTYPE_NAME='Faulty(FAU)' then RSR.QTY end,0))    FAUQTY,\n" +
+            "sum(coalesce(case when RST.STOCKTYPE_NAME='Reserved(RES)' then RSR.QTY end,0))  RESQTY,\n" +
+            "sum(coalesce(case when RST.STOCKTYPE_NAME='Available(AVL)' then RSR.QTY end,0)) AVLQTY,\n" +
+            "sum(coalesce(case when RST.STOCKTYPE_NAME='Demo(DEM)' then RSR.QTY end,0))      DEMQTY,\n" +
+            "sum(coalesce(case when RST.STOCKTYPE_NAME='Reserved With AO(RAO)' then RSR.QT end,0)) RAOQTY,\n" +
+            "sum(coalesce(case when RST.STOCKTYPE_NAME='Reserved With Remote(RRO)' then RSR.QTY end,0)) RROQTY\n" +
             "FROM   \n" +
             "  RES_SKU RS,\n" +
             "  RES_REPO RR,\n" +
@@ -33,17 +33,17 @@ public interface  ResSkuRepoRepository extends BaseRepository<DbResSkuRepo>{
             "   AND RR.ID = RSR.REPO_ID\n" +
             "   AND RST.ID = RSR.STOCK_TYPE_ID\n" +
             "\t AND RS.sku_code LIKE CONCAT(CONCAT('%',:skuNum),'%')\n" +
-            "AND RSR.REPO_ID=nvl(:repoNum,RSR.REPO_ID)\n"+
+            "AND RSR.REPO_ID=coalesce(:repoNum,RSR.REPO_ID)\n"+
             "GROUP BY RS.SKU_CODE,RR.REPO_CODE,RS.SKU_DESC) a",nativeQuery = true)
     List<Map> getStockBalanceInfo(@Param("skuNum") String skuNum, @Param("repoNum") String repoNum);
 
     @Query(value = "select * from res_sku_repo t where t.repo_id = ?1 and t.sku_id = ?2 and t.stock_type_id = ?3",nativeQuery = true)
     DbResSkuRepo findQtyByRepoAndShopAndType(@Param("shop") long shop, @Param("sku") long sku, @Param("stockType") long stockType);
 
-    @Query(value = "select SUM(t.QTY) qty from res_sku_repo t where t.repo_id = nvl(?1,t.repo_id) and t.sku_id = ?2 and t.item_id = nvl(?3,t.item_id) and t.stock_type_id = ?4",nativeQuery = true)
+    @Query(value = "select SUM(t.QTY) qty from res_sku_repo t where t.repo_id = coalesce(?1,t.repo_id) and t.sku_id = ?2 and t.item_id = nvl(?3,t.item_id) and t.stock_type_id = ?4",nativeQuery = true)
     Long findQtyByRepoAndSkuAndItemAndType(@Param("shop") long shop, @Param("sku") long sku,@Param("item") long item, @Param("stockType") long stockType);
 
-    @Query(value = "select SUM(t.QTY) qty from res_sku_repo t where t.repo_id = nvl(?1,t.repo_id) and t.sku_id = ?2 and t.stock_type_id = ?3",nativeQuery = true)
+    @Query(value = "select SUM(t.QTY) qty from res_sku_repo t where t.repo_id = coalesce(?1,t.repo_id) and t.sku_id = ?2 and t.stock_type_id = ?3",nativeQuery = true)
     Long findQtyByRepoAndSkuAndType(@Param("shop") long shop, @Param("sku") long sku, @Param("stockType") long stockType);
 
 //    @Query(value = "select  t.qty from res_sku_repo t where  t.sku_id = ?1 and t.stock_type_id = ?2 and t.repo_id is null ",nativeQuery = true)

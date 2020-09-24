@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -78,7 +79,7 @@ public class Stock_MovementCtrl extends BaseCtrl<DbResLogMgt> {
                     skuSearch = "";
                 }
             }
-            StringBuffer baseSql = new StringBuffer(" select t1.id \"id\",t1.CREATE_AT \"createAt\",a1.account_name \"createAccountName\", \n" +
+            StringBuffer baseSql = new StringBuffer(" select t1.id \"mgtId\", t4.id \"id\",t1.CREATE_AT \"createAt\",a1.account_name \"createAccountName\", \n" +
                     "t1.log_txt_num \"logTxtBum\",t1.log_order_nature \"logOrderNature\",t1.remark \"reason\", \n" +
                     "t1.approval \"approval\",t1.approval_by \"approvalBy\",t1.staff_number \"staff\",t1.remark \"remark\" ,\n" +
                     "t1.courier \"courier\",t1.serial \"serial\",t1.iccId \"iccID\",t1.imei \"imei\",t1.mobile_number \"mobileNumber\", \n" +
@@ -108,7 +109,7 @@ public class Stock_MovementCtrl extends BaseCtrl<DbResLogMgt> {
             }
 
             StringBuffer countBuffer = new StringBuffer(
-                    "select count(*) from ("+baseSql+")");
+                    "select count(*) from ("+baseSql+")t");
             baseSql.append(" order by t1.create_at desc");
 
             Query dataQuery = entityManager.createNativeQuery(baseSql.toString());
@@ -117,7 +118,7 @@ public class Stock_MovementCtrl extends BaseCtrl<DbResLogMgt> {
             dataQuery.setFirstResult(b.getPageIndex()*b.getPageSize());
             dataQuery.setMaxResults(b.getPageSize());
             dataQuery.unwrap(NativeQueryImpl.class).setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
-            BigDecimal count = (BigDecimal) countQuery.getSingleResult();
+            BigInteger count = (BigInteger) countQuery.getSingleResult();
             List<Map> content = dataQuery.getResultList();
             for (Map map : content) {
                 if(map.get("logOrderNature") !=null && (map.get("logOrderNature").toString().equals(StaticVariable.LOGORDERNATURE_STOCK_CATEGORY)
@@ -127,12 +128,12 @@ public class Stock_MovementCtrl extends BaseCtrl<DbResLogMgt> {
                  || map.get("logOrderNature").toString().equals(StaticVariable.LOGORDERNATURE_STOCK_RESERVE)
                  || map.get("logOrderNature").toString().equals(StaticVariable.LOGORDERNATURE_RETURN)
                 ) ) {
-                    List<DbResLogMgtDtl> ids = logMgtRepo.findById(Long.parseLong(map.get("id").toString())).get().getLine();
+                    List<DbResLogMgtDtl> ids = logMgtRepo.findById(Long.parseLong(map.get("mgtId").toString())).get().getLine();
                     if(ids!=null&&ids.size()>1)
                     map.put("toStatus",ids.get(1).getDtlSubin());
                 }
-                if(map.get("dtlId") !=null){
-                    List<DbResLogMgtDtlSerial> dtlId = serialRepo.findAllByDtlId(Long.parseLong(map.get("dtlId").toString()));
+                if(map.get("id") !=null){
+                    List<DbResLogMgtDtlSerial> dtlId = serialRepo.findAllByDtlId(Long.parseLong(map.get("id").toString()));
                     List<Map> line = new LinkedList<>();
                     for (DbResLogMgtDtlSerial serial : dtlId) {
                         Map linemap = new HashMap();

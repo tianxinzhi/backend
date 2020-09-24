@@ -25,6 +25,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -75,7 +76,7 @@ public class Stock_ReplenishmentCtrl extends BaseStockCtrl<DbResStockReplenishme
             }
 
             StringBuffer countBuffer = new StringBuffer(
-                    "select count(*) from ("+baseSql+")");
+                    "select count(*) from ("+baseSql+")t");
             baseSql.append(" order by t1.create_at desc");
 
             Query dataQuery = entityManager.createNativeQuery(baseSql.toString());
@@ -84,7 +85,7 @@ public class Stock_ReplenishmentCtrl extends BaseStockCtrl<DbResStockReplenishme
             dataQuery.setFirstResult(b.getPageIndex()*b.getPageSize());
             dataQuery.setMaxResults(b.getPageSize());
             dataQuery.unwrap(NativeQueryImpl.class).setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
-            BigDecimal count = (BigDecimal) countQuery.getSingleResult();
+            BigInteger count = (BigInteger) countQuery.getSingleResult();
             Long total = count.longValue();
             List<Map> content = dataQuery.getResultList();
             for (Map map : content) {

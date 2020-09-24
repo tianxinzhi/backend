@@ -15,13 +15,23 @@ import java.util.List;
 @Data
 @Table(name = "res_stock_return")
 @Entity
-@SequenceGenerator(name="id_stockReturn",sequenceName = "stockReturn_seq",allocationSize = 1)
+//@SequenceGenerator(name="id_stockReturn",sequenceName = "stockReturn_seq",allocationSize = 1)
 @Where(clause = " active='Y' ")
 public class DbResStockReturn extends Base{
 
     @Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "id_stockReturn")
+//    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "id_stockReturn")
+    @GeneratedValue(strategy=GenerationType.TABLE,generator="res_stock_return_gen")
+    @TableGenerator(
+            name = "res_stock_return_gen",
+            table="fendo_generator",
+            pkColumnName="seq_name",     //指定主键的名字
+            pkColumnValue="res_stock_return_pk",      //指定下次插入主键时使用默认的值
+            valueColumnName="seq_id",    //该主键当前所生成的值，它的值将会随着每次创建累加
+            //initialValue = 1,            //初始化值
+            allocationSize=1             //累加值
+    )
     private Long id;
 
     @Column(name = "return_header",length = 512)

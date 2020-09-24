@@ -27,7 +27,7 @@ public class JsonResult<T> {
 
     /**
      * quick method to return a JsonResult when SUCESSED
-     * @param <G>
+     * @param <T>
      * @param data
      * @return
      */

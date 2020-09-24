@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -65,14 +66,14 @@ public class Stock_CURDCtrl extends BaseCtrl<DbResSkuRepo> implements ICheck {
 
             StringBuffer baseSql = new StringBuffer("select r.sku_id \"skuId\",r.repo_id \"repoId\", s.sku_code \"sku\" ," +
                     "s.sku_desc \"skuDesc\" ,t1.repo_code \"shop\", \n" +
-                    " sum(nvl(decode(r.stock_type_id ,1,r.QTY),0)) \"staging\",\n" +
-                    " sum(nvl(decode(r.stock_type_id ,2,r.QTY),0)) \"faulty\",\n" +
-                    " sum(nvl(decode(r.stock_type_id ,3,r.QTY),0)) \"fg\",\n" +
-                    " sum(nvl(decode(r.stock_type_id ,4,r.QTY),0)) \"reserve\",\n" +
-                    " sum(nvl(decode(r.stock_type_id ,5,r.QTY),0)) \"intransit\",\n" +
-                    " sum(nvl(decode(r.stock_type_id ,6,r.QTY),0)) \"rao\",\n" +
-                    " sum(nvl(decode(r.stock_type_id ,7,r.QTY),0)) \"rro\"," +
-                    " sum(nvl(decode(r.stock_type_id ,8,r.QTY),0)) \"awaitReturn\" from res_sku_repo r\n" +
+                    " sum(coalesce(case when r.stock_type_id=1 then r.QTY end,0)) \"staging\",\n" +
+                    " sum(coalesce(case when r.stock_type_id=2 then r.QTY end,0)) \"faulty\",\n" +
+                    " sum(coalesce(case when r.stock_type_id=3 then r.QTY end,0)) \"fg\",\n" +
+                    " sum(coalesce(case when r.stock_type_id=4 then r.QTY end,0)) \"reserve\",\n" +
+                    " sum(coalesce(case when r.stock_type_id=5 then r.QTY end,0)) \"intransit\",\n" +
+                    " sum(coalesce(case when r.stock_type_id=6 then r.QTY end,0)) \"rao\",\n" +
+                    " sum(coalesce(case when r.stock_type_id=7 then r.QTY end,0)) \"rro\"," +
+                    " sum(coalesce(case when r.stock_type_id=8 then r.QTY end,0)) \"awaitReturn\" from res_sku_repo r\n" +
                     "left join res_sku s on r.sku_id = s.id left join res_repo t1 on r.repo_id = t1.id\n" +
                     " where 1=1 " );
 
@@ -97,7 +98,7 @@ public class Stock_CURDCtrl extends BaseCtrl<DbResSkuRepo> implements ICheck {
 
             baseSql.append(" GROUP BY r.sku_id,r.repo_id,s.sku_code ,s.sku_desc ,t1.repo_code");
             StringBuffer countBuffer = new StringBuffer(
-                    "select count(*) from ("+baseSql+")");
+                    "select count(*) from ("+baseSql+")t");
 
             baseSql.append(" ORDER BY t1.repo_code desc, s.sku_code desc ");
 
@@ -107,7 +108,7 @@ public class Stock_CURDCtrl extends BaseCtrl<DbResSkuRepo> implements ICheck {
             dataQuery.setMaxResults(bean.getPageSize());
             dataQuery.unwrap(NativeQueryImpl.class).setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
             List<Map> resultList = dataQuery.getResultList();
-            BigDecimal count = (BigDecimal) countQuery.getSingleResult();
+            BigInteger count = (BigInteger) countQuery.getSingleResult();
             for (Map map : resultList) {
 //                List<Map> line = new LinkedList<>();
                 List<Map> balanceSerials = serialRepository.getBalanceSerials(Long.parseLong(map.get("skuId").toString()), Long.parseLong(map.get("repoId").toString()));

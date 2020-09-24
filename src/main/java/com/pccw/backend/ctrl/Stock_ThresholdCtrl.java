@@ -68,7 +68,7 @@ public class Stock_ThresholdCtrl extends BaseCtrl<DbResLogMgt> {
     @RequestMapping(method = RequestMethod.POST, path = "/search")
     public JsonResult search(@RequestBody SearchBean b) {
         try {
-            String repoId = Objects.isNull(b.getRepoId()) ? "" : b.getRepoId();
+            Long repoId = Objects.isNull(b.getRepoId()) ? 0L : Long.parseLong(b.getRepoId());
             List<String> skuId = b.getSkuId() == null || b.getSkuId().size() == 0  ? null : b.getSkuId();
             //查询所有预警数据
 //            List<Map> list = resLogMgtRepository.getStockThreshold(repoId,skuId);
